@@ -110,11 +110,11 @@ const unifiedList = computeRanks(unifiedRawList, ['lvl1', 'lvl2', 'lvl3', 'lvl4'
 // Calculate best AI scores for each column to apply the golden aura
 const bestAiScores = { lvl1: -1, lvl2: -1, lvl3: -1, lvl4: -1, lvl5: -1 };
 unifiedList.forEach(item => {
-            if (item.lvl1 !== undefined && item.lvl1 > bestAiScores.lvl1) bestAiScores.lvl1 = item.lvl1;
-        if (item.lvl2 !== undefined && item.lvl2 > bestAiScores.lvl2) bestAiScores.lvl2 = item.lvl2;
-        if (item.lvl3 !== undefined && item.lvl3 > bestAiScores.lvl3) bestAiScores.lvl3 = item.lvl3;
-        if (item.lvl4 !== undefined && item.lvl4 > bestAiScores.lvl4) bestAiScores.lvl4 = item.lvl4;
-        if (item.lvl5 !== undefined && item.lvl5 > bestAiScores.lvl5) bestAiScores.lvl5 = item.lvl5;
+            if (item.lvl1 !== undefined && item.lvl1 > bestAiScores.lvl1 && typeof item.lvl1 === 'number') bestAiScores.lvl1 = item.lvl1;
+        if (item.lvl2 !== undefined && item.lvl2 > bestAiScores.lvl2 && typeof item.lvl2 === 'number') bestAiScores.lvl2 = item.lvl2;
+        if (item.lvl3 !== undefined && item.lvl3 > bestAiScores.lvl3 && typeof item.lvl3 === 'number') bestAiScores.lvl3 = item.lvl3;
+        if (item.lvl4 !== undefined && item.lvl4 > bestAiScores.lvl4 && typeof item.lvl4 === 'number') bestAiScores.lvl4 = item.lvl4;
+        if (item.lvl5 !== undefined && item.lvl5 > bestAiScores.lvl5 && typeof item.lvl5 === 'number') bestAiScores.lvl5 = item.lvl5;
 });
 
 const rows = Array.from({ length: unifiedList.length }, (_, i) => i);
@@ -153,6 +153,62 @@ dataList.forEach(item => {
         if (typeof item.octopus === 'number' && item.octopus > bestDataAiScores.octopus) bestDataAiScores.octopus = item.octopus;
 });
 
+// --- Dynamic Frontier Global Score Logic ---
+function computeGlobalScores(list, sotas, keys) {
+    const sotaWeights = {};
+    keys.forEach(k => {
+        const sota = sotas[k] > 0 ? sotas[k] : 0;
+        sotaWeights[k] = 110 - sota;
+    });
+
+    const globalScores = list.map(item => {
+        let multiplierSum = 0;
+        let divisorSum = 0;
+        let attemptedCount = 0;
+
+        keys.forEach(k => {
+            let val = item[k];
+            if (val === 'UNAVAILABLE' || val === undefined) {
+                // Ignore completely
+                return;
+            }
+
+            attemptedCount++;
+            let numVal = val === 'INVALID' ? 0 : (typeof val === 'number' ? val : 0);
+
+            const weight = sotaWeights[k];
+            multiplierSum += (numVal * weight);
+            divisorSum += weight;
+        });
+
+        const score = divisorSum > 0 ? (multiplierSum / divisorSum) : 0;
+
+        return {
+            ...item,
+            globalScore: score,
+            hasData: attemptedCount > 0
+        };
+    });
+
+    // Filter out models with no data, sort descending, assign rank
+    const sorted = globalScores
+        .filter(item => item.hasData)
+        .sort((a, b) => b.globalScore - a.globalScore);
+
+    let currentRank = 1;
+    let prevScore = null;
+    return sorted.map(item => {
+        if (prevScore !== null && item.globalScore < prevScore) {
+            currentRank++;
+        }
+        prevScore = item.globalScore;
+        return { ...item, rank: currentRank };
+    });
+}
+
+const visualGlobalList = computeGlobalScores(unifiedRawList, bestAiScores, ['lvl1', 'lvl2', 'lvl3', 'lvl4', 'lvl5']);
+const dataGlobalList = computeGlobalScores(dataRawList, bestDataAiScores, ['worm', 'koala', 'crow', 'octopus']);
+
 const rowsData = Array.from({ length: dataList.length }, (_, i) => i);
 
 function getPixelMedal(rank) {
@@ -189,7 +245,95 @@ function getRankDisplay(rank) {
         <div class="leaderboard-grid">
             <!-- Benchmarks Section -->
             <section class="leaderboard-section full-width">
-                <div id="visual-benchmark-wrapper">
+
+                <!-- Homepage Combined View -->
+                <div id="home-wrapper">
+                    <div class="benchmark-description">
+                        <p>Welcome to Ultimate Bench. This is the Global Leaderboard summarizing the models' performance across all tasks using the Dynamic Frontier scoring method.</p>
+                    </div>
+
+                    <div class="home-grid">
+                        <!-- Visual Global Column -->
+                        <div class="home-column">
+                            <div class="home-column-header">
+                                <h2>VISUAL BENCH</h2>
+                                <button class="expand-btn" data-target="visual">EXPAND</button>
+                            </div>
+                            <div class="benchmark-desktop-container">
+                                <div class="benchmark-container visual-table">
+                                    <div class="header-row unified-header-row" style="grid-template-columns: minmax(100px, 3fr) minmax(60px, 1fr);">
+                                        <div class="col-header model-col-header"><h3>MODEL</h3><div class="creature-icon"></div></div>
+                                        <div class="col-header" style="justify-content: center;">
+                                            <div class="header-title-wrapper" style="border-bottom: 2px solid #60A5FA;">
+                                                <h3 style="color: #60A5FA;">SCORE</h3>
+                                            </div>
+                                            <div class="creature-icon"></div>
+                                        </div>
+                                    </div>
+                                    {visualGlobalList.map((item) => (
+                                        <div class="benchmark-row unified-row" style="grid-template-columns: minmax(100px, 3fr) minmax(60px, 1fr);">
+                                            <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
+                                                <div class="benchmark-content">
+                                                    <div class="rank" set:html={getRankDisplay(item.rank)}></div>
+                                                    <div class="model-info">
+                                                        <div class="model-name" data-release-date={item.releaseDate}>
+                                                            {item.name}
+                                                            {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="benchmark-cell score-cell" style="justify-content: center; font-size: 1.1rem; font-weight: bold; color: #E0E0E0;">
+                                                {item.globalScore.toFixed(1)}%
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Data Global Column -->
+                        <div class="home-column">
+                            <div class="home-column-header">
+                                <h2>DATA RETRIEVAL</h2>
+                                <button class="expand-btn" data-target="data">EXPAND</button>
+                            </div>
+                            <div class="benchmark-desktop-container">
+                                <div class="benchmark-container visual-table">
+                                    <div class="header-row unified-header-row" style="grid-template-columns: minmax(100px, 3fr) minmax(60px, 1fr);">
+                                        <div class="col-header model-col-header"><h3>MODEL</h3><div class="creature-icon"></div></div>
+                                        <div class="col-header" style="justify-content: center;">
+                                            <div class="header-title-wrapper" style="border-bottom: 2px solid #60A5FA;">
+                                                <h3 style="color: #60A5FA;">SCORE</h3>
+                                            </div>
+                                            <div class="creature-icon"></div>
+                                        </div>
+                                    </div>
+                                    {dataGlobalList.map((item) => (
+                                        <div class="benchmark-row unified-row" style="grid-template-columns: minmax(100px, 3fr) minmax(60px, 1fr);">
+                                            <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
+                                                <div class="benchmark-content">
+                                                    <div class="rank" set:html={getRankDisplay(item.rank)}></div>
+                                                    <div class="model-info">
+                                                        <div class="model-name" data-release-date={item.releaseDate}>
+                                                            {item.name}
+                                                            {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="benchmark-cell score-cell" style="justify-content: center; font-size: 1.1rem; font-weight: bold; color: #E0E0E0;">
+                                                {item.globalScore.toFixed(1)}%
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="visual-benchmark-wrapper" class="hidden">
                     <div class="benchmark-description">
                         <p>This is the Visual Bench, the first of our Ultimate Bench series.<br>
                         Its goal is measuring the visual capabilities of an AI model, including:</p>
@@ -573,6 +717,50 @@ There are currently three levels in use. The fourth level will be unlocked once 
 </Layout>
 
 <style>
+    .hidden { display: none !important; }
+
+    /* Homepage Grid */
+    .home-grid {
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+    .home-column {
+        flex: 1;
+        min-width: 300px;
+        max-width: 600px;
+    }
+    .home-column-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid rgba(255,255,255,0.1);
+        padding-bottom: 0.5rem;
+    }
+    .home-column-header h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: #F59E0B;
+        letter-spacing: 0.05em;
+    }
+    .expand-btn {
+        background: #374151;
+        color: white;
+        border: none;
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+    .expand-btn:hover {
+        background: #60A5FA;
+    }
+
     main {
         max-width: 90rem; /* Wide layout */
         margin: 4rem auto;
@@ -1236,15 +1424,24 @@ There are currently three levels in use. The fourth level will be unlocked once 
         const visualWrapper = document.getElementById('visual-benchmark-wrapper');
         const dataWrapper = document.getElementById('data-benchmark-wrapper');
 
+        const homeWrapper = document.getElementById('home-wrapper');
+
         function updateBenchmarkView(mode) {
             if (mode === 'visual') {
+                if (homeWrapper) homeWrapper.classList.add('hidden');
                 if (visualWrapper) visualWrapper.classList.remove('hidden');
                 if (dataWrapper) dataWrapper.classList.add('hidden');
-            } else {
+            } else if (mode === 'data') {
+                if (homeWrapper) homeWrapper.classList.add('hidden');
                 if (visualWrapper) visualWrapper.classList.add('hidden');
                 if (dataWrapper) dataWrapper.classList.remove('hidden');
+            } else {
+                // home
+                if (homeWrapper) homeWrapper.classList.remove('hidden');
+                if (visualWrapper) visualWrapper.classList.add('hidden');
+                if (dataWrapper) dataWrapper.classList.add('hidden');
             }
-            localStorage.setItem('benchmark_tab', mode);
+            adjustFontSizes();
         }
 
         // Listen for tab changes from the Navbar
@@ -1252,9 +1449,21 @@ There are currently three levels in use. The fourth level will be unlocked once 
             updateBenchmarkView(e.detail);
         });
 
+        // Expand buttons
+        document.querySelectorAll('.expand-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const target = e.target.getAttribute('data-target');
+                window.history.pushState({}, '', `/?tab=${target}`);
+
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active-bench'));
+
+                updateBenchmarkView(target);
+            });
+        });
+
         const urlParams = new URLSearchParams(window.location.search);
         const urlMode = urlParams.get('tab');
-        const savedMode = urlMode || localStorage.getItem('benchmark_tab') || 'visual';
+        const savedMode = urlMode || 'home';
         updateBenchmarkView(savedMode);
 
         // --- Dynamic "NEW" Badge Logic ---

@@ -10,8 +10,7 @@
         </button>
 
         <div class="navbar-menu" id="navbar-menu">
-            <a href="/?tab=visual" id="nav-visual-bench" class="nav-link">VISUAL BENCH</a>
-            <a href="/?tab=data" id="nav-data-retrieval-bench" class="nav-link">DATA RETRIEVAL BENCH</a>
+            <a href="/" id="nav-home" class="nav-link">HOME</a>
             <a href="/about" class="nav-link">About</a>
             <a href="/contact" class="nav-link">Contact</a>
             <a href="/terms" class="nav-link">Terms of Service</a>
@@ -210,38 +209,37 @@
         const currentPath = window.location.pathname;
         const currentSearch = window.location.search;
         const urlParams = new URLSearchParams(currentSearch);
-        const activeTab = urlParams.get('tab') || localStorage.getItem('benchmark_tab') || 'visual';
+        const activeTab = urlParams.get('tab') || 'home';
 
         document.querySelectorAll('.nav-link').forEach(link => {
             const href = link.getAttribute('href');
 
             // Handle active state for benchmark tabs on homepage
-            if (currentPath === '/' && href.startsWith('/?tab=')) {
-                if ((href.includes('tab=visual') && activeTab === 'visual') ||
-                    (href.includes('tab=data') && activeTab === 'data')) {
+            if (currentPath === '/' && href === '/') {
+                if (activeTab === 'home') {
                     link.classList.add('active-bench');
                 } else {
                     link.classList.remove('active-bench');
                 }
             }
             // Regular links
-            else if (href === currentPath || (href !== '/' && !href.startsWith('/?tab=') && currentPath.startsWith(href))) {
+            else if (href === currentPath && currentPath !== '/') {
                 link.style.color = '#60A5FA';
                 link.style.fontWeight = '700';
             }
 
-            // Intercept benchmark tab clicks to prevent reload if already on homepage
-            if (href.startsWith('/?tab=')) {
+            // Intercept home click to prevent reload if already on homepage
+            if (href === '/') {
                 link.addEventListener('click', (e) => {
                     if (window.location.pathname === '/') {
                         e.preventDefault();
-                        const newTab = href.includes('tab=data') ? 'data' : 'visual';
+                        const newTab = 'home';
 
                         // Update URL without reload
-                        window.history.pushState({}, '', href);
+                        window.history.pushState({}, '', '/');
 
                         // Update UI
-                        document.querySelectorAll('.nav-link[href^="/?tab="]').forEach(l => l.classList.remove('active-bench'));
+                        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active-bench'));
                         link.classList.add('active-bench');
 
                         // Trigger custom event so index.astro can update the view
