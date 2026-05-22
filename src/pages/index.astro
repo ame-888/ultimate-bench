@@ -153,14 +153,8 @@ dataList.forEach(item => {
         if (typeof item.octopus === 'number' && item.octopus > bestDataAiScores.octopus) bestDataAiScores.octopus = item.octopus;
 });
 
-// --- Dynamic Frontier Global Score Logic ---
-function computeGlobalScores(list, sotas, keys) {
-    const sotaWeights = {};
-    keys.forEach(k => {
-        const sota = sotas[k] > 0 ? sotas[k] : 0;
-        sotaWeights[k] = 110 - sota;
-    });
-
+// --- Intrinsic Complexity Global Score Logic ---
+function computeGlobalScores(list, weights, keys) {
     const globalScores = list.map(item => {
         let multiplierSum = 0;
         let divisorSum = 0;
@@ -180,7 +174,7 @@ function computeGlobalScores(list, sotas, keys) {
             attemptedCount++;
             let numVal = val === 'INVALID' ? 0 : (typeof val === 'number' ? val : 0);
 
-            const weight = sotaWeights[k];
+            const weight = weights[k];
             multiplierSum += (numVal * weight);
             divisorSum += weight;
         });
@@ -211,8 +205,11 @@ function computeGlobalScores(list, sotas, keys) {
     });
 }
 
-const visualGlobalList = computeGlobalScores(unifiedRawList, bestAiScores, ['lvl1', 'lvl2', 'lvl3', 'lvl4', 'lvl5']);
-const dataGlobalList = computeGlobalScores(dataRawList, bestDataAiScores, ['worm', 'koala', 'crow', 'octopus']);
+const visualWeights = { lvl1: 10, lvl2: 15, lvl3: 35, lvl4: 100, lvl5: 250, lvl6: 500 };
+const dataWeights = { worm: 10, koala: 20, crow: 45, octopus: 120, raven: 250, athena: 500 };
+
+const visualGlobalList = computeGlobalScores(unifiedRawList, visualWeights, ['lvl1', 'lvl2', 'lvl3', 'lvl4', 'lvl5']);
+const dataGlobalList = computeGlobalScores(dataRawList, dataWeights, ['worm', 'koala', 'crow', 'octopus']);
 
 const rowsData = Array.from({ length: dataList.length }, (_, i) => i);
 
@@ -254,7 +251,7 @@ function getRankDisplay(rank) {
                 <!-- Homepage Combined View -->
                 <div id="home-wrapper">
                     <div class="benchmark-description">
-                        <p>Welcome to Ultimate Bench. This is the Global Leaderboard summarizing the models' performance across all tasks using the Dynamic Frontier scoring method.</p>
+                        <p>Welcome to Ultimate Bench. This is the Global Leaderboard summarizing the models' performance across all tasks using the Intrinsic Complexity scoring method.</p>
                     </div>
 
                     <div class="home-grid">
