@@ -6,6 +6,16 @@ export const benchmarks = {
     ],
     models: [
         {
+            name: 'Gemini 3.5 Flash (with code execution)',
+            scores: {
+                'lvl1': 84,
+                'lvl2': 92,
+                'lvl3': 77,
+                'lvl4': 'INVALID',
+                'lvl5': 'INVALID'
+            }
+        },
+        {
             name: 'Claude 4.6 Sonnet (with extended reasoning)',
             scores: {
                 'lvl1': 12,
