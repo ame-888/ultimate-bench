@@ -165,9 +165,13 @@ function computeGlobalScores(list, sotas, keys) {
         let multiplierSum = 0;
         let divisorSum = 0;
         let attemptedCount = 0;
+        let unavailableCount = 0;
 
         keys.forEach(k => {
             let val = item[k];
+            if (val === 'UNAVAILABLE') {
+                unavailableCount++;
+            }
             if (val === 'UNAVAILABLE' || val === undefined) {
                 // Ignore completely
                 return;
@@ -186,13 +190,14 @@ function computeGlobalScores(list, sotas, keys) {
         return {
             ...item,
             globalScore: score,
-            hasData: attemptedCount > 0
+            hasData: attemptedCount > 0,
+            qualifiesForGlobal: unavailableCount <= 1
         };
     });
 
     // Filter out models with no data, sort descending, assign rank
     const sorted = globalScores
-        .filter(item => item.hasData)
+        .filter(item => item.hasData && item.qualifiesForGlobal)
         .sort((a, b) => b.globalScore - a.globalScore);
 
     let currentRank = 1;
