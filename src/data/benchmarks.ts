@@ -17,6 +17,16 @@ export const benchmarks = {
             releaseDate: '2026-02-21'
         },
         {
+            name: 'Gemini 3.5 Flash',
+            scores: {
+                'lvl1': 79,
+                'lvl2': 76,
+                'lvl3': 64,
+                'lvl4': 12,
+                'lvl5': 0
+            }
+        },
+        {
             name: 'Gemini 3.1 Pro Preview',
             scores: {
                 'lvl1': 75,
