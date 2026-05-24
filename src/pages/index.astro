@@ -332,6 +332,17 @@ function getRankDisplay(rank) {
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Chess Global Column -->
+                        <div class="home-column">
+                            <div class="home-column-header">
+                                <h2>CHESS BENCH</h2>
+                                <button class="expand-btn" data-target="chess">EXPAND</button>
+                            </div>
+                            <div class="coming-soon-container" style="min-height: 200px; margin-top: 1rem; border-color: rgba(96, 165, 250, 0.3);">
+                                <div class="coming-soon-text" style="font-size: 2rem;">COMING SOON</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -512,6 +523,164 @@ There are currently five levels in use. The sixth level will be unlocked once al
                             })}
 
                             <p class="disclaimer">INVALID: The model was unable to consistently answer the test, even if incorrectly.<br>UNAVAILABLE: The model was unavailable for testing, and therefore the score couldn't be measured.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="chess-benchmark-wrapper" class="hidden">
+                    <div class="benchmark-description">
+                        <p>This is the Chess Bench, the third of our Ultimate Bench series.<br>
+                        Its goal is measuring how well AI models can play chess and solve complex positional puzzles. The challenges include:</p>
+                        <ul>
+                            <li>Understanding spatial coordinates and valid moves</li>
+                            <li>Looking ahead multiple steps to predict opponent responses</li>
+                            <li>Identifying forced mates and positional advantages</li>
+                        </ul>
+                        <p>The levels are presented in increasingly more difficult formats in order to test the limits of the AI models.</p>
+                    </div>
+
+                    <div class="data-benchmark-layout">
+                        <div class="benchmark-scroll-container data-table-wrapper" style="width: 100%;">
+                            <div class="benchmark-container visual-table" id="chess-table-body">
+                                <!-- Header Row -->
+                                <div class="header-row unified-header-row">
+                                    <div class="col-header model-col-header" style="flex: 2;"><h3>MODEL</h3><div class="creature-icon"></div></div>
+                                    <div class="col-header mouse-header" style="flex: 1;">
+                                        <div class="header-title-wrapper">
+                                            <h3>MOUSE</h3>
+                                            <span class="tooltip-container">
+                                                <span class="tooltip-icon">ⓘ</span>
+                                                <div class="tooltip-text"><strong>MOUSE (Level 1):</strong></div>
+                                            </span>
+                                        </div>
+                                        <div class="creature-icon mouse-icon">
+                                            <svg viewBox="0 0 16 16" width="24" height="24">
+                                                <rect x="5" y="7" width="6" height="4" fill="#A0522D"/>
+                                                <rect x="4" y="8" width="8" height="4" fill="#A0522D"/>
+                                                <rect x="3" y="10" width="10" height="4" fill="#A0522D"/>
+                                                <rect x="5" y="8" width="1" height="1" fill="#fff"/>
+                                                <rect x="9" y="8" width="1" height="1" fill="#fff"/>
+                                                <!-- Add tail for mouse -->
+                                                <rect x="13" y="10" width="3" height="1" fill="#A0522D"/>
+                                                <rect x="15" y="9" width="1" height="1" fill="#A0522D"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="col-header spider-header" style="flex: 1;">
+                                        <div class="header-title-wrapper">
+                                            <h3>SPIDER</h3>
+                                            <span class="tooltip-container">
+                                                <span class="tooltip-icon">ⓘ</span>
+                                                <div class="tooltip-text"><strong>SPIDER (Level 2):</strong></div>
+                                            </span>
+                                        </div>
+                                        <div class="creature-icon spider-icon">
+                                            <svg viewBox="0 0 16 16" width="24" height="24">
+                                                <rect x="6" y="5" width="4" height="6" fill="#111111"/>
+                                                <rect x="5" y="6" width="6" height="4" fill="#111111"/>
+                                                <rect x="6" y="6" width="1" height="1" fill="#FF0000"/>
+                                                <rect x="9" y="6" width="1" height="1" fill="#FF0000"/>
+                                                <rect x="4" y="4" width="1" height="3" fill="#111"/>
+                                                <rect x="11" y="4" width="1" height="3" fill="#111"/>
+                                                <rect x="3" y="7" width="2" height="1" fill="#111"/>
+                                                <rect x="11" y="7" width="2" height="1" fill="#111"/>
+                                                <rect x="4" y="9" width="1" height="3" fill="#111"/>
+                                                <rect x="11" y="9" width="1" height="3" fill="#111"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="col-header wolf-header" style="flex: 1;">
+                                        <div class="header-title-wrapper">
+                                            <h3>WOLF</h3>
+                                            <span class="tooltip-container">
+                                                <span class="tooltip-icon">ⓘ</span>
+                                                <div class="tooltip-text"><strong>WOLF (Level 3):</strong></div>
+                                            </span>
+                                        </div>
+                                        <div class="creature-icon wolf-icon">
+                                            <svg viewBox="0 0 16 16" width="24" height="24">
+                                                <rect x="5" y="4" width="6" height="6" fill="#555555"/>
+                                                <rect x="4" y="5" width="8" height="4" fill="#555555"/>
+                                                <rect x="5" y="2" width="2" height="2" fill="#555555"/>
+                                                <rect x="9" y="2" width="2" height="2" fill="#555555"/>
+                                                <rect x="6" y="6" width="1" height="1" fill="#FFD700"/>
+                                                <rect x="9" y="6" width="1" height="1" fill="#FFD700"/>
+                                                <rect x="6" y="9" width="4" height="3" fill="#333333"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="col-header hawk-header" style="flex: 1;">
+                                        <div class="header-title-wrapper">
+                                            <h3>HAWK</h3>
+                                            <span class="tooltip-container">
+                                                <span class="tooltip-icon">ⓘ</span>
+                                                <div class="tooltip-text"><strong>HAWK (Level 4):</strong></div>
+                                            </span>
+                                        </div>
+                                        <div class="creature-icon hawk-icon">
+                                            <svg viewBox="0 0 16 16" width="24" height="24">
+                                                <rect x="6" y="3" width="4" height="6" fill="#8B4513"/>
+                                                <rect x="5" y="4" width="6" height="4" fill="#8B4513"/>
+                                                <rect x="2" y="4" width="3" height="2" fill="#A0522D"/>
+                                                <rect x="11" y="4" width="3" height="2" fill="#A0522D"/>
+                                                <rect x="1" y="5" width="2" height="1" fill="#CD853F"/>
+                                                <rect x="13" y="5" width="2" height="1" fill="#CD853F"/>
+                                                <rect x="6" y="4" width="1" height="1" fill="#FFD700"/>
+                                                <rect x="9" y="4" width="1" height="1" fill="#FFD700"/>
+                                                <rect x="7" y="6" width="2" height="2" fill="#FF8C00"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="col-header python-header" style="flex: 1;">
+                                        <div class="header-title-wrapper">
+                                            <h3>PYTHON</h3>
+                                            <span class="tooltip-container">
+                                                <span class="tooltip-icon">ⓘ</span>
+                                                <div class="tooltip-text"><strong>PYTHON (Level 5):</strong></div>
+                                            </span>
+                                        </div>
+                                        <div class="creature-icon python-icon">
+                                            <svg viewBox="0 0 16 16" width="24" height="24" style="image-rendering: pixelated;">
+                                                <rect x="7" y="3" width="4" height="3" fill="#228B22"/>
+                                                <rect x="6" y="6" width="2" height="5" fill="#228B22"/>
+                                                <rect x="6" y="11" width="6" height="2" fill="#228B22"/>
+                                                <rect x="12" y="8" width="2" height="5" fill="#228B22"/>
+                                                <rect x="8" y="4" width="1" height="1" fill="#FFD700"/>
+                                                <rect x="11" y="4" width="1" height="1" fill="#000000"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="col-header hydra-header" style="flex: 1;">
+                                        <div class="header-title-wrapper">
+                                            <h3>HYDRA</h3>
+                                            <span class="tooltip-container">
+                                                <span class="tooltip-icon">ⓘ</span>
+                                                <div class="tooltip-text"><strong>HYDRA (Level 6):</strong></div>
+                                            </span>
+                                        </div>
+                                        <div class="creature-icon hydra-icon">
+                                            <svg viewBox="0 0 16 16" width="24" height="24">
+                                                <rect x="7" y="5" width="2" height="6" fill="#00CED1"/>
+                                                <rect x="4" y="6" width="2" height="5" fill="#20B2AA"/>
+                                                <rect x="10" y="6" width="2" height="5" fill="#20B2AA"/>
+                                                <rect x="6" y="3" width="4" height="3" fill="#00CED1"/>
+                                                <rect x="2" y="4" width="3" height="3" fill="#20B2AA"/>
+                                                <rect x="11" y="4" width="3" height="3" fill="#20B2AA"/>
+                                                <rect x="7" y="4" width="1" height="1" fill="#FF4500"/>
+                                                <rect x="8" y="4" width="1" height="1" fill="#FF4500"/>
+                                                <rect x="3" y="5" width="1" height="1" fill="#FF4500"/>
+                                                <rect x="12" y="5" width="1" height="1" fill="#FF4500"/>
+                                                <rect x="3" y="11" width="10" height="3" fill="#008080"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="coming-soon-container" style="border: none; background: transparent; padding: 4rem 0;">
+                                    <div class="coming-soon-text" style="font-size: 3rem;">COMING SOON</div>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1175,6 +1344,43 @@ There are currently three levels in use. The fourth level will be unlocked once 
         font-size: 1.2rem;
     }
 
+    /* --- CHESS CHALLENGE STYLES --- */
+
+    /* Mouse (Light Brown) */
+    .mouse-header h3 { color: #A0522D; }
+    .mouse-header .header-title-wrapper { border-color: #A0522D; }
+
+    /* Spider (Dark Red/Black) */
+    .spider-header h3 { color: #DC143C; }
+    .spider-header .header-title-wrapper { border-color: #DC143C; }
+
+    /* Wolf (Grey/Silver) */
+    .wolf-header h3 { color: #708090; }
+    .wolf-header .header-title-wrapper { border-color: #708090; }
+
+    /* Hawk (Orange/Brown) */
+    .hawk-header h3 { color: #CD853F; }
+    .hawk-header .header-title-wrapper { border-color: #CD853F; }
+
+    /* Python (Green Theme) */
+    .python-header h3 { color: #228B22; }
+    .python-header .header-title-wrapper { border-color: #228B22; }
+
+    /* Hydra (Neon Teal/Cyan Legendary Theme) */
+    .hydra-header h3 {
+        color: #00FFFF;
+        text-shadow: 0 0 5px #00FFFF, 0 0 10px #00CED1, 0 0 20px #20B2AA;
+        animation: hydraPulse 2s infinite alternate;
+    }
+    .hydra-header .header-title-wrapper {
+        border-color: #00FFFF;
+    }
+
+    @keyframes hydraPulse {
+        from { text-shadow: 0 0 5px #00FFFF, 0 0 10px #00CED1, 0 0 20px #20B2AA; }
+        to { text-shadow: 0 0 10px #00FFFF, 0 0 20px #00CED1, 0 0 30px #20B2AA, 0 0 40px #008080; }
+    }
+
     /* New Badge */
     .new-badge {
         display: inline-block;
@@ -1425,6 +1631,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
     function init() {
         const visualWrapper = document.getElementById('visual-benchmark-wrapper');
         const dataWrapper = document.getElementById('data-benchmark-wrapper');
+        const chessWrapper = document.getElementById('chess-benchmark-wrapper');
 
         const homeWrapper = document.getElementById('home-wrapper');
 
@@ -1433,15 +1640,23 @@ There are currently three levels in use. The fourth level will be unlocked once 
                 if (homeWrapper) homeWrapper.classList.add('hidden');
                 if (visualWrapper) visualWrapper.classList.remove('hidden');
                 if (dataWrapper) dataWrapper.classList.add('hidden');
+                if (chessWrapper) chessWrapper.classList.add('hidden');
             } else if (mode === 'data') {
                 if (homeWrapper) homeWrapper.classList.add('hidden');
                 if (visualWrapper) visualWrapper.classList.add('hidden');
                 if (dataWrapper) dataWrapper.classList.remove('hidden');
+                if (chessWrapper) chessWrapper.classList.add('hidden');
+            } else if (mode === 'chess') {
+                if (homeWrapper) homeWrapper.classList.add('hidden');
+                if (visualWrapper) visualWrapper.classList.add('hidden');
+                if (dataWrapper) dataWrapper.classList.add('hidden');
+                if (chessWrapper) chessWrapper.classList.remove('hidden');
             } else {
                 // home
                 if (homeWrapper) homeWrapper.classList.remove('hidden');
                 if (visualWrapper) visualWrapper.classList.add('hidden');
                 if (dataWrapper) dataWrapper.classList.add('hidden');
+                if (chessWrapper) chessWrapper.classList.add('hidden');
             }
             adjustFontSizes();
         }
