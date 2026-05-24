@@ -6,6 +6,16 @@ export const benchmarks = {
     ],
     models: [
         {
+            name: 'Claude 4.5 Sonnet (with extended reasoning)',
+            scores: {
+                'lvl1': 24,
+                'lvl2': 4,
+                'lvl3': 0,
+                'lvl4': 0,
+                'lvl5': 0
+            }
+        },
+        {
             name: 'Claude 4.5 Haiku (with extended reasoning)',
             scores: {
                 'lvl1': 6,
