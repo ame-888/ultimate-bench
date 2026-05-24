@@ -8,9 +8,14 @@ def run():
         # Navigate to the leaderboard page
         page.goto("http://localhost:4321/")
 
-        # Wait for the nav-data-retrieval-bench to be present and click it
-        page.wait_for_selector("#nav-data-retrieval-bench")
-        page.click("#nav-data-retrieval-bench")
+        cookie_btn = page.locator("button", has_text="Accept")
+        if cookie_btn.is_visible():
+            cookie_btn.click()
+            page.wait_for_timeout(500)
+
+        # The global navigation buttons were updated to generic expand buttons for each bench
+        page.wait_for_selector("button[data-target='data']")
+        page.click("button[data-target='data']")
 
         # Wait for the data table to be visible
         page.wait_for_selector("#data-benchmark-wrapper:not(.hidden)")

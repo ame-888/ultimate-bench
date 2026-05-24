@@ -6,6 +6,16 @@ export const benchmarks = {
     ],
     models: [
         {
+            name: 'GPT-5.4 Thinking Mini',
+            scores: {
+                'lvl1': 35,
+                'lvl2': 38,
+                'lvl3': 'PENDING',
+                'lvl4': 'PENDING',
+                'lvl5': 'PENDING'
+            }
+        },
+        {
             name: 'Claude 4.5 Sonnet (with extended reasoning)',
             scores: {
                 'lvl1': 24,
@@ -211,5 +221,8 @@ export const benchmarks = {
         { name: 'GPT-5.5 Instant', scores: { worm: 34, koala: 3, crow: 0, octopus: 0 } },
         { name: 'Gemini 3.1 Flashlite GA', scores: { worm: 16, koala: 14, crow: 8, octopus: 0 } },
         { name: 'Gemini 3.0 Flash Preview', scores: { worm: 15, koala: 19, crow: 2, octopus: 0 } }
+    ],
+    chessModels: [
+        { name: 'Gemini 3.1 Flashlite GA', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0, hydra: 0 } }
     ]
 };

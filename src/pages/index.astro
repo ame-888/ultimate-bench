@@ -213,6 +213,50 @@ const dataGlobalList = computeGlobalScores(dataRawList, dataWeights, ['worm', 'k
 
 const rowsData = Array.from({ length: dataList.length }, (_, i) => i);
 
+// Chess Benchmark Logic
+const chessDataMap = new Map();
+
+(benchmarks.chessModels || []).forEach(m => {
+    chessDataMap.set(m.name, {
+        name: m.name,
+        releaseDate: m.releaseDate,
+        mouse: m.scores?.mouse,
+        spider: m.scores?.spider,
+        wolf: m.scores?.wolf,
+        hawk: m.scores?.hawk,
+        python: m.scores?.python,
+        hydra: m.scores?.hydra
+    });
+});
+
+const chessRawList = Array.from(chessDataMap.values()).map(m => {
+    const mouseScore = typeof m.mouse === 'number' ? m.mouse : 0;
+    const spiderScore = typeof m.spider === 'number' ? m.spider : 0;
+    const wolfScore = typeof m.wolf === 'number' ? m.wolf : 0;
+    const hawkScore = typeof m.hawk === 'number' ? m.hawk : 0;
+    const pythonScore = typeof m.python === 'number' ? m.python : 0;
+    const hydraScore = typeof m.hydra === 'number' ? m.hydra : 0;
+    return m;
+});
+
+const chessList = computeRanks(chessRawList, ['mouse', 'spider', 'wolf', 'hawk', 'python', 'hydra']);
+
+const bestChessAiScores = { mouse: -1, spider: -1, wolf: -1, hawk: -1, python: -1, hydra: -1 };
+chessList.forEach(item => {
+    if (typeof item.mouse === 'number' && item.mouse > bestChessAiScores.mouse) bestChessAiScores.mouse = item.mouse;
+    if (typeof item.spider === 'number' && item.spider > bestChessAiScores.spider) bestChessAiScores.spider = item.spider;
+    if (typeof item.wolf === 'number' && item.wolf > bestChessAiScores.wolf) bestChessAiScores.wolf = item.wolf;
+    if (typeof item.hawk === 'number' && item.hawk > bestChessAiScores.hawk) bestChessAiScores.hawk = item.hawk;
+    if (typeof item.python === 'number' && item.python > bestChessAiScores.python) bestChessAiScores.python = item.python;
+    if (typeof item.hydra === 'number' && item.hydra > bestChessAiScores.hydra) bestChessAiScores.hydra = item.hydra;
+});
+
+const chessWeights = { mouse: 10, spider: 20, wolf: 45, hawk: 120, python: 250, hydra: 500 };
+const chessGlobalList = computeGlobalScores(chessRawList, chessWeights, ['mouse', 'spider', 'wolf', 'hawk', 'python', 'hydra']);
+
+const rowsChess = Array.from({ length: chessList.length }, (_, i) => i);
+
+
 function getPixelMedal(rank) {
     let color1, color2, color3;
     if (rank === 1) { color1 = '#FFD700'; color2 = '#DAA520'; color3 = '#B8860B'; } // Gold
@@ -339,8 +383,27 @@ function getRankDisplay(rank) {
                                 <h2>CHESS BENCH</h2>
                                 <button class="expand-btn" data-target="chess">EXPAND</button>
                             </div>
-                            <div class="coming-soon-container" style="min-height: 200px; margin-top: 1rem; border-color: rgba(96, 165, 250, 0.3);">
-                                <div class="coming-soon-text" style="font-size: 2rem;">COMING SOON</div>
+                            <div class="benchmark-desktop-container">
+                                <div class="benchmark-container">
+                                    {chessGlobalList.map(item => (
+                                        <div class="benchmark-row unified-row" data-model-name={item.name}>
+                                            <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
+                                                <div class="benchmark-content">
+                                                    <div class="rank" set:html={getRankDisplay(item.rank)}></div>
+                                                    <div class="model-info">
+                                                        <div class="model-name" data-release-date={item.releaseDate}>
+                                                            {item.name}
+                                                            {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="benchmark-cell score-cell" style="justify-content: center; font-size: 1.1rem; font-weight: bold; color: #E0E0E0;">
+                                                {item.globalScore.toFixed(1)}%
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -512,11 +575,11 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                         </div>
 
                                         {/* Challenge Columns */}
-                                        <div class="benchmark-cell score-cell mole-score"><span class={` ${item.lvl1 === 0 || item.lvl1 === 'INVALID' ? 'zero-score-glow' : ''} ${item.lvl1 === bestAiScores.lvl1 && item.lvl1 > 0 ? 'best-score-glow' : ''}`}>{item.lvl1 !== undefined ? (typeof item.lvl1 === 'string' ? item.lvl1 : `${item.lvl1}%`) : ''}</span></div>
-                                        <div class="benchmark-cell score-cell rhino-score"><span class={` ${item.lvl2 === 0 || item.lvl2 === 'INVALID' ? 'zero-score-glow' : ''} ${item.lvl2 === bestAiScores.lvl2 && item.lvl2 > 0 ? 'best-score-glow' : ''}`}>{item.lvl2 !== undefined ? (typeof item.lvl2 === 'string' ? item.lvl2 : `${item.lvl2}%`) : ''}</span></div>
-                                        <div class="benchmark-cell score-cell chimp-score"><span class={` ${item.lvl3 === 0 || item.lvl3 === 'INVALID' ? 'zero-score-glow' : ''} ${item.lvl3 === bestAiScores.lvl3 && item.lvl3 > 0 ? 'best-score-glow' : ''}`}>{item.lvl3 !== undefined ? (typeof item.lvl3 === 'string' ? item.lvl3 : `${item.lvl3}%`) : ''}</span></div>
-                                        <div class="benchmark-cell score-cell owl-score"><span class={` ${item.lvl4 === 0 || item.lvl4 === 'INVALID' ? 'zero-score-glow' : ''} ${item.lvl4 === bestAiScores.lvl4 && item.lvl4 > 0 ? 'best-score-glow' : ''}`}>{item.lvl4 !== undefined ? (typeof item.lvl4 === 'string' ? item.lvl4 : `${item.lvl4}%`) : ''}</span></div>
-                                        <div class="benchmark-cell score-cell eagle-score"><span class={` ${item.lvl5 === 0 || item.lvl5 === 'INVALID' ? 'zero-score-glow' : ''} ${item.lvl5 === bestAiScores.lvl5 && item.lvl5 > 0 ? 'best-score-glow' : ''}`}>{item.lvl5 !== undefined ? (typeof item.lvl5 === 'string' ? item.lvl5 : `${item.lvl5}%`) : ''}</span></div>
+                                        <div class="benchmark-cell score-cell mole-score"><span class={` ${item.lvl1 === 0 || item.lvl1 === 'INVALID' ? 'zero-score-glow' : ''} ${item.lvl1 === bestAiScores.lvl1 && item.lvl1 > 0 ? 'best-score-glow' : ''}`}>{item.lvl1 !== undefined ? (typeof item.lvl1 === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.lvl1}</span> : `${item.lvl1}%`) : ''}</span></div>
+                                        <div class="benchmark-cell score-cell rhino-score"><span class={` ${item.lvl2 === 0 || item.lvl2 === 'INVALID' ? 'zero-score-glow' : ''} ${item.lvl2 === bestAiScores.lvl2 && item.lvl2 > 0 ? 'best-score-glow' : ''}`}>{item.lvl2 !== undefined ? (typeof item.lvl2 === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.lvl2}</span> : `${item.lvl2}%`) : ''}</span></div>
+                                        <div class="benchmark-cell score-cell chimp-score"><span class={` ${item.lvl3 === 0 || item.lvl3 === 'INVALID' ? 'zero-score-glow' : ''} ${item.lvl3 === bestAiScores.lvl3 && item.lvl3 > 0 ? 'best-score-glow' : ''}`}>{item.lvl3 !== undefined ? (typeof item.lvl3 === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.lvl3}</span> : `${item.lvl3}%`) : ''}</span></div>
+                                        <div class="benchmark-cell score-cell owl-score"><span class={` ${item.lvl4 === 0 || item.lvl4 === 'INVALID' ? 'zero-score-glow' : ''} ${item.lvl4 === bestAiScores.lvl4 && item.lvl4 > 0 ? 'best-score-glow' : ''}`}>{item.lvl4 !== undefined ? (typeof item.lvl4 === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.lvl4}</span> : `${item.lvl4}%`) : ''}</span></div>
+                                        <div class="benchmark-cell score-cell eagle-score"><span class={` ${item.lvl5 === 0 || item.lvl5 === 'INVALID' ? 'zero-score-glow' : ''} ${item.lvl5 === bestAiScores.lvl5 && item.lvl5 > 0 ? 'best-score-glow' : ''}`}>{item.lvl5 !== undefined ? (typeof item.lvl5 === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.lvl5}</span> : `${item.lvl5}%`) : ''}</span></div>
                                         <div class="benchmark-cell score-cell beholder-score"><span class="beholder-text">?</span></div>
                                     </div>
                                 );
@@ -539,6 +602,19 @@ There are currently five levels in use. The sixth level will be unlocked once al
                         <p>The levels are presented in increasingly more difficult formats in order to test the limits of the AI models.</p>
                     </div>
 
+                    <div class="ranking-controls">
+                        <label for="chess-ranking-method">Ranking Method:</label>
+                        <select id="chess-ranking-method" class="ranking-select">
+                            <option value="baseline">Baseline Priority</option>
+                            <option value="average">Flat Average</option>
+                            <option value="crucible">Crucible Weight</option>
+                            <option value="resilience">Resilience Retention</option>
+                        </select>
+                        <span class="tooltip-container">
+                            <span class="tooltip-icon" id="chess-tooltip-icon">ⓘ</span>
+                            <div class="tooltip-text" id="chess-tooltip-text">Sorts descending by Level 1. If tied, looks at Level 2, then Level 3, and so on. Highlights models with the highest foundational capability.</div>
+                        </span>
+                    </div>
                     <div class="data-benchmark-layout">
                         <div class="benchmark-scroll-container data-table-wrapper" style="width: 100%;">
                             <div class="benchmark-container visual-table" id="chess-table-body">
@@ -676,9 +752,36 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                     </div>
                                 </div>
 
-                                <div class="coming-soon-container" style="border: none; background: transparent; padding: 4rem 0;">
-                                    <div class="coming-soon-text" style="font-size: 3rem;">COMING SOON</div>
-                                </div>
+
+                                {rowsChess.map(i => {
+                                const item = chessList[i];
+                                return (
+                                    <div class="benchmark-row unified-row" data-model-name={item.name}>
+                                        <div class={`benchmark-cell model-cell ${item ? getModelColorClass(item.name) : ''}`} style="flex: 2;">
+                                            {item && (
+                                                <div class={`benchmark-content `}>
+                                                    <div class={`rank `} set:html={getRankDisplay(item.rank)}>
+                                                    </div>
+                                                    <div class="model-info">
+                                                        <div class="model-name" data-release-date={item.releaseDate}>
+                                                            {item.name}
+                                                            {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Challenge Columns */}
+                                        <div class="benchmark-cell score-cell mouse-score" style="flex: 1;"><span class={` ${item.mouse === 0 || item.mouse === 'INVALID' ? 'zero-score-glow' : ''} ${item.mouse === bestChessAiScores.mouse && item.mouse > 0 ? 'best-score-glow' : ''}`}>{item.mouse !== undefined ? (typeof item.mouse === 'string' ? item.mouse : `${item.mouse}%`) : ''}</span></div>
+                                        <div class="benchmark-cell score-cell spider-score" style="flex: 1;"><span class={` ${item.spider === 0 || item.spider === 'INVALID' ? 'zero-score-glow' : ''} ${item.spider === bestChessAiScores.spider && item.spider > 0 ? 'best-score-glow' : ''}`}>{item.spider !== undefined ? (typeof item.spider === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.spider}</span> : `${item.spider}%`) : ''}</span></div>
+                                        <div class="benchmark-cell score-cell wolf-score" style="flex: 1;"><span class={` ${item.wolf === 0 || item.wolf === 'INVALID' ? 'zero-score-glow' : ''} ${item.wolf === bestChessAiScores.wolf && item.wolf > 0 ? 'best-score-glow' : ''}`}>{item.wolf !== undefined ? (typeof item.wolf === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.wolf}</span> : `${item.wolf}%`) : ''}</span></div>
+                                        <div class="benchmark-cell score-cell hawk-score" style="flex: 1;"><span class={` ${item.hawk === 0 || item.hawk === 'INVALID' ? 'zero-score-glow' : ''} ${item.hawk === bestChessAiScores.hawk && item.hawk > 0 ? 'best-score-glow' : ''}`}>{item.hawk !== undefined ? (typeof item.hawk === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.hawk}</span> : `${item.hawk}%`) : ''}</span></div>
+                                        <div class="benchmark-cell score-cell python-score" style="flex: 1;"><span class={` ${item.python === 0 || item.python === 'INVALID' ? 'zero-score-glow' : ''} ${item.python === bestChessAiScores.python && item.python > 0 ? 'best-score-glow' : ''}`}>{item.python !== undefined ? (typeof item.python === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.python}</span> : `${item.python}%`) : ''}</span></div>
+                                        <div class="benchmark-cell score-cell hydra-score" style="flex: 1;"><span class={` ${item.hydra === 0 || item.hydra === 'INVALID' ? 'zero-score-glow' : ''} ${item.hydra === bestChessAiScores.hydra && item.hydra > 0 ? 'best-score-glow' : ''}`}>{item.hydra !== undefined ? (typeof item.hydra === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.hydra}</span> : `${item.hydra}%`) : ''}</span></div>
+                                    </div>
+                                );
+                                })}
 
                             </div>
                         </div>
@@ -1627,7 +1730,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
 
 </style>
 
-<script define:vars={{ TIME_OFFSET, unifiedRawList, dataRawList }}>
+<script define:vars={{ TIME_OFFSET, unifiedRawList, dataRawList, chessRawList }}>
     function init() {
         const visualWrapper = document.getElementById('visual-benchmark-wrapper');
         const dataWrapper = document.getElementById('data-benchmark-wrapper');
@@ -1838,6 +1941,19 @@ There are currently three levels in use. The fourth level will be unlocked once 
 
                 const sorted = sortAndRank(unifiedRawList, ['lvl1', 'lvl2', 'lvl3', 'lvl4', 'lvl5'], method);
                 updateTableDOM('visual-table-body', sorted);
+            });
+        }
+
+                const chessDropdown = document.getElementById('chess-ranking-method');
+        const chessTooltip = document.getElementById('chess-tooltip-text');
+
+        if (chessDropdown) {
+            chessDropdown.addEventListener('change', (e) => {
+                const method = e.target.value;
+                if (chessTooltip) chessTooltip.textContent = tooltips[method];
+
+                const sorted = sortAndRank(chessRawList, ['mouse', 'spider', 'wolf', 'hawk', 'python', 'hydra'], method);
+                updateTableDOM('chess-table-body', sorted);
             });
         }
 
