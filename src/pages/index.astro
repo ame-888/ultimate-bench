@@ -273,7 +273,72 @@ function getPixelMedal(rank) {
     </svg>`;
 }
 
+
+// --- Global Ultimate Bench Logic ---
+const ultimateBenchMap = new Map();
+
+visualGlobalList.forEach(item => {
+    if (item.hasData && item.qualifiesForGlobal) {
+        ultimateBenchMap.set(item.name, {
+            name: item.name,
+            releaseDate: item.releaseDate,
+            visualScore: item.globalScore,
+            dataScore: null,
+            chessScore: null
+        });
+    }
+});
+
+dataGlobalList.forEach(item => {
+    if (item.hasData && item.qualifiesForGlobal) {
+        let nameToMatch = item.name;
+        // Handle Claude alias
+        if (nameToMatch === 'Claude 4.6 Sonnet (with extended thinking)') {
+            nameToMatch = 'Claude 4.6 Sonnet (with extended reasoning)';
+        }
+
+        if (ultimateBenchMap.has(nameToMatch)) {
+            const entry = ultimateBenchMap.get(nameToMatch);
+            entry.dataScore = item.globalScore;
+        } else if (item.name === 'Claude 4.6 Sonnet (with extended thinking)' && ultimateBenchMap.has('Claude 4.6 Sonnet (with extended thinking)')) {
+             const entry = ultimateBenchMap.get('Claude 4.6 Sonnet (with extended thinking)');
+             entry.dataScore = item.globalScore;
+        }
+    }
+});
+
+chessGlobalList.forEach(item => {
+    if (item.hasData && item.qualifiesForGlobal) {
+        let nameToMatch = item.name;
+        if (ultimateBenchMap.has(nameToMatch)) {
+            const entry = ultimateBenchMap.get(nameToMatch);
+            entry.chessScore = item.globalScore;
+        }
+    }
+});
+
+let ultimateBenchList = Array.from(ultimateBenchMap.values())
+    .filter(item => item.visualScore !== null && item.dataScore !== null && item.chessScore !== null)
+    .map(item => {
+        return {
+            ...item,
+            ultimateScore: (item.visualScore + item.dataScore + item.chessScore) / 3
+        };
+    })
+    .sort((a, b) => b.ultimateScore - a.ultimateScore);
+
+let ultRank = 1;
+let ultPrevScore = null;
+ultimateBenchList = ultimateBenchList.map(item => {
+    if (ultPrevScore !== null && item.ultimateScore < ultPrevScore) {
+        ultRank++;
+    }
+    ultPrevScore = item.ultimateScore;
+    return { ...item, rank: ultRank };
+});
+
 function getRankDisplay(rank) {
+
     if (rank === '-') return '-';
     if (rank === 'INVALID') return `<span class="zero-score-glow">INVALID</span>`;
     if (rank === 1) return getPixelMedal(1);
@@ -292,11 +357,72 @@ function getRankDisplay(rank) {
             <!-- Benchmarks Section -->
             <section class="leaderboard-section full-width">
 
+
                 <!-- Homepage Combined View -->
                 <div id="home-wrapper">
                     <div class="benchmark-description">
                         <p>Welcome to Ultimate Bench. This is the Global Leaderboard summarizing the models' performance across all tasks using the Intrinsic Complexity scoring method.</p>
                     </div>
+
+                    <!-- Ultimate Global Bench Section -->
+                    <div class="ultimate-bench-section">
+                        <div class="home-column-header" style="justify-content: center; margin-bottom: 1.5rem;">
+                            <h2 style="font-size: 2rem; color: #F59E0B; text-shadow: 0 0 10px rgba(245, 158, 11, 0.5); letter-spacing: 0.1em; text-align: center;">GLOBAL ULTIMATE BENCH</h2>
+                        </div>
+                        <div class="benchmark-desktop-container ultimate-container">
+                            <div class="benchmark-container visual-table" style="background-color: rgba(17, 24, 39, 0.8); border: 1px solid #374151; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+                                <div class="header-row unified-header-row" style="grid-template-columns: 80px minmax(200px, 3fr) 1fr 1fr 1fr 1.5fr; background-color: rgba(31, 41, 55, 0.9); border-bottom: 2px solid #4B5563; padding: 1rem;">
+                                    <div class="col-header" style="justify-content: center;"><h3>RANK</h3></div>
+                                    <div class="col-header model-col-header" style="justify-content: flex-start;"><h3>MODEL</h3><div class="creature-icon"></div></div>
+                                    <div class="col-header" style="justify-content: center;"><h3 style="color: #60A5FA;">VISUAL</h3></div>
+                                    <div class="col-header" style="justify-content: center;"><h3 style="color: #34D399;">DATA</h3></div>
+                                    <div class="col-header" style="justify-content: center;"><h3 style="color: #F87171;">CHESS</h3></div>
+                                    <div class="col-header" style="justify-content: center;">
+                                        <div class="header-title-wrapper" style="border-bottom: 2px solid #F59E0B;">
+                                            <h3 style="color: #F59E0B; font-weight: 900;">ULTIMATE AVG</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                {ultimateBenchList.map((item, index) => (
+                                    <div class="benchmark-row unified-row" style={`grid-template-columns: 80px minmax(200px, 3fr) 1fr 1fr 1fr 1.5fr; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(55, 65, 81, 0.5); ${index % 2 === 0 ? 'background-color: rgba(31, 41, 55, 0.3);' : 'background-color: transparent;'}`}>
+                                        <div class="benchmark-cell" style="justify-content: center; font-size: 1.25rem;">
+                                            <div class="rank" set:html={getRankDisplay(item.rank)}></div>
+                                        </div>
+                                        <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`} style="justify-content: flex-start; padding-left: 0.5rem; border-radius: 4px;">
+                                            <div class="benchmark-content">
+                                                <div class="model-info">
+                                                    <div class="model-name" data-release-date={item.releaseDate} style="font-size: 1.1rem; font-weight: 600;">
+                                                        {item.name === 'Claude 4.6 Sonnet (with extended reasoning)' ? 'Claude 4.6 Sonnet (Extended)' : item.name}
+                                                        {isNew(item.releaseDate) && <span class="new-badge" style="transform: scale(0.8); margin-left: 0.5rem;">NEW</span>}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="benchmark-cell score-cell" style="justify-content: center; font-size: 1.1rem; color: #9CA3AF;">
+                                            {item.visualScore.toFixed(1)}%
+                                        </div>
+                                        <div class="benchmark-cell score-cell" style="justify-content: center; font-size: 1.1rem; color: #9CA3AF;">
+                                            {item.dataScore.toFixed(1)}%
+                                        </div>
+                                        <div class="benchmark-cell score-cell" style="justify-content: center; font-size: 1.1rem; color: #9CA3AF;">
+                                            {item.chessScore.toFixed(1)}%
+                                        </div>
+                                        <div class="benchmark-cell score-cell" style="justify-content: center; font-size: 1.25rem; font-weight: 900; color: #F59E0B; text-shadow: 0 0 5px rgba(245, 158, 11, 0.3);">
+                                            {item.ultimateScore.toFixed(1)}%
+                                        </div>
+                                    </div>
+                                ))}
+                                {ultimateBenchList.length === 0 && (
+                                    <div style="padding: 2rem; text-align: center; color: #9CA3AF; font-style: italic;">
+                                        No models currently span all three benchmarks.
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0)); margin: 3rem 0;" />
+
 
                     <div class="home-grid">
                         <!-- Visual Global Column -->
@@ -307,7 +433,7 @@ function getRankDisplay(rank) {
                             </div>
                             <div class="benchmark-desktop-container">
                                 <div class="benchmark-container visual-table">
-                                    <div class="header-row unified-header-row" style="grid-template-columns: minmax(100px, 3fr) minmax(60px, 1fr);">
+                                    <div class="header-row unified-header-row" style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
                                         <div class="col-header model-col-header"><h3>MODEL</h3><div class="creature-icon"></div></div>
                                         <div class="col-header" style="justify-content: center;">
                                             <div class="header-title-wrapper" style="border-bottom: 2px solid #60A5FA;">
@@ -316,8 +442,8 @@ function getRankDisplay(rank) {
                                             <div class="creature-icon"></div>
                                         </div>
                                     </div>
-                                    {visualGlobalList.map((item) => (
-                                        <div class="benchmark-row unified-row" style="grid-template-columns: minmax(100px, 3fr) minmax(60px, 1fr);">
+                                    {visualGlobalList.map((item, index) => (
+                                        <div class={`benchmark-row unified-row ${index % 2 === 0 ? 'striped-row' : ''}`} style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
                                             <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="benchmark-content">
                                                     <div class="rank" set:html={getRankDisplay(item.rank)}></div>
@@ -346,7 +472,7 @@ function getRankDisplay(rank) {
                             </div>
                             <div class="benchmark-desktop-container">
                                 <div class="benchmark-container visual-table">
-                                    <div class="header-row unified-header-row" style="grid-template-columns: minmax(100px, 3fr) minmax(60px, 1fr);">
+                                    <div class="header-row unified-header-row" style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
                                         <div class="col-header model-col-header"><h3>MODEL</h3><div class="creature-icon"></div></div>
                                         <div class="col-header" style="justify-content: center;">
                                             <div class="header-title-wrapper" style="border-bottom: 2px solid #60A5FA;">
@@ -355,8 +481,8 @@ function getRankDisplay(rank) {
                                             <div class="creature-icon"></div>
                                         </div>
                                     </div>
-                                    {dataGlobalList.map((item) => (
-                                        <div class="benchmark-row unified-row" style="grid-template-columns: minmax(100px, 3fr) minmax(60px, 1fr);">
+                                    {dataGlobalList.map((item, index) => (
+                                        <div class={`benchmark-row unified-row ${index % 2 === 0 ? 'striped-row' : ''}`} style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
                                             <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="benchmark-content">
                                                     <div class="rank" set:html={getRankDisplay(item.rank)}></div>
@@ -385,8 +511,8 @@ function getRankDisplay(rank) {
                             </div>
                             <div class="benchmark-desktop-container">
                                 <div class="benchmark-container">
-                                    {chessGlobalList.map(item => (
-                                        <div class="benchmark-row unified-row" data-model-name={item.name}>
+                                    {chessGlobalList.map((item, index) => (
+                                        <div class={`benchmark-row unified-row ${index % 2 === 0 ? 'striped-row' : ''}`} style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);" data-model-name={item.name}>
                                             <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="benchmark-content">
                                                     <div class="rank" set:html={getRankDisplay(item.rank)}></div>
@@ -778,7 +904,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                         <div class="benchmark-cell score-cell wolf-score" style="flex: 1;"><span class={` ${item.wolf === 0 || item.wolf === 'INVALID' ? 'zero-score-glow' : ''} ${item.wolf === bestChessAiScores.wolf && item.wolf > 0 ? 'best-score-glow' : ''}`}>{item.wolf !== undefined ? (typeof item.wolf === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.wolf}</span> : `${item.wolf}%`) : ''}</span></div>
                                         <div class="benchmark-cell score-cell hawk-score" style="flex: 1;"><span class={` ${item.hawk === 0 || item.hawk === 'INVALID' ? 'zero-score-glow' : ''} ${item.hawk === bestChessAiScores.hawk && item.hawk > 0 ? 'best-score-glow' : ''}`}>{item.hawk !== undefined ? (typeof item.hawk === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.hawk}</span> : `${item.hawk}%`) : ''}</span></div>
                                         <div class="benchmark-cell score-cell python-score" style="flex: 1;"><span class={` ${item.python === 0 || item.python === 'INVALID' ? 'zero-score-glow' : ''} ${item.python === bestChessAiScores.python && item.python > 0 ? 'best-score-glow' : ''}`}>{item.python !== undefined ? (typeof item.python === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.python}</span> : `${item.python}%`) : ''}</span></div>
-                                        <div class="benchmark-cell score-cell hydra-score" style="flex: 1;"><span class={` ${item.hydra === 0 || item.hydra === 'INVALID' ? 'zero-score-glow' : ''} ${item.hydra === bestChessAiScores.hydra && item.hydra > 0 ? 'best-score-glow' : ''}`}>{item.hydra !== undefined ? (typeof item.hydra === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.hydra}</span> : `${item.hydra}%`) : ''}</span></div>
+                                        <div class="benchmark-cell score-cell hydra-score" style="flex: 1;"><span class="hydra-text">?</span></div>
                                     </div>
                                 );
                                 })}
@@ -992,6 +1118,19 @@ There are currently three levels in use. The fourth level will be unlocked once 
 
 <style>
     .hidden { display: none !important; }
+
+
+    .striped-row {
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .home-column {
+        background: rgba(17, 24, 39, 0.6);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 8px;
+        padding: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
 
     /* Homepage Grid */
     .home-grid {
