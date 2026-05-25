@@ -279,8 +279,9 @@ const ultimateBenchMap = new Map();
 
 visualGlobalList.forEach(item => {
     if (item.hasData && item.qualifiesForGlobal) {
-        ultimateBenchMap.set(item.name, {
-            name: item.name,
+        let cleanName = item.name.replace(/\*+$/, '');
+        ultimateBenchMap.set(cleanName, {
+            name: cleanName,
             releaseDate: item.releaseDate,
             visualScore: item.globalScore,
             dataScore: null,
@@ -291,25 +292,17 @@ visualGlobalList.forEach(item => {
 
 dataGlobalList.forEach(item => {
     if (item.hasData && item.qualifiesForGlobal) {
-        let nameToMatch = item.name;
-        // Handle Claude alias
-        if (nameToMatch === 'Claude 4.6 Sonnet (with extended thinking)') {
-            nameToMatch = 'Claude 4.6 Sonnet (with extended reasoning)';
-        }
-
+        let nameToMatch = item.name.replace(/\*+$/, '');
         if (ultimateBenchMap.has(nameToMatch)) {
             const entry = ultimateBenchMap.get(nameToMatch);
             entry.dataScore = item.globalScore;
-        } else if (item.name === 'Claude 4.6 Sonnet (with extended thinking)' && ultimateBenchMap.has('Claude 4.6 Sonnet (with extended thinking)')) {
-             const entry = ultimateBenchMap.get('Claude 4.6 Sonnet (with extended thinking)');
-             entry.dataScore = item.globalScore;
         }
     }
 });
 
 chessGlobalList.forEach(item => {
     if (item.hasData && item.qualifiesForGlobal) {
-        let nameToMatch = item.name;
+        let nameToMatch = item.name.replace(/\*+$/, '');
         if (ultimateBenchMap.has(nameToMatch)) {
             const entry = ultimateBenchMap.get(nameToMatch);
             entry.chessScore = item.globalScore;
@@ -388,8 +381,8 @@ function getRankDisplay(rank) {
                                         <div class="benchmark-cell" style="justify-content: center; font-size: 1.25rem;">
                                             <div class="rank" set:html={getRankDisplay(item.rank)}></div>
                                         </div>
-                                        <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`} style="justify-content: flex-start; padding-left: 0.5rem; border-radius: 4px;">
-                                            <div class="benchmark-content">
+                                        <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`} style="justify-content: flex-start; border-radius: 4px;">
+                                            <div class="benchmark-content" style="padding-left: 0.5rem;">
                                                 <div class="model-info">
                                                     <div class="model-name" data-release-date={item.releaseDate} style="font-size: 1.1rem; font-weight: 600;">
                                                         {item.name === 'Claude 4.6 Sonnet (with extended reasoning)' ? 'Claude 4.6 Sonnet (Extended)' : item.name}
@@ -1325,6 +1318,9 @@ There are currently three levels in use. The fourth level will be unlocked once 
         display: flex;
         align-items: center;
     }
+    .benchmark-cell.model-cell {
+        padding: 0;
+    }
 
     @media (min-width: 640px) {
         .benchmark-cell {
@@ -1334,7 +1330,22 @@ There are currently three levels in use. The fourth level will be unlocked once 
 
     .model-cell {
         border-right: 1px solid rgba(255, 255, 255, 0.1);
-        padding-right: 0.2rem;
+        padding: 0;
+    }
+    .benchmark-row .model-cell {
+        padding: 0;
+    }
+    .benchmark-row .model-cell .benchmark-content {
+        padding: 0.4rem 0.2rem;
+        box-sizing: border-box;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+    @media (min-width: 640px) {
+        .benchmark-row .model-cell .benchmark-content {
+            padding: 0.75rem 0.5rem;
+        }
     }
 
     @media (min-width: 640px) {
@@ -1385,6 +1396,13 @@ There are currently three levels in use. The fourth level will be unlocked once 
         color: #F59E0B;
         min-width: 15px;
         text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+    .rank svg {
+        margin: auto;
     }
 
     @media (min-width: 640px) {
