@@ -361,15 +361,15 @@ function getRankDisplay(rank) {
                         </div>
                         <div class="benchmark-desktop-container ultimate-container">
                             <div class="benchmark-container visual-table ultimate-modern-container">
-                                <div class="header-row unified-header-row ultimate-header-glass" style="grid-template-columns: 80px minmax(200px, max-content) 1fr 1fr 1fr 1.5fr; padding: 1rem;">
+                                <div class="header-row unified-header-row ultimate-header-glass" style="grid-template-columns: 80px minmax(200px, max-content) 1fr 1fr 1fr 1.5fr; padding: 1rem; align-items: center;">
                                     <div class="col-header" style="justify-content: center;"><h3>RANK</h3></div>
                                     <div class="col-header model-col-header" style="justify-content: flex-start; padding-left: 0.5rem;"><h3>MODEL</h3><div class="creature-icon"></div></div>
                                     <div class="col-header" style="justify-content: center; text-align: center;"><h3 style="color: #D1D5DB; text-align: center;">VISUAL</h3></div>
                                     <div class="col-header" style="justify-content: center; text-align: center;"><h3 style="color: #D1D5DB; text-align: center;">DATA</h3></div>
                                     <div class="col-header" style="justify-content: center; text-align: center;"><h3 style="color: #D1D5DB; text-align: center;">CHESS</h3></div>
                                     <div class="col-header" style="justify-content: center; text-align: center;">
-                                        <div class="header-title-wrapper" style="border-bottom: none;">
-                                            <h3 style="color: #F59E0B; font-weight: 900; text-align: center;">ULTIMATE AVG ▼</h3>
+                                        <div class="header-title-wrapper" id="ultimate-sort-btn" style="border-bottom: none; cursor: pointer; transition: opacity 0.2s ease;">
+                                            <h3 style="color: #F59E0B; font-weight: 900; text-align: center;" id="ultimate-sort-text">ULTIMATE AVG ▼</h3>
                                         </div>
                                     </div>
                                 </div>
@@ -1280,6 +1280,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
         overflow: hidden;
         text-overflow: ellipsis;
         display: inline-block;
+        margin-top: 0;
         margin-bottom: 0;
         border-bottom: none;
         padding-bottom: 0;
@@ -1882,6 +1883,10 @@ There are currently three levels in use. The fourth level will be unlocked once 
         z-index: -1;
         pointer-events: none;
     }
+    #ultimate-sort-btn:hover {
+        opacity: 0.8;
+    }
+
     .ultimate-title {
         font-size: 2.5rem;
         font-weight: 900;
@@ -2001,6 +2006,38 @@ There are currently three levels in use. The fourth level will be unlocked once 
                 if (chessWrapper) chessWrapper.classList.add('hidden');
             }
             adjustFontSizes();
+        }
+
+        // --- Ultimate Bench Sorting Logic ---
+        const ultimateSortBtn = document.getElementById('ultimate-sort-btn');
+        const ultimateSortText = document.getElementById('ultimate-sort-text');
+        let ultimateSortAscending = false; // Initially descending
+
+        if (ultimateSortBtn && ultimateSortText) {
+            ultimateSortBtn.addEventListener('click', () => {
+                ultimateSortAscending = !ultimateSortAscending;
+                ultimateSortText.textContent = ultimateSortAscending ? 'ULTIMATE AVG ▲' : 'ULTIMATE AVG ▼';
+
+                const tableContainer = document.querySelector('.ultimate-modern-container');
+                if (!tableContainer) return;
+
+                // Grab all rows except the header
+                const rows = Array.from(tableContainer.querySelectorAll('.benchmark-row'));
+
+                rows.sort((a, b) => {
+                    const cellA = a.querySelector('.ultimate-score-cell');
+                    const cellB = b.querySelector('.ultimate-score-cell');
+
+                    const scoreA = cellA ? parseFloat(cellA.textContent) : 0;
+                    const scoreB = cellB ? parseFloat(cellB.textContent) : 0;
+
+                    return ultimateSortAscending ? scoreA - scoreB : scoreB - scoreA;
+                });
+
+                // Re-append sorted rows.
+                // Since appendChild moves existing nodes, we just append them in the new order.
+                rows.forEach(row => tableContainer.appendChild(row));
+            });
         }
 
         // Listen for tab changes from the Navbar
