@@ -363,8 +363,8 @@ function getRankDisplay(rank) {
                             <h2 style="font-size: 2rem; color: #F59E0B; text-shadow: 0 0 10px rgba(245, 158, 11, 0.5); letter-spacing: 0.1em; text-align: center;">GLOBAL ULTIMATE BENCH</h2>
                         </div>
                         <div class="benchmark-desktop-container ultimate-container">
-                            <div class="benchmark-container visual-table" style="background-color: rgba(17, 24, 39, 0.8); border: 1px solid #374151; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
-                                <div class="header-row unified-header-row" style="grid-template-columns: 80px minmax(200px, 3fr) 1fr 1fr 1fr 1.5fr; background-color: rgba(31, 41, 55, 0.9); border-bottom: 2px solid #4B5563; padding: 1rem;">
+                            <div class="benchmark-container visual-table ultimate-rainbow-container">
+                                <div class="header-row unified-header-row ultimate-header-glass" style="grid-template-columns: 80px minmax(200px, 3fr) 1fr 1fr 1fr 1.5fr; padding: 1rem;">
                                     <div class="col-header" style="justify-content: center;"><h3>RANK</h3></div>
                                     <div class="col-header model-col-header" style="justify-content: flex-start;"><h3>MODEL</h3><div class="creature-icon"></div></div>
                                     <div class="col-header" style="justify-content: center;"><h3 style="color: #60A5FA;">VISUAL</h3></div>
@@ -377,7 +377,7 @@ function getRankDisplay(rank) {
                                     </div>
                                 </div>
                                 {ultimateBenchList.map((item, index) => (
-                                    <div class="benchmark-row unified-row" style={`grid-template-columns: 80px minmax(200px, 3fr) 1fr 1fr 1fr 1.5fr; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(55, 65, 81, 0.5); ${index % 2 === 0 ? 'background-color: rgba(31, 41, 55, 0.3);' : 'background-color: transparent;'}`}>
+                                    <div class={`benchmark-row unified-row ultimate-row-hover ${index % 2 === 0 ? 'striped-row' : ''}`} style="grid-template-columns: 80px minmax(200px, 3fr) 1fr 1fr 1fr 1.5fr; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(55, 65, 81, 0.5);">
                                         <div class="benchmark-cell" style="justify-content: center; font-size: 1.25rem;">
                                             <div class="rank" set:html={getRankDisplay(item.rank)}></div>
                                         </div>
@@ -1886,6 +1886,63 @@ There are currently three levels in use. The fourth level will be unlocked once 
         }
     }
 
+    /* Ultimate Bench Styles */
+    @keyframes rainbow-neon-pulse {
+        0% { box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff0000; border-color: #ff0000; }
+        14% { box-shadow: 0 0 10px #ff7f00, 0 0 20px #ff7f00, 0 0 30px #ff7f00; border-color: #ff7f00; }
+        28% { box-shadow: 0 0 10px #ffff00, 0 0 20px #ffff00, 0 0 30px #ffff00; border-color: #ffff00; }
+        42% { box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00; border-color: #00ff00; }
+        57% { box-shadow: 0 0 10px #0000ff, 0 0 20px #0000ff, 0 0 30px #0000ff; border-color: #0000ff; }
+        71% { box-shadow: 0 0 10px #4b0082, 0 0 20px #4b0082, 0 0 30px #4b0082; border-color: #4b0082; }
+        85% { box-shadow: 0 0 10px #9400d3, 0 0 20px #9400d3, 0 0 30px #9400d3; border-color: #9400d3; }
+        100% { box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff0000; border-color: #ff0000; }
+    }
+    .ultimate-rainbow-container {
+        background-color: rgba(17, 24, 39, 0.9);
+        border: 2px solid #ff0000;
+        border-radius: 12px;
+        overflow: hidden;
+        animation: rainbow-neon-pulse 5s linear infinite;
+        position: relative;
+        z-index: 1;
+        margin-bottom: 2rem;
+    }
+    .ultimate-row-hover {
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: relative;
+        cursor: crosshair;
+    }
+    .ultimate-row-hover:hover {
+        transform: scale(1.03) translateX(5px);
+        background: linear-gradient(90deg, rgba(245, 158, 11, 0.1) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(245, 158, 11, 0.1) 100%) !important;
+        box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.5), 0 0 20px rgba(245, 158, 11, 0.3);
+        z-index: 10;
+        border-radius: 8px;
+        border-bottom: 1px solid transparent !important;
+    }
+    .ultimate-row-hover:hover .score-cell {
+        color: #fff !important;
+        text-shadow: 0 0 10px rgba(255,255,255,0.8);
+        transform: scale(1.1);
+        transition: all 0.2s ease;
+    }
+    .ultimate-row-hover:hover .model-name {
+        color: #F59E0B;
+        text-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+        letter-spacing: 1px;
+        transition: all 0.2s ease;
+    }
+    .ultimate-row-hover:hover .rank {
+        transform: scale(1.2) rotate(-10deg);
+        transition: all 0.2s ease;
+        filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.8));
+    }
+    .ultimate-header-glass {
+        background: rgba(31, 41, 55, 0.7) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1) !important;
+    }
 </style>
 
 <script define:vars={{ TIME_OFFSET, unifiedRawList, dataRawList, chessRawList }}>
