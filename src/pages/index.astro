@@ -364,14 +364,13 @@ function getRankDisplay(rank) {
                                 <div class="header-row unified-header-row ultimate-header-glass" style="grid-template-columns: 80px minmax(200px, max-content) 1fr 1fr 1fr 1.5fr; padding: 1rem;">
                                     <div class="col-header" style="justify-content: center;"><h3>RANK</h3></div>
                                     <div class="col-header model-col-header" style="justify-content: flex-start;"><h3>MODEL</h3><div class="creature-icon"></div></div>
-                                    <div class="col-header" style="justify-content: center; text-align: center;"><div class="header-title-wrapper" style="border-bottom: none;"><h3 style="color: #D1D5DB; text-align: center;">VISUAL</h3></div><div class="creature-icon"></div></div>
-                                    <div class="col-header" style="justify-content: center; text-align: center;"><div class="header-title-wrapper" style="border-bottom: none;"><h3 style="color: #D1D5DB; text-align: center;">DATA</h3></div><div class="creature-icon"></div></div>
-                                    <div class="col-header" style="justify-content: center; text-align: center;"><div class="header-title-wrapper" style="border-bottom: none;"><h3 style="color: #D1D5DB; text-align: center;">CHESS</h3></div><div class="creature-icon"></div></div>
-                                    <div class="col-header" style="justify-content: center; text-align: center;">
+                                    <div class="col-header" style="justify-content: center;"><h3 style="color: #D1D5DB;">VISUAL</h3></div>
+                                    <div class="col-header" style="justify-content: center;"><h3 style="color: #D1D5DB;">DATA</h3></div>
+                                    <div class="col-header" style="justify-content: center;"><h3 style="color: #D1D5DB;">CHESS</h3></div>
+                                    <div class="col-header" style="justify-content: center;">
                                         <div class="header-title-wrapper" style="border-bottom: none;">
-                                            <h3 style="color: #F59E0B; font-weight: 900; text-align: center;">ULTIMATE AVG ▼</h3>
+                                            <h3 style="color: #F59E0B; font-weight: 900;">ULTIMATE AVG ▼</h3>
                                         </div>
-                                        <div class="creature-icon"></div>
                                     </div>
                                 </div>
                                 {ultimateBenchList.map((item, index) => (
@@ -389,16 +388,16 @@ function getRankDisplay(rank) {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="benchmark-cell score-cell" style="justify-content: center; text-align: center; font-size: 1.1rem; color: #9CA3AF;">
+                                        <div class="benchmark-cell score-cell" style="justify-content: center; font-size: 1.1rem; color: #9CA3AF;">
                                             {item.visualScore.toFixed(1)}%
                                         </div>
-                                        <div class="benchmark-cell score-cell" style="justify-content: center; text-align: center; font-size: 1.1rem; color: #9CA3AF;">
+                                        <div class="benchmark-cell score-cell" style="justify-content: center; font-size: 1.1rem; color: #9CA3AF;">
                                             {item.dataScore.toFixed(1)}%
                                         </div>
-                                        <div class="benchmark-cell score-cell" style="justify-content: center; text-align: center; font-size: 1.1rem; color: #9CA3AF;">
+                                        <div class="benchmark-cell score-cell" style="justify-content: center; font-size: 1.1rem; color: #9CA3AF;">
                                             {item.chessScore.toFixed(1)}%
                                         </div>
-                                        <div class="benchmark-cell score-cell ultimate-score-cell" style="justify-content: center; text-align: center; font-size: 1.25rem; font-weight: 900; color: #F59E0B; text-shadow: 0 0 5px rgba(245, 158, 11, 0.3); transition: all 0.2s ease;">
+                                        <div class="benchmark-cell score-cell ultimate-score-cell" style="justify-content: center; font-size: 1.25rem; font-weight: 900; color: #F59E0B; text-shadow: 0 0 5px rgba(245, 158, 11, 0.3); transition: all 0.2s ease;">
                                             {item.ultimateScore.toFixed(1)}%
                                         </div>
                                     </div>
@@ -425,10 +424,10 @@ function getRankDisplay(rank) {
                             <div class="benchmark-desktop-container">
                                 <div class="benchmark-container visual-table">
                                     <div class="header-row unified-header-row" style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
-                                        <div class="col-header model-col-header" style="justify-content: flex-start;"><h3>MODEL</h3><div class="creature-icon"></div></div>
-                                        <div class="col-header" style="justify-content: center; text-align: center;">
-                                            <div class="header-title-wrapper" style="border-bottom: none;">
-                                                <h3 style="color: #60A5FA; text-align: center;">SCORE</h3>
+                                        <div class="col-header model-col-header"><h3>MODEL</h3><div class="creature-icon"></div></div>
+                                        <div class="col-header" style="justify-content: center;">
+                                            <div class="header-title-wrapper" style="border-bottom: 2px solid #60A5FA;">
+                                                <h3 style="color: #60A5FA;">SCORE</h3>
                                             </div>
                                             <div class="creature-icon"></div>
                                         </div>
@@ -446,7 +445,7 @@ function getRankDisplay(rank) {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="benchmark-cell score-cell" style="justify-content: center; text-align: center; font-size: 1.1rem; font-weight: bold; color: #E0E0E0;">
+                                            <div class="benchmark-cell score-cell" style="justify-content: center; font-size: 1.1rem; font-weight: bold; color: #E0E0E0;">
                                                 {item.globalScore.toFixed(1)}%
                                             </div>
                                         </div>
@@ -464,10 +463,10 @@ function getRankDisplay(rank) {
                             <div class="benchmark-desktop-container">
                                 <div class="benchmark-container visual-table">
                                     <div class="header-row unified-header-row" style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
-                                        <div class="col-header model-col-header" style="justify-content: flex-start;"><h3>MODEL</h3><div class="creature-icon"></div></div>
-                                        <div class="col-header" style="justify-content: center; text-align: center;">
-                                            <div class="header-title-wrapper" style="border-bottom: none;">
-                                                <h3 style="color: #60A5FA; text-align: center;">SCORE</h3>
+                                        <div class="col-header model-col-header"><h3>MODEL</h3><div class="creature-icon"></div></div>
+                                        <div class="col-header" style="justify-content: center;">
+                                            <div class="header-title-wrapper" style="border-bottom: 2px solid #60A5FA;">
+                                                <h3 style="color: #60A5FA;">SCORE</h3>
                                             </div>
                                             <div class="creature-icon"></div>
                                         </div>
@@ -485,7 +484,7 @@ function getRankDisplay(rank) {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="benchmark-cell score-cell" style="justify-content: center; text-align: center; font-size: 1.1rem; font-weight: bold; color: #E0E0E0;">
+                                            <div class="benchmark-cell score-cell" style="justify-content: center; font-size: 1.1rem; font-weight: bold; color: #E0E0E0;">
                                                 {item.globalScore.toFixed(1)}%
                                             </div>
                                         </div>
@@ -501,16 +500,7 @@ function getRankDisplay(rank) {
                                 <button class="expand-btn" data-target="chess">EXPAND</button>
                             </div>
                             <div class="benchmark-desktop-container">
-                                <div class="benchmark-container visual-table">
-                                    <div class="header-row unified-header-row" style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
-                                        <div class="col-header model-col-header" style="justify-content: flex-start;"><h3>MODEL</h3><div class="creature-icon"></div></div>
-                                        <div class="col-header" style="justify-content: center; text-align: center;">
-                                            <div class="header-title-wrapper" style="border-bottom: none;">
-                                                <h3 style="color: #60A5FA; text-align: center;">SCORE</h3>
-                                            </div>
-                                            <div class="creature-icon"></div>
-                                        </div>
-                                    </div>
+                                <div class="benchmark-container">
                                     {chessGlobalList.map((item, index) => (
                                         <div class={`benchmark-row unified-row `} style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);" data-model-name={item.name}>
                                             <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
@@ -524,7 +514,7 @@ function getRankDisplay(rank) {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="benchmark-cell score-cell" style="justify-content: center; text-align: center; font-size: 1.1rem; font-weight: bold; color: #E0E0E0;">
+                                            <div class="benchmark-cell score-cell" style="justify-content: center; font-size: 1.1rem; font-weight: bold; color: #E0E0E0;">
                                                 {item.globalScore.toFixed(1)}%
                                             </div>
                                         </div>
@@ -565,7 +555,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                         <div class="benchmark-container visual-table" id="visual-table-body">
                             <!-- Header Row -->
                             <div class="header-row unified-header-row">
-                                <div class="col-header model-col-header" style="justify-content: flex-start;"><h3>MODEL</h3><div class="creature-icon"></div></div>
+                                <div class="col-header model-col-header"><h3>MODEL</h3><div class="creature-icon"></div></div>
                                 <div class="col-header mole-header">
                                     <div class="header-title-wrapper">
                                         <h3>MOLE</h3>
@@ -746,7 +736,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                             <div class="benchmark-container visual-table" id="chess-table-body">
                                 <!-- Header Row -->
                                 <div class="header-row unified-header-row">
-                                    <div class="col-header model-col-header" style="flex: 2; justify-content: flex-start;"><h3>MODEL</h3><div class="creature-icon"></div></div>
+                                    <div class="col-header model-col-header" style="flex: 2;"><h3>MODEL</h3><div class="creature-icon"></div></div>
                                     <div class="col-header mouse-header" style="flex: 1;">
                                         <div class="header-title-wrapper">
                                             <h3>MOUSE</h3>
@@ -945,7 +935,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
                             <div class="benchmark-container visual-table" id="data-table-body">
                                 <!-- Header Row -->
                                 <div class="header-row unified-header-row">
-                                    <div class="col-header model-col-header" style="flex: 2; justify-content: flex-start;"><h3>MODEL</h3><div class="creature-icon"></div></div>
+                                    <div class="col-header model-col-header" style="flex: 2;"><h3>MODEL</h3><div class="creature-icon"></div></div>
                                     <div class="col-header worm-header" style="flex: 1;">
                                         <div class="header-title-wrapper">
                                             <h3>WORM</h3>
@@ -1336,7 +1326,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
     }
 
     .model-cell {
-
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
         padding: 0;
     }
     .benchmark-row .model-cell {
