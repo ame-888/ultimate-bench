@@ -334,10 +334,7 @@ function getRankDisplay(rank) {
 
     if (rank === '-') return '-';
     if (rank === 'INVALID') return `<span class="zero-score-glow">INVALID</span>`;
-    if (rank === 1) return getPixelMedal(1);
-    if (rank === 2) return getPixelMedal(2);
-    if (rank === 3) return getPixelMedal(3);
-    return `#${rank}`;
+    return `${rank}`;
 }
 ---
 
@@ -364,24 +361,24 @@ function getRankDisplay(rank) {
                         </div>
                         <div class="benchmark-desktop-container ultimate-container">
                             <div class="benchmark-container visual-table ultimate-modern-container">
-                                <div class="header-row unified-header-row ultimate-header-glass" style="grid-template-columns: 80px minmax(200px, 3fr) 1fr 1fr 1fr 1.5fr; padding: 1rem;">
+                                <div class="header-row unified-header-row ultimate-header-glass" style="grid-template-columns: 80px minmax(200px, max-content) 1fr 1fr 1fr 1.5fr; padding: 1rem;">
                                     <div class="col-header" style="justify-content: center;"><h3>RANK</h3></div>
                                     <div class="col-header model-col-header" style="justify-content: flex-start;"><h3>MODEL</h3><div class="creature-icon"></div></div>
-                                    <div class="col-header" style="justify-content: center;"><h3 style="color: #60A5FA;">VISUAL</h3></div>
-                                    <div class="col-header" style="justify-content: center;"><h3 style="color: #34D399;">DATA</h3></div>
-                                    <div class="col-header" style="justify-content: center;"><h3 style="color: #F87171;">CHESS</h3></div>
+                                    <div class="col-header" style="justify-content: center;"><h3 style="color: #D1D5DB;">VISUAL</h3></div>
+                                    <div class="col-header" style="justify-content: center;"><h3 style="color: #D1D5DB;">DATA</h3></div>
+                                    <div class="col-header" style="justify-content: center;"><h3 style="color: #D1D5DB;">CHESS</h3></div>
                                     <div class="col-header" style="justify-content: center;">
-                                        <div class="header-title-wrapper" style="border-bottom: 2px solid #F59E0B;">
-                                            <h3 style="color: #F59E0B; font-weight: 900;">ULTIMATE AVG</h3>
+                                        <div class="header-title-wrapper" style="border-bottom: none;">
+                                            <h3 style="color: #F59E0B; font-weight: 900;">ULTIMATE AVG ▼</h3>
                                         </div>
                                     </div>
                                 </div>
                                 {ultimateBenchList.map((item, index) => (
-                                    <div class={`benchmark-row unified-row ultimate-row-hover ${index % 2 === 0 ? 'striped-row' : ''}`} style="grid-template-columns: 80px minmax(200px, 3fr) 1fr 1fr 1fr 1.5fr; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(55, 65, 81, 0.5);">
+                                    <div class={`benchmark-row unified-row ultimate-row-hover `} style="grid-template-columns: 80px minmax(200px, max-content) 1fr 1fr 1fr 1.5fr; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(55, 65, 81, 0.5);">
                                         <div class="benchmark-cell" style="justify-content: center; font-size: 1.25rem;">
                                             <div class="rank" set:html={getRankDisplay(item.rank)}></div>
                                         </div>
-                                        <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`} style="justify-content: flex-start; border-radius: 4px;">
+                                        <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`} style="justify-content: flex-start; border-radius: 4px; padding-right: 2rem;">
                                             <div class="benchmark-content" style="padding-left: 0.5rem;">
                                                 <div class="model-info">
                                                     <div class="model-name" data-release-date={item.releaseDate} style="font-size: 1.1rem; font-weight: 600;">
@@ -436,7 +433,7 @@ function getRankDisplay(rank) {
                                         </div>
                                     </div>
                                     {visualGlobalList.map((item, index) => (
-                                        <div class={`benchmark-row unified-row ${index % 2 === 0 ? 'striped-row' : ''}`} style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
+                                        <div class={`benchmark-row unified-row `} style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
                                             <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="benchmark-content">
                                                     <div class="rank" set:html={getRankDisplay(item.rank)}></div>
@@ -475,7 +472,7 @@ function getRankDisplay(rank) {
                                         </div>
                                     </div>
                                     {dataGlobalList.map((item, index) => (
-                                        <div class={`benchmark-row unified-row ${index % 2 === 0 ? 'striped-row' : ''}`} style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
+                                        <div class={`benchmark-row unified-row `} style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
                                             <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="benchmark-content">
                                                     <div class="rank" set:html={getRankDisplay(item.rank)}></div>
@@ -505,7 +502,7 @@ function getRankDisplay(rank) {
                             <div class="benchmark-desktop-container">
                                 <div class="benchmark-container">
                                     {chessGlobalList.map((item, index) => (
-                                        <div class={`benchmark-row unified-row ${index % 2 === 0 ? 'striped-row' : ''}`} style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);" data-model-name={item.name}>
+                                        <div class={`benchmark-row unified-row `} style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);" data-model-name={item.name}>
                                             <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="benchmark-content">
                                                     <div class="rank" set:html={getRankDisplay(item.rank)}></div>
@@ -1475,30 +1472,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
 
 
     /* --- MODEL BRANDING STYLES --- */
-    .model-bg-gemini { background-color: #ADD8E6; }
-    .model-bg-gemini .model-name { color: #111827; }
-    .model-bg-gemini .rank { color: #111827; }
-    .model-bg-gemini .model-score { color: #111827; }
-
-    .model-bg-muse { background-color: #00008B; }
-    .model-bg-muse .model-name { color: #FFFFFF; }
-    .model-bg-muse .rank { color: #FFFFFF; }
-    .model-bg-muse .model-score { color: #FFFFFF; }
-
-    .model-bg-gpt { background-color: #90EE90; }
-    .model-bg-gpt .model-name { color: #111827; }
-    .model-bg-gpt .rank { color: #111827; }
-    .model-bg-gpt .model-score { color: #111827; }
-
-    .model-bg-grok { background-color: #FFD700; }
-    .model-bg-grok .model-name { color: #111827; }
-    .model-bg-grok .rank { color: #111827; }
-    .model-bg-grok .model-score { color: #111827; }
-
-    .model-bg-claude { background-color: #C8A2C8; }
-    .model-bg-claude .model-name { color: #111827; }
-    .model-bg-claude .rank { color: #111827; }
-    .model-bg-claude .model-score { color: #111827; }
+    /* Background colors removed as part of UI refresh */
 
     /* --- CREATURE CHALLENGE STYLES --- */
 
@@ -2143,10 +2117,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
         function getRankDisplayHtml(rank) {
             if (rank === '-') return '-';
             if (rank === 'INVALID') return `<span class="zero-score-glow">INVALID</span>`;
-            if (rank === 1) return getPixelMedalHtml(1);
-            if (rank === 2) return getPixelMedalHtml(2);
-            if (rank === 3) return getPixelMedalHtml(3);
-            return `#${rank}`;
+            return `${rank}`;
         }
 
         function updateTableDOM(tableId, sortedItems) {
