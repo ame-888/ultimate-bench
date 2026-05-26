@@ -10,9 +10,9 @@ export const benchmarks = {
             scores: {
                 'lvl1': 35,
                 'lvl2': 38,
-                'lvl3': 'PENDING',
-                'lvl4': 'PENDING',
-                'lvl5': 'PENDING'
+                'lvl3': 34,
+                'lvl4': 0,
+                'lvl5': 0
             }
         },
         {
@@ -224,7 +224,7 @@ export const benchmarks = {
     ],
     chessModels: [
         { name: 'Gemini 3.1 Flashlite GA', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
-        { name: 'Grok 4.3 Fast*', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
+        { name: 'Grok 4.3 Fast', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Gemini 3.1 Pro Preview*', scores: { mouse: 100, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'GPT-5.5 Instant*', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } }
     ]
