@@ -227,7 +227,7 @@ export const benchmarks = {
         { name: 'Grok 4.3 Fast', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Gemini 3.1 Pro Preview*', scores: { mouse: 57, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'GPT-5.5 Instant', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
-        { name: 'Gemini 3.5 Flash*', scores: { mouse: 20, spider: 0, wolf: 0, hawk: 0, python: 0 } },
+        { name: 'Gemini 3.5 Flash', scores: { mouse: 40, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Claude 4.6 Sonnet (with extended reasoning)*', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } }
     ]
 };
