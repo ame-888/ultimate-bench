@@ -386,7 +386,7 @@ const sotaScore = ultimateBenchList.length > 0 ? ultimateBenchList[0].ultimateSc
                                             <div class="benchmark-content" style="padding-left: 0.5rem;">
                                                 <div class="model-info">
                                                     <div class="model-name" data-release-date={item.releaseDate} style="font-size: 1.1rem; font-weight: 600;">
-                                                        {item.name === 'Claude 4.6 Sonnet (with extended reasoning)' ? 'Claude 4.6 Sonnet (Extended)' : item.name}
+                                                        {item.name === 'Claude 4.6 Sonnet (adaptative thinking)' ? 'Claude 4.6 Sonnet (Adaptative)' : item.name}
                                                         {isNew(item.releaseDate) && <span class="new-badge" style="transform: scale(0.8); margin-left: 0.5rem;">NEW</span>}
                                                     </div>
                                                 </div>
@@ -971,7 +971,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                 })}
 
                             </div>
-                            <p class="disclaimer">INVALID: The model was unable to consistently answer the test, even if incorrectly.<br>UNAVAILABLE: The model was unavailable for testing, and therefore the score couldn't be measured.<br>*Scores still incomplete</p>
+                            <p class="disclaimer">INVALID: The model was unable to consistently answer the test, even if incorrectly.<br>UNAVAILABLE: The model was unavailable for testing, and therefore the score couldn't be measured.</p>
                         </div>
                     </div>
                 </div>
