@@ -428,11 +428,11 @@ const sotaScore = ultimateBenchList.length > 0 ? ultimateBenchList[0].ultimateSc
 
                                     <!-- Rocket Indicator -->
                                     <div class="sota-rocket-indicator" style="position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); z-index: 10; display: flex; align-items: center;">
-                                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(-45deg); filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.8));">
+                                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.8));">
                                             <path d="M12 2C12 2 15 6 15 11C15 16 17 18 17 18H7C7 18 9 16 9 11C9 6 12 2 12 2Z" fill="#FBBF24" stroke="#B45309" stroke-width="1.5" stroke-linejoin="round"/>
-                                            <path d="M12 18V22" stroke="#EF4444" stroke-width="3" stroke-linecap="round"/>
-                                            <path d="M9 18L7 21" stroke="#F97316" stroke-width="2" stroke-linecap="round"/>
-                                            <path d="M15 18L17 21" stroke="#F97316" stroke-width="2" stroke-linecap="round"/>
+                                            <path d="M12 18V22" stroke="#EF4444" stroke-width="3" stroke-linecap="round" class="propulsion-main"/>
+                                            <path d="M9 18L7 21" stroke="#F97316" stroke-width="2" stroke-linecap="round" class="propulsion-left"/>
+                                            <path d="M15 18L17 21" stroke="#F97316" stroke-width="2" stroke-linecap="round" class="propulsion-right"/>
                                             <circle cx="12" cy="10" r="1.5" fill="#1E3A8A"/>
                                         </svg>
                                         <div class="sota-score-label" style="position: absolute; left: 45px; background: rgba(17, 24, 39, 0.8); border: 1px solid #F59E0B; padding: 0.25rem 0.75rem; border-radius: 0.5rem; color: #F59E0B; font-weight: bold; font-family: monospace; font-size: 1.1rem; white-space: nowrap; box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);">
@@ -2032,6 +2032,33 @@ There are currently three levels in use. The fourth level will be unlocked once 
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border-bottom: 2px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    /* Rocket Propulsion Animation */
+    .propulsion-main {
+        transform-origin: 12px 18px;
+        animation: propulse 0.6s infinite alternate ease-in-out;
+    }
+    .propulsion-left {
+        transform-origin: 9px 18px;
+        animation: propulse 0.6s infinite alternate ease-in-out;
+        animation-delay: 0.2s;
+    }
+    .propulsion-right {
+        transform-origin: 15px 18px;
+        animation: propulse 0.6s infinite alternate ease-in-out;
+        animation-delay: 0.4s;
+    }
+
+    @keyframes propulse {
+        0% {
+            transform: scaleY(0.5);
+            opacity: 0.6;
+        }
+        100% {
+            transform: scaleY(1.5);
+            opacity: 1;
+        }
     }
 </style>
 
