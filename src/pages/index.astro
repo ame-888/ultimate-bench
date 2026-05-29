@@ -364,7 +364,7 @@ const sotaScore = ultimateBenchList.length > 0 ? ultimateBenchList[0].ultimateSc
                         </div>
                         <div class="benchmark-desktop-container ultimate-container">
                             <div class="benchmark-container visual-table ultimate-modern-container">
-                                <div class="header-row unified-header-row ultimate-header-glass" style="grid-template-columns: 80px minmax(300px, max-content) 1fr 1fr 1fr 1.5fr; padding: 1rem; align-items: flex-end;">
+                                <div class="header-row unified-header-row ultimate-header-glass" style="grid-template-columns: 80px minmax(340px, max-content) 1fr 1fr 1fr 1.5fr; padding: 1rem; align-items: flex-end;">
                                     <div class="col-header" style="justify-content: flex-end;"><h3>RANK</h3><div class="creature-icon"></div></div>
                                     <div class="col-header model-col-header" style="justify-content: flex-end; align-items: flex-start; padding-left: 0.5rem;"><h3>MODEL</h3><div class="creature-icon"></div></div>
                                     <div class="col-header" style="justify-content: flex-end; text-align: center;"><h3 style="color: #D1D5DB; text-align: center;">VISUAL</h3><div class="creature-icon"></div></div>
@@ -378,7 +378,7 @@ const sotaScore = ultimateBenchList.length > 0 ? ultimateBenchList[0].ultimateSc
                                     </div>
                                 </div>
                                 {ultimateBenchList.map((item, index) => (
-                                    <div class={`benchmark-row unified-row ultimate-row-hover `} style="grid-template-columns: 80px minmax(300px, max-content) 1fr 1fr 1fr 1.5fr; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(55, 65, 81, 0.5);">
+                                    <div class={`benchmark-row unified-row ultimate-row-hover `} style="grid-template-columns: 80px minmax(340px, max-content) 1fr 1fr 1fr 1.5fr; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(55, 65, 81, 0.5);">
                                         <div class="benchmark-cell" style="justify-content: center; font-size: 1.25rem;">
                                             <div class="rank" set:html={getRankDisplay(item.rank)}></div>
                                         </div>
@@ -485,7 +485,7 @@ const sotaScore = ultimateBenchList.length > 0 ? ultimateBenchList[0].ultimateSc
                             </div>
                             <div class="benchmark-desktop-container">
                                 <div class="benchmark-container visual-table">
-                                    <div class="header-row unified-header-row" style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
+                                    <div class="header-row unified-header-row" style="grid-template-columns: minmax(100px, 4.5fr) minmax(80px, 1.5fr);">
                                         <div class="col-header model-col-header" style="justify-content: flex-start; padding-left: 0.5rem;"><h3>MODEL</h3><div class="creature-icon"></div></div>
                                         <div class="col-header" style="justify-content: center; text-align: center;">
                                             <div class="header-title-wrapper" style="border-bottom: none;">
@@ -495,7 +495,7 @@ const sotaScore = ultimateBenchList.length > 0 ? ultimateBenchList[0].ultimateSc
                                         </div>
                                     </div>
                                     {visualGlobalList.map((item, index) => (
-                                        <div class={`benchmark-row unified-row `} style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
+                                        <div class={`benchmark-row unified-row `} style="grid-template-columns: minmax(100px, 4.5fr) minmax(80px, 1.5fr);">
                                             <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="benchmark-content">
                                                     <div class="rank" set:html={getRankDisplay(item.rank)}></div>
@@ -524,7 +524,7 @@ const sotaScore = ultimateBenchList.length > 0 ? ultimateBenchList[0].ultimateSc
                             </div>
                             <div class="benchmark-desktop-container">
                                 <div class="benchmark-container visual-table">
-                                    <div class="header-row unified-header-row" style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
+                                    <div class="header-row unified-header-row" style="grid-template-columns: minmax(100px, 4.5fr) minmax(80px, 1.5fr);">
                                         <div class="col-header model-col-header" style="justify-content: flex-start; padding-left: 0.5rem;"><h3>MODEL</h3><div class="creature-icon"></div></div>
                                         <div class="col-header" style="justify-content: center; text-align: center;">
                                             <div class="header-title-wrapper" style="border-bottom: none;">
@@ -534,7 +534,7 @@ const sotaScore = ultimateBenchList.length > 0 ? ultimateBenchList[0].ultimateSc
                                         </div>
                                     </div>
                                     {dataGlobalList.map((item, index) => (
-                                        <div class={`benchmark-row unified-row `} style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
+                                        <div class={`benchmark-row unified-row `} style="grid-template-columns: minmax(100px, 4.5fr) minmax(80px, 1.5fr);">
                                             <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="benchmark-content">
                                                     <div class="rank" set:html={getRankDisplay(item.rank)}></div>
@@ -563,7 +563,7 @@ const sotaScore = ultimateBenchList.length > 0 ? ultimateBenchList[0].ultimateSc
                             </div>
                             <div class="benchmark-desktop-container">
                                 <div class="benchmark-container">
-                                    <div class="header-row unified-header-row" style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
+                                    <div class="header-row unified-header-row" style="grid-template-columns: minmax(100px, 4.5fr) minmax(80px, 1.5fr);">
                                         <div class="col-header model-col-header" style="justify-content: flex-start; padding-left: 0.5rem;"><h3>MODEL</h3><div class="creature-icon"></div></div>
                                         <div class="col-header" style="justify-content: center; text-align: center;">
                                             <div class="header-title-wrapper" style="border-bottom: none;">
@@ -573,7 +573,7 @@ const sotaScore = ultimateBenchList.length > 0 ? ultimateBenchList[0].ultimateSc
                                         </div>
                                     </div>
                                     {chessGlobalList.map((item, index) => (
-                                        <div class={`benchmark-row unified-row `} style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);" data-model-name={item.name}>
+                                        <div class={`benchmark-row unified-row `} style="grid-template-columns: minmax(100px, 4.5fr) minmax(80px, 1.5fr);" data-model-name={item.name}>
                                             <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="benchmark-content">
                                                     <div class="rank" set:html={getRankDisplay(item.rank)}></div>
@@ -1285,12 +1285,12 @@ There are currently three levels in use. The fourth level will be unlocked once 
     /* Unified Visual Grid */
     .unified-header-row, .unified-row {
         display: grid;
-        grid-template-columns: minmax(60px, 2.5fr) repeat(6, minmax(25px, 1fr));
+        grid-template-columns: minmax(60px, 3fr) repeat(6, minmax(25px, 1fr));
         gap: 0.1rem;
     }
 
     .data-table-wrapper .unified-header-row, .data-table-wrapper .unified-row {
-        grid-template-columns: minmax(60px, 2.5fr) repeat(6, minmax(25px, 1fr));
+        grid-template-columns: minmax(60px, 3fr) repeat(6, minmax(25px, 1fr));
     }
 
     @media (min-width: 640px) {
