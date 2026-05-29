@@ -6,6 +6,16 @@ export const benchmarks = {
     ],
     models: [
         {
+            name: 'GPT-5.5 Instant (0529)',
+            scores: {
+                'lvl1': 48,
+                'lvl2': 33,
+                'lvl3': 34,
+                'lvl4': 0,
+                'lvl5': 0
+            }
+        },
+        {
             name: 'GPT-5.4 Thinking Mini',
             scores: {
                 'lvl1': 35,
