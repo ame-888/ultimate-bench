@@ -1,7 +1,0 @@
-<<<<<<< SEARCH
-<script define:vars={{ TIME_OFFSET }}>
-    function init() {
-=======
-<script define:vars={{ TIME_OFFSET, unifiedRawList, dataRawList }}>
-    function init() {
->>>>>>> REPLACE

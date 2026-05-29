@@ -46,6 +46,16 @@ export const benchmarks = {
             }
         },
         {
+            name: 'Claude 4.6 Sonnet (max thinking)',
+            scores: {
+                'lvl1': 14,
+                'lvl2': 6,
+                'lvl3': 6,
+                'lvl4': 0,
+                'lvl5': 0
+            }
+        },
+        {
             name: 'Claude 4.6 Sonnet (adaptative thinking)',
             scores: {
                 'lvl1': 12,
