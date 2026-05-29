@@ -201,7 +201,7 @@ export const benchmarks = {
             }
         },
         {
-            name: 'GPT-5.5 Instant (0505)',
+            name: 'GPT-5.5 Instant',
             scores: {
                 'lvl1': 30,
                 'lvl2': 38,
@@ -228,18 +228,18 @@ export const benchmarks = {
         { name: 'Gemini 3.1 Pro Preview', scores: { worm: 20, koala: 11, crow: 11, octopus: 0 } },
         { name: 'Muse Spark (with reasoning)', scores: { worm: 13, koala: 'INVALID', crow: 'INVALID', octopus: 'INVALID' } },
         { name: 'Claude 4.6 Sonnet (adaptative thinking)', scores: { worm: 9, koala: 10, crow: 3, octopus: 0 }, releaseDate: '2026-02-21' },
-        { name: 'GPT-5.5 Instant (0505)', scores: { worm: 34, koala: 3, crow: 0, octopus: 0 } },
+        { name: 'GPT-5.5 Instant', scores: { worm: 34, koala: 3, crow: 0, octopus: 0 } },
         { name: 'Gemini 3.1 Flashlite GA', scores: { worm: 16, koala: 14, crow: 8, octopus: 0 } },
         { name: 'Gemini 3.0 Flash Preview', scores: { worm: 15, koala: 19, crow: 2, octopus: 0 } }
     ],
     chessModels: [
         { name: 'Gemini 3.1 Flashlite GA', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Grok 4.3 Fast', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
-        { name: 'Gemini 3.1 Pro Preview', scores: { mouse: 57, spider: 0, wolf: 0, hawk: 0, python: 0 } },
-        { name: 'GPT-5.5 Instant (0505)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
+        { name: 'Gemini 3.1 Pro Preview*', scores: { mouse: 57, spider: 0, wolf: 0, hawk: 0, python: 0 } },
+        { name: 'GPT-5.5 Instant', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Gemini 3.5 Flash', scores: { mouse: 40, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Claude 4.6 Sonnet (adaptative thinking)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
-        { name: 'Muse Spark (with reasoning)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
+        { name: 'Muse Spark (with reasoning)*', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Gemini 3.0 Flash Preview', scores: { mouse: 15, spider: 0, wolf: 0, hawk: 0, python: 0 } }
     ]
 };
