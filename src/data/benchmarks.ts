@@ -254,7 +254,7 @@ export const benchmarks = {
         { name: 'GPT-5.5 Instant (0505)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Gemini 3.5 Flash', scores: { mouse: 40, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Claude 4.6 Sonnet (adaptative thinking)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
-        { name: 'Muse Spark (with reasoning)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
+        { name: 'Muse Spark (with reasoning)', scores: { mouse: 3, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Gemini 3.0 Flash Preview', scores: { mouse: 15, spider: 0, wolf: 0, hawk: 0, python: 0 } }
     ]
 };
