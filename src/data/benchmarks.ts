@@ -250,7 +250,7 @@ export const benchmarks = {
     chessModels: [
         { name: 'Gemini 3.1 Flashlite GA', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Grok 4.3 Fast', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
-        { name: 'Gemini 3.1 Pro Preview', scores: { mouse: 57, spider: 0, wolf: 0, hawk: 0, python: 0 } },
+        { name: 'Gemini 3.1 Pro Preview', scores: { mouse: 75, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'GPT-5.5 Instant (0505)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Gemini 3.5 Flash', scores: { mouse: 40, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Claude 4.6 Sonnet (adaptative thinking)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
