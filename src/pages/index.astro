@@ -338,6 +338,7 @@ function getRankDisplay(rank) {
 }
 
 const sotaScore = ultimateBenchList.length > 0 ? ultimateBenchList[0].ultimateScore : 0;
+const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name : "None";
 
 ---
 
@@ -415,62 +416,118 @@ const sotaScore = ultimateBenchList.length > 0 ? ultimateBenchList[0].ultimateSc
                         </div>
                     </div>
 
-                    <!-- Journey to Singularity: Loading Bar Section -->
-                    <div class="singularity-journey-section" style="margin: 4rem auto; max-width: 800px; display: flex; flex-direction: column; align-items: center; position: relative;">
-                        <h2 style="color: #60A5FA; font-weight: 800; text-align: center; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2rem;">Journey to Singularity</h2>
+                    <!-- Journey to Singularity: Enhanced Section -->
+                    <div class="singularity-journey-section" style="margin: 4rem auto; max-width: 900px; display: flex; flex-direction: column; align-items: center; position: relative; padding: 3rem 1rem; background: radial-gradient(circle at center, rgba(30, 58, 138, 0.15) 0%, transparent 70%); border-radius: 2rem;">
 
-                        <div class="sota-loading-container" style="position: relative; width: 100%; display: flex; justify-content: center; height: 500px;">
+                        <div style="text-align: center; margin-bottom: 3rem; position: relative;">
+                            <h2 style="color: #93C5FD; font-weight: 900; font-size: 2rem; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 0.5rem; text-shadow: 0 0 20px rgba(147, 197, 253, 0.3);">Journey to Singularity</h2>
+                            <div style="width: 60px; height: 3px; background: linear-gradient(90deg, transparent, #60A5FA, transparent); margin: 0 auto;"></div>
+                        </div>
+
+                        <div class="sota-loading-container" style="position: relative; width: 100%; display: flex; justify-content: center; height: 500px; z-index: 2;">
+                            <!-- Starry/Nebula Ambient Background for the track -->
+                            <div style="position: absolute; width: 120px; height: 100%; background: linear-gradient(to top, rgba(15, 23, 42, 0), rgba(30, 58, 138, 0.2), rgba(15, 23, 42, 0)); border-radius: 60px; filter: blur(10px); z-index: 0;"></div>
+
                             <!-- The Bar Background -->
-                            <div class="sota-bar-track" style="width: 40px; height: 100%; background: linear-gradient(to top, #0f172a, #1e3a8a); border-radius: 20px; border: 2px solid rgba(96, 165, 250, 0.3); position: relative; overflow: visible;">
+                            <div class="sota-bar-track" style="width: 12px; height: 100%; background: rgba(15, 23, 42, 0.8); border-radius: 10px; border: 1px solid rgba(59, 130, 246, 0.2); position: relative; overflow: visible; z-index: 1; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
 
                                 <!-- The Filled Bar -->
-                                <div class="sota-bar-fill" style={`position: absolute; bottom: 0; left: 0; width: 100%; height: ${sotaScore}%; background: linear-gradient(to top, #ef4444, #f97316, #eab308); border-radius: 20px; box-shadow: 0 0 15px rgba(249, 115, 22, 0.6); transition: height 1s ease-out;`}>
+                                <div class="sota-bar-fill" style={`position: absolute; bottom: 0; left: -1px; width: calc(100% + 2px); height: ${sotaScore}%; background: linear-gradient(to top, #3B82F6, #A855F7, #F59E0B); border-radius: 10px; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4), inset 0 0 5px rgba(255,255,255,0.5); transition: height 1.5s cubic-bezier(0.4, 0, 0.2, 1);`}>
 
                                     <!-- Rocket Indicator -->
-                                    <div class="sota-rocket-indicator" style="position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); z-index: 10; display: flex; align-items: center;">
-                                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.8));">
-                                            <path d="M12 2C12 2 15 6 15 11C15 16 17 18 17 18H7C7 18 9 16 9 11C9 6 12 2 12 2Z" fill="#FBBF24" stroke="#B45309" stroke-width="1.5" stroke-linejoin="round"/>
-                                            <path d="M12 18V22" stroke="#EF4444" stroke-width="3" stroke-linecap="round" class="propulsion-main"/>
-                                            <path d="M9 18L7 21" stroke="#F97316" stroke-width="2" stroke-linecap="round" class="propulsion-left"/>
-                                            <path d="M15 18L17 21" stroke="#F97316" stroke-width="2" stroke-linecap="round" class="propulsion-right"/>
-                                            <circle cx="12" cy="10" r="1.5" fill="#1E3A8A"/>
-                                        </svg>
-                                        <div class="sota-score-label" style="position: absolute; left: 45px; background: rgba(17, 24, 39, 0.8); border: 1px solid #F59E0B; padding: 0.25rem 0.75rem; border-radius: 0.5rem; color: #F59E0B; font-weight: bold; font-family: monospace; font-size: 1.1rem;  box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);">
-                                            SOTA: {sotaScore.toFixed(1)}%
+                                    <div class="sota-rocket-indicator" style="position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); z-index: 10; display: flex; align-items: center; transition: all 0.3s ease;">
+
+                                        <!-- Exhaust glow -->
+                                        <div style="position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); width: 20px; height: 30px; background: radial-gradient(ellipse at top, #F59E0B 0%, transparent 70%); filter: blur(4px); opacity: 0.8; animation: pulse 2s infinite alternate;"></div>
+
+                                        <!-- Sleeker Rocket SVG -->
+                                        <div style="background: rgba(15, 23, 42, 0.6); padding: 8px; border-radius: 50%; border: 1px solid rgba(245, 158, 11, 0.5); box-shadow: 0 0 15px rgba(245, 158, 11, 0.4), inset 0 0 10px rgba(0,0,0,0.5); backdrop-filter: blur(4px);">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5)); transform: rotate(-45deg);">
+                                                <path d="M4 14C4 14 5 13.5 7 14.5C9 15.5 10.5 17 11 19C11.5 21 11 22 11 22C11 22 13 21.5 15 20C17 18.5 18.5 16 19 14C19.5 12 21 10 22 9C23 8 22 6 22 6C22 6 20 5 19 6C18 7 16 8.5 14 9C12 9.5 9.5 8 8 6C6.5 4 6 2 6 2C6 2 5 2.5 5 3C4.5 4 4 6.5 5 8.5C6 10.5 7 12.5 7 14.5C6 16.5 5 18.5 4 19C3 19.5 2 20 2 20C2 20 3 19 4 14Z" fill="url(#rocketGrad)" stroke="#E5E7EB" stroke-width="1" stroke-linejoin="round"/>
+                                                <path d="M14 10C14 10 16 8 18 8C20 8 20 10 20 10C20 10 18 12 16 12C14 12 14 10 14 10Z" fill="#60A5FA"/>
+                                                <defs>
+                                                    <linearGradient id="rocketGrad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#F3F4F6" />
+                                                        <stop offset="1" stop-color="#9CA3AF" />
+                                                    </linearGradient>
+                                                </defs>
+                                            </svg>
+                                        </div>
+
+                                        <!-- Sleek SOTA Info Panel -->
+                                        <div class="sota-info-panel" style="position: absolute; left: 55px; background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)); border: 1px solid rgba(147, 197, 253, 0.3); border-left: 3px solid #60A5FA; padding: 0.75rem 1rem; border-radius: 0.5rem; display: flex; flex-direction: column; gap: 0.25rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(96, 165, 250, 0.15); backdrop-filter: blur(8px); min-width: 180px; white-space: nowrap;">
+                                            <div style="font-size: 0.7rem; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Current SOTA</div>
+                                            <div style="font-size: 1rem; color: #E5E7EB; font-weight: 700; text-overflow: ellipsis; overflow: hidden; max-width: 200px;">{sotaModelName}</div>
+                                            <div style="font-size: 1.25rem; color: #60A5FA; font-weight: 900; font-family: monospace; display: flex; align-items: baseline; gap: 0.25rem;">
+                                                {sotaScore.toFixed(1)}<span style="font-size: 0.9rem; color: #9CA3AF;">%</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- The 5 Zone Labels -->
-                            <div class="sota-labels-container" style="position: absolute; height: 100%; top: 0; left: calc(50% + 50px); width: 250px; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none;">
-                                <!-- Placed absolutely by percentage to align exactly with the 5 zones -->
-                                <!-- 80-100% (Singularity) - Center at 90% from bottom (10% from top) -->
-                                <div class={`sota-zone-label ${sotaScore >= 80 ? 'active' : ''}`} style="position: absolute; top: 10%; transform: translateY(-50%); transition: all 0.3s ease;">
-                                    <span class="zone-name" style={`font-weight: ${sotaScore >= 80 ? '800' : '500'}; color: ${sotaScore >= 80 ? '#FBBF24' : '#4B5563'}; text-shadow: ${sotaScore >= 80 ? '0 0 8px rgba(251, 191, 36, 0.5)' : 'none'}; font-size: 1.2rem;`}>SINGULARITY</span>
+                            <!-- The 5 Zone Nodes -->
+                            <div class="sota-nodes-container" style="position: absolute; height: 100%; top: 0; left: calc(50% - 6px); width: 12px; pointer-events: none; z-index: 2;">
+                                <!-- Placed exactly on the track -->
+
+                                <!-- 100% (Singularity) -->
+                                <div class="sota-node" style="position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);">
+                                    <div style={`width: 16px; height: 16px; border-radius: 50%; background: ${sotaScore >= 100 ? '#FBBF24' : '#1E293B'}; border: 2px solid ${sotaScore >= 100 ? '#FFF' : '#334155'}; box-shadow: ${sotaScore >= 100 ? '0 0 15px #FBBF24' : 'none'}; transition: all 0.5s ease;`}></div>
+                                    <div class="sota-node-label" style="position: absolute; left: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem;">
+                                        <span style={`font-weight: 800; color: ${sotaScore >= 100 ? '#FBBF24' : '#4B5563'}; font-size: 0.9rem; letter-spacing: 0.1em; text-shadow: ${sotaScore >= 100 ? '0 0 10px rgba(251, 191, 36, 0.4)' : 'none'}; transition: color 0.5s ease;`}>SINGULARITY</span>
+                                        <span style="color: #4B5563; font-size: 0.75rem; font-family: monospace;">100%</span>
+                                    </div>
                                 </div>
 
-                                <!-- 60-80% (Supernova) - Center at 70% from bottom (30% from top) -->
-                                <div class={`sota-zone-label ${sotaScore >= 60 ? 'active' : ''}`} style="position: absolute; top: 30%; transform: translateY(-50%); transition: all 0.3s ease;">
-                                    <span class="zone-name" style={`font-weight: ${sotaScore >= 60 ? '800' : '500'}; color: ${sotaScore >= 60 ? '#F97316' : '#4B5563'}; text-shadow: ${sotaScore >= 60 ? '0 0 8px rgba(249, 115, 22, 0.5)' : 'none'}; font-size: 1.2rem;`}>SUPERNOVA</span>
+                                <!-- 80% (Supernova) -->
+                                <div class="sota-node" style="position: absolute; top: 20%; left: 50%; transform: translate(-50%, -50%);">
+                                    <div style={`width: 16px; height: 16px; border-radius: 50%; background: ${sotaScore >= 80 ? '#F97316' : '#1E293B'}; border: 2px solid ${sotaScore >= 80 ? '#FFF' : '#334155'}; box-shadow: ${sotaScore >= 80 ? '0 0 15px #F97316' : 'none'}; transition: all 0.5s ease;`}></div>
+                                    <div class="sota-node-label" style="position: absolute; left: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem;">
+                                        <span style={`font-weight: 700; color: ${sotaScore >= 80 ? '#F97316' : '#4B5563'}; font-size: 0.9rem; letter-spacing: 0.1em; text-shadow: ${sotaScore >= 80 ? '0 0 10px rgba(249, 115, 22, 0.4)' : 'none'}; transition: color 0.5s ease;`}>SUPERNOVA</span>
+                                        <span style="color: #4B5563; font-size: 0.75rem; font-family: monospace;">80%</span>
+                                    </div>
                                 </div>
 
-                                <!-- 40-60% (Star) - Center at 50% from bottom (50% from top) -->
-                                <div class={`sota-zone-label ${sotaScore >= 40 ? 'active' : ''}`} style="position: absolute; top: 50%; transform: translateY(-50%); transition: all 0.3s ease;">
-                                    <span class="zone-name" style={`font-weight: ${sotaScore >= 40 ? '800' : '500'}; color: ${sotaScore >= 40 ? '#EF4444' : '#4B5563'}; text-shadow: ${sotaScore >= 40 ? '0 0 8px rgba(239, 68, 68, 0.5)' : 'none'}; font-size: 1.2rem;`}>STAR</span>
+                                <!-- 60% (Star) -->
+                                <div class="sota-node" style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);">
+                                    <div style={`width: 16px; height: 16px; border-radius: 50%; background: ${sotaScore >= 60 ? '#EF4444' : '#1E293B'}; border: 2px solid ${sotaScore >= 60 ? '#FFF' : '#334155'}; box-shadow: ${sotaScore >= 60 ? '0 0 15px #EF4444' : 'none'}; transition: all 0.5s ease;`}></div>
+                                    <div class="sota-node-label" style="position: absolute; left: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem;">
+                                        <span style={`font-weight: 700; color: ${sotaScore >= 60 ? '#EF4444' : '#4B5563'}; font-size: 0.9rem; letter-spacing: 0.1em; text-shadow: ${sotaScore >= 60 ? '0 0 10px rgba(239, 68, 68, 0.4)' : 'none'}; transition: color 0.5s ease;`}>STAR</span>
+                                        <span style="color: #4B5563; font-size: 0.75rem; font-family: monospace;">60%</span>
+                                    </div>
                                 </div>
 
-                                <!-- 20-40% (Nebula) - Center at 30% from bottom (70% from top) -->
-                                <div class={`sota-zone-label ${sotaScore >= 20 ? 'active' : ''}`} style="position: absolute; top: 70%; transform: translateY(-50%); transition: all 0.3s ease;">
-                                    <span class="zone-name" style={`font-weight: ${sotaScore >= 20 ? '800' : '500'}; color: ${sotaScore >= 20 ? '#A855F7' : '#4B5563'}; text-shadow: ${sotaScore >= 20 ? '0 0 8px rgba(168, 85, 247, 0.5)' : 'none'}; font-size: 1.2rem;`}>NEBULA</span>
+                                <!-- 40% (Nebula) -->
+                                <div class="sota-node" style="position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%);">
+                                    <div style={`width: 16px; height: 16px; border-radius: 50%; background: ${sotaScore >= 40 ? '#A855F7' : '#1E293B'}; border: 2px solid ${sotaScore >= 40 ? '#FFF' : '#334155'}; box-shadow: ${sotaScore >= 40 ? '0 0 15px #A855F7' : 'none'}; transition: all 0.5s ease;`}></div>
+                                    <div class="sota-node-label" style="position: absolute; left: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem;">
+                                        <span style={`font-weight: 700; color: ${sotaScore >= 40 ? '#A855F7' : '#4B5563'}; font-size: 0.9rem; letter-spacing: 0.1em; text-shadow: ${sotaScore >= 40 ? '0 0 10px rgba(168, 85, 247, 0.4)' : 'none'}; transition: color 0.5s ease;`}>NEBULA</span>
+                                        <span style="color: #4B5563; font-size: 0.75rem; font-family: monospace;">40%</span>
+                                    </div>
                                 </div>
 
-                                <!-- 0-20% (Event Horizon) - Center at 10% from bottom (90% from top) -->
-                                <div class={`sota-zone-label ${sotaScore >= 0 ? 'active' : ''}`} style="position: absolute; top: 90%; transform: translateY(-50%); transition: all 0.3s ease;">
-                                    <span class="zone-name" style={`font-weight: ${sotaScore >= 0 ? '800' : '500'}; color: ${sotaScore >= 0 ? '#3B82F6' : '#4B5563'}; text-shadow: ${sotaScore >= 0 ? '0 0 8px rgba(59, 130, 246, 0.5)' : 'none'}; font-size: 1.2rem;`}>EVENT HORIZON</span>
+                                <!-- 20% (Event Horizon) -->
+                                <div class="sota-node" style="position: absolute; top: 80%; left: 50%; transform: translate(-50%, -50%);">
+                                    <div style={`width: 16px; height: 16px; border-radius: 50%; background: ${sotaScore >= 20 ? '#3B82F6' : '#1E293B'}; border: 2px solid ${sotaScore >= 20 ? '#FFF' : '#334155'}; box-shadow: ${sotaScore >= 20 ? '0 0 15px #3B82F6' : 'none'}; transition: all 0.5s ease;`}></div>
+                                    <div class="sota-node-label" style="position: absolute; left: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem;">
+                                        <span style={`font-weight: 700; color: ${sotaScore >= 20 ? '#3B82F6' : '#4B5563'}; font-size: 0.9rem; letter-spacing: 0.1em; text-shadow: ${sotaScore >= 20 ? '0 0 10px rgba(59, 130, 246, 0.4)' : 'none'}; transition: color 0.5s ease;`}>EVENT HORIZON</span>
+                                        <span style="color: #4B5563; font-size: 0.75rem; font-family: monospace;">20%</span>
+                                    </div>
+                                </div>
+
+                                <!-- 0% (Origin) -->
+                                <div class="sota-node" style="position: absolute; top: 100%; left: 50%; transform: translate(-50%, -50%);">
+                                    <div style={`width: 16px; height: 16px; border-radius: 50%; background: #1E293B; border: 2px solid #334155;`}></div>
                                 </div>
                             </div>
                         </div>
+
+                        <style>
+                            @keyframes pulse {
+                                0% { opacity: 0.4; transform: translateX(-50%) scale(0.8); }
+                                100% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
+                            }
+                        </style>
                     </div>
 
                     <hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0)); margin: 3rem 0;" />
