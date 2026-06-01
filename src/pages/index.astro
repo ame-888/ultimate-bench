@@ -351,6 +351,13 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
             <!-- Benchmarks Section -->
             <section class="leaderboard-section full-width">
 
+                <!-- Modal Container -->
+                <div id="benchmark-modal" class="modal-overlay">
+                    <div class="modal-content">
+                        <button id="benchmark-modal-close" class="modal-close-btn">&times;</button>
+                        <div id="benchmark-modal-body"></div>
+                    </div>
+                </div>
 
                 <!-- Homepage Combined View -->
                 <div id="home-wrapper">
@@ -876,7 +883,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                             <h3>MOUSE</h3>
                                             <span class="tooltip-container">
                                                 <span class="tooltip-icon">ⓘ</span>
-                                                <div class="tooltip-text"><strong>MOUSE (Level 1):</strong></div>
+                                                <div class="tooltip-text"><strong>MOUSE (Level 1):</strong> A test of baseline structural integrity and fundamental laws. The system must demonstrate an active, coherent grasp of basic spatial constraints and avoid immediate cognitive collapse over a short horizon.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon mouse-icon">
@@ -897,7 +904,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                             <h3>SPIDER</h3>
                                             <span class="tooltip-container">
                                                 <span class="tooltip-icon">ⓘ</span>
-                                                <div class="tooltip-text"><strong>SPIDER (Level 2):</strong></div>
+                                                <div class="tooltip-text"><strong>SPIDER (Level 2):</strong> A trial of cognitive stamina. Here, the march of turns is the primary adversary, testing whether the system's internal state representation can withstand the creeping decay of longer, more drawn-out sequences.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon spider-icon">
@@ -920,7 +927,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                             <h3>WOLF</h3>
                                             <span class="tooltip-container">
                                                 <span class="tooltip-icon">ⓘ</span>
-                                                <div class="tooltip-text"><strong>WOLF (Level 3):</strong></div>
+                                                <div class="tooltip-text"><strong>WOLF (Level 3):</strong> An introduction to uncompromising precision. The margin for error shrinks drastically, demanding sharp tactical alertness where minor oversights carry sudden and heavy consequences.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon wolf-icon">
@@ -940,7 +947,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                             <h3>HAWK</h3>
                                             <span class="tooltip-container">
                                                 <span class="tooltip-icon">ⓘ</span>
-                                                <div class="tooltip-text"><strong>HAWK (Level 4):</strong></div>
+                                                <div class="tooltip-text"><strong>HAWK (Level 4):</strong> An evaluation of psychological friction and self-certainty. The system must navigate external skepticism and defend its own logical calculations, where a single moment of submissive compliance or hesitation results in total failure.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon hawk-icon">
@@ -962,7 +969,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                             <h3>PYTHON</h3>
                                             <span class="tooltip-container">
                                                 <span class="tooltip-icon">ⓘ</span>
-                                                <div class="tooltip-text"><strong>PYTHON (Level 5):</strong></div>
+                                                <div class="tooltip-text"><strong>PYTHON (Level 5):</strong> A confrontation with flawless execution. The standard is set so high that mere survival or passive defense is treated as defeat, all while the system is subjected to relentless, systematic false accusations.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon python-icon">
@@ -981,7 +988,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                             <h3>HYDRA</h3>
                                             <span class="tooltip-container">
                                                 <span class="tooltip-icon">ⓘ</span>
-                                                <div class="tooltip-text"><strong>HYDRA (Level 6):</strong></div>
+                                                <div class="tooltip-text"><strong>HYDRA (Level 6):</strong> The ultimate test of pure, unmemorized algorithmic reasoning. All familiar structures and comfortable reference points are shattered, forcing the system to map a completely foreign environment under severe constraints and maximum cognitive pressure.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon hydra-icon">
@@ -2123,6 +2130,76 @@ There are currently three levels in use. The fourth level will be unlocked once 
             opacity: 1;
         }
     }
+
+    /* Modal Styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .modal-content {
+        background: rgba(17, 24, 39, 0.95);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 12px;
+        width: 90%;
+        max-width: 1200px;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+        padding: 2rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        transform: scale(0.95);
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .modal-overlay.active .modal-content {
+        transform: scale(1);
+    }
+
+    .modal-close-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: #EF4444;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        transition: all 0.2s ease;
+        z-index: 10;
+    }
+
+    .modal-close-btn:hover {
+        background: #DC2626;
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.8);
+    }
 </style>
 
 <script define:vars={{ TIME_OFFSET, unifiedRawList, dataRawList, chessRawList }}>
@@ -2133,30 +2210,65 @@ There are currently three levels in use. The fourth level will be unlocked once 
 
         const homeWrapper = document.getElementById('home-wrapper');
 
-        function updateBenchmarkView(mode) {
-            if (mode === 'visual') {
-                if (homeWrapper) homeWrapper.classList.add('hidden');
-                if (visualWrapper) visualWrapper.classList.remove('hidden');
-                if (dataWrapper) dataWrapper.classList.add('hidden');
-                if (chessWrapper) chessWrapper.classList.add('hidden');
-            } else if (mode === 'data') {
-                if (homeWrapper) homeWrapper.classList.add('hidden');
-                if (visualWrapper) visualWrapper.classList.add('hidden');
-                if (dataWrapper) dataWrapper.classList.remove('hidden');
-                if (chessWrapper) chessWrapper.classList.add('hidden');
-            } else if (mode === 'chess') {
-                if (homeWrapper) homeWrapper.classList.add('hidden');
-                if (visualWrapper) visualWrapper.classList.add('hidden');
-                if (dataWrapper) dataWrapper.classList.add('hidden');
-                if (chessWrapper) chessWrapper.classList.remove('hidden');
-            } else {
-                // home
-                if (homeWrapper) homeWrapper.classList.remove('hidden');
-                if (visualWrapper) visualWrapper.classList.add('hidden');
-                if (dataWrapper) dataWrapper.classList.add('hidden');
-                if (chessWrapper) chessWrapper.classList.add('hidden');
+        const modalOverlay = document.getElementById('benchmark-modal');
+        const modalBody = document.getElementById('benchmark-modal-body');
+        const modalCloseBtn = document.getElementById('benchmark-modal-close');
+
+        function openModal(mode) {
+            if (!modalOverlay || !modalBody) return;
+
+            // Clear previous modal content without destroying elements
+            if (visualWrapper) {
+                visualWrapper.classList.add('hidden');
+                document.getElementById('home-wrapper').parentNode.appendChild(visualWrapper);
             }
-            adjustFontSizes();
+            if (dataWrapper) {
+                dataWrapper.classList.add('hidden');
+                document.getElementById('home-wrapper').parentNode.appendChild(dataWrapper);
+            }
+            if (chessWrapper) {
+                chessWrapper.classList.add('hidden');
+                document.getElementById('home-wrapper').parentNode.appendChild(chessWrapper);
+            }
+
+            modalBody.innerHTML = '';
+
+            let targetWrapper;
+            if (mode === 'visual') targetWrapper = visualWrapper;
+            else if (mode === 'data') targetWrapper = dataWrapper;
+            else if (mode === 'chess') targetWrapper = chessWrapper;
+
+            if (targetWrapper) {
+                targetWrapper.classList.remove('hidden');
+                modalBody.appendChild(targetWrapper);
+                modalOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                adjustFontSizes();
+            }
+        }
+
+        function closeModal() {
+            if (!modalOverlay || !modalBody) return;
+
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = ''; // Restore background scrolling
+
+            // Move the content back to its original place and hide it
+            if (modalBody.firstElementChild) {
+                const child = modalBody.firstElementChild;
+                child.classList.add('hidden');
+                document.getElementById('home-wrapper').parentNode.appendChild(child);
+            }
+        }
+
+        if (modalCloseBtn) {
+            modalCloseBtn.addEventListener('click', closeModal);
+        }
+
+        if (modalOverlay) {
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) closeModal();
+            });
         }
 
         // --- Ultimate Bench Sorting Logic ---
@@ -2191,27 +2303,19 @@ There are currently three levels in use. The fourth level will be unlocked once 
             });
         }
 
-        // Listen for tab changes from the Navbar
-        window.addEventListener('benchmarkTabChanged', (e) => {
-            updateBenchmarkView(e.detail);
-        });
-
         // Expand buttons
         document.querySelectorAll('.expand-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const target = e.target.getAttribute('data-target');
-                window.history.pushState({}, '', `/?tab=${target}`);
-
-                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active-bench'));
-
-                updateBenchmarkView(target);
+                openModal(target);
             });
         });
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const urlMode = urlParams.get('tab');
-        const savedMode = urlMode || 'home';
-        updateBenchmarkView(savedMode);
+        // Ensure home wrapper is visible and others hidden on load
+        if (homeWrapper) homeWrapper.classList.remove('hidden');
+        if (visualWrapper) visualWrapper.classList.add('hidden');
+        if (dataWrapper) dataWrapper.classList.add('hidden');
+        if (chessWrapper) chessWrapper.classList.add('hidden');
 
         // --- Dynamic "NEW" Badge Logic ---
         const timeOffset = TIME_OFFSET;
