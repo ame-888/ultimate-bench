@@ -479,54 +479,54 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                 <!-- Placed exactly on the track -->
 
                                 <!-- 100% (Singularity) -->
-                                <div class="sota-node" style="position: absolute; top: 0%; left: 50%; transform: translate(-50%, -50%);">
+                                <div class="sota-node sota-node-interactive" style="position: absolute; top: 0%; left: 50%; transform: translate(-50%, -50%);">
                                     <div style={`width: 16px; height: 16px; border-radius: 50%; background: ${sotaScore >= 100 ? '#FBBF24' : '#1E293B'}; border: 2px solid ${sotaScore >= 100 ? '#FFF' : '#334155'}; box-shadow: ${sotaScore >= 100 ? '0 0 15px #FBBF24' : 'none'}; transition: all 0.5s ease;`}></div>
-                                    <div class="sota-node-label" style="position: absolute; left: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem;">
+                                    <div class="sota-node-label" style="position: absolute; right: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem; flex-direction: row-reverse;">
                                         <span style={`font-weight: 800; color: ${sotaScore >= 100 ? '#FBBF24' : '#9CA3AF'}; font-size: 0.9rem; letter-spacing: 0.1em; text-shadow: ${sotaScore >= 100 ? '0 0 10px rgba(251, 191, 36, 0.4)' : 'none'}; transition: color 0.5s ease;`}>SINGULARITY</span>
                                         <span style="color: #9CA3AF; font-size: 0.75rem; font-family: monospace;">100%</span>
                                     </div>
                                 </div>
 
                                 <!-- 80% (Event Horizon) -->
-                                <div class="sota-node" style="position: absolute; top: 20%; left: 50%; transform: translate(-50%, -50%);">
+                                <div class="sota-node sota-node-interactive" style="position: absolute; top: 20%; left: 50%; transform: translate(-50%, -50%);">
                                     <div style={`width: 16px; height: 16px; border-radius: 50%; background: ${sotaScore >= 80 ? '#3B82F6' : '#1E293B'}; border: 2px solid ${sotaScore >= 80 ? '#FFF' : '#334155'}; box-shadow: ${sotaScore >= 80 ? '0 0 15px #3B82F6' : 'none'}; transition: all 0.5s ease;`}></div>
-                                    <div class="sota-node-label" style="position: absolute; left: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem;">
+                                    <div class="sota-node-label" style="position: absolute; right: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem; flex-direction: row-reverse;">
                                         <span style={`font-weight: 700; color: ${sotaScore >= 80 ? '#3B82F6' : '#9CA3AF'}; font-size: 0.9rem; letter-spacing: 0.1em; text-shadow: ${sotaScore >= 80 ? '0 0 10px rgba(59, 130, 246, 0.4)' : 'none'}; transition: color 0.5s ease;`}>EVENT HORIZON</span>
                                         <span style="color: #9CA3AF; font-size: 0.75rem; font-family: monospace;">80%</span>
                                     </div>
                                 </div>
 
                                 <!-- 60% (Supernova) -->
-                                <div class="sota-node" style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);">
+                                <div class="sota-node sota-node-interactive" style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);">
                                     <div style={`width: 16px; height: 16px; border-radius: 50%; background: ${sotaScore >= 60 ? '#F97316' : '#1E293B'}; border: 2px solid ${sotaScore >= 60 ? '#FFF' : '#334155'}; box-shadow: ${sotaScore >= 60 ? '0 0 15px #F97316' : 'none'}; transition: all 0.5s ease;`}></div>
-                                    <div class="sota-node-label" style="position: absolute; left: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem;">
+                                    <div class="sota-node-label" style="position: absolute; right: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem; flex-direction: row-reverse;">
                                         <span style={`font-weight: 700; color: ${sotaScore >= 60 ? '#F97316' : '#9CA3AF'}; font-size: 0.9rem; letter-spacing: 0.1em; text-shadow: ${sotaScore >= 60 ? '0 0 10px rgba(249, 115, 22, 0.4)' : 'none'}; transition: color 0.5s ease;`}>SUPERNOVA</span>
                                         <span style="color: #9CA3AF; font-size: 0.75rem; font-family: monospace;">60%</span>
                                     </div>
                                 </div>
 
                                 <!-- 40% (Star) -->
-                                <div class="sota-node" style="position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%);">
+                                <div class="sota-node sota-node-interactive" style="position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%);">
                                     <div style={`width: 16px; height: 16px; border-radius: 50%; background: ${sotaScore >= 40 ? '#EF4444' : '#1E293B'}; border: 2px solid ${sotaScore >= 40 ? '#FFF' : '#334155'}; box-shadow: ${sotaScore >= 40 ? '0 0 15px #EF4444' : 'none'}; transition: all 0.5s ease;`}></div>
-                                    <div class="sota-node-label" style="position: absolute; left: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem;">
+                                    <div class="sota-node-label" style="position: absolute; right: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem; flex-direction: row-reverse;">
                                         <span style={`font-weight: 700; color: ${sotaScore >= 40 ? '#EF4444' : '#9CA3AF'}; font-size: 0.9rem; letter-spacing: 0.1em; text-shadow: ${sotaScore >= 40 ? '0 0 10px rgba(239, 68, 68, 0.4)' : 'none'}; transition: color 0.5s ease;`}>STAR</span>
                                         <span style="color: #9CA3AF; font-size: 0.75rem; font-family: monospace;">40%</span>
                                     </div>
                                 </div>
 
                                 <!-- 20% (Nebula) -->
-                                <div class="sota-node" style="position: absolute; top: 80%; left: 50%; transform: translate(-50%, -50%);">
+                                <div class="sota-node sota-node-interactive" style="position: absolute; top: 80%; left: 50%; transform: translate(-50%, -50%);">
                                     <div style={`width: 16px; height: 16px; border-radius: 50%; background: ${sotaScore >= 20 ? '#A855F7' : '#1E293B'}; border: 2px solid ${sotaScore >= 20 ? '#FFF' : '#334155'}; box-shadow: ${sotaScore >= 20 ? '0 0 15px #A855F7' : 'none'}; transition: all 0.5s ease;`}></div>
-                                    <div class="sota-node-label" style="position: absolute; left: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem;">
+                                    <div class="sota-node-label" style="position: absolute; right: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem; flex-direction: row-reverse;">
                                         <span style={`font-weight: 700; color: ${sotaScore >= 20 ? '#A855F7' : '#9CA3AF'}; font-size: 0.9rem; letter-spacing: 0.1em; text-shadow: ${sotaScore >= 20 ? '0 0 10px rgba(168, 85, 247, 0.4)' : 'none'}; transition: color 0.5s ease;`}>NEBULA</span>
                                         <span style="color: #9CA3AF; font-size: 0.75rem; font-family: monospace;">20%</span>
                                     </div>
                                 </div>
 
                                 <!-- 0% (Inception) -->
-                                <div class="sota-node" style="position: absolute; top: 100%; left: 50%; transform: translate(-50%, -50%);">
+                                <div class="sota-node sota-node-interactive" style="position: absolute; top: 100%; left: 50%; transform: translate(-50%, -50%);">
                                     <div style={`width: 16px; height: 16px; border-radius: 50%; background: #1E293B; border: 2px solid #334155;`}></div>
-                                    <div class="sota-node-label" style="position: absolute; left: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem;">
+                                    <div class="sota-node-label" style="position: absolute; right: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem; flex-direction: row-reverse;">
                                         <span style={`font-weight: 700; color: #9CA3AF; font-size: 0.9rem; letter-spacing: 0.1em; transition: color 0.5s ease;`}>INCEPTION</span>
                                         <span style="color: #9CA3AF; font-size: 0.75rem; font-family: monospace;">0%</span>
                                     </div>
@@ -540,7 +540,63 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                 0% { opacity: 0.4; transform: translateX(-50%) scale(0.8); }
                                 100% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
                             }
-                        </style>
+
+    .sota-node-interactive {
+        pointer-events: auto;
+        cursor: pointer;
+        transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .sota-node-interactive:hover {
+        transform: translate(-50%, -50%) scale(1.3) !important;
+        z-index: 100;
+    }
+
+    .sota-node-interactive:hover .sota-node-label span:first-child {
+        filter: brightness(1.5);
+    }
+
+    .ripple-effect {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
+        animation: rippleAnim 0.6s linear forwards;
+        pointer-events: none;
+    }
+
+    @keyframes rippleAnim {
+        0% {
+            width: 16px;
+            height: 16px;
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
+            opacity: 1;
+        }
+        100% {
+            width: 100px;
+            height: 100px;
+            box-shadow: 0 0 0 20px rgba(255, 255, 255, 0);
+            opacity: 0;
+        }
+    }
+
+</style>
+
+                    <!-- Milestone Details Panel -->
+                    <div id="milestone-details-panel" style="width: 100%; max-width: 600px; margin-top: 2rem; background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9)); border: 1px solid rgba(147, 197, 253, 0.2); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); transform: translateY(20px); opacity: 0; visibility: hidden; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; z-index: 10;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div id="milestone-icon" style="width: 40px; height: 40px; border-radius: 50%; background: #1E293B; border: 2px solid #334155; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 15px rgba(0,0,0,0.5);"></div>
+                            <div>
+                                <h3 id="milestone-title" style="margin: 0; color: #FFF; font-size: 1.25rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;">Milestone</h3>
+                                <div id="milestone-score" style="color: #9CA3AF; font-family: monospace; font-size: 0.9rem;">0%</div>
+                            </div>
+                        </div>
+                        <p id="milestone-desc" style="color: #D1D5DB; line-height: 1.6; margin: 0; font-size: 0.95rem;"></p>
+                    </div>
                     </div>
 
                     <hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0)); margin: 3rem 0;" />
@@ -2310,6 +2366,81 @@ There are currently three levels in use. The fourth level will be unlocked once 
                 rows.forEach(row => tableContainer.appendChild(row));
             });
         }
+
+
+        // --- Milestone Details Logic ---
+        const milestoneData = {
+            'SINGULARITY': {
+                score: '100%',
+                color: '#FBBF24',
+                desc: 'The Singularity is reached. AI capabilities surpass human comprehension, marking the beginning of a new era.'
+            },
+            'EVENT HORIZON': {
+                score: '80%',
+                color: '#3B82F6',
+                desc: 'The point of no return. AI systems exhibit profound understanding and begin to recursively self-improve.'
+            },
+            'SUPERNOVA': {
+                score: '60%',
+                color: '#F97316',
+                desc: 'An explosion of intelligence. Models are capable of mastering complex multi-domain tasks with ease.'
+            },
+            'STAR': {
+                score: '40%',
+                color: '#EF4444',
+                desc: 'The fusion of knowledge. Reliable, powerful models shine brightly, solving everyday challenges autonomously.'
+            },
+            'NEBULA': {
+                score: '20%',
+                color: '#A855F7',
+                desc: 'The birthplace of modern AI. Systems begin to show sparks of true intelligence and reasoning capabilities.'
+            },
+            'INCEPTION': {
+                score: '0%',
+                color: '#9CA3AF',
+                desc: 'The beginning of the journey. Early systems lay the groundwork for what is to come.'
+            }
+        };
+
+        const panel = document.getElementById('milestone-details-panel');
+        const panelTitle = document.getElementById('milestone-title');
+        const panelScore = document.getElementById('milestone-score');
+        const panelDesc = document.getElementById('milestone-desc');
+        const panelIcon = document.getElementById('milestone-icon');
+
+        document.querySelectorAll('.sota-node-interactive').forEach(node => {
+            node.addEventListener('click', (e) => {
+                const labelEl = node.querySelector('.sota-node-label span:first-child');
+                if (!labelEl) return;
+
+                const title = labelEl.textContent.trim();
+                const data = milestoneData[title];
+
+                if (data && panel) {
+                    // Update content
+                    panelTitle.textContent = title;
+                    panelTitle.style.color = data.color;
+                    panelScore.textContent = data.score;
+                    panelDesc.textContent = data.desc;
+                    panelIcon.style.boxShadow = `0 0 15px ${data.color}`;
+                    panelIcon.style.borderColor = data.color;
+
+                    // Show panel
+                    panel.style.visibility = 'visible';
+                    panel.style.opacity = '1';
+                    panel.style.transform = 'translateY(0)';
+
+                    // Ripple effect
+                    const existingRipple = node.querySelector('.ripple-effect');
+                    if (existingRipple) existingRipple.remove();
+
+                    const ripple = document.createElement('div');
+                    ripple.className = 'ripple-effect';
+                    ripple.style.boxShadow = `0 0 0 0 ${data.color}80`;
+                    node.appendChild(ripple);
+                }
+            });
+        });
 
         // Expand buttons
         document.querySelectorAll('.expand-btn').forEach(btn => {
