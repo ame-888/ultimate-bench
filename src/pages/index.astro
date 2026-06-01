@@ -2253,12 +2253,20 @@ There are currently three levels in use. The fourth level will be unlocked once 
             modalOverlay.classList.remove('active');
             document.body.style.overflow = ''; // Restore background scrolling
 
-            // Move the content back to its original place and hide it
-            if (modalBody.firstElementChild) {
-                const child = modalBody.firstElementChild;
-                child.classList.add('hidden');
-                document.getElementById('home-wrapper').parentNode.appendChild(child);
-            }
+            const handleTransitionEnd = (e) => {
+                // Ignore events bubbling from children, only react to modalOverlay's transition
+                if (e.target !== modalOverlay) return;
+
+                if (modalBody.firstElementChild) {
+                    const child = modalBody.firstElementChild;
+                    child.classList.add('hidden');
+                    document.getElementById('home-wrapper').parentNode.appendChild(child);
+                }
+                modalOverlay.removeEventListener('transitionend', handleTransitionEnd);
+            };
+
+            // Add listener and ensure we don't pile up listeners if called multiple times fast
+            modalOverlay.addEventListener('transitionend', handleTransitionEnd);
         }
 
         if (modalCloseBtn) {
