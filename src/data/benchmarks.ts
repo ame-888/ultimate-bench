@@ -242,6 +242,7 @@ export const benchmarks = {
         }
     ],
     dataRetrieval: [
+        { name: 'Claude 4.6 Sonnet (max thinking)', scores: { worm: 11, koala: 20, crow: 10, octopus: 0 } },
         { name: 'GPT-5.5 Instant (0529)', scores: { worm: 28, koala: 1, crow: 0, octopus: 0 } },
         { name: 'Gemini 3.5 Flash', scores: { worm: 16, koala: 'INVALID', crow: 'INVALID', octopus: 'INVALID' } },
         { name: 'Grok 4.20 Expert', scores: { worm: 24, koala: "UNAVAILABLE", crow: "UNAVAILABLE", octopus: "UNAVAILABLE" }, releaseDate: '2026-02-18' },
