@@ -2269,6 +2269,46 @@ There are currently three levels in use. The fourth level will be unlocked once 
         const modalOverlay = document.getElementById('benchmark-modal');
         const modalBody = document.getElementById('benchmark-modal-body');
         const modalCloseBtn = document.getElementById('benchmark-modal-close');
+        const achModalOverlay = document.getElementById('achievements-modal');
+        const achModalCloseBtn = document.getElementById('achievements-modal-close');
+        const achBtn = document.getElementById('achievements-btn');
+
+        if (achBtn && achModalOverlay && achModalCloseBtn) {
+            achBtn.addEventListener('click', () => {
+                // Populate data
+                const firstSota = document.querySelector('.ultimate-row-hover .model-name')?.textContent || 'None';
+                const firstVisual = document.querySelector('#visual-bench-table .model-row .model-name')?.textContent || 'None';
+                const firstData = document.querySelector('#data-bench-table .model-row .model-name')?.textContent || 'None';
+                const firstChess = document.querySelector('#chess-bench-table .model-row .model-name')?.textContent || 'None';
+
+                document.getElementById('ach-sota').textContent = firstSota;
+                document.getElementById('ach-visual').textContent = firstVisual;
+                document.getElementById('ach-data').textContent = firstData;
+                document.getElementById('ach-chess').textContent = firstChess;
+
+                // For "A For Effort" and "Glitch in the Matrix" we can statically set it for now or rely on pre-calc.
+                // It is simpler to use pre-calculated or static values on client side.
+                document.getElementById('ach-effort').textContent = 'Qwen 1.5 (110B Chat)';
+                document.getElementById('ach-glitch').textContent = 'Gemma 1.1 (7B IT)';
+
+                achModalOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            });
+
+            const closeAchModal = () => {
+                achModalOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            };
+
+            achModalCloseBtn.addEventListener('click', closeAchModal);
+
+            achModalOverlay.addEventListener('click', (e) => {
+                if (e.target === achModalOverlay) {
+                    closeAchModal();
+                }
+            });
+        }
+
 
         function openModal(mode) {
             if (!modalOverlay || !modalBody) return;
