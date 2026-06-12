@@ -15,6 +15,7 @@
             <a href="/contact" class="nav-link">Contact</a>
             <a href="/terms" class="nav-link">Terms of Service</a>
             <a href="/privacy" class="nav-link">Privacy Policy</a>
+            <button id="achievements-btn" class="nav-link achievements-link" aria-label="Achievements">🏆 Achievements</button>
             <a href="/arcade" id="nav-arcade" class="nav-link" style="color: #FACC15; font-weight: 700; margin-right: 1rem;">ARCADE</a>
         </div>
 
@@ -83,6 +84,29 @@
         color: #111827 !important;
         background-color: #F59E0B !important;
         box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+    }
+
+    .achievements-link {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .achievements-link:hover {
+        background: linear-gradient(135deg, #FDE68A 0%, #FBBF24 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        transform: scale(1.05);
+        text-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
     }
 
     /* Pet Notification Style */

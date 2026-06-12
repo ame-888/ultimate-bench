@@ -359,6 +359,59 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                     </div>
                 </div>
 
+                <!-- Achievements Modal Container -->
+                <div id="achievements-modal" class="modal-overlay">
+                    <div class="modal-content achievements-content glass-panel">
+                        <button id="achievements-modal-close" class="modal-close-btn">&times;</button>
+                        <h2 class="achievements-title">🏆 Hall of Achievements 🏆</h2>
+                        <p class="achievements-subtitle">Celebrating the finest (and quirkiest) performances</p>
+
+                        <div class="achievements-grid">
+                            <div class="achievement-card sota-card">
+                                <div class="ach-icon">👑</div>
+                                <h3>Current SOTA</h3>
+                                <p>The apex intelligence.</p>
+                                <div class="ach-model"><span id="ach-sota">Loading...</span></div>
+                            </div>
+
+                            <div class="achievement-card vis-card">
+                                <div class="ach-icon">👁️</div>
+                                <h3>Visual Master</h3>
+                                <p>Seeing beyond pixels.</p>
+                                <div class="ach-model"><span id="ach-visual">Loading...</span></div>
+                            </div>
+
+                            <div class="achievement-card dat-card">
+                                <div class="ach-icon">🕸️</div>
+                                <h3>Data Weaver</h3>
+                                <p>Untangling the web.</p>
+                                <div class="ach-model"><span id="ach-data">Loading...</span></div>
+                            </div>
+
+                            <div class="achievement-card che-card">
+                                <div class="ach-icon">♟️</div>
+                                <h3>Grandmaster</h3>
+                                <p>Checkmate in 12.</p>
+                                <div class="ach-model"><span id="ach-chess">Loading...</span></div>
+                            </div>
+
+                            <div class="achievement-card eff-card">
+                                <div class="ach-icon">💪</div>
+                                <h3>A for Effort</h3>
+                                <p>Tried really hard!</p>
+                                <div class="ach-model"><span id="ach-effort">Loading...</span></div>
+                            </div>
+
+                            <div class="achievement-card gli-card">
+                                <div class="ach-icon">👾</div>
+                                <h3>Glitch in Matrix</h3>
+                                <p>Unexpected behavior.</p>
+                                <div class="ach-model"><span id="ach-glitch">Loading...</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Homepage Combined View -->
                 <div id="home-wrapper">
                     <div class="benchmark-description">
@@ -2256,6 +2309,113 @@ There are currently three levels in use. The fourth level will be unlocked once 
         transform: scale(1.1);
         box-shadow: 0 0 15px rgba(239, 68, 68, 0.8);
     }
+
+    /* Achievements Modal Styling */
+    .achievements-content {
+        background: rgba(17, 24, 39, 0.95);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        box-shadow: 0 0 40px rgba(245, 158, 11, 0.1);
+        max-width: 800px;
+        text-align: center;
+        padding: 2.5rem;
+    }
+
+    .achievements-title {
+        font-size: 2.2rem;
+        font-weight: 900;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+    }
+
+    .achievements-subtitle {
+        color: #9CA3AF;
+        font-size: 1.1rem;
+        margin-bottom: 2.5rem;
+        font-style: italic;
+    }
+
+    .achievements-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .achievement-card {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .achievement-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; height: 3px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+        opacity: 0.3;
+    }
+
+    .achievement-card:hover {
+        transform: translateY(-5px);
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+    .sota-card:hover { box-shadow: 0 10px 20px rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.4); }
+    .vis-card:hover { box-shadow: 0 10px 20px rgba(96, 165, 250, 0.2); border-color: rgba(96, 165, 250, 0.4); }
+    .dat-card:hover { box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); }
+    .che-card:hover { box-shadow: 0 10px 20px rgba(167, 139, 250, 0.2); border-color: rgba(167, 139, 250, 0.4); }
+    .eff-card:hover { box-shadow: 0 10px 20px rgba(236, 72, 153, 0.2); border-color: rgba(236, 72, 153, 0.4); }
+    .gli-card:hover { box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2); border-color: #10B981; }
+
+
+    .ach-icon {
+        font-size: 3rem;
+        margin-bottom: 0.75rem;
+        filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+    }
+
+    .achievement-card h3 {
+        font-size: 1.2rem;
+        color: #F3F4F6;
+        margin: 0 0 0.25rem 0;
+    }
+
+    .achievement-card p {
+        font-size: 0.85rem;
+        color: #9CA3AF;
+        margin: 0 0 1rem 0;
+    }
+
+    .ach-model {
+        margin-top: auto;
+        font-weight: 700;
+        color: #FCD34D;
+        background: rgba(245, 158, 11, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        width: 100%;
+        box-sizing: border-box;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .vis-card .ach-model { color: #93C5FD; background: rgba(96, 165, 250, 0.1); border-color: rgba(96, 165, 250, 0.2); }
+    .dat-card .ach-model { color: #6EE7B7; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); }
+    .che-card .ach-model { color: #C4B5FD; background: rgba(167, 139, 250, 0.1); border-color: rgba(167, 139, 250, 0.2); }
+    .eff-card .ach-model { color: #F9A8D4; background: rgba(236, 72, 153, 0.1); border-color: rgba(236, 72, 153, 0.2); }
+    .gli-card .ach-model { color: #10B981; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); font-family: 'Courier New', monospace; font-weight: bold;}
+
 </style>
 
 <script define:vars={{ TIME_OFFSET, unifiedRawList, dataRawList, chessRawList }}>
