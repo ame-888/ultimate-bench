@@ -2405,9 +2405,8 @@ There are currently three levels in use. The fourth level will be unlocked once 
         border: 1px solid rgba(245, 158, 11, 0.2);
         width: 100%;
         box-sizing: border-box;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
+        text-align: center;
+        word-wrap: break-word;
     }
 
     .vis-card .ach-model { color: #93C5FD; background: rgba(96, 165, 250, 0.1); border-color: rgba(96, 165, 250, 0.2); }
@@ -2437,19 +2436,65 @@ There are currently three levels in use. The fourth level will be unlocked once 
             achBtn.addEventListener('click', () => {
                 // Populate data
                 const firstSota = document.querySelector('.ultimate-row-hover .model-name')?.textContent || 'None';
-                const firstVisual = document.querySelector('#visual-bench-table .model-row .model-name')?.textContent || 'None';
-                const firstData = document.querySelector('#data-bench-table .model-row .model-name')?.textContent || 'None';
-                const firstChess = document.querySelector('#chess-bench-table .model-row .model-name')?.textContent || 'None';
+                const firstVisual = document.querySelector('#visual-table-body .benchmark-row .model-name')?.textContent || 'None';
+                const firstData = document.querySelector('#data-table-body .benchmark-row .model-name')?.textContent || 'None';
+                const firstChess = document.querySelector('#chess-table-body .benchmark-row .model-name')?.textContent || 'None';
 
                 document.getElementById('ach-sota').textContent = firstSota;
                 document.getElementById('ach-visual').textContent = firstVisual;
                 document.getElementById('ach-data').textContent = firstData;
                 document.getElementById('ach-chess').textContent = firstChess;
 
-                // For "A For Effort" and "Glitch in the Matrix" we can statically set it for now or rely on pre-calc.
-                // It is simpler to use pre-calculated or static values on client side.
-                document.getElementById('ach-effort').textContent = 'Qwen 1.5 (110B Chat)';
-                document.getElementById('ach-glitch').textContent = 'Gemma 1.1 (7B IT)';
+                // Calculate "A for Effort" (lowest positive average score) and "Glitch in the Matrix" (has INVALID/PENDING) dynamically
+                let effortModel = 'None';
+                let effortScore = Infinity;
+                let glitchModel = 'None';
+
+                // Scrape the tables
+                const visualRows = Array.from(document.querySelectorAll('#visual-table-body .benchmark-row'));
+                const dataRows = Array.from(document.querySelectorAll('#data-table-body .benchmark-row'));
+                const chessRows = Array.from(document.querySelectorAll('#chess-table-body .benchmark-row'));
+
+                const allRows = [...visualRows, ...dataRows, ...chessRows];
+                const modelAverages = {};
+
+                for (const row of allRows) {
+                     const nameEl = row.querySelector('.model-name');
+                     if (!nameEl) continue;
+                     const name = nameEl.textContent.trim();
+                     if (!modelAverages[name]) modelAverages[name] = [];
+
+                     // check for glitch
+                     const text = row.textContent;
+                     if (text.includes('INVALID') || text.includes('PENDING')) {
+                          glitchModel = name;
+                     }
+
+                     // try to get avg score by scraping cells
+                     const scoreCells = Array.from(row.querySelectorAll('.score-cell')).filter(c => !c.classList.contains('rank-cell'));
+                     const numericScores = scoreCells.map(c => parseInt(c.textContent.replace('%', ''))).filter(n => !isNaN(n));
+                     if (numericScores.length > 0) {
+                          const sum = numericScores.reduce((a,b)=>a+b,0);
+                          const avg = sum / numericScores.length;
+                          if (avg > 0) {
+                               modelAverages[name].push(avg);
+                          }
+                     }
+                }
+
+                for (const model in modelAverages) {
+                    const scores = modelAverages[model];
+                    if (scores.length > 0) {
+                        const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+                        if (avg > 0 && avg < effortScore) {
+                            effortScore = avg;
+                            effortModel = model;
+                        }
+                    }
+                }
+
+                document.getElementById('ach-effort').textContent = effortModel;
+                document.getElementById('ach-glitch').textContent = glitchModel;
 
                 achModalOverlay.classList.add('active');
                 document.body.style.overflow = 'hidden'; // Prevent background scrolling
