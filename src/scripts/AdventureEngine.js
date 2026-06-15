@@ -47,7 +47,7 @@ export class AdventureEngine {
 
         this.story = {
             'start': {
-                text: "Welcome to The Ultimate RPG. Choose your theme to begin your adventure:",
+                text: "Welcome to The Architect's Journey RPG. Choose your theme to begin your adventure:",
                 choices: [
                     { text: "Cyberpunk", next: 'choose_race', theme: 'Cyberpunk' },
                     { text: "Medieval", next: 'choose_race', theme: 'Medieval' },
@@ -111,7 +111,8 @@ export class AdventureEngine {
                 text: "You find yourself at the entrance of the {location2}. It looks dangerous.",
                 choices: [
                     { text: "Enter the {location2}", next: 'boss_fight' },
-                    { text: "Go back to {location1}", next: 'explore' }
+                    { text: "Rest (Consume Item)", next: 'rest', req: 'consumable' },
+                    { text: "Go back to {location1} to train", next: 'explore' }
                 ]
             },
             'boss_fight': {

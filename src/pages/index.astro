@@ -428,9 +428,24 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                 <div class="header-row unified-header-row ultimate-header-glass" style="grid-template-columns: 80px minmax(340px, max-content) 1fr 1fr 1fr 1.5fr; padding: 1rem; align-items: flex-end;">
                                     <div class="col-header" style="justify-content: flex-end;"><h3>RANK</h3><div class="creature-icon"></div></div>
                                     <div class="col-header model-col-header" style="justify-content: flex-end; align-items: flex-start; padding-left: 0.5rem;"><h3>MODEL</h3><div class="creature-icon"></div></div>
-                                    <div class="col-header" style="justify-content: flex-end; text-align: center;"><h3 style="color: #D1D5DB; text-align: center;">VISUAL</h3><div class="creature-icon"></div></div>
-                                    <div class="col-header" style="justify-content: flex-end; text-align: center;"><h3 style="color: #D1D5DB; text-align: center;">DATA</h3><div class="creature-icon"></div></div>
-                                    <div class="col-header" style="justify-content: flex-end; text-align: center;"><h3 style="color: #D1D5DB; text-align: center;">CHESS</h3><div class="creature-icon"></div></div>
+                                    <div class="col-header" style="justify-content: flex-end; text-align: center;">
+                                        <div class="header-title-wrapper" id="ultimate-visual-sort-btn" style="border-bottom: none; cursor: pointer; transition: opacity 0.2s ease; margin-bottom: 0; padding-bottom: 0;">
+                                            <h3 style="color: #D1D5DB; font-weight: 900; text-align: center;" id="ultimate-visual-sort-text">VISUAL ▼</h3>
+                                        </div>
+                                        <div class="creature-icon"></div>
+                                    </div>
+                                    <div class="col-header" style="justify-content: flex-end; text-align: center;">
+                                        <div class="header-title-wrapper" id="ultimate-data-sort-btn" style="border-bottom: none; cursor: pointer; transition: opacity 0.2s ease; margin-bottom: 0; padding-bottom: 0;">
+                                            <h3 style="color: #D1D5DB; font-weight: 900; text-align: center;" id="ultimate-data-sort-text">DATA ▼</h3>
+                                        </div>
+                                        <div class="creature-icon"></div>
+                                    </div>
+                                    <div class="col-header" style="justify-content: flex-end; text-align: center;">
+                                        <div class="header-title-wrapper" id="ultimate-chess-sort-btn" style="border-bottom: none; cursor: pointer; transition: opacity 0.2s ease; margin-bottom: 0; padding-bottom: 0;">
+                                            <h3 style="color: #D1D5DB; font-weight: 900; text-align: center;" id="ultimate-chess-sort-text">CHESS ▼</h3>
+                                        </div>
+                                        <div class="creature-icon"></div>
+                                    </div>
                                     <div class="col-header" style="justify-content: flex-end; text-align: center;">
                                         <div class="header-title-wrapper" id="ultimate-sort-btn" style="border-bottom: none; cursor: pointer; transition: opacity 0.2s ease; margin-bottom: 0; padding-bottom: 0;">
                                             <h3 style="color: #F59E0B; font-weight: 900; text-align: center;" id="ultimate-sort-text">ULTIMATE AVG ▼</h3>
@@ -453,13 +468,13 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="benchmark-cell score-cell" style="justify-content: center; text-align: center; font-size: 1.1rem; color: #9CA3AF;">
+                                        <div class="benchmark-cell score-cell ultimate-visual-score-cell" data-score={item.visualScore} style="justify-content: center; text-align: center; font-size: 1.1rem; color: #9CA3AF;">
                                             {item.visualScore.toFixed(1)}%
                                         </div>
-                                        <div class="benchmark-cell score-cell" style="justify-content: center; text-align: center; font-size: 1.1rem; color: #9CA3AF;">
+                                        <div class="benchmark-cell score-cell ultimate-data-score-cell" data-score={item.dataScore} style="justify-content: center; text-align: center; font-size: 1.1rem; color: #9CA3AF;">
                                             {item.dataScore.toFixed(1)}%
                                         </div>
-                                        <div class="benchmark-cell score-cell" style="justify-content: center; text-align: center; font-size: 1.1rem; color: #9CA3AF;">
+                                        <div class="benchmark-cell score-cell ultimate-chess-score-cell" data-score={item.chessScore} style="justify-content: center; text-align: center; font-size: 1.1rem; color: #9CA3AF;">
                                             {item.chessScore.toFixed(1)}%
                                         </div>
                                         <div class="benchmark-cell score-cell ultimate-score-cell" style="justify-content: center; text-align: center; font-size: 1.25rem; font-weight: 900; color: #F59E0B; text-shadow: 0 0 5px rgba(245, 158, 11, 0.3); transition: all 0.2s ease;">
@@ -520,7 +535,7 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                             <div style="font-size: 0.7rem; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Current SOTA</div>
                                             <div style="font-size: 1rem; color: #E5E7EB; font-weight: 700; text-overflow: ellipsis; overflow: hidden; max-width: 200px;">{sotaModelName}</div>
                                             <div style="font-size: 1.25rem; color: #60A5FA; font-weight: 900; font-family: monospace; display: flex; align-items: baseline; gap: 0;">
-                                                {sotaScore.toFixed(1)}<span style="font-size: 0.9rem; color: #9CA3AF;">%</span>
+                                                {sotaScore.toFixed(1)}<span style="font-size: 0.9rem;">%</span>
                                             </div>
                                         </div>
                                     </div>
@@ -2581,36 +2596,67 @@ There are currently three levels in use. The fourth level will be unlocked once 
         }
 
         // --- Ultimate Bench Sorting Logic ---
-        const ultimateSortBtn = document.getElementById('ultimate-sort-btn');
-        const ultimateSortText = document.getElementById('ultimate-sort-text');
-        let ultimateSortAscending = false; // Initially descending
+        function setupUltimateSort(btnId, textId, cellClass, defaultText, color) {
+            const btn = document.getElementById(btnId);
+            const textEl = document.getElementById(textId);
+            let ascending = false;
 
-        if (ultimateSortBtn && ultimateSortText) {
-            ultimateSortBtn.addEventListener('click', () => {
-                ultimateSortAscending = !ultimateSortAscending;
-                ultimateSortText.textContent = ultimateSortAscending ? 'ULTIMATE AVG ▲' : 'ULTIMATE AVG ▼';
+            if (btn && textEl) {
+                btn.addEventListener('click', () => {
+                    ascending = !ascending;
 
-                const tableContainer = document.querySelector('.ultimate-modern-container');
-                if (!tableContainer) return;
+                    // Reset all other headers
+                    const visText = document.getElementById('ultimate-visual-sort-text');
+                    if (visText) visText.textContent = 'VISUAL ▼';
+                    const dataText = document.getElementById('ultimate-data-sort-text');
+                    if (dataText) dataText.textContent = 'DATA ▼';
+                    const chessText = document.getElementById('ultimate-chess-sort-text');
+                    if (chessText) chessText.textContent = 'CHESS ▼';
+                    const avgText = document.getElementById('ultimate-sort-text');
+                    if (avgText) avgText.textContent = 'ULTIMATE AVG ▼';
 
-                // Grab all rows except the header
-                const rows = Array.from(tableContainer.querySelectorAll('.benchmark-row'));
+                    textEl.textContent = ascending ? `${defaultText} ▲` : `${defaultText} ▼`;
 
-                rows.sort((a, b) => {
-                    const cellA = a.querySelector('.ultimate-score-cell');
-                    const cellB = b.querySelector('.ultimate-score-cell');
+                    const tableContainer = document.querySelector('.ultimate-modern-container');
+                    if (!tableContainer) return;
 
-                    const scoreA = cellA ? parseFloat(cellA.textContent) : 0;
-                    const scoreB = cellB ? parseFloat(cellB.textContent) : 0;
+                    const rows = Array.from(tableContainer.querySelectorAll('.benchmark-row'));
 
-                    return ultimateSortAscending ? scoreA - scoreB : scoreB - scoreA;
+                    rows.sort((a, b) => {
+                        const cellA = a.querySelector(cellClass);
+                        const cellB = b.querySelector(cellClass);
+
+                        let scoreA = 0;
+                        let scoreB = 0;
+
+                        if (cellClass === '.ultimate-score-cell') {
+                             scoreA = cellA ? parseFloat(cellA.textContent) : 0;
+                             scoreB = cellB ? parseFloat(cellB.textContent) : 0;
+                        } else {
+                             scoreA = cellA ? parseFloat(cellA.getAttribute('data-score')) : 0;
+                             scoreB = cellB ? parseFloat(cellB.getAttribute('data-score')) : 0;
+                        }
+
+                        if (scoreA === scoreB) {
+                            // Secondary sort by Rank (which is always ascending naturally)
+                            const rankA = parseInt(a.querySelector('.rank').textContent.replace(/\D/g, '')) || 999;
+                            const rankB = parseInt(b.querySelector('.rank').textContent.replace(/\D/g, '')) || 999;
+                            return rankA - rankB;
+                        }
+
+                        return ascending ? scoreA - scoreB : scoreB - scoreA;
+                    });
+
+                    // Re-append sorted rows
+                    rows.forEach(row => tableContainer.appendChild(row));
                 });
-
-                // Re-append sorted rows.
-                // Since appendChild moves existing nodes, we just append them in the new order.
-                rows.forEach(row => tableContainer.appendChild(row));
-            });
+            }
         }
+
+        setupUltimateSort('ultimate-sort-btn', 'ultimate-sort-text', '.ultimate-score-cell', 'ULTIMATE AVG', '#F59E0B');
+        setupUltimateSort('ultimate-visual-sort-btn', 'ultimate-visual-sort-text', '.ultimate-visual-score-cell', 'VISUAL', '#D1D5DB');
+        setupUltimateSort('ultimate-data-sort-btn', 'ultimate-data-sort-text', '.ultimate-data-score-cell', 'DATA', '#D1D5DB');
+        setupUltimateSort('ultimate-chess-sort-btn', 'ultimate-chess-sort-text', '.ultimate-chess-score-cell', 'CHESS', '#D1D5DB');
 
 
         // --- Milestone Details Logic ---
