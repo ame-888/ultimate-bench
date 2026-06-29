@@ -249,6 +249,16 @@ export const benchmarks = {
                 'lvl4': 7,
                 'lvl5': 0
             }
+        },
+        {
+            name: 'GPT-5.5 Instant (0624)',
+            scores: {
+                'lvl1': 42,
+                'lvl2': 34,
+                'lvl3': 35,
+                'lvl4': 0,
+                'lvl5': 0
+            }
         }
     ],
     dataRetrieval: [
