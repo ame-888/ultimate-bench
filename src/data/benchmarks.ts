@@ -259,6 +259,16 @@ export const benchmarks = {
                 'lvl4': 0,
                 'lvl5': 0
             }
+        },
+        {
+            name: 'GPT-5.6 Sol (high)',
+            scores: {
+                'lvl1': 86,
+                'lvl2': 71,
+                'lvl3': 65,
+                'lvl4': 25,
+                'lvl5': 0
+            }
         }
     ],
     dataRetrieval: [
