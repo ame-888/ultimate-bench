@@ -6,6 +6,16 @@ export const benchmarks = {
     ],
     models: [
         {
+            name: 'Muse Spark 1.1',
+            scores: {
+                'lvl1': 68,
+                'lvl2': 40,
+                'lvl3': 41,
+                'lvl4': 0,
+                'lvl5': 0
+            }
+        },
+        {
             name: 'GPT-5.4',
             scores: {
                 'lvl1': 72,
