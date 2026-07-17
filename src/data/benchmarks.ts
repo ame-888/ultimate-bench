@@ -297,7 +297,8 @@ export const benchmarks = {
         { name: 'GPT-5.5 Instant (0505)', scores: { worm: 34, koala: 3, crow: 0, octopus: 0 } },
         { name: 'Gemini 3.1 Flashlite GA', scores: { worm: 16, koala: 14, crow: 8, octopus: 0 } },
         { name: 'Gemini 3.0 Flash Preview', scores: { worm: 15, koala: 19, crow: 2, octopus: 0 } },
-        { name: 'GPT-5.5', scores: { worm: 29, koala: 30, crow: 18, octopus: 0 } }
+        { name: 'GPT-5.5', scores: { worm: 29, koala: 30, crow: 18, octopus: 0 } },
+        { name: 'GPT-5.6 Sol (high)', scores: { worm: 51, koala: 46, crow: 36, octopus: 3 } }
     ],
     chessModels: [
         { name: 'Gemini 3.1 Flashlite GA', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
