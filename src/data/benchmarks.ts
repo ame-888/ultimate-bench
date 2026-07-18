@@ -279,6 +279,16 @@ export const benchmarks = {
                 'lvl4': 25,
                 'lvl5': 0
             }
+        },
+        {
+            name: 'Claude 5 Fable (high)',
+            scores: {
+                'lvl1': 72,
+                'lvl2': 90,
+                'lvl3': 33,
+                'lvl4': 0,
+                'lvl5': 0
+            }
         }
     ],
     dataRetrieval: [
@@ -298,7 +308,8 @@ export const benchmarks = {
         { name: 'Gemini 3.1 Flashlite GA', scores: { worm: 16, koala: 14, crow: 8, octopus: 0 } },
         { name: 'Gemini 3.0 Flash Preview', scores: { worm: 15, koala: 19, crow: 2, octopus: 0 } },
         { name: 'GPT-5.5', scores: { worm: 29, koala: 30, crow: 18, octopus: 0 } },
-        { name: 'GPT-5.6 Sol (high)', scores: { worm: 51, koala: 46, crow: 36, octopus: 3 } }
+        { name: 'GPT-5.6 Sol (high)', scores: { worm: 51, koala: 46, crow: 36, octopus: 3 } },
+        { name: 'Claude 5 Fable (high)', scores: { worm: 20, koala: 19, crow: 6, octopus: 0 } }
     ],
     chessModels: [
         { name: 'Gemini 3.1 Flashlite GA', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
@@ -311,6 +322,7 @@ export const benchmarks = {
         { name: 'Claude 4.6 Sonnet (adaptative thinking)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Muse Spark (thinking)', scores: { mouse: 3, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Gemini 3.0 Flash Preview', scores: { mouse: 24, spider: 0, wolf: 0, hawk: 0, python: 0 } },
-        { name: 'GPT-5.5', scores: { mouse: 39, spider: 48, wolf: 22, hawk: 0, python: 0 } }
+        { name: 'GPT-5.5', scores: { mouse: 39, spider: 48, wolf: 22, hawk: 0, python: 0 } },
+        { name: 'Claude 5 Fable (high)', scores: { mouse: 40, spider: 40, wolf: 0, hawk: 0, python: 0 } }
     ]
 };
