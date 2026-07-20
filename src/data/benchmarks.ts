@@ -323,6 +323,7 @@ export const benchmarks = {
         { name: 'Muse Spark (thinking)', scores: { mouse: 3, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Gemini 3.0 Flash Preview', scores: { mouse: 24, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'GPT-5.5', scores: { mouse: 39, spider: 48, wolf: 22, hawk: 0, python: 0 } },
+        { name: 'GPT-5.6 Sol (high)', scores: { mouse: 97, spider: 68, wolf: 59, hawk: 0, python: 0 } },
         { name: 'Claude 5 Fable (high)', scores: { mouse: 40, spider: 40, wolf: 0, hawk: 0, python: 0 } }
     ]
 };
