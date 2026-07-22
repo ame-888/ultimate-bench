@@ -97,7 +97,7 @@ export const benchmarks = {
             releaseDate: '2026-02-21'
         },
         {
-            name: 'Gemini 3.5 Flash',
+            name: 'Gemini 3.5 Flash (without code execution)',
             scores: {
                 'lvl1': 79,
                 'lvl2': 76,
@@ -314,7 +314,7 @@ export const benchmarks = {
     dataRetrieval: [
         { name: 'Claude 4.6 Sonnet (max thinking)', scores: { worm: 11, koala: 20, crow: 10, octopus: 0 } },
         { name: 'GPT-5.5 Instant (0529)', scores: { worm: 28, koala: 1, crow: 0, octopus: 0 } },
-        { name: 'Gemini 3.5 Flash', scores: { worm: 16, koala: 'INVALID', crow: 'INVALID', octopus: 'INVALID' } },
+        { name: 'Gemini 3.5 Flash (without code execution)', scores: { worm: 16, koala: 'INVALID', crow: 'INVALID', octopus: 'INVALID' } },
         { name: 'Grok 4.20 Expert', scores: { worm: 24, koala: "UNAVAILABLE", crow: "UNAVAILABLE", octopus: "UNAVAILABLE" }, releaseDate: '2026-02-18' },
         { name: 'Grok 4.3 Fast', scores: { worm: 27, koala: 21, crow: 7, octopus: 0 } },
         { name: 'Gemini 3.1 Pro Preview', scores: { worm: 20, koala: 11, crow: 11, octopus: 0 } },
@@ -337,7 +337,7 @@ export const benchmarks = {
         { name: 'Gemini 3.1 Pro Preview', scores: { mouse: 75, spider: 91, wolf: 100, hawk: 0, python: 0 } },
         { name: 'GPT-5.5 Instant (0505)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'GPT-5.5 Instant (0529)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
-        { name: 'Gemini 3.5 Flash', scores: { mouse: 40, spider: 43, wolf: 17, hawk: 0, python: 0 } },
+        { name: 'Gemini 3.5 Flash (without code execution)', scores: { mouse: 40, spider: 43, wolf: 17, hawk: 0, python: 0 } },
         { name: 'Claude 4.6 Sonnet (max thinking)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Claude 4.6 Sonnet (adaptative thinking)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Muse Spark (thinking)', scores: { mouse: 3, spider: 0, wolf: 0, hawk: 0, python: 0 } },
