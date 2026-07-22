@@ -291,7 +291,7 @@ export const benchmarks = {
             }
         },
         {
-            name: 'Gemini 3.6 Flash (without tools)',
+            name: 'Gemini 3.6 Flash (without code execution)',
             scores: {
                 'lvl1': 74,
                 'lvl2': 67,
@@ -301,7 +301,7 @@ export const benchmarks = {
             }
         },
         {
-            name: 'Gemini 3.6 Flash (with tools)',
+            name: 'Gemini 3.6 Flash (with code execution)',
             scores: {
                 'lvl1': 91,
                 'lvl2': 87,
