@@ -289,6 +289,26 @@ export const benchmarks = {
                 'lvl4': 0,
                 'lvl5': 0
             }
+        },
+        {
+            name: 'Gemini 3.6 Flash (without tools)',
+            scores: {
+                'lvl1': 74,
+                'lvl2': 67,
+                'lvl3': 60,
+                'lvl4': 3,
+                'lvl5': 0
+            }
+        },
+        {
+            name: 'Gemini 3.6 Flash (with tools)',
+            scores: {
+                'lvl1': 91,
+                'lvl2': 87,
+                'lvl3': 80,
+                'lvl4': 'INVALID',
+                'lvl5': 0
+            }
         }
     ],
     dataRetrieval: [
