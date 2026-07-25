@@ -323,7 +323,7 @@ export const benchmarks = {
     ],
     dataRetrieval: [
         { name: 'Muse Spark 1.1', scores: { worm: 24, koala: 'INVALID', crow: 11, octopus: 0 } },
-        { name: 'Gemini 3.6 Flash', scores: { worm: 32, koala: 0, crow: 0, octopus: 0 } },
+        { name: 'Gemini 3.6 Flash', scores: { worm: 32, koala: 'INVALID', crow: 20, octopus: 'INVALID' } },
         { name: 'Claude 4.6 Sonnet (max thinking)', scores: { worm: 11, koala: 20, crow: 10, octopus: 0 } },
         { name: 'GPT-5.5 Instant (0529)', scores: { worm: 28, koala: 1, crow: 0, octopus: 0 } },
         { name: 'Gemini 3.5 Flash', scores: { worm: 16, koala: 'INVALID', crow: 'INVALID', octopus: 'INVALID' } },
