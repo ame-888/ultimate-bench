@@ -309,6 +309,16 @@ export const benchmarks = {
                 'lvl4': 'INVALID',
                 'lvl5': 0
             }
+        },
+        {
+            name: 'Claude 4.8 Opus (high)',
+            scores: {
+                'lvl1': 60,
+                'lvl2': 57,
+                'lvl3': 55,
+                'lvl4': 0,
+                'lvl5': 0
+            }
         }
     ],
     dataRetrieval: [
