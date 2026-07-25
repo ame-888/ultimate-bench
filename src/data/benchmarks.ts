@@ -341,7 +341,8 @@ export const benchmarks = {
         { name: 'Gemini 3.0 Flash Preview', scores: { worm: 15, koala: 19, crow: 2, octopus: 0 } },
         { name: 'GPT-5.5', scores: { worm: 29, koala: 30, crow: 18, octopus: 0 } },
         { name: 'GPT-5.6 Sol (high)', scores: { worm: 51, koala: 46, crow: 36, octopus: 3 } },
-        { name: 'Claude 5 Fable (high)', scores: { worm: 30, koala: 19, crow: 6, octopus: 0 } }
+        { name: 'Claude 5 Fable (high)', scores: { worm: 30, koala: 19, crow: 6, octopus: 0 } },
+        { name: 'Claude 5 Opus', scores: { worm: 25, koala: 1, crow: 0, octopus: 0 } }
     ],
     chessModels: [
         { name: 'Muse Spark 1.1', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
