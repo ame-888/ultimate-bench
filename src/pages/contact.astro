@@ -1,46 +1,33 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import '../styles/content-pages.css';
 ---
 
 <Layout title="Contact | Ultimate Bench" description="Contact Ultimate Bench with questions, concerns, or feedback about the benchmark and website.">
-    <main>
-        <h1 id="contact-title">Contact Us</h1>
-        <div class="contact-container">
+    <main class="content-page contact-page" style="--page-accent: #34d399; --page-accent-rgb: 52, 211, 153;">
+        <header class="page-heading">
+            <span class="page-kicker">We'd love to hear from you</span>
+            <h1 id="contact-title">Contact Us</h1>
+            <p>Questions, ideas, or feedback? Send us a note and help make the benchmark better.</p>
+        </header>
+        <section class="content-card contact-container">
             <p>If you have any questions, concerns, or feedback regarding Ultimate Bench, please feel free to reach out to us.</p>
 
             <div class="contact-methods">
                 <div class="contact-method">
+                    <div class="mail-icon" aria-hidden="true">✦</div>
+                    <span class="method-label">Direct line</span>
                     <h2>Email Support</h2>
                     <p>For general inquiries and support, please email us at:</p>
                     <a href="mailto:support@ultimate-bench.com" class="email-link">support@ultimate-bench.com</a>
                 </div>
             </div>
-        </div>
+        </section>
     </main>
 </Layout>
 
 <style>
-    main {
-        max-width: 50rem;
-        margin: 4rem auto;
-        padding: 0 1rem;
-    }
-
-    h1 {
-        font-size: 2.5rem;
-        font-weight: 900;
-        text-align: center;
-        margin-bottom: 2rem;
-        color: white;
-    }
-
     .contact-container {
-        background: rgba(31, 41, 55, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 1rem;
-        padding: 2.5rem;
-        color: #D1D5DB;
-        line-height: 1.8;
         text-align: center;
     }
 
@@ -51,17 +38,39 @@ import Layout from '../layouts/Layout.astro';
     }
 
     .contact-method {
-        background: rgba(17, 24, 39, 0.6);
-        padding: 2rem;
-        border-radius: 0.5rem;
-        border: 1px solid rgba(96, 165, 250, 0.3);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        width: min(32rem, 100%);
+        padding: clamp(1.75rem, 5vw, 3rem);
+        border: 1px solid rgba(52, 211, 153, .24);
+        border-radius: 1.25rem;
+        background: linear-gradient(145deg, rgba(15, 23, 42, .8), rgba(16, 38, 43, .55));
+        box-shadow: 0 18px 45px rgba(0, 0, 0, .2), inset 0 1px rgba(255, 255, 255, .04);
+    }
+
+    .mail-icon {
+        display: grid;
+        place-items: center;
+        width: 3.25rem;
+        height: 3.25rem;
+        margin: 0 auto 1rem;
+        border: 1px solid rgba(52, 211, 153, .35);
+        border-radius: 1rem;
+        color: #6ee7b7;
+        background: rgba(52, 211, 153, .08);
+        box-shadow: 0 0 28px rgba(52, 211, 153, .12);
+    }
+
+    .method-label {
+        color: #6ee7b7;
+        font-size: .68rem;
+        font-weight: 800;
+        letter-spacing: .16em;
+        text-transform: uppercase;
     }
 
     .contact-method h2 {
         font-size: 1.5rem;
         color: #fff;
-        margin-top: 0;
+        margin-top: .35rem;
         margin-bottom: 1rem;
         font-weight: 700;
     }
@@ -71,13 +80,13 @@ import Layout from '../layouts/Layout.astro';
         margin-top: 1rem;
         font-size: 1.25rem;
         font-weight: 600;
-        color: #60A5FA;
+        color: #6ee7b7;
         text-decoration: none;
         transition: color 0.3s ease;
     }
 
     .email-link:hover {
-        color: #93C5FD;
+        color: #d1fae5;
         text-decoration: underline;
     }
 </style>

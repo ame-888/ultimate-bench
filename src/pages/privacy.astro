@@ -1,11 +1,16 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import '../styles/content-pages.css';
 ---
 
 <Layout title="Privacy Policy | Ultimate Bench" description="Read how Ultimate Bench handles visitor information, cookies, advertising services, and privacy choices.">
-    <main>
-        <h1 id="privacy-title">Privacy Policy</h1>
-        <div class="privacy-container">
+    <main class="content-page" style="--page-accent: #a78bfa; --page-accent-rgb: 167, 139, 250;">
+        <header class="page-heading">
+            <span class="page-kicker">Your data, clearly explained</span>
+            <h1 id="privacy-title">Privacy Policy</h1>
+            <p>A transparent overview of the information we use and the choices you have.</p>
+        </header>
+        <article class="content-card privacy-container">
             <h1>Privacy Policy for Ultimate Bench</h1>
 
             <p>At Ultimate Bench, accessible from https://ultimate-bench.vercel.app/, one of our main priorities is the privacy of our visitors. This Privacy Policy document describes the types of information that are collected and recorded by Ultimate Bench and how we use it.</p>
@@ -75,63 +80,6 @@ import Layout from '../layouts/Layout.astro';
             <p>Another part of our priority is adding protection for children while using the internet. We encourage parents and guardians to observe, participate in, and/or monitor and guide their online activity.</p>
 
             <p>Ultimate Bench does not knowingly collect any personally identifiable information from children under the age of 13. We make every effort to ensure that such information is not collected.</p>
-        </div>
+        </article>
     </main>
 </Layout>
-
-<style>
-    main {
-        max-width: 50rem;
-        margin: 4rem auto;
-        padding: 0 1rem;
-    }
-
-    h1 {
-        font-size: 2.5rem;
-        font-weight: 900;
-        text-align: center;
-        margin-bottom: 2rem;
-        color: white;
-    }
-
-    .privacy-container {
-        background: rgba(31, 41, 55, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 1rem;
-        padding: 2rem;
-        color: #D1D5DB;
-        line-height: 1.8;
-    }
-
-    .privacy-container h1 {
-        font-size: 2rem;
-        text-align: left;
-        margin-top: 0;
-    }
-
-    .privacy-container h2 {
-        font-size: 1.5rem;
-        color: #fff;
-        margin-top: 1.5rem;
-        margin-bottom: 1rem;
-        font-weight: 700;
-    }
-
-    .privacy-container p {
-        margin-bottom: 1rem;
-    }
-
-    .privacy-container ul {
-        list-style-type: disc;
-        margin-left: 1.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .privacy-container a {
-        color: #60A5FA;
-        text-decoration: underline;
-    }
-    .privacy-container a:hover {
-        color: #93C5FD;
-    }
-</style>
