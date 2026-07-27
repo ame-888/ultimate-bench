@@ -174,20 +174,47 @@ export class AdventureEngine {
             }
         };
 
-        this.state = JSON.parse(JSON.stringify(this.defaultState));
+        this.state = this.createDefaultState();
+    }
+
+    createDefaultState() {
+        return structuredClone(this.defaultState);
     }
 
     explicitLoad() {
         try {
             const data = localStorage.getItem(this.key);
             if (data) {
-                this.state = JSON.parse(data);
+                const saved = JSON.parse(data);
+                if (!this.isValidState(saved)) return false;
+
+                // Merge with the current schema so older saves gain newly-added
+                // fields without allowing malformed storage to break the game.
+                this.state = {
+                    ...this.createDefaultState(),
+                    ...saved,
+                    inventory: [...saved.inventory],
+                    stats: { ...this.defaultState.stats, ...saved.stats }
+                };
                 return true;
             }
             return false;
         } catch (e) {
             return false;
         }
+    }
+
+    isValidState(state) {
+        return Boolean(
+            state &&
+            typeof state === 'object' &&
+            typeof state.currentNode === 'string' &&
+            this.story[state.currentNode] &&
+            (state.theme === null || this.themes[state.theme]) &&
+            Array.isArray(state.inventory) &&
+            state.stats &&
+            typeof state.stats === 'object'
+        );
     }
 
     explicitSave() {
@@ -203,23 +230,22 @@ export class AdventureEngine {
     interpolateText(text) {
         if (!this.state.theme) return text;
         const themeData = this.themes[this.state.theme];
-        return text
-            .replace(/\{weapon\}/g, themeData.weapon)
-            .replace(/\{currency\}/g, themeData.currency)
-            .replace(/\{enemy\}/g, themeData.enemy)
-            .replace(/\{boss\}/g, themeData.boss)
-            .replace(/\{consumable\}/g, themeData.consumable)
-            .replace(/\{location1\}/g, themeData.locations[0])
-            .replace(/\{location2\}/g, themeData.locations[1])
-            .replace(/\{location3\}/g, themeData.locations[2])
-            .replace(/\{race\}/g, this.state.stats.race)
-            .replace(/\{class\}/g, this.state.stats.charClass)
-            .replace(/\{level\}/g, this.state.stats.level);
+        const values = {
+            ...themeData,
+            location1: themeData.locations[0],
+            location2: themeData.locations[1],
+            location3: themeData.locations[2],
+            race: this.state.stats.race,
+            class: this.state.stats.charClass,
+            level: this.state.stats.level
+        };
+        return text.replace(/\{(\w+)\}/g, (placeholder, key) => values[key] ?? placeholder);
     }
 
     getCurrentNode() {
         const rawNode = this.story[this.state.currentNode];
-        let node = JSON.parse(JSON.stringify(rawNode)); // Deep copy to modify
+        if (!rawNode) return null;
+        const node = structuredClone(rawNode);
 
         node.text = this.interpolateText(node.text);
 
@@ -246,15 +272,14 @@ export class AdventureEngine {
         return node;
     }
 
-    handleChoice(index, callbacks) {
-        let node = this.getCurrentNode();
-        let choice = node.choices[index];
+    handleChoice(index, callbacks = {}) {
+        const node = this.getCurrentNode();
+        const choice = node?.choices?.[index];
 
         if (!choice) return;
 
         // Check Requirements
         if (choice.req) {
-            let hasItem = false;
             let reqType = choice.req;
             if(reqType === 'consumable') reqType = this.themes[this.state.theme].consumable;
 
@@ -286,9 +311,17 @@ export class AdventureEngine {
             }
         }
 
+        // End-screen actions start a genuinely fresh run. Previously the reset
+        // was checked against the destination node, so "Restart" never reset.
+        if (this.story[this.state.currentNode].isEnd) {
+            this.state = this.createDefaultState();
+            return this.getCurrentNode();
+        }
+
         // Apply Setup for init_game
         if (choice.next === 'init_game') {
-            this.state.inventory.push(this.themes[this.state.theme].weapon);
+            const weapon = this.themes[this.state.theme].weapon;
+            if (!this.state.inventory.includes(weapon)) this.state.inventory.push(weapon);
             this.state.currency = 10;
         }
 
@@ -297,13 +330,6 @@ export class AdventureEngine {
             const itemToConsume = this.themes[this.state.theme].consumable;
             const idx = this.state.inventory.indexOf(itemToConsume);
             if(idx > -1) this.state.inventory.splice(idx, 1);
-        }
-
-        // Apply Stat Changes from current node leaving
-        if (choice.statChanges) {
-            if (choice.statChanges.hp) this.state.stats.hp = Math.max(0, Math.min(this.state.stats.maxHp, this.state.stats.hp + choice.statChanges.hp));
-            if (choice.statChanges.stm) this.state.stats.stm = Math.max(0, Math.min(this.state.stats.maxStm, this.state.stats.stm + choice.statChanges.stm));
-            if (choice.statChanges.status) this.state.stats.status = choice.statChanges.status;
         }
 
         // Move to next
@@ -318,7 +344,7 @@ export class AdventureEngine {
             }
 
             // Player attacks
-            let playerDmg = Math.floor(Math.random() * this.state.stats.str) + 5;
+            const playerDmg = Math.floor(Math.random() * this.state.stats.str) + 5;
             this.state.enemyHp -= playerDmg;
 
             if (this.state.enemyHp <= 0) {
@@ -347,8 +373,8 @@ export class AdventureEngine {
                 }
             } else {
                 // Enemy attacks
-                let enemyDmg = isBoss ? (Math.floor(Math.random() * 15) + 10) : (Math.floor(Math.random() * 8) + 2);
-                this.state.stats.hp -= enemyDmg;
+                const enemyDmg = isBoss ? (Math.floor(Math.random() * 15) + 10) : (Math.floor(Math.random() * 8) + 2);
+                this.state.stats.hp = Math.max(0, this.state.stats.hp - enemyDmg);
                 if (this.state.stats.hp <= 0) {
                     nextNodeId = 'combat_lose';
                 }
@@ -359,18 +385,20 @@ export class AdventureEngine {
         const newNode = this.story[this.state.currentNode];
 
         // Node Stat Changes (applied when entering node)
-        if (newNode.statChanges) {
-            if (newNode.statChanges.hp) this.state.stats.hp = Math.max(0, Math.min(this.state.stats.maxHp, this.state.stats.hp + newNode.statChanges.hp));
-            if (newNode.statChanges.stm) this.state.stats.stm = Math.max(0, Math.min(this.state.stats.maxStm, this.state.stats.stm + newNode.statChanges.stm));
-            if (newNode.statChanges.status) this.state.stats.status = newNode.statChanges.status;
-        }
-
-        if (newNode.isEnd) {
-             if (choice.text.includes("Restart") || choice.text.includes("Play Again") || choice.text.includes("Try Again")) {
-                 this.state = JSON.parse(JSON.stringify(this.defaultState));
-             }
-        }
+        this.applyStatChanges(newNode.statChanges);
 
         return this.getCurrentNode();
+    }
+
+    applyStatChanges(changes) {
+        if (!changes) return;
+        const { stats } = this.state;
+        if (typeof changes.hp === 'number') {
+            stats.hp = Math.max(0, Math.min(stats.maxHp, stats.hp + changes.hp));
+        }
+        if (typeof changes.stm === 'number') {
+            stats.stm = Math.max(0, Math.min(stats.maxStm, stats.stm + changes.stm));
+        }
+        if (changes.status) stats.status = changes.status;
     }
 }
