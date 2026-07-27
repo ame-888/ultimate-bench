@@ -760,6 +760,11 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                 </div>
 
                 <div id="visual-benchmark-wrapper" class="hidden">
+                    <header class="detail-hero">
+                        <span class="detail-kicker">Arena 01 · Perception</span>
+                        <h2>Visual Bench</h2>
+                        <p>Six escalating trials of spatial reasoning, focus, and visual stability.</p>
+                    </header>
                     <div class="benchmark-description">
                         <p>Visual Bench is the first benchmark in the Ultimate Bench series.<br>
                         Its goal is to measure the visual capabilities of an AI model, including:</p>
@@ -902,6 +907,11 @@ There are currently five levels in use. The sixth level will be unlocked once al
                 </div>
 
                 <div id="chess-benchmark-wrapper" class="hidden">
+                    <header class="detail-hero">
+                        <span class="detail-kicker">Arena 03 · Strategy</span>
+                        <h2>Chess Bench</h2>
+                        <p>Six pressure tests for calculation, conviction, and strategic execution.</p>
+                    </header>
                     <div class="benchmark-description">
                         <p>Chess Bench is the third benchmark in the Ultimate Bench series.<br>
                         Its goal is to measure how well AI models can play chess and solve complex positional puzzles. The challenges include:</p>
@@ -1045,6 +1055,11 @@ There are currently five levels in use. The sixth level will be unlocked once al
                 </div>
 
                 <div id="data-benchmark-wrapper" class="hidden">
+                    <header class="detail-hero">
+                        <span class="detail-kicker">Arena 02 · Retrieval</span>
+                        <h2>Data Bench</h2>
+                        <p>Four increasingly demanding trials of search, synthesis, and source confidence.</p>
+                    </header>
                     <div class="benchmark-description">
                         <p>Data Retrieval Bench is the second benchmark in the Ultimate Bench series.<br>
                         Its goal is to measure how well AI models can search the web for specific, obscure information and find the correct answer despite the odds. The challenges include:</p>
@@ -2522,6 +2537,68 @@ There are currently three levels in use. The fourth level will be unlocked once 
         .leaderboard-meta div { padding: 1rem .35rem; }
         .leaderboard-meta strong { font-size: 1rem; }
         .leaderboard-meta span { font-size: .52rem; letter-spacing: .05em; }
+    }
+
+    /* Detailed leaderboard — match the new editorial leaderboard system. */
+    #benchmark-modal { padding: clamp(.5rem, 2vw, 1.5rem); background: rgba(2, 6, 14, .88); }
+    #benchmark-modal .modal-content {
+        width: min(96vw, 1360px); max-width: 1360px; max-height: 96vh; padding: 0;
+        border: 1px solid #26344c; border-radius: 24px; overflow-x: hidden;
+        background: #080f1b; box-shadow: 0 40px 110px rgba(0, 0, 0, .72);
+    }
+    #benchmark-modal .modal-close-btn {
+        position: sticky; top: 1rem; float: right; margin: 1rem 1rem -3.75rem 0;
+        width: 42px; height: 42px; border: 1px solid #33445e; border-radius: 12px;
+        background: rgba(13, 24, 41, .92); color: #a9b7ca; font-size: 1.55rem; font-weight: 400;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, .3); backdrop-filter: blur(12px);
+    }
+    #benchmark-modal .modal-close-btn:hover { border-color: #fbbf24; background: #172338; color: #fff; box-shadow: 0 0 24px rgba(251, 191, 36, .12); }
+    #benchmark-modal-body > div { --detail-accent: #f59e0b; --detail-rgb: 245, 158, 11; padding-bottom: 2.25rem; }
+    #benchmark-modal-body > #data-benchmark-wrapper { --detail-accent: #38bdf8; --detail-rgb: 56, 189, 248; }
+    #benchmark-modal-body > #chess-benchmark-wrapper { --detail-accent: #a78bfa; --detail-rgb: 167, 139, 250; }
+    .detail-hero {
+        position: relative; overflow: hidden; padding: clamp(3.5rem, 7vw, 6.5rem) clamp(1.25rem, 6vw, 5rem) clamp(2.75rem, 5vw, 4.5rem);
+        border-bottom: 1px solid #26344c; text-align: center;
+        background: radial-gradient(circle at 50% 15%, rgba(var(--detail-rgb), .2), transparent 34%), #080d17;
+    }
+    .detail-hero::before { content: ""; position: absolute; inset: 0; opacity: .18; background-image: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(to bottom, black, transparent 80%); }
+    .detail-hero > * { position: relative; z-index: 1; }
+    .detail-kicker { display: block; margin-bottom: 1.15rem; color: var(--detail-accent); font-size: .7rem; font-weight: 800; letter-spacing: .25em; text-transform: uppercase; }
+    .detail-hero h2 { margin: 0; color: #f8fafc; font-size: clamp(2.8rem, 7vw, 6.5rem); font-weight: 900; line-height: .9; letter-spacing: -.06em; text-transform: uppercase; }
+    .detail-hero p { max-width: 42rem; margin: 1.5rem auto 0; color: #91a1b7; font-size: clamp(.9rem, 1.4vw, 1.05rem); line-height: 1.65; }
+    #benchmark-modal-body .benchmark-description {
+        max-width: 72rem; margin: 0 auto; padding: 2rem clamp(1.25rem, 4vw, 3rem);
+        border: 0; border-bottom: 1px solid #202c3f; border-radius: 0; background: #0b1422;
+        color: #aab6c8; font-size: .92rem; line-height: 1.7;
+    }
+    #benchmark-modal-body .benchmark-description ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem 2rem; margin: 1rem 0 1.25rem; padding: 0; list-style: none; }
+    #benchmark-modal-body .benchmark-description li { position: relative; margin: 0; padding-left: 1.1rem; color: #8797ad; }
+    #benchmark-modal-body .benchmark-description li::before { content: "◆"; position: absolute; left: 0; color: var(--detail-accent); font-size: .48rem; }
+    #benchmark-modal-body .ranking-controls { width: min(72rem, calc(100% - 2rem)); margin: 1.5rem auto 1rem; padding: .8rem 1rem; justify-content: flex-start; border: 1px solid #26344c; border-radius: 12px; background: #0d1726; color: #75869d; font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    #benchmark-modal-body .ranking-select { min-width: 13rem; padding: .65rem 2.2rem .65rem .85rem; border: 1px solid #33445e; border-radius: 8px; background: #111e31; color: #edf2f8; font-size: .82rem; text-transform: none; }
+    #benchmark-modal-body .ranking-select:hover, #benchmark-modal-body .ranking-select:focus { border-color: var(--detail-accent); }
+    #benchmark-modal-body .tooltip-icon { color: var(--detail-accent); }
+    #benchmark-modal-body .benchmark-desktop-container, #benchmark-modal-body .data-benchmark-layout { width: min(72rem, calc(100% - 2rem)); margin-inline: auto; }
+    #benchmark-modal-body .data-table-wrapper { padding: 0; }
+    #benchmark-modal-body .benchmark-container { padding: .5rem 1rem; border: 1px solid #26344c; border-radius: 14px; background: #0a1220; box-shadow: none; }
+    #benchmark-modal-body .unified-header-row { min-height: 5rem; border-bottom: 1px solid #2b3a50; background: #0e192a; }
+    #benchmark-modal-body .unified-row { min-height: 4.1rem; border-color: rgba(43, 58, 80, .72); transition: background .2s; }
+    #benchmark-modal-body .unified-row:hover { background: rgba(var(--detail-rgb), .045); }
+    #benchmark-modal-body .header-title-wrapper { border-color: rgba(var(--detail-rgb), .55); }
+    #benchmark-modal-body .col-header h3 { color: var(--detail-accent); letter-spacing: .06em; }
+    #benchmark-modal-body .model-name { color: #edf2f8; font-size: .85rem; }
+    #benchmark-modal-body .rank { color: var(--detail-accent); font-variant-numeric: tabular-nums; }
+    #benchmark-modal-body .score-cell { color: #c9d3e1; font-family: var(--font-heading); font-variant-numeric: tabular-nums; }
+    #benchmark-modal-body .disclaimer { width: min(72rem, calc(100% - 2rem)); margin: .8rem auto 0; color: #64748b; font-size: .68rem; line-height: 1.55; }
+    @media (max-width: 700px) {
+        #benchmark-modal { padding: 0; }
+        #benchmark-modal .modal-content { width: 100vw; max-height: 100vh; border-radius: 0; }
+        #benchmark-modal-body .benchmark-description ul { grid-template-columns: 1fr; }
+        #benchmark-modal-body .ranking-controls { align-items: stretch; flex-wrap: wrap; }
+        #benchmark-modal-body .ranking-controls label { width: 100%; }
+        #benchmark-modal-body .ranking-select { min-width: 0; flex: 1; }
+        #benchmark-modal-body .benchmark-desktop-container, #benchmark-modal-body .data-benchmark-layout { overflow-x: auto; }
+        #benchmark-modal-body .benchmark-container { min-width: 720px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
