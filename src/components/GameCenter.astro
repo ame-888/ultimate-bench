@@ -1,853 +1,98 @@
 ---
 const { mode = 'modal' } = Astro.props;
+
+const games = [
+  { id: 'pool', number: '01', name: 'Synapse Pool', genre: 'PHYSICS / PRECISION', description: 'Read the table. Shape the angle. Clear every node.', accent: 'cyan', icon: '◉' },
+  { id: 'adventure', number: '02', name: "The Architect’s Journey", genre: 'NARRATIVE / RPG', description: 'Enter a branching terminal world where every choice persists.', accent: 'violet', icon: '⌘' },
+  { id: 'tetris', number: '03', name: 'Quantum Tetris', genre: 'PUZZLE / ENDURANCE', description: 'Collapse impossible structures before the stack reaches critical.', accent: 'amber', icon: '▦' },
+  { id: 'snake', number: '04', name: 'Byte Snake', genre: 'ARCADE / REFLEX', description: 'Consume loose data. Grow the chain. Never cross your own signal.', accent: 'lime', icon: '⌁' },
+  { id: 'breakout', number: '05', name: 'Proxy Breaker', genre: 'ACTION / CONTROL', description: 'Punch through layered firewalls with a single volatile packet.', accent: 'coral', icon: '◆' },
+  { id: 'tictactoe', number: '06', name: 'Cyber Tic-Tac-Toe', genre: 'STRATEGY / AI', description: 'A familiar grid. An opponent that learns how you think.', accent: 'blue', icon: '×' },
+];
 ---
 <div id="game-center-container" data-mode={mode}>
-    {mode === 'modal' && (
-        <button id="joystick-btn" aria-label="Open Game Center" title="Play Games">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="joystick-icon">
-                <rect x="2" y="6" width="20" height="12" rx="2"></rect>
-                <path d="M6 12h4"></path>
-                <path d="M8 10v4"></path>
-                <line x1="15" y1="13" x2="15.01" y2="13"></line>
-                <line x1="18" y1="11" x2="18.01" y2="11"></line>
-            </svg>
-        </button>
-    )}
-
-    <div id="game-modal" class={mode === 'embedded' ? 'embedded-view' : 'hidden'}>
-        {mode === 'modal' && <div class="modal-overlay"></div>}
-        <div class="modal-content glass-panel">
-            <div id="crt-overlay" class="hidden"></div>
-            <div class="modal-header">
-                <button id="header-back-btn" class="hidden" aria-label="Back to Menu">←</button>
-                <h2 id="modal-title">Synaptic Arcade</h2>
-                <button id="crt-toggle-btn" aria-label="Toggle CRT Effect" title="Toggle CRT Effect">📺</button>
-                <button id="suggest-game-btn" aria-label="Suggest a Game" title="Suggest a Game">💡</button>
-                <button id="close-modal-btn" aria-label="Close">&times;</button>
-            </div>
-
-            <div id="game-menu" class="fade-in">
-                <button class="game-select-btn" data-game="pool">
-                    <div class="game-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <circle cx="12" cy="12" r="10"/>
-                            <circle cx="12" cy="12" r="4" fill="#000"/>
-                            <text x="12" y="14" text-anchor="middle" fill="#FFF" font-size="6" font-weight="bold">8</text>
-                        </svg>
-                    </div>
-                    Synapse Pool
-                </button>
-                <button class="game-select-btn" data-game="adventure">
-                     <div class="game-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                        </svg>
-                    </div>
-                    The Architect's Journey
-                </button>
-                <button class="game-select-btn" data-game="tetris">
-                     <div class="game-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <rect x="4" y="12" width="8" height="8" rx="1"/>
-                            <rect x="12" y="12" width="8" height="8" rx="1"/>
-                            <rect x="12" y="4" width="8" height="8" rx="1"/>
-                        </svg>
-                    </div>
-                    Quantum Tetris
-                </button>
-                <button class="game-select-btn" data-game="snake">
-                     <div class="game-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="4" y="4" width="16" height="16" rx="4"/>
-                            <path d="M9 9h6v6h-3"/>
-                        </svg>
-                    </div>
-                    Byte Snake
-                </button>
-                <button class="game-select-btn" data-game="breakout">
-                     <div class="game-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <rect x="4" y="4" width="4" height="2"/>
-                            <rect x="10" y="4" width="4" height="2"/>
-                            <rect x="16" y="4" width="4" height="2"/>
-                            <rect x="7" y="8" width="4" height="2"/>
-                            <rect x="13" y="8" width="4" height="2"/>
-                            <rect x="8" y="18" width="8" height="2"/>
-                            <circle cx="12" cy="14" r="2"/>
-                        </svg>
-                    </div>
-                    Proxy Breaker
-                </button>
-                <button class="game-select-btn" data-game="tictactoe">
-                     <div class="game-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 4l16 16"/>
-                            <path d="M20 4L4 20"/>
-                        </svg>
-                    </div>
-                    Cyber Tic-Tac-Toe
-                </button>
-                <button class="game-select-btn" id="leaderboard-btn">
-                     <div class="game-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M4 6h16v2H4z"/>
-                            <path d="M4 10h12v2H4z"/>
-                            <path d="M4 14h8v2H4z"/>
-                            <path d="M18 10l4 4-4 4"/>
-                        </svg>
-                    </div>
-                    High Scores
-                </button>
-            </div>
-
-            <div id="leaderboard-view" class="hidden fade-in">
-                <h3>Top Scores</h3>
-                <div id="leaderboard-content"></div>
-            </div>
-
-            <div id="game-area" class="hidden fade-in game-layout-wrapper">
-                <div class="game-left-col">
-                    <div id="pool-controls" class="hidden" style="margin-bottom: 0.5rem; display: flex; justify-content: center; gap: 1rem;">
-                        <button id="pool-mode-btn" style="padding: 0.5rem 1rem; border-radius: 0.5rem; background: #374151; color: white; border: none; cursor: pointer;">Switch to VS AI</button>
-                    </div>
-
-                    <div id="adventure-wrapper" class="hidden">
-                        <div class="adventure-top-bar">
-                            <button id="adv-save-btn" class="adv-action-btn">Save Game</button>
-                            <button id="adv-load-btn" class="adv-action-btn">Load Game</button>
-                            <span id="adv-status-msg"></span>
-                        </div>
-                        <div class="adventure-main-layout">
-                            <div id="adventure-character-sheet" class="adv-side-panel">
-                                <h4>CHARACTER</h4>
-                                <div id="adv-char-name" style="font-size: 0.8rem; color: #6EE7B7; margin-bottom: 0.5rem; word-break: break-word;">User_01</div>
-                                <div class="adv-stat-row"><span>LVL:</span> <span id="adv-stat-lvl">1</span></div>
-                                <div class="adv-stat-row"><span>XP:</span> <span id="adv-stat-xp">0</span></div>
-                                <div class="adv-stat-row"><span>HP:</span> <span id="adv-stat-hp">100/100</span></div>
-                                <div class="adv-stat-row"><span>STM:</span> <span id="adv-stat-stm">50/50</span></div>
-                                <div class="adv-stat-row"><span>STR:</span> <span id="adv-stat-str">10</span></div>
-                                <div class="adv-stat-row"><span>DEX:</span> <span id="adv-stat-dex">10</span></div>
-                                <div class="adv-stat-row"><span>INT:</span> <span id="adv-stat-int">10</span></div>
-                                <div class="adv-stat-row"><span>CURRENCY:</span> <span id="adv-stat-currency">0</span></div>
-                                <div class="adv-stat-row"><span>STATUS:</span> <span id="adv-stat-status">OK</span></div>
-                            </div>
-                            <div id="adventure-container" class="terminal-screen">
-                                <div id="adventure-text" class="terminal-text"></div>
-                                <div id="adventure-choices" class="terminal-choices"></div>
-                            </div>
-                        </div>
-                        <div id="adventure-inventory" class="adv-bottom-panel">
-                            <h4>INVENTORY</h4>
-                            <div id="adv-inv-list" class="inv-list">
-                                <!-- Items injected here -->
-                                <span class="inv-empty">Empty</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="canvas-container" class="game-canvas-wrapper">
-                        <canvas id="game-canvas" width="400" height="400"></canvas>
-                        <div id="game-overlay" class="hidden">
-                            <h3 id="game-overlay-title">Game Over</h3>
-                            <p id="game-overlay-score">Score: 0</p>
-                            <button id="game-restart-btn">Play Again</button>
-                            <button id="game-quit-btn">Quit to Menu</button>
-                        </div>
-                        <!-- Cutscene Overlay -->
-                        <div id="cutscene-overlay" class="hidden">
-                            <div class="cutscene-content">
-                                <div class="glitch-text" data-text="WARNING">WARNING</div>
-                                <p class="cutscene-msg">UNAUTHORIZED WIN STREAK DETECTED</p>
-                                <p class="cutscene-sub">ENGAGING MAX DIFFICULTY PROTOCOL...</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="game-controls-info">
-                    <div class="score-card">
-                        <div class="score-label">SCORE</div>
-                        <div class="score-display" id="current-score">0</div>
-                    </div>
-                    <div class="info-card">
-                        <p id="controls-hint">Controls Info</p>
-                    </div>
-                    <!-- Duplicate Quit button for side access on large screens -->
-                    <button id="side-quit-btn" class="side-btn">Quit Game</button>
-                </div>
-            </div>
+  {mode === 'modal' && <button id="joystick-btn" aria-label="Open Game Center" title="Enter arcade"><span>PLAY</span></button>}
+  <div id="game-modal" class={mode === 'embedded' ? 'embedded-view' : 'hidden'}>
+    {mode === 'modal' && <div class="modal-overlay"></div>}
+    <section class="modal-content" aria-labelledby="modal-title">
+      <div id="crt-overlay" class="hidden"></div>
+      <header class="modal-header">
+        <button id="header-back-btn" class="icon-btn hidden" aria-label="Back to game library">←</button>
+        <div class="title-lockup"><span class="eyebrow">UB // PLAY SYSTEM</span><h2 id="modal-title">Arcade Library</h2></div>
+        <div class="header-actions">
+          <button id="crt-toggle-btn" class="icon-btn" aria-label="Toggle scanlines" title="Toggle scanlines">CRT</button>
+          <button id="suggest-game-btn" class="icon-btn" aria-label="Suggest a game" title="Suggest a game">+IDEA</button>
+          <button id="close-modal-btn" class="icon-btn close-btn" aria-label="Close arcade">×</button>
         </div>
-    </div>
+      </header>
+
+      <div id="game-menu" class="fade-in">
+        <div class="library-intro">
+          <p>SELECT PROGRAM</p><span>6 experiments online</span>
+        </div>
+        <div class="game-grid">
+          {games.map((game) => (
+            <button class={`game-select-btn accent-${game.accent}`} data-game={game.id}>
+              <span class="game-number">{game.number}</span>
+              <span class="game-glyph" aria-hidden="true">{game.icon}</span>
+              <span class="game-meta"><small>{game.genre}</small><strong>{game.name}</strong><span>{game.description}</span></span>
+              <span class="launch-arrow" aria-hidden="true">↗</span>
+            </button>
+          ))}
+        </div>
+        <button class="leaderboard-strip" id="leaderboard-btn">
+          <span class="rank-icon">⌁</span><span><small>LOCAL RECORDS</small><strong>Hall of Signals</strong></span><span class="launch-arrow">→</span>
+        </button>
+      </div>
+
+      <div id="leaderboard-view" class="hidden fade-in"><div class="view-kicker">LOCAL MEMORY</div><h3>Hall of Signals</h3><div id="leaderboard-content"></div></div>
+
+      <div id="game-area" class="hidden fade-in game-layout-wrapper">
+        <div class="game-left-col">
+          <div id="pool-controls" class="hidden pool-controls"><button id="pool-mode-btn">Switch to VS AI</button></div>
+          <div id="adventure-wrapper" class="hidden">
+            <div class="adventure-top-bar"><button id="adv-save-btn" class="adv-action-btn">SAVE</button><button id="adv-load-btn" class="adv-action-btn">LOAD</button><span id="adv-status-msg"></span></div>
+            <div class="adventure-main-layout"><div id="adventure-character-sheet" class="adv-side-panel"><h4>OPERATOR</h4><div id="adv-char-name">User_01</div>
+              <div class="adv-stat-row"><span>LVL</span><span id="adv-stat-lvl">1</span></div><div class="adv-stat-row"><span>XP</span><span id="adv-stat-xp">0</span></div><div class="adv-stat-row"><span>HP</span><span id="adv-stat-hp">100/100</span></div><div class="adv-stat-row"><span>STM</span><span id="adv-stat-stm">50/50</span></div><div class="adv-stat-row"><span>STR</span><span id="adv-stat-str">10</span></div><div class="adv-stat-row"><span>DEX</span><span id="adv-stat-dex">10</span></div><div class="adv-stat-row"><span>INT</span><span id="adv-stat-int">10</span></div><div class="adv-stat-row"><span>CR</span><span id="adv-stat-currency">0</span></div><div class="adv-stat-row"><span>STATE</span><span id="adv-stat-status">OK</span></div>
+            </div><div id="adventure-container" class="terminal-screen"><div id="adventure-text" class="terminal-text"></div><div id="adventure-choices" class="terminal-choices"></div></div></div>
+            <div id="adventure-inventory" class="adv-bottom-panel"><h4>INVENTORY</h4><div id="adv-inv-list" class="inv-list"><span class="inv-empty">Empty</span></div></div>
+          </div>
+          <div id="canvas-container" class="game-canvas-wrapper"><canvas id="game-canvas" width="400" height="400"></canvas><div id="game-overlay" class="hidden"><span class="view-kicker">RUN TERMINATED</span><h3 id="game-overlay-title">Game Over</h3><p id="game-overlay-score">Score: 0</p><button id="game-restart-btn">Run it back</button><button id="game-quit-btn">Return to library</button></div><div id="cutscene-overlay" class="hidden"><div class="cutscene-content"><div class="glitch-text" data-text="WARNING">WARNING</div><p class="cutscene-msg">UNAUTHORIZED WIN STREAK DETECTED</p><p class="cutscene-sub">ENGAGING MAX DIFFICULTY PROTOCOL...</p></div></div></div>
+        </div>
+        <aside class="game-controls-info"><div class="score-card"><div class="score-label">LIVE SCORE</div><div class="score-display" id="current-score">0</div></div><div class="info-card"><span class="panel-label">INPUT MAP</span><p id="controls-hint">Controls Info</p></div><button id="side-quit-btn" class="side-btn">← Exit program</button></aside>
+      </div>
+    </section>
+  </div>
 </div>
-
 <style>
-    /* Modern Glassmorphism & Animations */
-    #joystick-btn {
-        position: fixed;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 9999;
-        pointer-events: auto;
-        background: rgba(31, 41, 55, 0.8);
-        color: #60A5FA;
-        border: 2px solid #60A5FA;
-        border-radius: 50%;
-        width: 4rem;
-        height: 4rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
-        backdrop-filter: blur(5px);
-    }
-
-    #joystick-btn:hover {
-        background: rgba(55, 65, 81, 0.9);
-        transform: translateX(-50%) scale(1.15) rotate(10deg);
-        box-shadow: 0 0 30px rgba(96, 165, 250, 0.8);
-        border-color: #93C5FD;
-        color: #93C5FD;
-    }
-
-    #joystick-btn:active {
-        transform: translateX(-50%) scale(0.95);
-    }
-
-    .joystick-icon {
-        width: 2rem;
-        height: 2rem;
-        pointer-events: none;
-    }
-
-    /* Modal Styling */
-    #game-modal {
-        position: fixed;
-        top: 4rem; /* Below Navbar */
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 90; /* Below Navbar (100) */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s, visibility 0.3s;
-    }
-
-    #game-modal.embedded-view {
-        position: static;
-        opacity: 1;
-        visibility: visible;
-        width: 100%;
-        max-width: 600px;
-        margin: 0 auto;
-        padding-bottom: 2rem;
-    }
-
-    #game-modal:not(.hidden):not(.embedded-view) {
-        opacity: 1;
-        visibility: visible;
-    }
-
-    .modal-overlay {
-        position: absolute;
-        inset: 0;
-        background: rgba(3, 7, 18, 0.7); /* Deep dark blue/black */
-        backdrop-filter: blur(8px);
-    }
-
-    .modal-content.glass-panel {
-        position: relative;
-        background: rgba(17, 24, 39, 0.85);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow:
-            0 0 0 1px rgba(255, 255, 255, 0.05),
-            0 20px 50px rgba(0, 0, 0, 0.7),
-            0 0 100px rgba(96, 165, 250, 0.1); /* Subtle blue glow */
-        backdrop-filter: blur(16px);
-        border-radius: 1.5rem;
-        padding: 2rem;
-        width: 95%;
-        max-width: 500px;
-        color: #F3F4F6;
-        display: flex;
-        flex-direction: column;
-        max-height: 90vh;
-        overflow-y: auto;
-        transform: scale(0.95);
-        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    /* Expand for Game View (Horizontal Layout) */
-    #game-modal:not(.hidden) .modal-content:has(#game-area:not(.hidden)) {
-        max-width: 800px;
-    }
-
-    #game-modal:not(.hidden) .modal-content.adventure-mode {
-        max-width: 1000px; /* Wider for text game */
-    }
-
-    #game-modal:not(.hidden) .modal-content {
-        transform: scale(1);
-    }
-
-    .modal-header {
-        display: grid;
-        grid-template-columns: 2.5rem 1fr 2.5rem 2.5rem 2.5rem;
-        gap: 0.5rem;
-        align-items: center;
-        margin-bottom: 2rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    #modal-title {
-        font-size: 1.8rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, #60A5FA 0%, #A78BFA 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin: 0;
-        letter-spacing: -0.02em;
-        text-align: center;
-    }
-
-    /* Fix for Title Display Error: preserve space when hidden */
-    #header-back-btn.hidden {
-        display: block !important;
-        visibility: hidden;
-    }
-
-    #header-back-btn, #close-modal-btn, #suggest-game-btn {
-        background: rgba(255, 255, 255, 0.05);
-        border: none;
-        color: #9CA3AF;
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: 50%;
-        font-size: 1.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    #header-back-btn:hover, #close-modal-btn:hover, #suggest-game-btn:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-    }
-
-    #suggest-game-btn {
-        font-size: 1.2rem;
-    }
-
-    #close-modal-btn:hover {
-        transform: rotate(90deg);
-    }
-
-    /* Menu Buttons */
-    #game-menu {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
-        width: 100%;
-    }
-
-    .game-select-btn {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        padding: 1.5rem 1rem;
-        border-radius: 1rem;
-        color: #E5E7EB;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        text-align: center;
-        aspect-ratio: 1;
-    }
-
-    .game-select-btn:hover {
-        background: rgba(96, 165, 250, 0.1);
-        border-color: rgba(96, 165, 250, 0.3);
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px -5px rgba(0,0,0,0.3);
-    }
-
-    .game-icon {
-        width: 3rem;
-        height: 3rem;
-        color: #60A5FA;
-        margin-bottom: 0.25rem;
-    }
-
-    .game-icon svg {
-        width: 100%;
-        height: 100%;
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-    }
-
-    #leaderboard-btn {
-        grid-column: span 2;
-        aspect-ratio: auto;
-        flex-direction: row;
-        padding: 1rem;
-        margin-top: 0.5rem;
-        background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%);
-        border-color: rgba(245, 158, 11, 0.2);
-        color: #FCD34D;
-    }
-
-    #leaderboard-btn .game-icon {
-        width: 1.5rem;
-        height: 1.5rem;
-        margin-bottom: 0;
-        color: #FCD34D;
-    }
-
-    #leaderboard-btn:hover {
-        background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%);
-        border-color: rgba(245, 158, 11, 0.5);
-        transform: translateY(-2px);
-    }
-
-    /* Canvas Area */
-    .game-canvas-wrapper {
-        position: relative;
-        width: 100%;
-        aspect-ratio: 1;
-        background: #000; /* Deep black for contrast */
-        border: 2px solid rgba(55, 65, 81, 0.5);
-        border-radius: 1rem;
-        overflow: hidden;
-        margin-bottom: 1.5rem;
-        box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
-        box-sizing: border-box;
-    }
-
-    canvas {
-        width: 100%;
-        height: 100%;
-        display: block;
-        image-rendering: pixelated; /* Sharp rendering */
-    }
-
-    /* CRT global overlay */
-    #crt-overlay {
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        z-index: 10;
-        background: linear-gradient(
-            rgba(18, 16, 16, 0) 50%,
-            rgba(0, 0, 0, 0.25) 50%
-        );
-        background-size: 100% 4px;
-        border-radius: 1.5rem;
-    }
-
-    #crt-overlay::after {
-        content: " ";
-        display: block;
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%);
-        border-radius: 1.5rem;
-    }
-
-    /* Cutscene Overlay */
-    #cutscene-overlay {
-        position: absolute;
-        inset: 0;
-        background: rgba(220, 38, 38, 0.2);
-        backdrop-filter: blur(2px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 30;
-        animation: flashRed 1s infinite alternate;
-    }
-
-    .cutscene-content {
-        background: #000;
-        border: 2px solid #EF4444;
-        padding: 2rem;
-        text-align: center;
-        color: #EF4444;
-        box-shadow: 0 0 50px rgba(239, 68, 68, 0.5);
-        transform: rotate(-2deg);
-    }
-
-    .glitch-text {
-        font-size: 3rem;
-        font-weight: 900;
-        text-transform: uppercase;
-        position: relative;
-        animation: glitch 1s infinite;
-    }
-
-    .cutscene-msg {
-        font-size: 1.2rem;
-        font-weight: bold;
-        margin: 1rem 0;
-    }
-
-    .cutscene-sub {
-        font-size: 0.9rem;
-        color: #FECACA;
-        animation: blink 0.5s infinite;
-    }
-
-    @keyframes flashRed {
-        from { background: rgba(220, 38, 38, 0.1); }
-        to { background: rgba(220, 38, 38, 0.3); }
-    }
-
-    @keyframes blink {
-        50% { opacity: 0; }
-    }
-
-    /* Game Overlay */
-    #game-overlay {
-        position: absolute;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(4px);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 1.5rem;
-        z-index: 20;
-        animation: fadeIn 0.3s;
-    }
-
-    #game-overlay-title {
-        font-size: 2.5rem;
-        color: #F87171;
-        margin: 0;
-        font-weight: 900;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        text-shadow: 0 0 20px rgba(248, 113, 113, 0.5);
-    }
-
-    #game-overlay button {
-        padding: 1rem 2rem;
-        border-radius: 0.75rem;
-        border: none;
-        font-weight: 700;
-        font-size: 1.1rem;
-        cursor: pointer;
-        width: 80%;
-        transition: transform 0.1s, filter 0.2s;
-        text-transform: uppercase;
-    }
-
-    #game-restart-btn {
-        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-        color: white;
-        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-    }
-
-    #game-quit-btn {
-        background: rgba(255, 255, 255, 0.1);
-        color: #D1D5DB;
-    }
-
-    #game-overlay button:hover {
-        transform: translateY(-2px);
-        filter: brightness(1.1);
-    }
-
-    /* Horizontal Game Layout */
-    .game-layout-wrapper {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-
-    .adventure-mode .game-controls-info {
-        display: none !important; /* Hide side panel in adventure mode to give full width */
-    }
-
-    @media (min-width: 768px) {
-        .game-layout-wrapper {
-            flex-direction: row;
-            align-items: flex-start;
-        }
-
-        .game-left-col {
-            flex: 2;
-            min-width: 0; /* Prevent overflow */
-        }
-
-        .game-controls-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            min-width: 200px;
-            text-align: left;
-            padding-top: 0;
-        }
-    }
-
-    /* Info Panel Styling */
-    .score-card, .info-card {
-        background: rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 1rem;
-        padding: 1rem;
-    }
-
-    .score-label {
-        font-size: 0.8rem;
-        color: #9CA3AF;
-        font-weight: 700;
-        margin-bottom: 0.25rem;
-        letter-spacing: 0.05em;
-    }
-
-    .score-display {
-        font-size: 2.5rem;
-        font-weight: 900;
-        color: #60A5FA;
-        font-family: 'Courier New', monospace;
-        text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
-        line-height: 1;
-    }
-
-    #controls-hint {
-        color: #D1D5DB;
-        font-size: 0.9rem;
-        font-style: italic;
-        margin: 0;
-        line-height: 1.4;
-    }
-
-    .side-btn {
-        background: rgba(255, 255, 255, 0.05);
-        color: #F87171;
-        border: 1px solid rgba(248, 113, 113, 0.2);
-        padding: 0.75rem;
-        border-radius: 0.75rem;
-        cursor: pointer;
-        font-weight: 600;
-        transition: all 0.2s;
-        display: none;
-    }
-
-    @media (min-width: 768px) {
-        .side-btn {
-            display: block;
-        }
-    }
-
-    .side-btn:hover {
-        background: rgba(248, 113, 113, 0.1);
-        border-color: rgba(248, 113, 113, 0.5);
-    }
-
-    /* Leaderboard */
-    .leaderboard-game-section {
-        background: rgba(0,0,0,0.2);
-        border-radius: 0.75rem;
-        padding: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    .leaderboard-game-title {
-        font-weight: 700;
-        color: #60A5FA;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        margin-bottom: 0.75rem;
-        letter-spacing: 0.05em;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
-        padding-bottom: 0.5rem;
-    }
-
-    .leaderboard-list li {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.4rem 0;
-        color: #D1D5DB;
-        font-size: 0.9rem;
-        border-bottom: 1px dashed rgba(255,255,255,0.1);
-    }
-    .leaderboard-list li:last-child { border-bottom: none; }
-
-    /* Terminal Adventure Layout */
-    #adventure-wrapper {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        width: 100%;
-    }
-
-    .adventure-top-bar {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        background: rgba(0, 0, 0, 0.4);
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-
-    .adv-action-btn {
-        background: transparent;
-        color: #10B981;
-        border: 1px solid #10B981;
-        border-radius: 0.25rem;
-        padding: 0.25rem 0.75rem;
-        font-family: 'Courier New', monospace;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .adv-action-btn:hover {
-        background: rgba(16, 185, 129, 0.2);
-    }
-
-    #adv-status-msg {
-        color: #FCD34D;
-        font-family: 'Courier New', monospace;
-        font-size: 0.9rem;
-        margin-left: auto;
-    }
-
-    .adventure-main-layout {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    @media (min-width: 640px) {
-        .adventure-main-layout {
-            flex-direction: row;
-            align-items: stretch;
-        }
-    }
-
-    .adv-side-panel {
-        background: #000;
-        border: 2px solid #374151;
-        border-radius: 1rem;
-        padding: 1rem;
-        font-family: 'Courier New', monospace;
-        color: #10B981;
-        min-width: 150px;
-        box-sizing: border-box;
-    }
-
-    .adv-side-panel h4, .adv-bottom-panel h4 {
-        margin: 0 0 0.75rem 0;
-        color: #34D399;
-        font-size: 1rem;
-        border-bottom: 1px dashed #374151;
-        padding-bottom: 0.25rem;
-    }
-
-    #adv-char-name {
-        font-weight: bold;
-        color: #60A5FA;
-        margin-bottom: 0.5rem;
-    }
-
-    .adv-stat-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 0.25rem;
-        font-size: 0.9rem;
-    }
-
-    .adv-bottom-panel {
-        background: #000;
-        border: 2px solid #374151;
-        border-radius: 1rem;
-        padding: 1rem;
-        font-family: 'Courier New', monospace;
-        color: #10B981;
-        box-sizing: border-box;
-    }
-
-    .inv-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-
-    .inv-item {
-        background: rgba(16, 185, 129, 0.1);
-        border: 1px solid #059669;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        font-size: 0.85rem;
-        color: #6EE7B7;
-    }
-
-    .inv-empty {
-        color: #4B5563;
-        font-style: italic;
-    }
-
-    /* Terminal Adventure Styling */
-    .terminal-screen {
-        flex: 1;
-        width: 100%;
-        aspect-ratio: auto;
-        min-height: 400px;
-        background-color: #000;
-        border: 2px solid #374151;
-        border-radius: 1rem;
-        padding: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        position: relative;
-        box-sizing: border-box;
-    }
-
-    .terminal-text {
-        flex-grow: 1;
-        overflow-y: auto;
-        color: #10B981;
-        font-family: 'Courier New', monospace;
-        font-size: 1.1rem;
-        line-height: 1.6;
-        margin-bottom: 1rem;
-        text-shadow: 0 0 5px #10B981;
-        white-space: pre-wrap;
-    }
-
-    .terminal-choices {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        margin-top: auto;
-    }
-
-    /* Utility */
-    .hidden { display: none !important; }
-    .fade-in { animation: fadeIn 0.3s ease-out; }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+  :root { --arcade-ink:#07090d; --arcade-paper:#e9e7df; --arcade-line:rgba(233,231,223,.14); --arcade-lime:#c9ff3d; }
+  #game-center-container { width:100%; }
+  #joystick-btn { position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%); z-index:9999; border:1px solid #c9ff3d; background:#c9ff3d; color:#07090d; font:800 .72rem/1 'Inter',sans-serif; letter-spacing:.15em; border-radius:999px; padding:1rem 1.5rem; cursor:pointer; box-shadow:0 10px 40px #000; }
+  #game-modal { position:fixed; inset:4rem 0 0; z-index:90; display:grid; place-items:center; opacity:0; visibility:hidden; transition:.25s ease; }
+  #game-modal:not(.hidden), #game-modal.embedded-view { opacity:1; visibility:visible; }
+  #game-modal.embedded-view { position:static; display:block; width:100%; }
+  .modal-overlay { position:absolute; inset:0; background:rgba(3,4,7,.88); backdrop-filter:blur(14px); }
+  .modal-content { position:relative; width:min(1120px,calc(100% - 2rem)); max-height:calc(100vh - 6rem); overflow:auto; box-sizing:border-box; color:var(--arcade-paper); background:#0a0d12; border:1px solid var(--arcade-line); border-radius:2px; padding:clamp(1rem,3vw,2.25rem); box-shadow:0 30px 100px rgba(0,0,0,.55); }
+  .embedded-view .modal-content { width:100%; max-height:none; overflow:visible; background:transparent; border:0; box-shadow:none; padding:0; }
+  .modal-header { display:flex; align-items:center; gap:1rem; padding-bottom:1.35rem; margin-bottom:1.5rem; border-bottom:1px solid var(--arcade-line); }
+  .title-lockup { flex:1; }.eyebrow,.view-kicker,.panel-label { display:block; color:#8d928f; font:700 .62rem/1.2 'Inter',sans-serif; letter-spacing:.18em; }
+  #modal-title { margin:.35rem 0 0; color:var(--arcade-paper); font-size:clamp(1.4rem,3vw,2.2rem); letter-spacing:-.045em; }
+  .header-actions { display:flex; gap:.45rem; }.icon-btn { min-width:2.5rem; height:2.5rem; padding:0 .75rem; border:1px solid var(--arcade-line); background:transparent; color:#aeb2b0; font:700 .62rem 'Inter',sans-serif; letter-spacing:.08em; cursor:pointer; }.icon-btn:hover { border-color:var(--arcade-lime); color:var(--arcade-lime); }.close-btn{font-size:1.25rem}.embedded-view .close-btn{display:none}
+  .library-intro { display:flex; justify-content:space-between; align-items:center; margin-bottom:.8rem; color:#7d827f; font-size:.7rem; letter-spacing:.14em; }.library-intro p{margin:0;color:var(--arcade-lime);font-weight:800}
+  .game-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); border-top:1px solid var(--arcade-line); border-left:1px solid var(--arcade-line); }
+  .game-select-btn { --accent:#c9ff3d; position:relative; min-height:190px; display:grid; grid-template-columns:2.5rem 1fr auto; align-items:start; gap:1rem; text-align:left; color:var(--arcade-paper); padding:1.35rem; border:0; border-right:1px solid var(--arcade-line); border-bottom:1px solid var(--arcade-line); background:rgba(255,255,255,.015); cursor:pointer; overflow:hidden; transition:background .25s; }
+  .game-select-btn:after { content:''; position:absolute; inset:auto 0 0; height:3px; background:var(--accent); transform:scaleX(0); transform-origin:left; transition:transform .3s; }.game-select-btn:hover{background:rgba(255,255,255,.05)}.game-select-btn:hover:after{transform:scaleX(1)}
+  .accent-violet{--accent:#bba1ff}.accent-amber{--accent:#ffcc66}.accent-lime{--accent:#c9ff3d}.accent-coral{--accent:#ff786b}.accent-blue{--accent:#75a7ff}
+  .game-number{color:#606662;font:600 .68rem monospace}.game-glyph{font:400 2.9rem/1 'Poppins',sans-serif;color:var(--accent);text-shadow:0 0 35px color-mix(in srgb,var(--accent) 35%,transparent)}
+  .game-meta{align-self:end;display:flex;flex-direction:column;gap:.45rem}.game-meta small{color:var(--accent);font:700 .58rem 'Inter';letter-spacing:.14em}.game-meta strong{font:700 clamp(1.05rem,2vw,1.4rem) 'Poppins';letter-spacing:-.035em}.game-meta>span{max-width:34ch;color:#8f9491;font-size:.75rem;line-height:1.45}.launch-arrow{color:#6e7470;font-size:1.1rem}
+  .leaderboard-strip { width:100%; display:grid; grid-template-columns:2.5rem 1fr auto; align-items:center; gap:1rem; margin-top:1rem; padding:1rem 1.35rem; border:1px solid var(--arcade-line); background:#11151a; color:var(--arcade-paper); text-align:left; cursor:pointer }.leaderboard-strip:hover{border-color:#ffcc66}.rank-icon{color:#ffcc66;font-size:1.5rem}.leaderboard-strip small{display:block;color:#8d928f;font-size:.55rem;letter-spacing:.14em}.leaderboard-strip strong{font-size:.9rem}
+  .game-layout-wrapper{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:1.25rem}.game-canvas-wrapper{position:relative;aspect-ratio:1;background:#020303;border:1px solid #2b312e;overflow:hidden}canvas{display:block;width:100%;height:100%;image-rendering:pixelated}.game-controls-info{display:flex;flex-direction:column;gap:.75rem}.score-card,.info-card{border:1px solid var(--arcade-line);background:#0e1115;padding:1.1rem}.score-label,.panel-label{color:#777d79;font-size:.58rem;letter-spacing:.16em}.score-display{margin-top:.5rem;color:var(--arcade-lime);font:700 2.8rem monospace}.info-card{flex:1}#controls-hint{color:#aeb2af;font-size:.8rem;line-height:1.6}.side-btn,.pool-controls button,.adv-action-btn{border:1px solid var(--arcade-line);background:transparent;color:var(--arcade-paper);padding:.8rem;cursor:pointer}.side-btn:hover{border-color:#ff786b;color:#ff786b}
+  #game-overlay,#cutscene-overlay{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:rgba(4,5,7,.92);padding:2rem}#game-overlay h3{font-size:2.5rem;margin:.5rem 0;color:#ff786b}#game-overlay button{width:min(260px,90%);padding:.8rem;margin:.25rem;border:1px solid #39413d;background:#121713;color:white;cursor:pointer}#game-restart-btn{border-color:var(--arcade-lime)!important;color:var(--arcade-lime)!important}
+  #crt-overlay{position:absolute;inset:0;z-index:30;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.2) 3px 4px)}
+  #leaderboard-view h3{font-size:2rem;margin:.5rem 0 1.5rem}.leaderboard-game-section{border-top:1px solid var(--arcade-line);padding:1rem 0}.leaderboard-game-title{color:var(--arcade-lime);font-size:.7rem;letter-spacing:.12em}.leaderboard-list{padding:0;list-style:none}.leaderboard-list li{display:flex;justify-content:space-between;padding:.45rem 0;color:#aeb2af;font: .8rem monospace}
+  #adventure-wrapper{display:flex;flex-direction:column;gap:.75rem}.adventure-top-bar{display:flex;gap:.5rem;align-items:center}.adventure-main-layout{display:grid;grid-template-columns:180px 1fr;gap:.75rem}.adv-side-panel,.adv-bottom-panel,.terminal-screen{box-sizing:border-box;border:1px solid #31513b;background:#020503;color:#77f39a;padding:1rem;font: .78rem/1.5 monospace}.adv-side-panel h4,.adv-bottom-panel h4{margin:0 0 .75rem;color:#c9ff3d}.adv-stat-row{display:flex;justify-content:space-between;padding:.16rem 0}.terminal-screen{min-height:420px;display:flex;flex-direction:column}.terminal-text{flex:1;white-space:pre-wrap;overflow:auto}.terminal-choices{display:flex;flex-direction:column;gap:.4rem}.inv-list{display:flex;gap:.5rem;flex-wrap:wrap}.inv-item{border:1px solid #31513b;padding:.2rem .4rem}.cutscene-content{color:#ff786b}.glitch-text{font:900 3rem Poppins}.hidden{display:none!important}.fade-in{animation:fade .35s ease}@keyframes fade{from{opacity:0;transform:translateY(8px)}}
+  @media(max-width:700px){.modal-content{width:calc(100% - 1rem);padding:1rem}.game-grid{grid-template-columns:1fr}.game-select-btn{min-height:150px}.game-layout-wrapper{grid-template-columns:1fr}.game-controls-info{display:grid;grid-template-columns:1fr 1fr}.side-btn{grid-column:1/-1}.adventure-main-layout{grid-template-columns:1fr}.modal-header{align-items:flex-start}.header-actions{flex-wrap:wrap;justify-content:flex-end}.eyebrow{display:none}.game-meta>span{display:none}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
 <script>
