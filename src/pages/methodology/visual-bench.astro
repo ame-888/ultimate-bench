@@ -5,20 +5,30 @@ import '../../styles/content-pages.css';
 const levels = Array.from({ length: 6 }, (_, index) => index + 1);
 ---
 
-<Layout title="Visual Bench Methodology | Ultimate Bench" description="Detailed protocols for Visual Bench, including the Level 1 Mole character-localization evaluation.">
+<Layout title="Visual Bench Methodology | Ultimate Bench" description="Detailed protocols for Visual Bench Levels 1 and 2: Mole and Rhino character-localization evaluations.">
     <main class="content-page visual-methodology">
         <header class="page-heading">
             <span class="page-kicker">Benchmark protocols</span>
             <h1>Visual Bench Methodology</h1>
-            <p>Visual Bench contains six progressively structured levels. This page publishes the complete Level 1 protocol; documentation for the remaining levels will be added progressively.</p>
+            <p>Visual Bench contains six progressively structured levels. This page publishes the complete protocols for Levels 1 and 2; documentation for Levels 3–6 is in progress.</p>
         </header>
 
         <nav class="level-navigation" aria-label="Visual Bench levels">
-            <a class="current" href="#level-1" aria-current="page"><span>Level 1</span><strong>Mole</strong></a>
-            {levels.slice(1).map((level) => (
+            <a href="#level-1"><span>Level 1</span><strong>Mole</strong></a>
+            <a href="#level-2-rhino"><span>Level 2</span><strong>Rhino</strong></a>
+            {levels.slice(2).map((level) => (
                 <span class="pending"><strong>Level {level}</strong><small>Protocol documentation in progress</small></span>
             ))}
         </nav>
+
+        <aside class="level-comparison" aria-labelledby="documented-levels-title">
+            <h2 id="documented-levels-title">Documented-level comparison</h2>
+            <dl>
+                <div><dt>Mole</dt><dd>Intact 10 × 10 grid.</dd></div>
+                <div><dt>Rhino</dt><dd>The same grid with 50% systematic lateral cropping.</dd></div>
+            </dl>
+            <p>Rhino is a controlled degradation condition relative to Mole: the source grid and coordinate questions are held constant while lateral visual information is systematically reduced.</p>
+        </aside>
 
         <article id="level-1" class="content-card protocol" aria-labelledby="level-1-title">
             <header class="protocol-heading">
@@ -95,6 +105,84 @@ const levels = Array.from({ length: 6 }, (_, index) => index + 1);
                 <p>For each model, the Level 1 evaluation record should preserve:</p><ul><li>benchmark and stimulus version;</li><li>exact model name and version;</li><li>date of testing;</li><li>model configuration and reasoning settings;</li><li>availability of tools or code execution;</li><li>score obtained in each of the ten administrations;</li><li>total score;</li><li>original model responses;</li><li>accepted character-name variants;</li><li>non-evaluable administrations and their reasons;</li><li>whether the final result was classified as INVALID.</li></ul>
             </section>
         </article>
+
+        <article id="level-2-rhino" class="content-card protocol" aria-labelledby="level-2-rhino-title">
+            <header class="protocol-heading">
+                <p class="protocol-level">Visual Bench — Level 2: Rhino</p>
+                <h2 id="level-2-rhino-title">Rhino</h2>
+                <p class="protocol-subtitle">Repeated Coordinate-Based Character Localization Under Systematic Lateral Cropping</p>
+            </header>
+
+            <section aria-labelledby="rhino-purpose"><h3 id="rhino-purpose">Purpose</h3>
+                <p>Level 2 evaluates repeatable correct character recognition and coordinate grounding when the Level 1 visual stimulus is subjected to a controlled loss of lateral visual information.</p>
+                <p>It uses the same source grid and the same ten coordinate questions as Level 1. This pairing supports a direct comparison between performance with the intact stimulus and performance under a standardized degradation condition; it does not isolate a single cognitive or architectural mechanism.</p>
+            </section>
+
+            <section aria-labelledby="rhino-stimulus"><h3 id="rhino-stimulus">Visual stimulus and transformation</h3>
+                <p>The Level 2 stimulus is derived from the fixed Level 1 10 × 10 character grid. Every original vertical column is reduced to the same retained lateral half: one lateral half is removed consistently from every column, and the ten surviving strips are concatenated in their original left-to-right order.</p>
+                <p>The transformed image retains the original height and approximately half of the original width. Despite this physical reduction, it remains logically a grid of 10 rows × 10 columns: each concatenated strip corresponds to its original column, and every character retains its original row–column coordinate.</p>
+                <p>The benchmark record currently does not establish here whether the left or right half is retained. That property must not be inferred and must be recorded in the stimulus-version metadata so that the transformation can be reproduced.</p>
+            </section>
+
+            <section aria-labelledby="rhino-coordinates"><h3 id="rhino-coordinates">Coordinate system and questions</h3>
+                <p>Level 2 preserves Level 1’s one-based row–column coordinate system. Rows are counted from top to bottom, columns from left to right, the upper-left cell is (1,1), and the lower-right cell is (10,10).</p>
+                <p>The same ten positions queried in Level 1 are queried in Level 2, in the same wording and order. Each question asks the model to identify the character at a specified coordinate, and the model is expected to provide one identifiable character name for each position.</p>
+            </section>
+
+            <section aria-labelledby="rhino-administration"><h3 id="rhino-administration">Repeated-administration procedure</h3>
+                <p>The exact transformed prompt is repeated ten times. The transformed grid, retained lateral half, concatenation order, ten queried coordinates, question wording and order, and scoring criteria remain unchanged across all administrations.</p>
+                <p>The evaluation therefore produces:</p>
+                <ul><li>10 unique queried positions;</li><li>10 identical administrations of each query;</li><li>100 scored response instances in total.</li></ul>
+                <p><strong>The 100 scored responses are repeated measurements of ten unique items, not 100 independent items.</strong> Repetition measures whether correct performance is reproduced under the same degraded visual input.</p>
+            </section>
+
+            <section aria-labelledby="rhino-scoring"><h3 id="rhino-scoring">Scoring</h3>
+                <p>Each response instance is scored dichotomously using the Level 1 criteria: 1 point for correctly identifying the character at the requested coordinate, and 0 points for an incorrect, missing, or non-evaluable answer.</p>
+                <p>Each administration yields 0–10 points. The official Level 2 score is the sum of correct responses across ten questions in each of ten administrations:</p>
+                <figure class="score-formula">
+                    <math display="block" aria-label="S sub Rhino equals the sum from r equals 1 to 10 of the sum from q equals 1 to 10 of x sub r q">
+                        <msub><mi>S</mi><mtext>Rhino</mtext></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>r</mi><mo>=</mo><mn>1</mn></mrow><mn>10</mn></munderover><munderover><mo>∑</mo><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><mn>10</mn></munderover><msub><mi>x</mi><mrow><mi>r</mi><mi>q</mi></mrow></msub>
+                    </math>
+                    <figcaption>Official Level 2 score: correct response instances summed over ten questions in each of ten administrations.</figcaption>
+                </figure>
+                <p>The final score ranges from 0 to 100 and is displayed as a percentage. It measures <strong>repeatable correct performance under degraded visual input</strong>, jointly reflecting recognition, coordinate grounding, and response stability in this specific condition.</p>
+            </section>
+
+            <section aria-labelledby="rhino-invalid"><h3 id="rhino-invalid">Invalid-result rule</h3>
+                <p>The Level 1 invalid-result rule also applies to Level 2. A result is <strong>INVALID</strong> when three consecutive administrations are non-evaluable because the requested answers cannot be scored reliably. Incorrect but evaluable answers receive zero points and do not count as non-evaluable administrations.</p>
+                <p>Testing ends after the third consecutive non-evaluable administration. INVALID is numerically zero for leaderboard aggregation but remains conceptually distinct from an evaluated score of zero.</p>
+            </section>
+
+            <section aria-labelledby="rhino-supplementary"><h3 id="rhino-supplementary">Supplementary Level 1–Level 2 comparisons</h3>
+                <p>The following are <strong>supplementary analyses only</strong>. They describe the paired scores but do not alter the official leaderboard score, weights, rankings, or ranking logic.</p>
+                <div class="supplementary-formulas">
+                    <figure class="score-formula">
+                        <math display="block" aria-label="Absolute loss equals the Level 1 score minus the Level 2 score"><mi>L</mi><mo>=</mo><msub><mi>S</mi><mtext>Mole</mtext></msub><mo>−</mo><msub><mi>S</mi><mtext>Rhino</mtext></msub></math>
+                        <figcaption>Supplementary absolute loss: Level 1 score minus Level 2 score.</figcaption>
+                    </figure>
+                    <figure class="score-formula">
+                        <math display="block" aria-label="Performance retention equals the Level 2 score divided by the Level 1 score, multiplied by 100 percent"><mi>R</mi><mo>=</mo><mfrac><msub><mi>S</mi><mtext>Rhino</mtext></msub><msub><mi>S</mi><mtext>Mole</mtext></msub></mfrac><mo>×</mo><mn>100</mn><mo>%</mo></math>
+                        <figcaption>Supplementary performance retention: Level 2 score divided by Level 1 score, multiplied by 100.</figcaption>
+                    </figure>
+                </div>
+                <p>Performance retention must not be calculated when the Level 1 score is zero or when the Level 1 result is INVALID. These comparisons should not be interpreted as proving why performance changed.</p>
+            </section>
+
+            <section aria-labelledby="rhino-interpretation"><h3 id="rhino-interpretation">Interpretation</h3>
+                <p>A higher Level 2 score indicates more repeatable correct recognition and spatial grounding on this fixed grid after the specified lateral cropping. Comparison with Level 1 describes the observed effect of the controlled visual degradation for the same ten questions.</p>
+                <p>The protocol does not prove Gestalt completion, identify reliance on pixel matching, isolate a particular cognitive process, or establish general robustness to real-world occlusion. The transformation is regular, the stimulus and questions are fixed, and many kinds of natural occlusion are not represented.</p>
+            </section>
+
+            <section aria-labelledby="rhino-limitations"><h3 id="rhino-limitations">Limitations and potential confounders</h3>
+                <p>In addition to the Level 1 limitations, performance may depend on which lateral half is retained, how column boundaries and rounding are implemented, resampling or compression during transformation, and whether distinctive character features survive the crop.</p>
+                <p>Because the same transformed image and questions are repeated, results are specific to these ten items and this stimulus version. They should not be generalized to arbitrary crops, irregular occlusion, unfamiliar characters, or broader real-world vision tasks.</p>
+            </section>
+
+            <section aria-labelledby="rhino-record"><h3 id="rhino-record">Recommended result record</h3>
+                <p>Alongside the Level 1 result fields, the Level 2 record should preserve:</p>
+                <ul><li>the source-grid and transformed-stimulus versions;</li><li>whether the left or right lateral half was retained;</li><li>the exact cropping, rounding, concatenation, resizing, and encoding procedure;</li><li>the transformed image’s dimensions and file hash;</li><li>scores and original responses for all administrations;</li><li>accepted name variants and manual-review decisions;</li><li>all non-evaluable administrations and the final validity status.</li></ul>
+            </section>
+        </article>
     </main>
 </Layout>
 
@@ -109,9 +197,17 @@ const levels = Array.from({ length: 6 }, (_, index) => index + 1);
     .level-navigation span, .level-navigation small { color: #8291a5; }
     .level-navigation strong { color: #e2e8f0; font-size: .9rem; }
     .level-navigation small { margin-top: .25rem; font-size: .72rem; line-height: 1.35; }
-    .level-navigation .current { border-color: rgba(94,234,212,.45); }
-    .level-navigation .current span { color: #99f6e4; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; }
+    .level-navigation a { border-color: rgba(94,234,212,.45); }
+    .level-navigation a span { color: #99f6e4; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; }
+    .level-comparison { max-width: 52rem; margin: 0 0 2rem; padding: 1rem 1.25rem; border-left: 3px solid var(--page-accent); background: rgba(15,23,42,.42); }
+    .level-comparison h2 { margin: 0 0 .75rem; color: #f8fafc; font-size: 1.1rem; }
+    .level-comparison dl { display: flex; flex-wrap: wrap; gap: .5rem 2rem; margin: 0; }
+    .level-comparison dl div { display: flex; gap: .5rem; }
+    .level-comparison dt { color: #f8fafc; font-weight: 800; }
+    .level-comparison dd { margin: 0; color: #cbd5e1; }
+    .level-comparison p { margin: .75rem 0 0; color: #a8b5c7; font-size: .9rem; }
     .protocol { scroll-margin-top: 2rem; }
+    .protocol + .protocol { margin-top: 2rem; }
     .protocol-heading { padding-bottom: 1.5rem; border-bottom: 1px solid rgba(148,163,184,.16); }
     .protocol-heading .protocol-level { margin: 0; color: var(--page-accent); font-size: .75rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
     .protocol-heading h2 { margin: .35rem 0; font-size: clamp(2.25rem, 6vw, 4rem); }
@@ -122,10 +218,12 @@ const levels = Array.from({ length: 6 }, (_, index) => index + 1);
     .score-formula { max-width: 34rem; margin: 1.5rem 0; padding: 1.25rem; overflow-x: auto; border: 1px solid rgba(94,234,212,.22); border-radius: 1rem; text-align: center; background: rgba(15,23,42,.55); }
     .score-formula math { color: #f8fafc; font-size: clamp(1.25rem, 4vw, 1.8rem); }
     .score-formula figcaption { margin-top: .8rem; color: #94a3b8; font-size: .75rem; line-height: 1.5; }
+    .supplementary-formulas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+    .supplementary-formulas .score-formula { min-width: 0; margin: .75rem 0; }
     .validity-comparison { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin: 1rem 0 1.5rem; }
     .validity-comparison div { padding: 1rem; border: 1px solid rgba(148,163,184,.16); border-radius: .75rem; background: rgba(15,23,42,.4); }
     .validity-comparison dt { color: #f8fafc; font-weight: 800; }
     .validity-comparison dd { margin: .35rem 0 0; color: #a8b5c7; font-size: .9rem; line-height: 1.6; }
-    @media (max-width: 700px) { .level-navigation { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 700px) { .level-navigation { grid-template-columns: 1fr 1fr; } .supplementary-formulas { grid-template-columns: 1fr; } }
     @media (max-width: 440px) { .level-navigation, .validity-comparison { grid-template-columns: 1fr; } }
 </style>
