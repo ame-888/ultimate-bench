@@ -24,6 +24,26 @@ function isNew(dateStr) {
     return diffDays >= -1 && diffDays <= 30;
 }
 
+function formatReleaseDate(dateStr) {
+    return new Intl.DateTimeFormat('en-US', {
+        day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC'
+    }).format(new Date(`${dateStr}T00:00:00Z`));
+}
+
+function formatTimeAgo(dateStr, now = SIMULATED_NOW) {
+    const release = new Date(`${dateStr}T00:00:00Z`);
+    const today = new Date(now);
+    const days = Math.max(0, Math.floor((today.getTime() - release.getTime()) / 86_400_000));
+    if (days === 0) return 'today';
+    if (days === 1) return '1 day ago';
+    if (days < 30) return `${days} days ago`;
+    const months = Math.floor(days / 30.4375);
+    if (months === 1) return '1 month ago';
+    if (months < 12) return `${months} months ago`;
+    const years = Math.floor(months / 12);
+    return `${years} ${years === 1 ? 'year' : 'years'} ago`;
+}
+
 const modelProviders = [
     { match: 'gemini', name: 'Google', slug: 'google' },
     { match: 'muse', name: 'Meta AI', slug: 'meta' },
@@ -483,6 +503,11 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                             <div class={`ultimate-model model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="model-info" data-provider={getModelProvider(item.name).name}>
                                                     <strong class="model-name" data-release-date={item.releaseDate}>{item.name}</strong>
+                                                    <span class="ultimate-release-date">
+                                                        <time datetime={item.releaseDate}>{formatReleaseDate(item.releaseDate)}</time>
+                                                        <span aria-hidden="true"> · </span>
+                                                        <span class="release-time-ago">{formatTimeAgo(item.releaseDate)}</span>
+                                                    </span>
                                                 </div>
                                                 {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
                                             </div>
@@ -2523,6 +2548,8 @@ There are currently three levels in use. The fourth level will be unlocked once 
     .ultimate-model { display: flex; align-items: center; justify-content: space-between; min-height: 3rem; margin-right: .75rem; padding: .35rem .45rem; border-radius: 7px; }
     .ultimate-model .model-info { min-width: 0; }
     .ultimate-model .model-name { display: block; overflow: hidden; color: #edf2f8; font-size: .94rem; text-overflow: ellipsis; white-space: nowrap; }
+    .ultimate-release-date { display: block; margin-top: .22rem; color: #72839a; font-size: .64rem; font-weight: 600; letter-spacing: .015em; white-space: nowrap; }
+    .ultimate-release-date time { color: #9aabc0; }
     .ultimate-metric { position: relative; color: #d4dbe5; font-family: var(--font-heading); font-size: 1.22rem; font-variant-numeric: tabular-nums; }
     .ultimate-metric small, .ultimate-score-cell small { margin-left: .12rem; color: #65758b; font-size: .68rem; }
     .ultimate-bench-section .ultimate-score-cell { color: #fbbf24 !important; font-family: var(--font-heading); font-size: 1.5rem; font-variant-numeric: tabular-nums; text-align: center !important; }
@@ -2973,6 +3000,24 @@ There are currently three levels in use. The fourth level will be unlocked once 
         // --- Dynamic "NEW" Badge Logic ---
         const timeOffset = TIME_OFFSET;
         const simNow = new Date(new Date().getTime() + timeOffset);
+
+        const relativeReleaseTime = (dateStr) => {
+            const release = new Date(`${dateStr}T00:00:00Z`);
+            const days = Math.max(0, Math.floor((simNow.getTime() - release.getTime()) / 86400000));
+            if (days === 0) return 'today';
+            if (days === 1) return '1 day ago';
+            if (days < 30) return `${days} days ago`;
+            const months = Math.floor(days / 30.4375);
+            if (months === 1) return '1 month ago';
+            if (months < 12) return `${months} months ago`;
+            const years = Math.floor(months / 12);
+            return `${years} ${years === 1 ? 'year' : 'years'} ago`;
+        };
+
+        document.querySelectorAll('.ultimate-model .model-name[data-release-date]').forEach(el => {
+            const relative = el.parentElement?.querySelector('.release-time-ago');
+            if (relative) relative.textContent = relativeReleaseTime(el.getAttribute('data-release-date'));
+        });
 
         document.querySelectorAll('.model-name[data-release-date]').forEach(el => {
             const dateStr = el.getAttribute('data-release-date');
