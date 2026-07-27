@@ -382,15 +382,17 @@ const paretoModels = ultimateBenchList.filter(item => !ultimateBenchList.some(ot
     (other.blendedCost < item.blendedCost || other.ultimateScore > item.ultimateScore)
 ));
 const paretoNames = new Set(paretoModels.map(item => item.name));
+const sotaScore = Math.max(0, ...ultimateBenchList.map(item => item.ultimateScore));
+const sotaModelName = ultimateBenchList.find(item => item.ultimateScore === sotaScore)?.name ?? "None";
 const chartWidth = 1200;
 const chartHeight = 640;
 const chartPad = { left: 82, right: 42, top: 42, bottom: 72 };
 const minCostPower = Math.floor(Math.log10(Math.min(...ultimateBenchList.map(item => item.blendedCost))));
 const maxCostPower = Math.ceil(Math.log10(Math.max(...ultimateBenchList.map(item => item.blendedCost))));
 const costTicks = Array.from({ length: maxCostPower - minCostPower + 1 }, (_, index) => 10 ** (minCostPower + index));
-const scoreTicks = [0, 20, 40, 60, 80, 100];
+const scoreTicks = Array.from({ length: 5 }, (_, index) => (sotaScore * index) / 4);
 const chartX = (cost) => chartPad.left + ((Math.log10(cost) - minCostPower) / (maxCostPower - minCostPower)) * (chartWidth - chartPad.left - chartPad.right);
-const chartY = (score) => chartPad.top + ((100 - score) / 100) * (chartHeight - chartPad.top - chartPad.bottom);
+const chartY = (score) => chartPad.top + ((sotaScore - score) / sotaScore) * (chartHeight - chartPad.top - chartPad.bottom);
 const frontierPoints = [...paretoModels].sort((a, b) => a.blendedCost - b.blendedCost).map(item => `${chartX(item.blendedCost)},${chartY(item.ultimateScore)}`).join(' ');
 
 function getRankDisplay(rank) {
@@ -399,9 +401,6 @@ function getRankDisplay(rank) {
     if (rank === 'INVALID') return `<span class="zero-score-glow">INVALID</span>`;
     return `${rank}`;
 }
-
-const sotaScore = ultimateBenchList.length > 0 ? ultimateBenchList[0].ultimateScore : 0;
-const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name : "None";
 
 ---
 
@@ -549,15 +548,17 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                 <p>Every frontier model offers a performance level no cheaper model can match. Everything below the gold line is dominated by a stronger bargain.</p>
                                 <div class="pareto-stat"><strong>{paretoModels.length}</strong><span>frontier models</span></div>
                             </header>
-                            <div class="pareto-legend" aria-hidden="true"><span><i class="frontier-dot"></i>Pareto frontier</span><span><i></i>Other models</span><small>Best direction ↖</small></div>
+                            <div class="pareto-legend" aria-hidden="true"><span><i class="frontier-dot"></i>Pareto frontier</span><span><i></i>Other models</span><small>0 → current SOTA · Best direction ↖</small></div>
                             <div class="pareto-chart-wrap">
                                 <svg class="pareto-chart" viewBox={`0 0 ${chartWidth} ${chartHeight}`} role="img" aria-labelledby="pareto-svg-title pareto-svg-desc">
                                     <title id="pareto-svg-title">Model performance versus blended token cost</title>
-                                    <desc id="pareto-svg-desc">A logarithmic scatter plot. Models on the gold Pareto frontier are not outperformed by any model at the same or lower price.</desc>
-                                    {scoreTicks.map(tick => <g class="chart-grid"><line x1={chartPad.left} y1={chartY(tick)} x2={chartWidth - chartPad.right} y2={chartY(tick)}/><text x={chartPad.left - 18} y={chartY(tick) + 5}>{tick}%</text></g>)}
+                                    <desc id="pareto-svg-desc">A logarithmic scatter plot scaled from zero to the current state-of-the-art score. Models on the gold Pareto frontier are not outperformed by any model at the same or lower price.</desc>
+                                    <rect class="chart-plot-bg" x={chartPad.left} y={chartPad.top} width={chartWidth - chartPad.left - chartPad.right} height={chartHeight - chartPad.top - chartPad.bottom} rx="14"/>
+                                    {scoreTicks.map((tick, index) => <g class={`chart-grid ${index === scoreTicks.length - 1 ? 'sota-grid' : ''}`}><line x1={chartPad.left} y1={chartY(tick)} x2={chartWidth - chartPad.right} y2={chartY(tick)}/><text x={chartPad.left - 18} y={chartY(tick) + 5}>{tick.toFixed(1)}%</text></g>)}
                                     {costTicks.map(tick => <g class="chart-grid chart-grid-x"><line x1={chartX(tick)} y1={chartPad.top} x2={chartX(tick)} y2={chartHeight - chartPad.bottom}/><text x={chartX(tick)} y={chartHeight - chartPad.bottom + 32}>${tick < 1 ? tick.toFixed(2) : tick}</text></g>)}
+                                    <g class="sota-marker" transform={`translate(${chartWidth - chartPad.right - 10} ${chartPad.top})`}><rect x="-164" y="-17" width="164" height="26" rx="13"/><text x="-12" y="1">SOTA · {sotaScore.toFixed(1)}%</text></g>
                                     <text class="axis-title" x={(chartWidth + chartPad.left - chartPad.right) / 2} y={chartHeight - 15}>BLENDED COST · USD PER 1M TOKENS · LOG SCALE</text>
-                                    <text class="axis-title axis-title-y" transform={`translate(22 ${(chartHeight - chartPad.bottom + chartPad.top) / 2}) rotate(-90)`}>OVERALL SCORE</text>
+                                    <text class="axis-title axis-title-y" transform={`translate(20 ${(chartHeight - chartPad.bottom + chartPad.top) / 2}) rotate(-90)`}>OVERALL SCORE · 0 TO SOTA</text>
                                     <polyline class="frontier-glow" points={frontierPoints}/><polyline class="frontier-line" points={frontierPoints}/>
                                     {ultimateBenchList.map(item => (
                                         <g class={`pareto-point ${paretoNames.has(item.name) ? 'is-frontier' : ''}`} data-model-name={item.name.toLowerCase()} data-provider={getModelProvider(item.name).name} transform={`translate(${chartX(item.blendedCost)} ${chartY(item.ultimateScore)})`} tabindex="0" role="img" aria-label={`${item.name}: ${item.ultimateScore.toFixed(1)} percent overall at $${item.blendedCost.toFixed(2)} per million tokens`}>
@@ -2637,13 +2638,14 @@ There are currently three levels in use. The fourth level will be unlocked once 
     .filter-count { margin-left: auto; color: #718198; font-size: .7rem; font-weight: 700; white-space: nowrap; }
     .filter-clear { padding: .4rem .55rem; border: 0; background: transparent; color: #d4a72c; font: 700 .68rem var(--font-body); cursor: pointer; white-space: nowrap; }
     .filter-clear:hover { color: #fbbf24; text-decoration: underline; }
-    .pareto-panel { width: min(100%, 82rem); margin: 0 auto .75rem; padding: clamp(1rem, 3vw, 2rem); overflow: hidden; border: 1px solid #4b3d1c; border-radius: 18px; background: radial-gradient(circle at 18% 0, rgba(251,191,36,.12), transparent 30%), linear-gradient(145deg, #0c1726, #070d17 72%); box-shadow: inset 0 1px rgba(255,255,255,.03), 0 24px 70px rgba(0,0,0,.22); }
+    .pareto-panel { position: relative; isolation: isolate; width: min(100%, 82rem); margin: 0 auto .75rem; padding: clamp(1rem, 3vw, 2rem); overflow: hidden; border: 1px solid rgba(251,191,36,.32); border-radius: 24px; background: radial-gradient(circle at 12% -15%, rgba(251,191,36,.2), transparent 29%), radial-gradient(circle at 92% 15%, rgba(56,189,248,.12), transparent 25%), linear-gradient(145deg, #0d1929, #060b13 72%); box-shadow: inset 0 1px rgba(255,255,255,.06), 0 30px 90px rgba(0,0,0,.4), 0 0 60px rgba(245,158,11,.05); }
+    .pareto-panel::before { content: ""; position: absolute; z-index: -1; inset: 0; opacity: .22; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px); background-size: 32px 32px; mask-image: linear-gradient(to bottom, #000, transparent 65%); }
     .pareto-panel[hidden] { display: none; }
-    .pareto-header { display: grid; grid-template-columns: 1fr minmax(18rem, 1.3fr) auto; gap: 2rem; align-items: end; padding-bottom: 1.25rem; border-bottom: 1px solid #26344c; }
+    .pareto-header { display: grid; grid-template-columns: 1fr minmax(18rem, 1.3fr) auto; gap: 2rem; align-items: end; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(148,163,184,.17); }
     .pareto-kicker { color: #d4a72c; font-size: .61rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
-    .pareto-header h3 { margin: .35rem 0 0; color: #f8fafc; font: 800 clamp(1.35rem, 3vw, 2rem)/1 var(--font-heading); letter-spacing: -.03em; }
+    .pareto-header h3 { margin: .35rem 0 0; color: #f8fafc; font: 800 clamp(1.55rem, 3vw, 2.35rem)/1 var(--font-heading); letter-spacing: -.045em; text-shadow: 0 8px 30px rgba(0,0,0,.5); }
     .pareto-header p { margin: 0; color: #91a0b4; font-size: .76rem; line-height: 1.65; }
-    .pareto-stat { display: flex; flex-direction: column; padding-left: 1.25rem; border-left: 1px solid #3a321e; }
+    .pareto-stat { display: flex; flex-direction: column; min-width: 7.5rem; padding: .7rem 1rem; border: 1px solid rgba(251,191,36,.2); border-radius: 12px; background: rgba(251,191,36,.055); }
     .pareto-stat strong { color: #fbbf24; font: 800 2rem var(--font-heading); }
     .pareto-stat span { color: #7f8da1; font-size: .58rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; }
     .pareto-legend { display: flex; gap: 1.2rem; align-items: center; margin: 1rem 0 -.25rem; color: #8190a5; font-size: .65rem; font-weight: 700; }
@@ -2651,19 +2653,24 @@ There are currently three levels in use. The fourth level will be unlocked once 
     .pareto-legend i { width: .55rem; height: .55rem; border-radius: 50%; background: #64748b; }
     .pareto-legend .frontier-dot { background: #fbbf24; box-shadow: 0 0 10px rgba(251,191,36,.65); }
     .pareto-legend small { margin-left: auto; color: #b79845; font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; }
-    .pareto-chart-wrap { overflow-x: auto; }
+    .pareto-chart-wrap { margin-top: .55rem; overflow-x: auto; border: 1px solid rgba(148,163,184,.12); border-radius: 18px; background: rgba(2,6,15,.32); box-shadow: inset 0 1px rgba(255,255,255,.025); }
     .pareto-chart { display: block; min-width: 760px; width: 100%; height: auto; overflow: visible; }
-    .chart-grid line { stroke: #243147; stroke-width: 1; }
-    .chart-grid text { fill: #65758b; font: 600 13px var(--font-body); text-anchor: end; }
+    .chart-plot-bg { fill: rgba(8,18,31,.6); stroke: rgba(148,163,184,.09); }
+    .chart-grid line { stroke: #29384d; stroke-width: 1; stroke-dasharray: 3 7; }
+    .chart-grid text { fill: #71839a; font: 600 13px var(--font-body); text-anchor: end; }
     .chart-grid-x text { text-anchor: middle; }
+    .chart-grid.sota-grid line { stroke: rgba(251,191,36,.75); stroke-width: 1.5; stroke-dasharray: none; }
+    .chart-grid.sota-grid text { fill: #fcd34d; font-weight: 800; }
+    .sota-marker rect { fill: #3b2e0c; stroke: #8b6b19; }
+    .sota-marker text { fill: #fde68a; font: 800 11px var(--font-body); letter-spacing: .08em; text-anchor: end; }
     .axis-title { fill: #64748b; font: 800 11px var(--font-body); letter-spacing: 1.7px; text-anchor: middle; }
     .frontier-glow, .frontier-line { fill: none; stroke-linecap: round; stroke-linejoin: round; }
-    .frontier-glow { stroke: rgba(251,191,36,.18); stroke-width: 14; }
-    .frontier-line { stroke: #fbbf24; stroke-width: 3; }
+    .frontier-glow { stroke: rgba(251,191,36,.2); stroke-width: 18; }
+    .frontier-line { stroke: #fbbf24; stroke-width: 4; }
     .pareto-point { cursor: crosshair; outline: none; }
-    .pareto-point circle { fill: #718198; stroke: #0b1421; stroke-width: 3; transition: r .18s, fill .18s; }
+    .pareto-point circle { fill: #65758b; stroke: #0b1421; stroke-width: 3; opacity: .82; transition: r .18s, fill .18s, opacity .18s; }
     .pareto-point text { fill: #c7d2e0; font: 700 12px var(--font-body); paint-order: stroke; stroke: #09111d; stroke-width: 4px; stroke-linejoin: round; }
-    .pareto-point.is-frontier circle { fill: #fbbf24; stroke: #614b16; filter: drop-shadow(0 0 6px rgba(251,191,36,.55)); }
+    .pareto-point.is-frontier circle { fill: #fbbf24; stroke: #6b5012; opacity: 1; filter: drop-shadow(0 0 9px rgba(251,191,36,.7)); }
     .pareto-point:hover circle, .pareto-point:focus circle { r: 12; fill: #f8fafc; }
     .pareto-point.is-filtered { display: none; }
     .pareto-footnote { margin: -.15rem 0 0; color: #718198; font-size: .68rem; line-height: 1.5; }
