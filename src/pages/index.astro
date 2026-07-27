@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { benchmarks } from '../data/benchmarks';
+import CreatureIcon from '../components/CreatureIcon.astro';
 import { getSimulatedDate, TIME_OFFSET } from '../scripts/TimeUtils';
 
 
@@ -839,14 +840,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                         </span>
                                     </div>
                                     <div class="creature-icon mole-icon">
-                                        <svg viewBox="0 0 16 16" width="24" height="24">
-                                            <rect x="5" y="7" width="6" height="4" fill="#A0522D"/>
-                                            <rect x="4" y="8" width="8" height="4" fill="#A0522D"/>
-                                            <rect x="3" y="10" width="10" height="4" fill="#A0522D"/>
-                                            <rect x="5" y="8" width="1" height="1" fill="#fff"/>
-                                            <rect x="9" y="8" width="1" height="1" fill="#fff"/>
-                                            <rect x="7" y="10" width="2" height="1" fill="#ffcccc"/>
-                                        </svg>
+                                        <CreatureIcon creature="mole" />
                                     </div>
                                 </div>
                                 <div class="col-header rhino-header">
@@ -858,12 +852,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                         </span>
                                     </div>
                                     <div class="creature-icon rhino-icon">
-                                        <svg viewBox="0 0 16 16" width="24" height="24">
-                                            <rect x="3" y="6" width="10" height="8" fill="#708090"/>
-                                            <rect x="12" y="7" width="2" height="6" fill="#708090"/>
-                                            <rect x="13" y="5" width="1" height="2" fill="#fff"/>
-                                            <rect x="4" y="8" width="1" height="1" fill="#000"/>
-                                        </svg>
+                                        <CreatureIcon creature="rhino" />
                                     </div>
                                 </div>
                                 <div class="col-header chimp-header">
@@ -875,13 +864,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                         </span>
                                     </div>
                                     <div class="creature-icon chimp-icon">
-                                        <svg viewBox="0 0 16 16" width="24" height="24">
-                                            <rect x="5" y="4" width="6" height="8" fill="#5C4033"/>
-                                            <rect x="4" y="5" width="8" height="6" fill="#5C4033"/>
-                                            <rect x="6" y="6" width="4" height="4" fill="#DEB887"/>
-                                            <rect x="6" y="7" width="1" height="1" fill="#000"/>
-                                            <rect x="9" y="7" width="1" height="1" fill="#000"/>
-                                        </svg>
+                                        <CreatureIcon creature="chimpanzee" />
                                     </div>
                                 </div>
                                 <div class="col-header owl-header">
@@ -893,15 +876,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                         </span>
                                     </div>
                                     <div class="creature-icon owl-icon">
-                                        <svg viewBox="0 0 16 16" width="24" height="24">
-                                            <rect x="5" y="3" width="6" height="10" fill="#8B4513"/>
-                                            <rect x="4" y="5" width="8" height="8" fill="#8B4513"/>
-                                            <rect x="5" y="6" width="2" height="2" fill="#FFD700"/>
-                                            <rect x="9" y="6" width="2" height="2" fill="#FFD700"/>
-                                            <rect x="5.5" y="6.5" width="1" height="1" fill="#000"/>
-                                            <rect x="9.5" y="6.5" width="1" height="1" fill="#000"/>
-                                            <rect x="7" y="8" width="2" height="2" fill="#FFA500"/>
-                                        </svg>
+                                        <CreatureIcon creature="owl" />
                                     </div>
                                 </div>
                                 <div class="col-header eagle-header">
@@ -913,12 +888,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                         </span>
                                     </div>
                                     <div class="creature-icon eagle-icon">
-                                        <svg viewBox="0 0 16 16" width="24" height="24">
-                                            <rect x="5" y="3" width="6" height="6" fill="#fff"/>
-                                            <rect x="4" y="9" width="8" height="6" fill="#8B4513"/>
-                                            <rect x="10" y="5" width="3" height="2" fill="#FFD700"/>
-                                            <rect x="6" y="5" width="1" height="1" fill="#000"/>
-                                        </svg>
+                                        <CreatureIcon creature="eagle" />
                                     </div>
                                 </div>
                                 <div class="col-header beholder-header">
@@ -930,16 +900,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                         </span>
                                     </div>
                                     <div class="creature-icon beholder-icon">
-                                        <svg viewBox="0 0 16 16" width="24" height="24">
-                                            <rect x="4" y="4" width="8" height="8" fill="#8A2BE2"/>
-                                            <rect x="5" y="5" width="6" height="6" fill="#9400D3"/>
-                                            <rect x="6" y="6" width="4" height="4" fill="#fff"/>
-                                            <rect x="7" y="7" width="2" height="2" fill="#FF0000"/>
-                                            <rect x="2" y="2" width="2" height="2" fill="#8A2BE2"/>
-                                            <rect x="12" y="2" width="2" height="2" fill="#8A2BE2"/>
-                                            <rect x="2" y="12" width="2" height="2" fill="#8A2BE2"/>
-                                            <rect x="12" y="12" width="2" height="2" fill="#8A2BE2"/>
-                                        </svg>
+                                        <CreatureIcon creature="beholder" />
                                     </div>
                                 </div>
                             </div>
@@ -1021,16 +982,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                             </span>
                                         </div>
                                         <div class="creature-icon mouse-icon">
-                                            <svg viewBox="0 0 16 16" width="24" height="24">
-                                                <rect x="5" y="7" width="6" height="4" fill="#A0522D"/>
-                                                <rect x="4" y="8" width="8" height="4" fill="#A0522D"/>
-                                                <rect x="3" y="10" width="10" height="4" fill="#A0522D"/>
-                                                <rect x="5" y="8" width="1" height="1" fill="#fff"/>
-                                                <rect x="9" y="8" width="1" height="1" fill="#fff"/>
-                                                <!-- Add tail for mouse -->
-                                                <rect x="13" y="10" width="3" height="1" fill="#A0522D"/>
-                                                <rect x="15" y="9" width="1" height="1" fill="#A0522D"/>
-                                            </svg>
+                                            <CreatureIcon creature="mouse" />
                                         </div>
                                     </div>
                                     <div class="col-header spider-header" style="flex: 1;">
@@ -1042,18 +994,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                             </span>
                                         </div>
                                         <div class="creature-icon spider-icon">
-                                            <svg viewBox="0 0 16 16" width="24" height="24">
-                                                <rect x="6" y="5" width="4" height="6" fill="#111111"/>
-                                                <rect x="5" y="6" width="6" height="4" fill="#111111"/>
-                                                <rect x="6" y="6" width="1" height="1" fill="#FF0000"/>
-                                                <rect x="9" y="6" width="1" height="1" fill="#FF0000"/>
-                                                <rect x="4" y="4" width="1" height="3" fill="#111"/>
-                                                <rect x="11" y="4" width="1" height="3" fill="#111"/>
-                                                <rect x="3" y="7" width="2" height="1" fill="#111"/>
-                                                <rect x="11" y="7" width="2" height="1" fill="#111"/>
-                                                <rect x="4" y="9" width="1" height="3" fill="#111"/>
-                                                <rect x="11" y="9" width="1" height="3" fill="#111"/>
-                                            </svg>
+                                            <CreatureIcon creature="spider" />
                                         </div>
                                     </div>
                                     <div class="col-header wolf-header" style="flex: 1;">
@@ -1065,15 +1006,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                             </span>
                                         </div>
                                         <div class="creature-icon wolf-icon">
-                                            <svg viewBox="0 0 16 16" width="24" height="24">
-                                                <rect x="5" y="4" width="6" height="6" fill="#555555"/>
-                                                <rect x="4" y="5" width="8" height="4" fill="#555555"/>
-                                                <rect x="5" y="2" width="2" height="2" fill="#555555"/>
-                                                <rect x="9" y="2" width="2" height="2" fill="#555555"/>
-                                                <rect x="6" y="6" width="1" height="1" fill="#FFD700"/>
-                                                <rect x="9" y="6" width="1" height="1" fill="#FFD700"/>
-                                                <rect x="6" y="9" width="4" height="3" fill="#333333"/>
-                                            </svg>
+                                            <CreatureIcon creature="wolf" />
                                         </div>
                                     </div>
                                     <div class="col-header hawk-header" style="flex: 1;">
@@ -1085,17 +1018,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                             </span>
                                         </div>
                                         <div class="creature-icon hawk-icon">
-                                            <svg viewBox="0 0 16 16" width="24" height="24">
-                                                <rect x="6" y="3" width="4" height="6" fill="#8B4513"/>
-                                                <rect x="5" y="4" width="6" height="4" fill="#8B4513"/>
-                                                <rect x="2" y="4" width="3" height="2" fill="#A0522D"/>
-                                                <rect x="11" y="4" width="3" height="2" fill="#A0522D"/>
-                                                <rect x="1" y="5" width="2" height="1" fill="#CD853F"/>
-                                                <rect x="13" y="5" width="2" height="1" fill="#CD853F"/>
-                                                <rect x="6" y="4" width="1" height="1" fill="#FFD700"/>
-                                                <rect x="9" y="4" width="1" height="1" fill="#FFD700"/>
-                                                <rect x="7" y="6" width="2" height="2" fill="#FF8C00"/>
-                                            </svg>
+                                            <CreatureIcon creature="hawk" />
                                         </div>
                                     </div>
                                     <div class="col-header python-header" style="flex: 1;">
@@ -1107,14 +1030,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                             </span>
                                         </div>
                                         <div class="creature-icon python-icon">
-                                            <svg viewBox="0 0 16 16" width="24" height="24" style="image-rendering: pixelated;">
-                                                <rect x="7" y="3" width="4" height="3" fill="#228B22"/>
-                                                <rect x="6" y="6" width="2" height="5" fill="#228B22"/>
-                                                <rect x="6" y="11" width="6" height="2" fill="#228B22"/>
-                                                <rect x="12" y="8" width="2" height="5" fill="#228B22"/>
-                                                <rect x="8" y="4" width="1" height="1" fill="#FFD700"/>
-                                                <rect x="11" y="4" width="1" height="1" fill="#000000"/>
-                                            </svg>
+                                            <CreatureIcon creature="python" />
                                         </div>
                                     </div>
                                     <div class="col-header hydra-header" style="flex: 1;">
@@ -1126,19 +1042,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                             </span>
                                         </div>
                                         <div class="creature-icon hydra-icon">
-                                            <svg viewBox="0 0 16 16" width="24" height="24">
-                                                <rect x="7" y="5" width="2" height="6" fill="#00CED1"/>
-                                                <rect x="4" y="6" width="2" height="5" fill="#20B2AA"/>
-                                                <rect x="10" y="6" width="2" height="5" fill="#20B2AA"/>
-                                                <rect x="6" y="3" width="4" height="3" fill="#00CED1"/>
-                                                <rect x="2" y="4" width="3" height="3" fill="#20B2AA"/>
-                                                <rect x="11" y="4" width="3" height="3" fill="#20B2AA"/>
-                                                <rect x="7" y="4" width="1" height="1" fill="#FF4500"/>
-                                                <rect x="8" y="4" width="1" height="1" fill="#FF4500"/>
-                                                <rect x="3" y="5" width="1" height="1" fill="#FF4500"/>
-                                                <rect x="12" y="5" width="1" height="1" fill="#FF4500"/>
-                                                <rect x="3" y="11" width="10" height="3" fill="#008080"/>
-                                            </svg>
+                                            <CreatureIcon creature="hydra" />
                                         </div>
                                     </div>
                                 </div>
@@ -1221,13 +1125,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
                                             </span>
                                         </div>
                                         <div class="creature-icon worm-icon">
-                                            <svg viewBox="0 0 16 16" width="24" height="24">
-                                                <rect x="2" y="8" width="3" height="3" fill="#D2B48C"/>
-                                                <rect x="5" y="7" width="3" height="3" fill="#DEB887"/>
-                                                <rect x="8" y="8" width="3" height="3" fill="#D2B48C"/>
-                                                <rect x="11" y="7" width="3" height="3" fill="#DEB887"/>
-                                                <rect x="12" y="8" width="1" height="1" fill="#000"/>
-                                            </svg>
+                                            <CreatureIcon creature="worm" />
                                         </div>
                                     </div>
                                     <div class="col-header koala-header" style="flex: 1;">
@@ -1239,14 +1137,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
                                             </span>
                                         </div>
                                         <div class="creature-icon koala-icon">
-                                            <svg viewBox="0 0 16 16" width="24" height="24">
-                                                <rect x="4" y="5" width="8" height="8" fill="#A9A9A9"/>
-                                                <rect x="3" y="6" width="2" height="3" fill="#808080"/>
-                                                <rect x="11" y="6" width="2" height="3" fill="#808080"/>
-                                                <rect x="6" y="8" width="1" height="1" fill="#000"/>
-                                                <rect x="9" y="8" width="1" height="1" fill="#000"/>
-                                                <rect x="7" y="10" width="2" height="2" fill="#2F4F4F"/>
-                                            </svg>
+                                            <CreatureIcon creature="koala" />
                                         </div>
                                     </div>
                                     <div class="col-header crow-header" style="flex: 1;">
@@ -1258,16 +1149,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
                                             </span>
                                         </div>
                                         <div class="creature-icon crow-icon">
-                                            <svg viewBox="0 0 16 16" width="24" height="24">
-                                                <rect x="5" y="4" width="6" height="8" fill="#333333"/>
-                                                <rect x="3" y="6" width="4" height="4" fill="#222222"/>
-                                                <rect x="9" y="6" width="4" height="4" fill="#222222"/>
-                                                <rect x="6" y="5" width="1" height="1" fill="#FFF"/>
-                                                <rect x="9" y="5" width="1" height="1" fill="#FFF"/>
-                                                <rect x="7" y="7" width="2" height="2" fill="#FFA500"/>
-                                                <rect x="7" y="12" width="1" height="2" fill="#FFA500"/>
-                                                <rect x="8" y="12" width="1" height="2" fill="#FFA500"/>
-                                            </svg>
+                                            <CreatureIcon creature="crow" />
                                         </div>
                                     </div>
                                     <div class="col-header octopus-header" style="flex: 1;">
@@ -1279,23 +1161,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
                                             </span>
                                         </div>
                                         <div class="creature-icon octopus-icon">
-                                            <svg viewBox="0 0 16 16" width="24" height="24">
-                                                <rect x="5" y="3" width="6" height="5" fill="#9370DB"/>
-                                                <rect x="4" y="5" width="8" height="4" fill="#8A2BE2"/>
-                                                <rect x="6" y="5" width="1" height="1" fill="#FFF"/>
-                                                <rect x="9" y="5" width="1" height="1" fill="#FFF"/>
-                                                <rect x="6" y="5" width="1" height="1" fill="#000" transform="translate(0.5, 0.5) scale(0.5)"/>
-                                                <rect x="9" y="5" width="1" height="1" fill="#000" transform="translate(0.5, 0.5) scale(0.5)"/>
-                                                <!-- Tentacles -->
-                                                <rect x="3" y="9" width="1" height="4" fill="#9370DB"/>
-                                                <rect x="5" y="9" width="1" height="3" fill="#8A2BE2"/>
-                                                <rect x="7" y="9" width="1" height="5" fill="#9370DB"/>
-                                                <rect x="10" y="9" width="1" height="3" fill="#8A2BE2"/>
-                                                <rect x="12" y="9" width="1" height="4" fill="#9370DB"/>
-                                                <rect x="4" y="12" width="1" height="1" fill="#8A2BE2"/>
-                                                <rect x="11" y="12" width="1" height="1" fill="#8A2BE2"/>
-                                                <rect x="8" y="13" width="1" height="1" fill="#8A2BE2"/>
-                                            </svg>
+                                            <CreatureIcon creature="octopus" />
                                         </div>
                                     </div>
                                     <div class="col-header raven-header" style="flex: 1;">
@@ -1307,16 +1173,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
                                             </span>
                                         </div>
                                         <div class="creature-icon">
-                                            <svg viewBox="0 0 16 16" width="24" height="24" style="image-rendering: pixelated;">
-                                                <rect x="6" y="2" width="4" height="2" fill="#2E0854"/>
-                                                <rect x="5" y="4" width="6" height="4" fill="#4B0082"/>
-                                                <rect x="4" y="8" width="8" height="3" fill="#2E0854"/>
-                                                <rect x="3" y="10" width="2" height="2" fill="#4B0082"/>
-                                                <rect x="11" y="10" width="2" height="2" fill="#4B0082"/>
-                                                <rect x="7" y="11" width="2" height="3" fill="#000000"/>
-                                                <rect x="8" y="5" width="1" height="1" fill="#FF00FF"/>
-                                                <rect x="10" y="5" width="2" height="1" fill="#FFA500"/>
-                                            </svg>
+                                            <CreatureIcon creature="raven" />
                                         </div>
                                     </div>
                                     <div class="col-header athena-header" style="flex: 1;">
@@ -1328,17 +1185,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
                                             </span>
                                         </div>
                                         <div class="creature-icon athena-icon">
-                                            <svg viewBox="0 0 16 16" width="24" height="24">
-                                                <rect x="6" y="3" width="4" height="2" fill="#B8860B"/>
-                                                <rect x="5" y="5" width="6" height="4" fill="#DAA520"/>
-                                                <rect x="7" y="5" width="2" height="6" fill="#FFD700"/>
-                                                <rect x="4" y="9" width="8" height="2" fill="#4682B4"/>
-                                                <rect x="5" y="11" width="6" height="2" fill="#4682B4"/>
-                                                <rect x="6" y="6" width="1" height="1" fill="#fff"/>
-                                                <rect x="9" y="6" width="1" height="1" fill="#fff"/>
-                                                <rect x="6.5" y="6.5" width="0.5" height="0.5" fill="#000"/>
-                                                <rect x="9.5" y="6.5" width="0.5" height="0.5" fill="#000"/>
-                                            </svg>
+                                            <CreatureIcon creature="athena" />
                                         </div>
                                     </div>
                                 </div>
