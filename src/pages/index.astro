@@ -519,13 +519,15 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                             <div class="ultimate-rank"><span>{String(item.rank).padStart(2, '0')}</span>{item.rank <= 3 && <i aria-hidden="true">{item.rank === 1 ? '◆' : '◇'}</i>}</div>
                                             <div class={`ultimate-model model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="model-info" data-provider={getModelProvider(item.name).name}>
-                                                    <strong class="model-name" data-release-date={item.releaseDate}>{item.name}</strong>
+                                                    <div class="model-name-line">
+                                                        <strong class="model-name" data-release-date={item.releaseDate}>{item.name}</strong>
+                                                        {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="ultimate-release-date">
                                                 <time datetime={item.releaseDate}>{formatReleaseDate(item.releaseDate)}</time>
                                                 <span class="release-time-ago">{formatTimeAgo(item.releaseDate)}</span>
-                                                {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
                                             </div>
                                             {[['visual', item.visualScore], ['data', item.dataScore], ['chess', item.chessScore]].map(([type, score]) => (
                                                 <div class={`ultimate-metric ultimate-${type}-score-cell score-cell`} data-score={score}>
@@ -705,8 +707,8 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                                 <div class="benchmark-content">
                                                     <div class="rank" set:html={getRankDisplay(item.rank)}></div>
                                                     <div class="model-info" data-provider={getModelProvider(item.name).name}>
-                                                        <div class="model-name" data-release-date={item.releaseDate}>
-                                                            {item.name}
+                                                        <div class="model-name-line">
+                                                            <div class="model-name" data-release-date={item.releaseDate}>{item.name}</div>
                                                             {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
                                                         </div>
                                                     </div>
@@ -744,8 +746,8 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                                 <div class="benchmark-content">
                                                     <div class="rank" set:html={getRankDisplay(item.rank)}></div>
                                                     <div class="model-info" data-provider={getModelProvider(item.name).name}>
-                                                        <div class="model-name" data-release-date={item.releaseDate}>
-                                                            {item.name}
+                                                        <div class="model-name-line">
+                                                            <div class="model-name" data-release-date={item.releaseDate}>{item.name}</div>
                                                             {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
                                                         </div>
                                                     </div>
@@ -783,8 +785,8 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                                 <div class="benchmark-content">
                                                     <div class="rank" set:html={getRankDisplay(item.rank)}></div>
                                                     <div class="model-info" data-provider={getModelProvider(item.name).name}>
-                                                        <div class="model-name" data-release-date={item.releaseDate}>
-                                                            {item.name}
+                                                        <div class="model-name-line">
+                                                            <div class="model-name" data-release-date={item.releaseDate}>{item.name}</div>
                                                             {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
                                                         </div>
                                                     </div>
@@ -923,8 +925,8 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                                 <div class={`rank `} set:html={getRankDisplay(item.rank)}>
                                                 </div>
                                                 <div class="model-info" data-provider={getModelProvider(item.name).name}>
-                                                    <div class="model-name" data-release-date={item.releaseDate}>
-                                                        {item.name}
+                                                    <div class="model-name-line">
+                                                        <div class="model-name" data-release-date={item.releaseDate}>{item.name}</div>
                                                         {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
                                                     </div>
                                                 </div>
@@ -1069,8 +1071,8 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                                     <div class={`rank `} set:html={getRankDisplay(item.rank)}>
                                                     </div>
                                                     <div class="model-info" data-provider={getModelProvider(item.name).name}>
-                                                        <div class="model-name" data-release-date={item.releaseDate}>
-                                                            {item.name}
+                                                        <div class="model-name-line">
+                                                            <div class="model-name" data-release-date={item.releaseDate}>{item.name}</div>
                                                             {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
                                                         </div>
                                                     </div>
@@ -1217,8 +1219,8 @@ There are currently three levels in use. The fourth level will be unlocked once 
                                                     <div class={`rank `} set:html={getRankDisplay(item.rank)}>
                                                     </div>
                                                     <div class="model-info" data-provider={getModelProvider(item.name).name}>
-                                                        <div class="model-name" data-release-date={item.releaseDate}>
-                                                            {item.name}
+                                                        <div class="model-name-line">
+                                                            <div class="model-name" data-release-date={item.releaseDate}>{item.name}</div>
                                                             {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
                                                         </div>
                                                     </div>
@@ -1670,6 +1672,13 @@ There are currently three levels in use. The fourth level will be unlocked once 
 
     }
 
+    .model-name-line {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        min-width: 0;
+    }
+
     @media (min-width: 640px) {
         .model-name {
             font-size: 0.75rem;
@@ -1848,25 +1857,23 @@ There are currently three levels in use. The fourth level will be unlocked once 
 
     /* New Badge */
     .new-badge {
-        display: inline-block;
-        margin-left: 0.3rem;
-        font-size: 0.6rem;
-        font-weight: 800;
-        color: #713f12;
-        background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%);
-        padding: 0 0.3rem;
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        min-width: 2.25rem;
+        height: 1rem;
+        margin: 0;
+        padding: 0 0.32rem;
+        border: 1px solid #fbbf24;
         border-radius: 0.2rem;
+        background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%);
+        font-weight: 800;
+        font-size: 0.6rem;
+        line-height: 1;
+        color: #713f12;
         text-transform: uppercase;
         box-shadow: 0 0 5px rgba(245, 158, 11, 0.5);
-        animation: shine 2s infinite;
-        vertical-align: middle;
-        border: 1px solid #fbbf24;
-    }
-
-    @keyframes shine {
-        0% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.8; transform: scale(1.05); }
-        100% { opacity: 1; transform: scale(1); }
     }
 
     .disclaimer {
@@ -2578,11 +2585,11 @@ There are currently three levels in use. The fourth level will be unlocked once 
     .rank-1 .ultimate-rank span { color: #fbbf24; }
     .ultimate-model { display: flex; align-items: center; justify-content: space-between; min-height: 3rem; margin-right: .75rem; padding: .35rem .45rem; border-radius: 7px; }
     .ultimate-model .model-info { min-width: 0; }
-    .ultimate-model .model-name { display: block; overflow: hidden; color: #edf2f8; font-size: .94rem; text-overflow: ellipsis; white-space: nowrap; }
+    .ultimate-model .model-name-line { max-width: 100%; }
+    .ultimate-model .model-name { display: block; min-width: 0; overflow: hidden; color: #edf2f8; font-size: .94rem; text-overflow: ellipsis; white-space: nowrap; }
     .ultimate-release-date { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: .15rem .5rem; color: #72839a; font-size: .64rem; font-weight: 600; letter-spacing: .015em; white-space: nowrap; }
     .ultimate-release-date time { grid-column: 1 / -1; color: #c4cedb; font-size: .72rem; }
     .ultimate-release-date .release-time-ago { color: #687990; }
-    .ultimate-release-date .new-badge { position: static; justify-self: start; margin: 0; }
     .ultimate-metric { position: relative; color: #d4dbe5; font-family: var(--font-heading); font-size: 1.22rem; font-variant-numeric: tabular-nums; }
     .ultimate-metric small, .ultimate-score-cell small { margin-left: .12rem; color: #65758b; font-size: .68rem; }
     .ultimate-bench-section .ultimate-score-cell { color: #fbbf24 !important; font-family: var(--font-heading); font-size: 1.5rem; font-variant-numeric: tabular-nums; text-align: center !important; }
@@ -3140,13 +3147,16 @@ There are currently three levels in use. The fourth level will be unlocked once 
             // Should be new if within 30 days
             const isNew = diffDays >= -1 && diffDays <= 30;
 
-            let badge = el.querySelector('.new-badge');
+            const nameLine = el.closest('.model-name-line');
+            if (!nameLine) return;
+
+            let badge = nameLine.querySelector('.new-badge');
             if (isNew) {
                 if (!badge) {
                     badge = document.createElement('span');
                     badge.className = 'new-badge';
                     badge.textContent = 'NEW';
-                    el.appendChild(badge);
+                    nameLine.appendChild(badge);
                 }
             } else {
                 if (badge) badge.remove();
