@@ -1,0 +1,117 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { benchmarks } from '../data/benchmarks';
+
+const editionDate = 'July 27, 2026';
+const isScore = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
+const average = (values: number[]) => values.reduce((sum, value) => sum + value, 0) / values.length;
+const scoreAverage = (scores: Record<string, unknown>) => {
+    const valid = Object.values(scores).filter(isScore);
+    return valid.length ? average(valid) : null;
+};
+const format = (value: number | null, digits = 1) => value === null ? '—' : `${value.toFixed(digits)}%`;
+
+// Match the leaderboard's last-entry-wins behavior where a model has been rerun.
+const unique = <T extends { name: string }>(rows: T[]) => [...new Map(rows.map((row) => [row.name, row])).values()];
+const visual = unique(benchmarks.models);
+const data = unique(benchmarks.dataRetrieval || []);
+const chess = unique(benchmarks.chessModels || []);
+
+const categoryRows = [
+    { name: 'Visual reasoning', rows: visual, levels: 5, accent: 'violet' },
+    { name: 'Data retrieval', rows: data, levels: 4, accent: 'cyan' },
+    { name: 'Chess', rows: chess, levels: 5, accent: 'mint' },
+].map((category) => ({
+    ...category,
+    leader: category.rows
+        .map((row) => ({ name: row.name, score: scoreAverage(row.scores) }))
+        .filter((row): row is { name: string; score: number } => row.score !== null)
+        .sort((a, b) => b.score - a.score)[0],
+}));
+
+const commonNames = visual
+    .map(({ name }) => name)
+    .filter((name) => data.some((row) => row.name === name) && chess.some((row) => row.name === name));
+
+const crossDomain = commonNames.map((name) => {
+    const categoryScores = [visual, data, chess].map((rows) => scoreAverage(rows.find((row) => row.name === name)!.scores));
+    const completeScores = categoryScores.filter(isScore);
+    return { name, categoryScores, overall: completeScores.length === 3 ? average(completeScores) : null };
+}).filter((row) => row.overall !== null).sort((a, b) => b.overall! - a.overall!);
+
+const sol = visual.find((row) => row.name === 'GPT-5.6 Sol (high)')!;
+const solScores = Object.values(sol.scores).filter(isScore);
+const solRetention = solScores[0] ? (solScores[3] / solScores[0]) * 100 : 0;
+const geminiBase = visual.find((row) => row.name === 'Gemini 3.6 Flash')!;
+const geminiCode = visual.find((row) => row.name === 'Gemini 3.6 Flash (with code execution)')!;
+const executionLift = ['lvl1', 'lvl2', 'lvl3'].map((level) =>
+    Number(geminiCode.scores[level as keyof typeof geminiCode.scores]) - Number(geminiBase.scores[level as keyof typeof geminiBase.scores])
+);
+const totalUniqueModels = new Set([...visual, ...data, ...chess].map(({ name }) => name)).size;
+---
+
+<Layout title="Results Analysis | Ultimate Bench" description="Updated, in-depth analysis of Ultimate Bench results across visual reasoning, data retrieval, and chess.">
+    <main class="analysis-page">
+        <header class="analysis-hero">
+            <p class="eyebrow">Results desk · {editionDate}</p>
+            <h1>The scores tell a<br /><em>more complicated story.</em></h1>
+            <p class="deck">A living editorial analysis of the current Ultimate Bench dataset: who leads, where performance breaks, and what the leaderboard cannot safely claim.</p>
+            <div class="snapshot" aria-label="Dataset snapshot">
+                <span><strong>{totalUniqueModels}</strong> unique configurations</span>
+                <span><strong>3</strong> benchmark families</span>
+                <span><strong>{crossDomain.length}</strong> cross-domain comparisons</span>
+            </div>
+        </header>
+
+        <section class="brief" aria-labelledby="brief-title">
+            <p class="section-label">Executive read</p>
+            <h2 id="brief-title">The current result in four sentences.</h2>
+            <div class="brief-grid">
+                <p><strong>GPT-5.6 Sol (high) is the broadest performer.</strong> It leads the comparable cross-domain group at {format(crossDomain[0].overall)}, with no category below {format(Math.min(...crossDomain[0].categoryScores.filter(isScore)))}.</p>
+                <p><strong>Specialists still win individual rooms.</strong> Gemini 3.5 Flash with code execution leads the valid-score visual average, while Gemini 3.1 Pro Preview leads chess.</p>
+                <p><strong>Difficulty remains the dominant separator.</strong> Even Sol falls from {sol.scores.lvl1}% at Visual Level 1 to {sol.scores.lvl4}% at Level 4—a {format(solRetention)} retention rate.</p>
+                <p><strong>Coverage changes the meaning of “best.”</strong> Only {crossDomain.length} configurations have numeric results in all three families, so category wins and all-domain strength must stay separate.</p>
+            </div>
+        </section>
+
+        <section class="section" aria-labelledby="leaders-title">
+            <div class="section-heading"><div><p class="section-label">Category leaders</p><h2 id="leaders-title">Three tests, three different shapes.</h2></div><p>These averages use every numeric level recorded in a category, including zeroes. INVALID and UNAVAILABLE cells are omitted rather than silently converted to failures.</p></div>
+            <div class="leader-grid">
+                {categoryRows.map((category) => <article class:list={['leader-card', category.accent]}><p>{category.name}</p><h3>{category.leader.name}</h3><strong>{format(category.leader.score)}</strong><small>mean across valid recorded levels</small></article>)}
+            </div>
+        </section>
+
+        <section class="section split" aria-labelledby="findings-title">
+            <div><p class="section-label">What moved the result</p><h2 id="findings-title">Capability is conditional.</h2></div>
+            <div class="findings">
+                <article><span>01</span><div><h3>Tools produce a large, visible lift</h3><p>On the first three visual levels, Gemini 3.6 Flash with code execution gains <strong>+{executionLift[0]}, +{executionLift[1]}, and +{executionLift[2]} points</strong> over the base configuration. That is evidence about the configured system—not the underlying model in isolation. Its Level 4 run is INVALID, so the assisted version cannot yet support a complete five-level claim.</p></div></article>
+                <article><span>02</span><div><h3>The hardest levels are still largely unsolved</h3><p>Visual Level 5 has no positive score in the current table. In chess, Hawk and Python are also all zero. The leaderboard therefore measures progress through the present frontier more clearly than mastery of it.</p></div></article>
+                <article><span>03</span><div><h3>Averages can conceal very different profiles</h3><p>Gemini 3.1 Pro Preview ranks second in the cross-domain comparison largely because of its {format(crossDomain[1].categoryScores[2])} chess average; its data result is {format(crossDomain[1].categoryScores[1])}. GPT-5.6 Sol instead stays between {format(Math.min(...crossDomain[0].categoryScores.filter(isScore)))} and {format(Math.max(...crossDomain[0].categoryScores.filter(isScore)))} across all three categories.</p></div></article>
+            </div>
+        </section>
+
+        <section class="section" aria-labelledby="table-title">
+            <div class="section-heading"><div><p class="section-label">Comparable field</p><h2 id="table-title">The cross-domain top five.</h2></div><p>The overall figure is the unweighted mean of each category average. It is an analytical lens, not a replacement for the level-by-level leaderboard.</p></div>
+            <div class="table-wrap"><table><thead><tr><th>Rank / configuration</th><th>Visual</th><th>Data</th><th>Chess</th><th>Cross-domain</th></tr></thead><tbody>{crossDomain.slice(0, 5).map((row, index) => <tr><td><span>{String(index + 1).padStart(2, '0')}</span>{row.name}</td>{row.categoryScores.map((score) => <td>{format(score)}</td>)}<td><strong>{format(row.overall)}</strong></td></tr>)}</tbody></table></div>
+        </section>
+
+        <aside class="method-note"><div><p class="section-label">How to read this edition</p><h2>Analysis updates with the results.</h2></div><p>Leader cards and comparison figures are calculated directly from the published dataset at build time. They describe tested configurations, not vendors as a whole. Zero is retained as a measured result; INVALID and UNAVAILABLE are excluded; missing categories disqualify a model from the cross-domain table. Small gaps should not be read as statistically decisive because uncertainty intervals are not published.</p><a href="/methodology">Read methodology →</a></aside>
+    </main>
+</Layout>
+
+<style>
+    .analysis-page { --lime:#bef264; --cyan:#67e8f9; max-width:76rem; margin:auto; padding:clamp(4rem,8vw,7rem) 1.25rem 7rem; color:#aab8ca; }
+    .analysis-hero { max-width:64rem; margin-bottom:clamp(5rem,10vw,9rem); } .eyebrow,.section-label { margin:0 0 1rem; color:var(--lime); font-size:.7rem; font-weight:850; letter-spacing:.17em; text-transform:uppercase; }
+    h1 { margin:0; color:#f8fafc; font-size:clamp(3.2rem,7.8vw,6.7rem); line-height:.94; letter-spacing:-.07em; } h1 em { color:var(--cyan); font-style:normal; }
+    .deck { max-width:47rem; margin:1.7rem 0; font-size:clamp(1rem,2vw,1.18rem); line-height:1.8; }
+    .snapshot { display:flex; flex-wrap:wrap; gap:.7rem; } .snapshot span { padding:.65rem .85rem; border:1px solid #26364d; border-radius:.7rem; font-size:.75rem; } .snapshot strong { color:#f8fafc; font-size:1rem; }
+    h2 { margin:0; color:#f8fafc; font-size:clamp(2rem,4.4vw,3.4rem); line-height:1.07; letter-spacing:-.05em; }
+    .brief { padding:clamp(1.5rem,5vw,3rem); border:1px solid rgba(103,232,249,.22); border-radius:1.5rem; background:linear-gradient(130deg,rgba(8,47,73,.35),rgba(15,23,42,.72)); }
+    .brief-grid { display:grid; grid-template-columns:1fr 1fr; gap:0; margin-top:2.2rem; } .brief-grid p { margin:0; padding:1.4rem 1.5rem 1.4rem 0; border-top:1px solid #2a394c; line-height:1.72; } .brief-grid p:nth-child(even) { padding-left:1.5rem; border-left:1px solid #2a394c; } strong { color:#eaf2fb; }
+    .section { padding-top:clamp(5rem,10vw,8rem); } .section-heading { display:grid; grid-template-columns:1fr .75fr; align-items:end; gap:4rem; margin-bottom:2rem; } .section-heading>p { margin:0; line-height:1.75; }
+    .leader-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; } .leader-card { min-height:16rem; padding:1.6rem; border:1px solid #29384c; border-radius:1.2rem; background:#111c2c; display:flex; flex-direction:column; } .leader-card>p { margin:0; color:#8fa0b6; font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.1em; } .leader-card h3 { margin:2rem 0 auto; color:#f8fafc; font-size:1.15rem; line-height:1.35; } .leader-card>strong { margin-top:1.5rem; color:var(--cyan); font-size:2.5rem; letter-spacing:-.05em; } .leader-card small { color:#708096; } .leader-card.mint>strong { color:#5eead4; } .leader-card.violet>strong { color:#c4b5fd; }
+    .split { display:grid; grid-template-columns:.55fr 1fr; gap:5rem; } .findings article { display:grid; grid-template-columns:2.5rem 1fr; gap:1rem; padding:1.7rem 0; border-top:1px solid #29384c; } .findings span { color:var(--lime); font-size:.72rem; font-weight:800; } .findings h3 { margin:0 0 .6rem; color:#f8fafc; } .findings p { margin:0; line-height:1.75; }
+    .table-wrap { overflow-x:auto; border:1px solid #29384c; border-radius:1rem; } table { width:100%; border-collapse:collapse; min-width:720px; } th,td { padding:1.1rem; border-bottom:1px solid #26364a; text-align:right; font-size:.82rem; } th { color:#73839a; text-transform:uppercase; letter-spacing:.08em; font-size:.65rem; } th:first-child,td:first-child { text-align:left; } td:first-child { color:#dbe6f3; font-weight:700; } td:first-child span { display:inline-block; width:2rem; color:#64748b; font-size:.68rem; } tbody tr:last-child td { border:0; } td:last-child strong { color:var(--cyan); }
+    .method-note { display:grid; grid-template-columns:.7fr 1fr auto; align-items:center; gap:3rem; margin-top:7rem; padding:2rem; border:1px solid rgba(190,242,100,.25); border-radius:1.3rem; background:rgba(30,41,59,.45); } .method-note h2 { font-size:1.6rem; } .method-note>p { margin:0; font-size:.83rem; line-height:1.7; } .method-note a { color:#0f172a; background:var(--lime); padding:.8rem 1rem; border-radius:.65rem; font-weight:800; font-size:.78rem; text-decoration:none; white-space:nowrap; }
+    @media(max-width:760px){.brief-grid,.section-heading,.split,.method-note{grid-template-columns:1fr;gap:1.5rem}.brief-grid p:nth-child(even){padding-left:0;border-left:0}.leader-grid{grid-template-columns:1fr}.leader-card{min-height:13rem}.split{gap:2rem}.method-note{align-items:start}}
+</style>
