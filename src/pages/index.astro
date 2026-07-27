@@ -1256,17 +1256,43 @@ There are currently three levels in use. The fourth level will be unlocked once 
     }
 
     .home-column {
-        background: rgba(17, 24, 39, 0.6);
-        border: 1px solid rgba(55, 65, 81, 0.5);
-        border-radius: 8px;
-        padding: 1rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --bench-accent: #f59e0b;
+        --bench-accent-rgb: 245, 158, 11;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(155deg, rgba(21, 32, 51, .94), rgba(10, 18, 33, .98));
+        border: 1px solid rgba(148, 163, 184, .16);
+        border-radius: 20px;
+        padding: 1.1rem;
+        box-shadow: 0 22px 55px rgba(0, 0, 0, .25), inset 0 1px rgba(255, 255, 255, .04);
+        transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+    }
+
+    .home-column:nth-child(2) { --bench-accent: #38bdf8; --bench-accent-rgb: 56, 189, 248; }
+    .home-column:nth-child(3) { --bench-accent: #a78bfa; --bench-accent-rgb: 167, 139, 250; }
+
+    .home-column::before {
+        content: "";
+        position: absolute;
+        top: -6rem;
+        right: -5rem;
+        width: 13rem;
+        height: 13rem;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(var(--bench-accent-rgb), .16), transparent 68%);
+        pointer-events: none;
+    }
+
+    .home-column:hover {
+        transform: translateY(-4px);
+        border-color: rgba(var(--bench-accent-rgb), .34);
+        box-shadow: 0 28px 65px rgba(0, 0, 0, .32), 0 0 35px rgba(var(--bench-accent-rgb), .06);
     }
 
     /* Homepage Grid */
     .home-grid {
         display: flex;
-        gap: 2rem;
+        gap: 1.25rem;
         justify-content: center;
         flex-wrap: wrap;
         margin-top: 1rem;
@@ -1280,30 +1306,67 @@ There are currently three levels in use. The fourth level will be unlocked once 
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 1rem;
-        border-bottom: 2px solid rgba(255,255,255,0.1);
-        padding-bottom: 0.5rem;
+        margin-bottom: .75rem;
+        border-bottom: 1px solid rgba(148, 163, 184, .14);
+        padding: .15rem .2rem 1rem;
     }
     .home-column-header h2 {
         margin: 0;
-        font-size: 1.2rem;
-        color: #F59E0B;
-        letter-spacing: 0.05em;
+        display: flex;
+        align-items: center;
+        gap: .65rem;
+        color: #f8fafc;
+        font-size: 1rem;
+        letter-spacing: .075em;
+        text-align: left;
+    }
+    .home-column-header h2::before {
+        content: "";
+        width: .55rem;
+        height: .55rem;
+        border: 2px solid var(--bench-accent);
+        border-radius: 3px;
+        transform: rotate(45deg);
+        box-shadow: 0 0 12px rgba(var(--bench-accent-rgb), .55);
     }
     .expand-btn {
-        background: #374151;
-        color: white;
-        border: none;
-        padding: 0.25rem 0.75rem;
-        border-radius: 0.25rem;
-        font-size: 0.75rem;
-        font-weight: bold;
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        background: rgba(var(--bench-accent-rgb), .07);
+        color: #cbd5e1;
+        border: 1px solid rgba(var(--bench-accent-rgb), .28);
+        padding: .42rem .7rem;
+        border-radius: 999px;
+        font-size: .65rem;
+        font-weight: 800;
+        letter-spacing: .08em;
         cursor: pointer;
-        transition: background 0.3s ease;
+        transition: background .2s ease, color .2s ease, transform .2s ease;
+    }
+    .expand-btn::after {
+        content: "↗";
+        color: var(--bench-accent);
+        font-size: .8rem;
     }
     .expand-btn:hover {
-        background: #60A5FA;
+        color: #fff;
+        background: rgba(var(--bench-accent-rgb), .16);
+        transform: translateY(-1px);
     }
+
+    .home-column > .benchmark-desktop-container > .benchmark-container {
+        padding: .7rem;
+        border: 0;
+        border-radius: 14px;
+        background: rgba(2, 8, 23, .32);
+        box-shadow: inset 0 1px rgba(255, 255, 255, .025);
+    }
+
+    .home-column .col-header h3 { color: var(--bench-accent); }
+    .home-column .unified-header-row { min-height: 2.75rem; }
+    .home-column .unified-row { border-color: rgba(148, 163, 184, .09); }
+    .home-column .unified-row:hover { background: rgba(var(--bench-accent-rgb), .045); }
 
     main {
         max-width: 90rem; /* Wide layout */
