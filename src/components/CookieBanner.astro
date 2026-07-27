@@ -1,102 +1,94 @@
----
-// CookieBanner.astro
----
-
-<div id="cookie-banner" class="cookie-banner">
+<div id="cookie-banner" class="cookie-banner" role="dialog" aria-modal="true" aria-labelledby="cookie-title" hidden>
     <div class="cookie-content">
-        <p>
-            We use cookies to personalize content and ads, to provide social media features, and to analyze our traffic. By continuing to use our site, you agree to our use of cookies.
-            <a href="/privacy">Read our Privacy Policy</a>.
-        </p>
-        <button id="accept-cookies" class="cookie-btn">Accept</button>
+        <div>
+            <h2 id="cookie-title">Cookie preferences</h2>
+            <p>We use necessary browser storage for your preferences. With your permission, we also load Google AdSense, which may use cookies or similar technologies for advertising. See our <a href="/privacy">Privacy Policy</a>.</p>
+            <div id="cookie-options" class="cookie-options" hidden>
+                <label><input type="checkbox" checked disabled /> Necessary storage (always active)</label>
+                <label><input id="advertising-consent" type="checkbox" /> Advertising cookies and services</label>
+            </div>
+        </div>
+        <div class="cookie-actions">
+            <button id="accept-cookies" class="cookie-btn primary">Accept</button>
+            <button id="reject-cookies" class="cookie-btn">Reject non-essential cookies</button>
+            <button id="manage-cookies" class="cookie-btn">Manage preferences</button>
+            <button id="save-cookies" class="cookie-btn primary" hidden>Save preferences</button>
+        </div>
     </div>
 </div>
+<button id="reopen-cookie-settings" class="reopen-cookie-settings" hidden>Cookie preferences</button>
 
 <script>
+    const CONSENT_KEY = "ultimate_bench_cookie_consent";
+
+    function loadAdsense() {
+        if (document.querySelector('script[data-consent-service="adsense"]')) return;
+        const script = document.createElement("script");
+        script.async = true;
+        script.crossOrigin = "anonymous";
+        script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5230972214569734";
+        script.dataset.consentService = "adsense";
+        document.head.appendChild(script);
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
         const banner = document.getElementById("cookie-banner");
-        const acceptBtn = document.getElementById("accept-cookies");
+        const options = document.getElementById("cookie-options");
+        const advertising = document.getElementById("advertising-consent");
+        const accept = document.getElementById("accept-cookies");
+        const reject = document.getElementById("reject-cookies");
+        const manage = document.getElementById("manage-cookies");
+        const save = document.getElementById("save-cookies");
+        const reopen = document.getElementById("reopen-cookie-settings");
+        if (!(banner && options && advertising instanceof HTMLInputElement && accept && reject && manage && save && reopen)) return;
 
-        // Check if user has already accepted
-        if (!localStorage.getItem("cookie_consent")) {
-            banner.classList.add("show");
+        const stored = localStorage.getItem(CONSENT_KEY);
+        let consent = null;
+        try { consent = stored ? JSON.parse(stored) : null; } catch { localStorage.removeItem(CONSENT_KEY); }
+
+        const showBanner = (manageMode = false) => {
+            banner.hidden = false;
+            options.hidden = !manageMode;
+            save.hidden = !manageMode;
+            accept.hidden = manageMode;
+            reject.hidden = manageMode;
+            reopen.hidden = true;
+        };
+
+        const storeConsent = (advertisingAllowed) => {
+            localStorage.setItem(CONSENT_KEY, JSON.stringify({ necessary: true, advertising: advertisingAllowed }));
+            banner.hidden = true;
+            reopen.hidden = false;
+            if (advertisingAllowed) loadAdsense();
+        };
+
+        if (consent && typeof consent.advertising === "boolean") {
+            advertising.checked = consent.advertising;
+            reopen.hidden = false;
+            if (consent.advertising) loadAdsense();
+        } else {
+            showBanner();
         }
 
-        acceptBtn.addEventListener("click", () => {
-            localStorage.setItem("cookie_consent", "true");
-            banner.classList.remove("show");
-        });
+        accept.addEventListener("click", () => storeConsent(true));
+        reject.addEventListener("click", () => storeConsent(false));
+        manage.addEventListener("click", () => showBanner(true));
+        save.addEventListener("click", () => storeConsent(advertising.checked));
+        reopen.addEventListener("click", () => showBanner(true));
     });
 </script>
 
 <style>
-    .cookie-banner {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: rgba(17, 24, 39, 0.98); /* Tailwind gray-900 */
-        color: #F3F4F6; /* Tailwind gray-100 */
-        padding: 1rem;
-        z-index: 10000;
-        border-top: 1px solid #374151; /* Tailwind gray-700 */
-        transform: translateY(100%);
-        transition: transform 0.3s ease-in-out;
-        box-sizing: border-box;
-    }
-
-    .cookie-banner.show {
-        transform: translateY(0);
-    }
-
-    .cookie-content {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        text-align: center;
-    }
-
-    @media (min-width: 768px) {
-        .cookie-content {
-            flex-direction: row;
-            justify-content: space-between;
-            text-align: left;
-        }
-    }
-
-    .cookie-content p {
-        margin: 0;
-        font-size: 0.875rem;
-        line-height: 1.4;
-        font-family: var(--font-body);
-    }
-
-    .cookie-content a {
-        color: #10B981; /* Emerald-500 */
-        text-decoration: underline;
-    }
-
-    .cookie-content a:hover {
-        color: #34D399; /* Emerald-400 */
-    }
-
-    .cookie-btn {
-        background-color: #10B981;
-        color: #111827;
-        border: none;
-        padding: 0.5rem 1.5rem;
-        border-radius: 4px;
-        font-weight: 600;
-        font-family: var(--font-heading);
-        cursor: pointer;
-        transition: background-color 0.2s;
-        white-space: nowrap;
-    }
-
-    .cookie-btn:hover {
-        background-color: #059669; /* Emerald-600 */
-    }
+    .cookie-banner { position: fixed; inset: auto 0 0; background: rgba(17,24,39,.98); color: #F3F4F6; padding: 1rem; z-index: 10000; border-top: 1px solid #374151; }
+    .cookie-banner[hidden], [hidden] { display: none !important; }
+    .cookie-content { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
+    .cookie-content h2 { margin: 0 0 .4rem; font-size: 1.1rem; }
+    .cookie-content p { margin: 0; font-size: .875rem; line-height: 1.5; }
+    .cookie-content a { color: #34D399; }
+    .cookie-options { display: flex; flex-direction: column; gap: .5rem; margin-top: 1rem; font-size: .875rem; }
+    .cookie-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .5rem; min-width: 22rem; }
+    .cookie-btn, .reopen-cookie-settings { border: 1px solid #6B7280; background: #1F2937; color: #F3F4F6; padding: .6rem .9rem; border-radius: 4px; font-weight: 600; cursor: pointer; }
+    .cookie-btn.primary { background: #10B981; border-color: #10B981; color: #111827; }
+    .reopen-cookie-settings { position: fixed; right: 1rem; bottom: 1rem; z-index: 9998; font-size: .75rem; }
+    @media (max-width: 767px) { .cookie-content { flex-direction: column; align-items: stretch; } .cookie-actions { min-width: 0; justify-content: flex-start; } }
 </style>

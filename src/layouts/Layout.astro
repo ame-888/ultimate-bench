@@ -2,7 +2,11 @@
 import Navbar from '../components/Navbar.astro';
 import CookieBanner from '../components/CookieBanner.astro';
 
-const { title = 'The AI Benchmark' } = Astro.props;
+const {
+    title = 'Ultimate Bench | AI Model Benchmark',
+    description = 'Ultimate Bench is an independent experimental benchmark comparing AI model performance across visual, data, and chess evaluations.'
+} = Astro.props;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 ---
 <!doctype html>
 <html lang="en">
@@ -12,11 +16,16 @@ const { title = 'The AI Benchmark' } = Astro.props;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Ultimate Bench" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonicalUrl} />
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;900&display=swap" rel="stylesheet">
-		<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5230972214569734"
-     crossorigin="anonymous"></script>
         <slot name="head" />
 	</head>
 	<body>
