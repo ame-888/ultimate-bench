@@ -2489,27 +2489,28 @@ There are currently three levels in use. The fourth level will be unlocked once 
     .leaderboard-meta div + div { border-left: 1px solid #222c3d; }
     .leaderboard-meta strong { color: #f8fafc; font-family: var(--font-heading); font-size: 1.25rem; }
     .leaderboard-meta span { color: #6f7f95; font-size: .63rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-    .ultimate-bench-section .ultimate-container { overflow-x: auto; margin-top: 1rem; border: 1px solid #26344c; border-radius: 16px; background: #0a1220; }
-    .ultimate-bench-section .ultimate-modern-container { min-width: 760px; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
-    .ultimate-table-header, .ultimate-row-hover { display: grid; grid-template-columns: 76px minmax(260px, 2fr) repeat(3, minmax(92px, .8fr)) minmax(110px, .9fr); align-items: center; }
-    .ultimate-table-header { min-height: 4.3rem; padding: 0 1.25rem; border-bottom: 1px solid #26344c; background: #0e192a; }
+    .ultimate-bench-section .ultimate-container { overflow-x: auto; width: min(100%, 72rem); margin: 1rem auto 0; border: 1px solid #26344c; border-radius: 16px; background: #0a1220; }
+    .ultimate-bench-section .ultimate-modern-container { min-width: 800px; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+    .ultimate-table-header, .ultimate-row-hover { display: grid; grid-template-columns: 64px minmax(260px, 1.55fr) repeat(4, minmax(108px, .75fr)); align-items: center; }
+    .ultimate-table-header { min-height: 3.75rem; padding: 0 1.25rem; border-bottom: 1px solid #26344c; background: #0e192a; }
     .ultimate-table-header > span, .ultimate-table-header button { color: #718198; font: 700 .62rem var(--font-body); letter-spacing: .13em; text-align: left; text-transform: uppercase; }
     .ultimate-table-header button { padding: .6rem 0; border: 0; background: none; cursor: pointer; }
     .ultimate-table-header button span, .ultimate-table-header button small { display: block; }
+    .ultimate-table-header button { text-align: center; }
     .ultimate-table-header button small { margin-top: .2rem; color: #46566d; font-size: .55rem; }
     .ultimate-table-header .overall-sort span { color: #fbbf24; }
-    .ultimate-row-hover { min-height: 5.35rem; padding: 0 1.25rem; border-bottom: 1px solid rgba(38,52,76,.72); cursor: default; transition: background .2s; }
+    .ultimate-row-hover { min-height: 4.25rem; padding: 0 1.25rem; border-bottom: 1px solid rgba(38,52,76,.72); cursor: default; transition: background .2s; }
     .ultimate-row-hover:last-child { border-bottom: 0; }
     .ultimate-row-hover:hover { border-radius: 0 !important; background: #111e31 !important; }
     .ultimate-rank { display: flex; align-items: center; gap: .5rem; color: #526177; font-family: var(--font-heading); font-size: 1rem; font-weight: 800; }
     .ultimate-rank i { color: #a77918; font-size: .55rem; font-style: normal; }
     .rank-1 .ultimate-rank span { color: #fbbf24; }
-    .ultimate-model { display: flex; align-items: center; justify-content: space-between; min-height: 3rem; margin-right: 1.4rem; padding: .35rem .8rem; border-radius: 7px; }
+    .ultimate-model { display: flex; align-items: center; justify-content: space-between; min-height: 3rem; margin-right: .75rem; padding: .35rem .45rem; border-radius: 7px; }
     .ultimate-model .model-info { min-width: 0; }
     .ultimate-model .model-name { display: block; overflow: hidden; color: #edf2f8; font-size: .94rem; text-overflow: ellipsis; white-space: nowrap; }
-    .ultimate-metric { position: relative; color: #bac4d1; font-size: 1rem; }
-    .ultimate-metric small, .ultimate-score-cell small { margin-left: .1rem; color: #58677b; font-size: .62rem; }
-    .ultimate-bench-section .ultimate-score-cell { color: #fbbf24 !important; font-family: var(--font-heading); font-size: 1.35rem; text-align: left !important; }
+    .ultimate-metric { position: relative; color: #d4dbe5; font-family: var(--font-heading); font-size: 1.22rem; font-variant-numeric: tabular-nums; }
+    .ultimate-metric small, .ultimate-score-cell small { margin-left: .12rem; color: #65758b; font-size: .68rem; }
+    .ultimate-bench-section .ultimate-score-cell { color: #fbbf24 !important; font-family: var(--font-heading); font-size: 1.5rem; font-variant-numeric: tabular-nums; text-align: center !important; }
     .leaderboard-note { margin: 1rem 0 0; color: #718198; font-size: .72rem; line-height: 1.5; }
     .leaderboard-note span { margin-right: .45rem; color: #fbbf24; }
     .ultimate-empty { padding: 3rem; color: #94a3b8; text-align: center; }
