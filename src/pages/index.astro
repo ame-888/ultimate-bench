@@ -467,23 +467,6 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                             </div>
                         </header>
 
-                        {ultimateBenchList.length > 0 && (
-                            <div class="leaderboard-crown" aria-label={`Current leader: ${sotaModelName}`}>
-                                <div class="crown-rank"><span>01</span><small>World leader</small></div>
-                                <div class="crown-model">
-                                    <span class="crown-eyebrow">Current champion</span>
-                                    <strong>{sotaModelName}</strong>
-                                    <small>{getModelProvider(sotaModelName).name}</small>
-                                </div>
-                                <div class="crown-scores">
-                                    <div><span>Visual</span><strong>{ultimateBenchList[0].visualScore.toFixed(1)}</strong></div>
-                                    <div><span>Data</span><strong>{ultimateBenchList[0].dataScore.toFixed(1)}</strong></div>
-                                    <div><span>Chess</span><strong>{ultimateBenchList[0].chessScore.toFixed(1)}</strong></div>
-                                </div>
-                                <div class="crown-total"><span>Ultimate score</span><strong>{sotaScore.toFixed(1)}<small>%</small></strong></div>
-                            </div>
-                        )}
-
                         <div class="ultimate-container" role="region" aria-label="Global Ultimate Bench standings" tabindex="0">
                             <div class="ultimate-modern-container">
                                 <div class="ultimate-table-header">
@@ -2508,20 +2491,6 @@ There are currently three levels in use. The fourth level will be unlocked once 
     .leaderboard-meta div + div { border-left: 1px solid #222c3d; }
     .leaderboard-meta strong { color: #f8fafc; font-family: var(--font-heading); font-size: 1.25rem; }
     .leaderboard-meta span { color: #6f7f95; font-size: .63rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-    .leaderboard-crown { display: grid; grid-template-columns: .65fr 2fr 2fr 1fr; align-items: center; gap: 1.5rem; padding: 1.6rem 2rem; border: 1px solid rgba(251,191,36,.32); border-top: 0; background: linear-gradient(100deg, #171508, #15120b 50%, #0f1724); box-shadow: 0 18px 50px rgba(0,0,0,.28); }
-    .crown-rank span { display: block; color: #fbbf24; font-family: var(--font-heading); font-size: 2rem; font-weight: 900; }
-    .crown-rank small, .crown-eyebrow, .crown-total > span { color: #a88b42; font-size: .6rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
-    .crown-model { display: flex; flex-direction: column; gap: .25rem; }
-    .crown-model strong { color: #fff7d6; font-family: var(--font-heading); font-size: clamp(1.15rem, 2.5vw, 1.7rem); }
-    .crown-model small { color: #817860; }
-    .crown-scores { display: grid; grid-template-columns: repeat(3,1fr); gap: .5rem; }
-    .crown-scores div { padding-left: .8rem; border-left: 1px solid #3e3825; }
-    .crown-scores span, .crown-scores strong { display: block; }
-    .crown-scores span { margin-bottom: .3rem; color: #817860; font-size: .62rem; text-transform: uppercase; }
-    .crown-scores strong { color: #d9d3c3; font-size: .95rem; }
-    .crown-total { text-align: right; }
-    .crown-total strong { display: block; color: #fbbf24; font-family: var(--font-heading); font-size: 2rem; }
-    .crown-total strong small { font-size: .45em; }
     .ultimate-bench-section .ultimate-container { overflow-x: auto; margin-top: 1rem; border: 1px solid #26344c; border-radius: 16px; background: #0a1220; }
     .ultimate-bench-section .ultimate-modern-container { min-width: 760px; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
     .ultimate-table-header, .ultimate-row-hover { display: grid; grid-template-columns: 76px minmax(260px, 2fr) repeat(3, minmax(92px, .8fr)) minmax(110px, .9fr); align-items: center; }
@@ -2552,16 +2521,11 @@ There are currently three levels in use. The fourth level will be unlocked once 
     @media (max-width: 760px) {
         .ultimate-bench-section .ultimate-title-container { min-height: 0; border-radius: 20px 20px 0 0; }
         .ultimate-bench-section .ultimate-title { font-size: clamp(3.25rem, 17vw, 5.2rem); }
-        .leaderboard-crown { grid-template-columns: 52px 1fr auto; padding: 1.2rem; }
-        .crown-scores { display: none; }
-        .crown-total strong { font-size: 1.5rem; }
     }
     @media (max-width: 480px) {
         .leaderboard-meta div { padding: 1rem .35rem; }
         .leaderboard-meta strong { font-size: 1rem; }
         .leaderboard-meta span { font-size: .52rem; letter-spacing: .05em; }
-        .crown-rank small, .crown-model small { display: none; }
-        .leaderboard-crown { grid-template-columns: 42px minmax(0,1fr) auto; gap: .7rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
