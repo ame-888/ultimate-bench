@@ -96,6 +96,7 @@ const process = [
                 <p class="section-label">Scoring &amp; aggregation</p>
                 <h2 id="scoring-title">One summary score,<br />three distinct signals.</h2>
                 <p>Each category retains its own score because domain-level performance is often more informative than a single rank. When all three category scores are available, the Ultimate average is their arithmetic mean.</p>
+                <p>Cost efficiency is anchored to an ideal rather than normalized against the current cohort. Models at or below a $1 blended token cost keep their Ultimate average; above $1, the score loses 15 points for every tenfold increase in cost. This reserves 100% for a model that scores 100% in all three categories while costing $1 or less.</p>
                 <p class="data-note">Published benchmark records are maintained in <code>src/data/benchmarks.ts</code>. Category tables contain additional level descriptions and context.</p>
             </div>
             <div class="formula-card" aria-label="Ultimate average formula">

@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { benchmarks } from '../data/benchmarks';
-import { blendedCost, COST_SENSITIVITY_ALPHA, modelPricing, PRICING_CHECKED_ON, unnormalizedValueScore } from '../data/modelPricing';
+import { blendedCost, COST_SENSITIVITY_ALPHA, costEfficiencyScore, IDEAL_BLENDED_COST, modelPricing, PRICING_CHECKED_ON } from '../data/modelPricing';
 import CreatureIcon from '../components/CreatureIcon.astro';
 import { getSimulatedDate, TIME_OFFSET } from '../scripts/TimeUtils';
 
@@ -357,18 +357,13 @@ if (missingPrices.length > 0) {
     throw new Error(`Missing token pricing for Global Ultimate Bench models: ${missingPrices.map(item => item.name).join(', ')}`);
 }
 
-const valueScoreMaximum = Math.max(...ultimateBenchList.map(item => {
-    const pricing = modelPricing[item.name];
-    return unnormalizedValueScore(item.ultimateScore, blendedCost(pricing));
-}));
-
 ultimateBenchList = ultimateBenchList.map(item => {
     const pricing = modelPricing[item.name];
     const cost = blendedCost(pricing);
     return {
         ...item,
         blendedCost: cost,
-        valueScore: (unnormalizedValueScore(item.ultimateScore, cost) / valueScoreMaximum) * 100,
+        valueScore: costEfficiencyScore(item.ultimateScore, cost),
         pricingSource: pricing.source
     };
 });
@@ -581,7 +576,7 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                             </div>
                         </div>
                         <p class="leaderboard-note absolute-note"><span>↳</span> Overall scores average each model’s complexity-weighted performance across all three arenas.</p>
-                        <p class="leaderboard-note cost-note" hidden><span>↳</span> Value score = 100 × [overall − {COST_SENSITIVITY_ALPHA} × log₁₀(0.75 × input price + 0.25 × output price)] / cohort maximum. Token prices were checked {PRICING_CHECKED_ON}; select a cost to open its source.</p>
+                        <p class="leaderboard-note cost-note" hidden><span>↳</span> Cost efficiency = overall − {COST_SENSITIVITY_ALPHA} × max(0, log₁₀(blended cost / ${IDEAL_BLENDED_COST})), bounded from 0–100. A 100% requires 100% in every arena and a blended cost of ${IDEAL_BLENDED_COST.toFixed(2)} or less. Token prices were checked {PRICING_CHECKED_ON}; select a cost to open its source.</p>
                     </section>
 
                     <!-- Journey to Singularity: Enhanced Section -->
@@ -3027,7 +3022,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
             rows.forEach(row => ultimateBody?.appendChild(row));
             const overallLabel = document.querySelector('#ultimate-sort-btn > span');
             const overallText = document.getElementById('ultimate-sort-text');
-            if (overallLabel) overallLabel.textContent = costMode ? 'Value score' : 'Overall';
+            if (overallLabel) overallLabel.textContent = costMode ? 'Cost efficiency' : 'Overall';
             if (overallText) overallText.textContent = 'Score ▼';
         }
 

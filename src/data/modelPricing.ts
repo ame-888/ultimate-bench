@@ -6,6 +6,7 @@
  */
 export const PRICING_CHECKED_ON = '2026-07-27';
 export const COST_SENSITIVITY_ALPHA = 15;
+export const IDEAL_BLENDED_COST = 1;
 
 export const modelPricing = {
     'GPT-5.6 Sol (high)': { input: 2.50, output: 15.00, source: 'https://openai.com/api/pricing/' },
@@ -28,7 +29,8 @@ export function blendedCost({ input, output }: { input: number; output: number }
     return (0.75 * input) + (0.25 * output);
 }
 
-export function unnormalizedValueScore(score: number, cost: number, alpha = COST_SENSITIVITY_ALPHA) {
+export function costEfficiencyScore(score: number, cost: number, alpha = COST_SENSITIVITY_ALPHA) {
     if (cost <= 0) throw new RangeError('Blended cost must be greater than zero.');
-    return score - (alpha * Math.log10(cost));
+    const costPenalty = alpha * Math.max(0, Math.log10(cost / IDEAL_BLENDED_COST));
+    return Math.max(0, Math.min(100, score - costPenalty));
 }
