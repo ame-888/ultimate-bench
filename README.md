@@ -12,7 +12,7 @@ Ultimate Bench is an independent experimental benchmark and static Astro site fo
 | `/contact/` | Contact information |
 | `/privacy/` | Privacy policy |
 | `/terms/` | Terms of service (governing law is pending owner/legal review) |
-| `/blog/` | Blog landing page |
+| `/blog/` | Practical AI evaluation guides |
 | `/arcade/` | Interactive arcade |
 
 Astro generates these pages into `dist/`. The post-build sitemap generator discovers every generated HTML route rather than relying on a manually maintained route list. `robots.txt`, `sitemap-index.xml`, and `sitemap-0.xml` are served from the site root.
@@ -43,4 +43,4 @@ The canonical production origin is <https://ultimate-bench.vercel.app/>. Connect
 
 ## Legal and privacy review
 
-The Terms contain an explicit placeholder because the owner has not supplied a governing-law jurisdiction. The owner and qualified counsel must complete that section. The privacy and consent text should also be reviewed for the operator's actual hosting, analytics, advertising configuration, audience, retention practices, and regulatory obligations before production use.
+The terms, privacy policy, and consent text should be reviewed for the operator's actual hosting, analytics, advertising configuration, audience, retention practices, and regulatory obligations before production use.
