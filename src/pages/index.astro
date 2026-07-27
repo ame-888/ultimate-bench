@@ -492,180 +492,139 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                     </div>
 
                     <!-- Journey to Singularity: Enhanced Section -->
-                    <div class="singularity-journey-section" style="margin: 4rem auto; max-width: 900px; display: flex; flex-direction: column; align-items: center; position: relative; padding: 3rem 1rem; background: radial-gradient(circle at center, rgba(30, 58, 138, 0.15) 0%, transparent 70%); border-radius: 2rem;">
-
-                        <div style="text-align: center; margin-bottom: 3rem; position: relative;">
-                            <h2 style="color: #93C5FD; font-weight: 900; font-size: 2rem; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 0.5rem; text-shadow: 0 0 20px rgba(147, 197, 253, 0.3);">Journey to Singularity</h2>
-                            <div style="width: 60px; height: 3px; background: linear-gradient(90deg, transparent, #60A5FA, transparent); margin: 0 auto;"></div>
+                    <section class="singularity-journey-section" aria-labelledby="journey-title">
+                        <div class="journey-stars" aria-hidden="true">
+                            {Array.from({ length: 34 }, (_, i) => (
+                                <i style={`--x:${(i * 47) % 97}%;--y:${(i * 71) % 93}%;--d:${2 + (i % 5)}s;--s:${1 + (i % 3)}px`}></i>
+                            ))}
                         </div>
 
-                        <div class="sota-loading-container" style="position: relative; width: 100%; display: flex; justify-content: center; height: 500px; z-index: 2;">
-                            <!-- Starry/Nebula Ambient Background for the track -->
+                        <header class="journey-header">
+                            <div class="journey-eyebrow"><span></span> Ultimate Bench trajectory</div>
+                            <h2 id="journey-title">Journey to <em>Singularity</em></h2>
+                            <p>Follow the frontier model through six capability milestones. Select a waypoint to explore what comes next.</p>
+                        </header>
 
-                            <!-- The Bar Background -->
-                            <div class="sota-bar-track" style="width: 12px; height: 100%; background: rgba(15, 23, 42, 0.8); border-radius: 10px; border: 1px solid rgba(59, 130, 246, 0.2); position: relative; overflow: visible; z-index: 1; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                        <div class="journey-dashboard">
+                            <aside class="journey-stat-card">
+                                <span class="journey-stat-label">Current frontier</span>
+                                <strong>{sotaScore.toFixed(1)}<small>%</small></strong>
+                                <div class="journey-model-name">{sotaModelName}</div>
+                                <div class="journey-mini-track"><span style={`width:${sotaScore}%`}></span></div>
+                                <div class="journey-stat-foot"><span>Inception</span><span>Singularity</span></div>
+                            </aside>
 
-                                <!-- The Filled Bar -->
-                                <div class="sota-bar-fill" style={`position: absolute; bottom: 0; left: -1px; width: calc(100% + 2px); height: ${sotaScore}%; background: linear-gradient(to top, #3B82F6, #A855F7, #F59E0B); border-radius: 10px; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4), inset 0 0 5px rgba(255,255,255,0.5); transition: height 1.5s cubic-bezier(0.4, 0, 0.2, 1);`}>
-
-                                    <!-- Rocket Indicator -->
-                                    <div class="sota-rocket-indicator" style="position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); z-index: 50; display: flex; align-items: center; transition: all 0.3s ease;">
-
-                                        <!-- Exhaust glow -->
-                                        <div style="position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); width: 20px; height: 30px; background: radial-gradient(ellipse at top, #F59E0B 0%, transparent 70%); filter: blur(4px); opacity: 0.8; animation: pulse 2s infinite alternate;"></div>
-
-                                        <!-- Sleeker Rocket SVG -->
-                                        <div style="background: rgba(15, 23, 42, 0.6); padding: 8px; border-radius: 50%; border: 1px solid rgba(245, 158, 11, 0.5); box-shadow: 0 0 15px rgba(245, 158, 11, 0.4), inset 0 0 10px rgba(0,0,0,0.5); backdrop-filter: blur(4px);">
-                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5)); transform: rotate(-45deg);">
-                                                <path d="M4 14C4 14 5 13.5 7 14.5C9 15.5 10.5 17 11 19C11.5 21 11 22 11 22C11 22 13 21.5 15 20C17 18.5 18.5 16 19 14C19.5 12 21 10 22 9C23 8 22 6 22 6C22 6 20 5 19 6C18 7 16 8.5 14 9C12 9.5 9.5 8 8 6C6.5 4 6 2 6 2C6 2 5 2.5 5 3C4.5 4 4 6.5 5 8.5C6 10.5 7 12.5 7 14.5C6 16.5 5 18.5 4 19C3 19.5 2 20 2 20C2 20 3 19 4 14Z" fill="url(#rocketGrad)" stroke="#E5E7EB" stroke-width="1" stroke-linejoin="round"/>
-                                                <path d="M14 10C14 10 16 8 18 8C20 8 20 10 20 10C20 10 18 12 16 12C14 12 14 10 14 10Z" fill="#60A5FA"/>
-                                                <defs>
-                                                    <linearGradient id="rocketGrad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#F3F4F6" />
-                                                        <stop offset="1" stop-color="#9CA3AF" />
-                                                    </linearGradient>
-                                                </defs>
+                            <div class="sota-loading-container">
+                                <div class="sota-bar-track" aria-hidden="true">
+                                    <div class="sota-bar-fill" style={`height:${sotaScore}%`}>
+                                        <div class="sota-rocket-indicator">
+                                            <span class="rocket-orbit"></span>
+                                            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M13.2 3.3c2.3-2 5.1-1.7 7.5-1.7.1 2.4.3 5.2-1.7 7.5l-5.8 5.8-4.1-4.1 4.1-7.5Z" fill="url(#rocketGrad)" stroke="#fff" stroke-width=".8"/>
+                                                <path d="m9.5 10.5-4.2.8-2.5 2.5 5.5.2m5.2-2.2.2 5.5-2.5 2.5-.8-4.2" fill="#60A5FA" stroke="#fff" stroke-width=".7"/>
+                                                <circle cx="15.8" cy="6.5" r="1.7" fill="#071224" stroke="#93C5FD"/>
+                                                <path d="M7.7 15.3c-1.8.3-3 1.5-3.4 3.5 2-.4 3.2-1.5 3.5-3.4" fill="#F59E0B"/>
+                                                <defs><linearGradient id="rocketGrad" x1="8" y1="16" x2="20" y2="2"><stop stop-color="#93C5FD"/><stop offset="1" stop-color="#fff"/></linearGradient></defs>
                                             </svg>
                                         </div>
-
-                                        <!-- Sleek SOTA Info Panel -->
-                                        <!-- Connector line -->
-                                        <div style="position: absolute; left: 16px; top: 50%; width: 39px; height: 1px; background: rgba(100, 180, 255, 0.3);"></div>
-                                        <div class="sota-info-panel" style="position: absolute; left: 55px; background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)); border: 1px solid rgba(147, 197, 253, 0.3); border-left: 3px solid #60A5FA; padding: 0.75rem 1rem; border-radius: 0.5rem; display: flex; flex-direction: column; gap: 0.25rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(96, 165, 250, 0.15); backdrop-filter: blur(8px); min-width: 180px; white-space: nowrap;">
-                                            <div style="font-size: 0.7rem; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Current SOTA</div>
-                                            <div style="font-size: 1rem; color: #E5E7EB; font-weight: 700; text-overflow: ellipsis; overflow: hidden; max-width: 200px;">{sotaModelName}</div>
-                                            <div style="font-size: 1.25rem; color: #60A5FA; font-weight: 900; font-family: monospace; display: flex; align-items: baseline; gap: 0;">
-                                                {sotaScore.toFixed(1)}<span style="font-size: 0.9rem;">%</span>
-                                            </div>
-                                        </div>
                                     </div>
+                                </div>
+
+                                <div class="sota-nodes-container">
+                                    {[
+                                        { name: 'SINGULARITY', score: 100, color: '#FBBF24' },
+                                        { name: 'EVENT HORIZON', score: 80, color: '#38BDF8' },
+                                        { name: 'SUPERNOVA', score: 60, color: '#F97316' },
+                                        { name: 'STAR', score: 40, color: '#FB7185' },
+                                        { name: 'NEBULA', score: 20, color: '#A855F7' },
+                                        { name: 'INCEPTION', score: 0, color: '#94A3B8' }
+                                    ].map((milestone) => (
+                                        <button
+                                            class:list={['sota-node', 'sota-node-interactive', { reached: sotaScore >= milestone.score, current: milestone.score === 20 }]}
+                                            style={`--top:${100 - milestone.score}%;--milestone:${milestone.color}`}
+                                            data-milestone={milestone.name}
+                                            type="button"
+                                            aria-label={`Explore ${milestone.name}, ${milestone.score}% milestone`}
+                                        >
+                                            <span class="sota-node-dot"><i></i></span>
+                                            <span class="sota-node-label"><b>{milestone.name}</b><small>{milestone.score}%</small></span>
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
 
-                            <!-- The 5 Zone Nodes -->
-                                                        <div class="sota-nodes-container" style="position: absolute; height: 100%; top: 0; left: calc(50% - 6px); width: 12px; pointer-events: none; z-index: 2;">
-                                <!-- Placed exactly on the track -->
-
-                                <!-- 100% (Singularity) -->
-                                <div class="sota-node sota-node-interactive" style="position: absolute; top: 0%; left: 50%; transform: translate(-50%, -50%);">
-                                    <div style={`width: 16px; height: 16px; border-radius: 50%; background: ${sotaScore >= 100 ? '#FBBF24' : '#1E293B'}; border: 2px solid ${sotaScore >= 100 ? '#FFF' : '#334155'}; box-shadow: ${sotaScore >= 100 ? '0 0 15px #FBBF24' : 'none'}; transition: all 0.5s ease;`}></div>
-                                    <div class="sota-node-label" style="position: absolute; right: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem; flex-direction: row-reverse;">
-                                        <span style={`font-weight: 800; color: ${sotaScore >= 100 ? '#FBBF24' : '#9CA3AF'}; font-size: 0.9rem; letter-spacing: 0.1em; text-shadow: ${sotaScore >= 100 ? '0 0 10px rgba(251, 191, 36, 0.4)' : 'none'}; transition: color 0.5s ease;`}>SINGULARITY</span>
-                                        <span style="color: #9CA3AF; font-size: 0.75rem; font-family: monospace;">100%</span>
-                                    </div>
+                            <aside id="milestone-details-panel" class="milestone-details-panel" aria-live="polite">
+                                <div class="milestone-panel-top">
+                                    <div id="milestone-icon" class="milestone-icon"><span></span></div>
+                                    <span id="milestone-score" class="milestone-score">20%</span>
                                 </div>
-
-                                <!-- 80% (Event Horizon) -->
-                                <div class="sota-node sota-node-interactive" style="position: absolute; top: 20%; left: 50%; transform: translate(-50%, -50%);">
-                                    <div style={`width: 16px; height: 16px; border-radius: 50%; background: ${sotaScore >= 80 ? '#3B82F6' : '#1E293B'}; border: 2px solid ${sotaScore >= 80 ? '#FFF' : '#334155'}; box-shadow: ${sotaScore >= 80 ? '0 0 15px #3B82F6' : 'none'}; transition: all 0.5s ease;`}></div>
-                                    <div class="sota-node-label" style="position: absolute; right: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem; flex-direction: row-reverse;">
-                                        <span style={`font-weight: 700; color: ${sotaScore >= 80 ? '#3B82F6' : '#9CA3AF'}; font-size: 0.9rem; letter-spacing: 0.1em; text-shadow: ${sotaScore >= 80 ? '0 0 10px rgba(59, 130, 246, 0.4)' : 'none'}; transition: color 0.5s ease;`}>EVENT HORIZON</span>
-                                        <span style="color: #9CA3AF; font-size: 0.75rem; font-family: monospace;">80%</span>
-                                    </div>
-                                </div>
-
-                                <!-- 60% (Supernova) -->
-                                <div class="sota-node sota-node-interactive" style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);">
-                                    <div style={`width: 16px; height: 16px; border-radius: 50%; background: ${sotaScore >= 60 ? '#F97316' : '#1E293B'}; border: 2px solid ${sotaScore >= 60 ? '#FFF' : '#334155'}; box-shadow: ${sotaScore >= 60 ? '0 0 15px #F97316' : 'none'}; transition: all 0.5s ease;`}></div>
-                                    <div class="sota-node-label" style="position: absolute; right: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem; flex-direction: row-reverse;">
-                                        <span style={`font-weight: 700; color: ${sotaScore >= 60 ? '#F97316' : '#9CA3AF'}; font-size: 0.9rem; letter-spacing: 0.1em; text-shadow: ${sotaScore >= 60 ? '0 0 10px rgba(249, 115, 22, 0.4)' : 'none'}; transition: color 0.5s ease;`}>SUPERNOVA</span>
-                                        <span style="color: #9CA3AF; font-size: 0.75rem; font-family: monospace;">60%</span>
-                                    </div>
-                                </div>
-
-                                <!-- 40% (Star) -->
-                                <div class="sota-node sota-node-interactive" style="position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%);">
-                                    <div style={`width: 16px; height: 16px; border-radius: 50%; background: ${sotaScore >= 40 ? '#EF4444' : '#1E293B'}; border: 2px solid ${sotaScore >= 40 ? '#FFF' : '#334155'}; box-shadow: ${sotaScore >= 40 ? '0 0 15px #EF4444' : 'none'}; transition: all 0.5s ease;`}></div>
-                                    <div class="sota-node-label" style="position: absolute; right: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem; flex-direction: row-reverse;">
-                                        <span style={`font-weight: 700; color: ${sotaScore >= 40 ? '#EF4444' : '#9CA3AF'}; font-size: 0.9rem; letter-spacing: 0.1em; text-shadow: ${sotaScore >= 40 ? '0 0 10px rgba(239, 68, 68, 0.4)' : 'none'}; transition: color 0.5s ease;`}>STAR</span>
-                                        <span style="color: #9CA3AF; font-size: 0.75rem; font-family: monospace;">40%</span>
-                                    </div>
-                                </div>
-
-                                <!-- 20% (Nebula) -->
-                                <div class="sota-node sota-node-interactive" style="position: absolute; top: 80%; left: 50%; transform: translate(-50%, -50%);">
-                                    <div style={`width: 16px; height: 16px; border-radius: 50%; background: ${sotaScore >= 20 ? '#A855F7' : '#1E293B'}; border: 2px solid ${sotaScore >= 20 ? '#FFF' : '#334155'}; box-shadow: ${sotaScore >= 20 ? '0 0 15px #A855F7' : 'none'}; transition: all 0.5s ease;`}></div>
-                                    <div class="sota-node-label" style="position: absolute; right: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem; flex-direction: row-reverse;">
-                                        <span style={`font-weight: 700; color: ${sotaScore >= 20 ? '#A855F7' : '#9CA3AF'}; font-size: 0.9rem; letter-spacing: 0.1em; text-shadow: ${sotaScore >= 20 ? '0 0 10px rgba(168, 85, 247, 0.4)' : 'none'}; transition: color 0.5s ease;`}>NEBULA</span>
-                                        <span style="color: #9CA3AF; font-size: 0.75rem; font-family: monospace;">20%</span>
-                                    </div>
-                                </div>
-
-                                <!-- 0% (Inception) -->
-                                <div class="sota-node sota-node-interactive" style="position: absolute; top: 100%; left: 50%; transform: translate(-50%, -50%);">
-                                    <div style={`width: 16px; height: 16px; border-radius: 50%; background: #1E293B; border: 2px solid #334155;`}></div>
-                                    <div class="sota-node-label" style="position: absolute; right: 30px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.75rem; flex-direction: row-reverse;">
-                                        <span style={`font-weight: 700; color: #9CA3AF; font-size: 0.9rem; letter-spacing: 0.1em; transition: color 0.5s ease;`}>INCEPTION</span>
-                                        <span style="color: #9CA3AF; font-size: 0.75rem; font-family: monospace;">0%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            </div>
+                                <span class="milestone-kicker">Selected waypoint</span>
+                                <h3 id="milestone-title">Nebula</h3>
+                                <p id="milestone-desc">The birthplace of modern AI. Systems begin to show sparks of true intelligence and reasoning capabilities.</p>
+                                <div class="milestone-hint"><kbd>Click</kbd> a waypoint to explore</div>
+                            </aside>
                         </div>
+                    </section>
 
-                        <style>
-                            @keyframes pulse {
-                                0% { opacity: 0.4; transform: translateX(-50%) scale(0.8); }
-                                100% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
-                            }
-
-    .sota-node-interactive {
-        pointer-events: auto;
-        cursor: pointer;
-        transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .sota-node-interactive:hover {
-        transform: translate(-50%, -50%) scale(1.3) !important;
-        z-index: 100;
-    }
-
-    .sota-node-interactive:hover .sota-node-label span:first-child {
-        filter: brightness(1.5);
-    }
-
-    .ripple-effect {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
-        animation: rippleAnim 0.6s linear forwards;
-        pointer-events: none;
-    }
-
-    @keyframes rippleAnim {
-        0% {
-            width: 16px;
-            height: 16px;
-            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
-            opacity: 1;
-        }
-        100% {
-            width: 100px;
-            height: 100px;
-            box-shadow: 0 0 0 20px rgba(255, 255, 255, 0);
-            opacity: 0;
-        }
-    }
-
-</style>
-
-                    <!-- Milestone Details Panel -->
-                    <div id="milestone-details-panel" style="width: 100%; max-width: 600px; margin-top: 2rem; background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9)); border: 1px solid rgba(147, 197, 253, 0.2); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); transform: translateY(20px); opacity: 0; visibility: hidden; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; z-index: 10;">
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                            <div id="milestone-icon" style="width: 40px; height: 40px; border-radius: 50%; background: #1E293B; border: 2px solid #334155; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 15px rgba(0,0,0,0.5);"></div>
-                            <div>
-                                <h3 id="milestone-title" style="margin: 0; color: #FFF; font-size: 1.25rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;">Milestone</h3>
-                                <div id="milestone-score" style="color: #9CA3AF; font-family: monospace; font-size: 0.9rem;">0%</div>
-                            </div>
-                        </div>
-                        <p id="milestone-desc" style="color: #D1D5DB; line-height: 1.6; margin: 0; font-size: 0.95rem;"></p>
-                    </div>
-                    </div>
+                    <style>
+                        .singularity-journey-section { position:relative; isolation:isolate; max-width:1040px; margin:4rem auto; padding:clamp(2rem,5vw,4.5rem); overflow:hidden; border:1px solid rgba(96,165,250,.16); border-radius:32px; background:linear-gradient(145deg,rgba(10,20,40,.98),rgba(15,23,42,.94)); box-shadow:0 30px 80px rgba(0,0,0,.35),inset 0 1px rgba(255,255,255,.04); }
+                        .singularity-journey-section::before { content:""; position:absolute; inset:-30% 20% 35%; z-index:-1; background:radial-gradient(ellipse,rgba(59,130,246,.22),transparent 65%); filter:blur(30px); }
+                        .journey-stars { position:absolute; inset:0; z-index:-1; opacity:.7; }
+                        .journey-stars i { position:absolute; left:var(--x); top:var(--y); width:var(--s); height:var(--s); border-radius:50%; background:#bfdbfe; box-shadow:0 0 8px #60a5fa; animation:starTwinkle var(--d) ease-in-out infinite alternate; }
+                        .journey-header { max-width:650px; margin:0 auto 3rem; text-align:center; }
+                        .journey-eyebrow { display:flex; justify-content:center; align-items:center; gap:.6rem; margin-bottom:1rem; color:#60A5FA; font-size:.7rem; font-weight:800; letter-spacing:.18em; text-transform:uppercase; }
+                        .journey-eyebrow span { width:24px; height:1px; background:#60A5FA; box-shadow:0 0 8px #60A5FA; }
+                        .journey-header h2 { margin:0; color:#F8FAFC; font-size:clamp(2rem,5vw,3.8rem); line-height:1; letter-spacing:-.045em; text-transform:none; }
+                        .journey-header h2 em { color:#93C5FD; font-style:normal; text-shadow:0 0 26px rgba(96,165,250,.35); }
+                        .journey-header p { max-width:550px; margin:1rem auto 0; color:#94A3B8; line-height:1.65; }
+                        .journey-dashboard { display:grid; grid-template-columns:minmax(160px,1fr) 270px minmax(190px,1.15fr); gap:clamp(1rem,4vw,3.5rem); align-items:center; }
+                        .journey-stat-card,.milestone-details-panel { padding:1.35rem; border:1px solid rgba(148,163,184,.16); border-radius:18px; background:rgba(15,23,42,.65); box-shadow:0 18px 45px rgba(0,0,0,.22); backdrop-filter:blur(12px); }
+                        .journey-stat-label,.milestone-kicker { display:block; color:#64748B; font-size:.65rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+                        .journey-stat-card strong { display:block; margin:.4rem 0; color:#F8FAFC; font:800 2.6rem/1 monospace; }
+                        .journey-stat-card strong small { color:#60A5FA; font-size:1rem; }
+                        .journey-model-name { min-height:2.5em; color:#CBD5E1; font-size:.85rem; font-weight:700; line-height:1.3; }
+                        .journey-mini-track { height:5px; margin-top:1.2rem; overflow:hidden; border-radius:9px; background:#1E293B; }
+                        .journey-mini-track span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#8B5CF6,#38BDF8); box-shadow:0 0 12px #60A5FA; animation:growBar 1.2s ease-out both; }
+                        .journey-stat-foot { display:flex; justify-content:space-between; margin-top:.55rem; color:#475569; font-size:.55rem; text-transform:uppercase; }
+                        .sota-loading-container { position:relative; height:550px; }
+                        .sota-bar-track { position:absolute; left:50%; width:8px; height:100%; transform:translateX(-50%); border:1px solid #263855; border-radius:10px; background:#071224; box-shadow:inset 0 0 8px #000; }
+                        .sota-bar-fill { position:absolute; bottom:0; left:-1px; width:calc(100% + 2px); border-radius:10px; background:linear-gradient(to top,#2563EB,#A855F7,#F59E0B); box-shadow:0 0 22px rgba(168,85,247,.6); animation:growUp 1.4s cubic-bezier(.2,.8,.2,1) both; }
+                        .sota-rocket-indicator { position:absolute; top:0; left:50%; display:grid; place-items:center; width:54px; height:54px; transform:translate(-50%,-50%); border:1px solid rgba(96,165,250,.5); border-radius:50%; background:rgba(8,18,36,.88); box-shadow:0 0 0 7px rgba(59,130,246,.07),0 0 30px rgba(96,165,250,.45); }
+                        .sota-rocket-indicator svg { transform:rotate(-43deg); filter:drop-shadow(0 0 5px rgba(255,255,255,.5)); }
+                        .rocket-orbit { position:absolute; inset:-8px; border:1px dashed rgba(147,197,253,.3); border-radius:50%; animation:orbit 9s linear infinite; }
+                        .sota-nodes-container { position:absolute; inset:0; pointer-events:none; }
+                        .sota-node { position:absolute; top:var(--top); left:50%; width:100%; height:0; padding:0; border:0; color:inherit; background:none; pointer-events:auto; cursor:pointer; }
+                        .sota-node-dot { position:absolute; left:50%; display:grid; place-items:center; width:18px; height:18px; transform:translate(-50%,-50%); border:2px solid #334155; border-radius:50%; background:#132038; transition:.25s ease; }
+                        .sota-node-dot i { width:5px; height:5px; border-radius:50%; background:#64748B; }
+                        .sota-node-label { position:absolute; right:calc(50% + 24px); display:flex; align-items:center; gap:.55rem; transform:translateY(-50%); white-space:nowrap; transition:.25s ease; }
+                        .sota-node-label b { color:#94A3B8; font-size:.72rem; letter-spacing:.1em; }
+                        .sota-node-label small { order:-1; color:#64748B; font:600 .65rem monospace; }
+                        .sota-node.reached .sota-node-dot { border-color:var(--milestone); box-shadow:0 0 16px color-mix(in srgb,var(--milestone) 65%,transparent); }
+                        .sota-node.reached .sota-node-dot i { background:var(--milestone); }
+                        .sota-node.current .sota-node-dot { box-shadow:0 0 0 7px color-mix(in srgb,var(--milestone) 12%,transparent),0 0 18px var(--milestone); }
+                        .sota-node:hover .sota-node-dot,.sota-node:focus-visible .sota-node-dot,.sota-node.selected .sota-node-dot { transform:translate(-50%,-50%) scale(1.35); border-color:var(--milestone); background:color-mix(in srgb,var(--milestone) 25%,#132038); }
+                        .sota-node:hover .sota-node-label,.sota-node:focus-visible .sota-node-label,.sota-node.selected .sota-node-label { transform:translateY(-50%) translateX(-5px); }
+                        .sota-node:hover .sota-node-label b,.sota-node.selected .sota-node-label b { color:var(--milestone); }
+                        .sota-node:focus-visible { outline:2px solid #60A5FA; outline-offset:14px; }
+                        .milestone-details-panel { min-height:220px; transition:border-color .3s,transform .3s; }
+                        .milestone-panel-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; }
+                        .milestone-icon { display:grid; place-items:center; width:40px; height:40px; border:1px solid #A855F7; border-radius:12px; background:rgba(168,85,247,.1); box-shadow:0 0 20px rgba(168,85,247,.18); }
+                        .milestone-icon span { width:9px; height:9px; border-radius:50%; background:currentColor; box-shadow:0 0 12px currentColor; }
+                        .milestone-score { color:#A855F7; font:800 1rem monospace; }
+                        .milestone-details-panel h3 { margin:.4rem 0 .7rem; color:#F8FAFC; font-size:1.4rem; letter-spacing:.04em; text-transform:uppercase; }
+                        .milestone-details-panel p { min-height:6em; margin:0; color:#94A3B8; font-size:.82rem; line-height:1.6; }
+                        .milestone-hint { margin-top:1rem; color:#475569; font-size:.65rem; }
+                        .milestone-hint kbd { padding:.15rem .35rem; border:1px solid #334155; border-radius:4px; color:#94A3B8; background:#0F172A; font:inherit; }
+                        .ripple-effect { position:absolute; top:50%; left:50%; width:18px; height:18px; border:1px solid var(--milestone); border-radius:50%; transform:translate(-50%,-50%); animation:rippleAnim .7s ease-out forwards; pointer-events:none; }
+                        @keyframes starTwinkle { to { opacity:.2; transform:scale(.55); } }
+                        @keyframes orbit { to { transform:rotate(360deg); } }
+                        @keyframes growUp { from { height:0; } }
+                        @keyframes growBar { from { width:0; } }
+                        @keyframes rippleAnim { to { width:75px; height:75px; opacity:0; } }
+                        @media (max-width:800px) { .journey-dashboard { grid-template-columns:1fr 1fr; } .sota-loading-container { grid-row:1 / span 2; height:500px; } .journey-stat-card,.milestone-details-panel { grid-column:2; } }
+                        @media (max-width:580px) { .singularity-journey-section { padding:2.5rem 1rem; border-radius:22px; } .journey-dashboard { display:block; } .journey-stat-card { max-width:250px; margin:0 auto 2rem; text-align:center; } .sota-loading-container { width:260px; height:470px; margin:auto; transform:translateX(25px); } .milestone-details-panel { margin-top:2rem; } .sota-node-label b { font-size:.62rem; } }
+                        @media (prefers-reduced-motion:reduce) { .journey-stars i,.rocket-orbit,.sota-bar-fill,.journey-mini-track span { animation:none; } }
+                    </style>
 
                     <hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0)); margin: 3rem 0;" />
 
@@ -2704,20 +2663,23 @@ There are currently three levels in use. The fourth level will be unlocked once 
 
         document.querySelectorAll('.sota-node-interactive').forEach(node => {
             node.addEventListener('click', (e) => {
-                const labelEl = node.querySelector('.sota-node-label span:first-child');
-                if (!labelEl) return;
-
-                const title = labelEl.textContent.trim();
+                const title = node.dataset.milestone;
                 const data = milestoneData[title];
 
                 if (data && panel) {
+                    document.querySelectorAll('.sota-node-interactive').forEach(item => item.classList.remove('selected'));
+                    node.classList.add('selected');
+
                     // Update content
                     panelTitle.textContent = title;
                     panelTitle.style.color = data.color;
                     panelScore.textContent = data.score;
+                    panelScore.style.color = data.color;
                     panelDesc.textContent = data.desc;
                     panelIcon.style.boxShadow = `0 0 15px ${data.color}`;
                     panelIcon.style.borderColor = data.color;
+                    panelIcon.style.color = data.color;
+                    panel.style.borderColor = `${data.color}55`;
 
                     // Show panel
                     panel.style.visibility = 'visible';
@@ -2734,7 +2696,17 @@ There are currently three levels in use. The fourth level will be unlocked once 
                     node.appendChild(ripple);
                 }
             });
+
+            node.addEventListener('keydown', (event) => {
+                if (!['ArrowUp', 'ArrowDown'].includes(event.key)) return;
+                event.preventDefault();
+                const nodes = [...document.querySelectorAll('.sota-node-interactive')];
+                const direction = event.key === 'ArrowDown' ? 1 : -1;
+                nodes[(nodes.indexOf(node) + direction + nodes.length) % nodes.length].focus();
+            });
         });
+
+        document.querySelector('.sota-node-interactive.current')?.classList.add('selected');
 
         // Expand buttons
         document.querySelectorAll('.expand-btn').forEach(btn => {
