@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { benchmarks } from '../data/benchmarks';
+import { blendedCost, COST_SENSITIVITY_ALPHA, modelPricing, PRICING_CHECKED_ON, unnormalizedValueScore } from '../data/modelPricing';
 import CreatureIcon from '../components/CreatureIcon.astro';
 import { getSimulatedDate, TIME_OFFSET } from '../scripts/TimeUtils';
 
@@ -351,6 +352,27 @@ let ultimateBenchList = Array.from(ultimateBenchMap.values())
     })
     .sort((a, b) => b.ultimateScore - a.ultimateScore);
 
+const missingPrices = ultimateBenchList.filter(item => !modelPricing[item.name]);
+if (missingPrices.length > 0) {
+    throw new Error(`Missing token pricing for Global Ultimate Bench models: ${missingPrices.map(item => item.name).join(', ')}`);
+}
+
+const valueScoreMaximum = Math.max(...ultimateBenchList.map(item => {
+    const pricing = modelPricing[item.name];
+    return unnormalizedValueScore(item.ultimateScore, blendedCost(pricing));
+}));
+
+ultimateBenchList = ultimateBenchList.map(item => {
+    const pricing = modelPricing[item.name];
+    const cost = blendedCost(pricing);
+    return {
+        ...item,
+        blendedCost: cost,
+        valueScore: (unnormalizedValueScore(item.ultimateScore, cost) / valueScoreMaximum) * 100,
+        pricingSource: pricing.source
+    };
+});
+
 let ultRank = 1;
 let ultPrevScore = null;
 ultimateBenchList = ultimateBenchList.map(item => {
@@ -360,6 +382,13 @@ ultimateBenchList = ultimateBenchList.map(item => {
     ultPrevScore = item.ultimateScore;
     return { ...item, rank: ultRank };
 });
+
+const valueRanks = new Map(
+    [...ultimateBenchList]
+        .sort((a, b) => b.valueScore - a.valueScore)
+        .map((item, index) => [item.name, index + 1])
+);
+ultimateBenchList = ultimateBenchList.map(item => ({ ...item, valueRank: valueRanks.get(item.name) }));
 
 function getRankDisplay(rank) {
 
@@ -491,6 +520,10 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                         </header>
 
                         <div class="leaderboard-controls" aria-label="Filter leaderboard models">
+                            <div class="score-mode" role="group" aria-label="Leaderboard scoring mode">
+                                <button type="button" class="score-mode-btn is-active" data-score-mode="absolute" aria-pressed="true">Absolute</button>
+                                <button type="button" class="score-mode-btn" data-score-mode="cost">Cost-efficiency</button>
+                            </div>
                             <label class="model-search">
                                 <span class="sr-only">Search models</span>
                                 <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m21 21-4.35-4.35m2.1-5.4a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"/></svg>
@@ -511,6 +544,7 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                             <div class="ultimate-modern-container">
                                 <div class="ultimate-table-header">
                                     <span>Rank</span><span>Model</span><span>Released</span>
+                                    <button class="cost-column" id="ultimate-cost-sort-btn"><span>Blended cost</span><small id="ultimate-cost-sort-text">USD / 1M ▼</small></button>
                                     <button id="ultimate-visual-sort-btn"><span>Visual</span><small id="ultimate-visual-sort-text">Score ▼</small></button>
                                     <button id="ultimate-data-sort-btn"><span>Data</span><small id="ultimate-data-sort-text">Score ▼</small></button>
                                     <button id="ultimate-chess-sort-btn"><span>Chess</span><small id="ultimate-chess-sort-text">Score ▼</small></button>
@@ -518,8 +552,8 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                 </div>
                                 <div class="ultimate-table-body">
                                     {ultimateBenchList.map((item) => (
-                                        <div class={`ultimate-row-hover rank-${item.rank}`} data-model-name={item.name.toLowerCase()} data-provider={getModelProvider(item.name).name}>
-                                            <div class="ultimate-rank"><span>{String(item.rank).padStart(2, '0')}</span>{item.rank <= 3 && <i aria-hidden="true">{item.rank === 1 ? '◆' : '◇'}</i>}</div>
+                                        <div class={`ultimate-row-hover rank-${item.rank}`} data-model-name={item.name.toLowerCase()} data-provider={getModelProvider(item.name).name} data-absolute-rank={item.rank} data-value-rank={item.valueRank}>
+                                            <div class="ultimate-rank"><span>{String(item.rank).padStart(2, '0')}</span><i aria-hidden="true">{item.rank <= 3 ? (item.rank === 1 ? '◆' : '◇') : ''}</i></div>
                                             <div class={`ultimate-model model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="model-info" data-provider={getModelProvider(item.name).name}>
                                                     <div class="model-name-line">
@@ -532,12 +566,13 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                                 <time datetime={item.releaseDate}>{formatReleaseDate(item.releaseDate)}</time>
                                                 <span class="release-time-ago">{formatTimeAgo(item.releaseDate)}</span>
                                             </div>
+                                            <a class="ultimate-cost cost-column" href={item.pricingSource} target="_blank" rel="noreferrer" data-score={item.blendedCost} title="Published input/output token pricing source">${item.blendedCost.toFixed(2)}</a>
                                             {[['visual', item.visualScore], ['data', item.dataScore], ['chess', item.chessScore]].map(([type, score]) => (
                                                 <div class={`ultimate-metric ultimate-${type}-score-cell score-cell`} data-score={score}>
                                                     <strong>{score.toFixed(1)}</strong><small>%</small>
                                                 </div>
                                             ))}
-                                            <div class="ultimate-score-cell score-cell"><strong>{item.ultimateScore.toFixed(1)}</strong><small>%</small></div>
+                                            <div class="ultimate-score-cell score-cell" data-absolute-score={item.ultimateScore.toFixed(1)} data-value-score={item.valueScore.toFixed(1)}><strong>{item.ultimateScore.toFixed(1)}</strong><small>%</small></div>
                                         </div>
                                     ))}
                                 </div>
@@ -545,7 +580,8 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                 {ultimateBenchList.length === 0 && <div class="ultimate-empty">No models currently span all three benchmarks.</div>}
                             </div>
                         </div>
-                        <p class="leaderboard-note"><span>↳</span> Overall scores average each model’s complexity-weighted performance across all three arenas.</p>
+                        <p class="leaderboard-note absolute-note"><span>↳</span> Overall scores average each model’s complexity-weighted performance across all three arenas.</p>
+                        <p class="leaderboard-note cost-note" hidden><span>↳</span> Value score = 100 × [overall − {COST_SENSITIVITY_ALPHA} × log₁₀(0.75 × input price + 0.25 × output price)] / cohort maximum. Token prices were checked {PRICING_CHECKED_ON}; select a cost to open its source.</p>
                     </section>
 
                     <!-- Journey to Singularity: Enhanced Section -->
@@ -2557,6 +2593,9 @@ There are currently three levels in use. The fourth level will be unlocked once 
     .leaderboard-meta strong { color: #f8fafc; font-family: var(--font-heading); font-size: 1.25rem; }
     .leaderboard-meta span { color: #6f7f95; font-size: .63rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
     .leaderboard-controls { display: flex; align-items: center; gap: .65rem; width: min(100%, 82rem); margin: 1.25rem auto .75rem; }
+    .score-mode { display: flex; gap: .25rem; padding: .25rem; border: 1px solid #4b3d1c; border-radius: 10px; background: #151407; }
+    .score-mode-btn { padding: .52rem .72rem; border: 0; border-radius: 7px; background: transparent; color: #8e835f; font: 800 .62rem var(--font-body); letter-spacing: .07em; text-transform: uppercase; cursor: pointer; }
+    .score-mode-btn.is-active { background: #4a3913; color: #fde68a; box-shadow: inset 0 0 0 1px #75591c; }
     .model-search { position: relative; display: flex; align-items: center; min-width: 15rem; height: 2.65rem; border: 1px solid #2b3a51; border-radius: 10px; background: #0b1524; transition: border-color .2s, box-shadow .2s; }
     .model-search:focus-within { border-color: #7c6325; box-shadow: 0 0 0 3px rgba(251,191,36,.08); }
     .model-search svg { width: 1rem; margin-left: .8rem; fill: none; stroke: #64748b; stroke-linecap: round; stroke-width: 1.8; }
@@ -2573,6 +2612,10 @@ There are currently three levels in use. The fourth level will be unlocked once 
     .ultimate-bench-section .ultimate-container { overflow-x: auto; width: min(100%, 82rem); margin: 0 auto; border: 1px solid #26344c; border-radius: 16px; background: #0a1220; }
     .ultimate-bench-section .ultimate-modern-container { min-width: 980px; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
     .ultimate-table-header, .ultimate-row-hover { display: grid; grid-template-columns: 64px minmax(230px, 1.5fr) minmax(130px, .75fr) repeat(4, minmax(100px, .7fr)); align-items: center; }
+    .cost-column { display: none; }
+    .ultimate-bench-section.is-cost-mode .ultimate-table-header,
+    .ultimate-bench-section.is-cost-mode .ultimate-row-hover { grid-template-columns: 64px minmax(210px, 1.4fr) minmax(125px, .7fr) minmax(115px, .7fr) repeat(4, minmax(92px, .65fr)); }
+    .ultimate-bench-section.is-cost-mode .cost-column { display: block; }
     .ultimate-table-header { min-height: 3.75rem; padding: 0 1.25rem; border-bottom: 1px solid #26344c; background: #0e192a; }
     .ultimate-table-header > span, .ultimate-table-header button { color: #718198; font: 700 .62rem var(--font-body); letter-spacing: .13em; text-align: left; text-transform: uppercase; }
     .ultimate-table-header button { padding: .6rem 0; border: 0; background: none; cursor: pointer; }
@@ -2594,6 +2637,8 @@ There are currently three levels in use. The fourth level will be unlocked once 
     .ultimate-release-date time { grid-column: 1 / -1; color: #c4cedb; font-size: .72rem; }
     .ultimate-release-date .release-time-ago { color: #687990; }
     .ultimate-metric { position: relative; color: #d4dbe5; font-family: var(--font-heading); font-size: 1.22rem; font-variant-numeric: tabular-nums; }
+    .ultimate-cost { color: #86efac; font: 800 1rem var(--font-heading); text-align: center; text-decoration: none; font-variant-numeric: tabular-nums; }
+    .ultimate-cost:hover { color: #bbf7d0; text-decoration: underline; }
     .ultimate-metric small, .ultimate-score-cell small { margin-left: .12rem; color: #65758b; font-size: .68rem; }
     .ultimate-bench-section .ultimate-score-cell { color: #fbbf24 !important; font-family: var(--font-heading); font-size: 1.5rem; font-variant-numeric: tabular-nums; text-align: center !important; }
     .leaderboard-note { margin: 1rem 0 0; color: #718198; font-size: .72rem; line-height: 1.5; }
@@ -2945,6 +2990,48 @@ There are currently three levels in use. The fourth level will be unlocked once 
         setupUltimateSort('ultimate-visual-sort-btn', 'ultimate-visual-sort-text', '.ultimate-visual-score-cell', 'VISUAL', '#D1D5DB');
         setupUltimateSort('ultimate-data-sort-btn', 'ultimate-data-sort-text', '.ultimate-data-score-cell', 'DATA', '#D1D5DB');
         setupUltimateSort('ultimate-chess-sort-btn', 'ultimate-chess-sort-text', '.ultimate-chess-score-cell', 'CHESS', '#D1D5DB');
+        setupUltimateSort('ultimate-cost-sort-btn', 'ultimate-cost-sort-text', '.ultimate-cost', 'USD / 1M', '#86EFAC');
+
+        // --- Absolute / cost-efficiency scoring mode ---
+        const ultimateSection = document.querySelector('.ultimate-bench-section');
+        const scoreModeButtons = Array.from(document.querySelectorAll('.score-mode-btn'));
+        const ultimateBody = document.querySelector('.ultimate-table-body');
+
+        function setScoreMode(mode) {
+            const costMode = mode === 'cost';
+            ultimateSection?.classList.toggle('is-cost-mode', costMode);
+            scoreModeButtons.forEach(button => {
+                const active = button.dataset.scoreMode === mode;
+                button.classList.toggle('is-active', active);
+                button.setAttribute('aria-pressed', String(active));
+            });
+            document.querySelector('.absolute-note')?.toggleAttribute('hidden', costMode);
+            document.querySelector('.cost-note')?.toggleAttribute('hidden', !costMode);
+
+            const rows = Array.from(document.querySelectorAll('.ultimate-row-hover'));
+            rows.forEach(row => {
+                const rank = Number(costMode ? row.dataset.valueRank : row.dataset.absoluteRank);
+                row.classList.remove('rank-1', 'rank-2', 'rank-3');
+                if (rank <= 3) row.classList.add(`rank-${rank}`);
+                const rankCell = row.querySelector('.ultimate-rank');
+                const scoreCell = row.querySelector('.ultimate-score-cell');
+                if (rankCell) {
+                    rankCell.querySelector('span').textContent = String(rank).padStart(2, '0');
+                    rankCell.querySelector('i').textContent = rank <= 3 ? (rank === 1 ? '◆' : '◇') : '';
+                }
+                if (scoreCell) {
+                    scoreCell.querySelector('strong').textContent = costMode ? scoreCell.dataset.valueScore : scoreCell.dataset.absoluteScore;
+                }
+            });
+            rows.sort((a, b) => Number(costMode ? a.dataset.valueRank : a.dataset.absoluteRank) - Number(costMode ? b.dataset.valueRank : b.dataset.absoluteRank));
+            rows.forEach(row => ultimateBody?.appendChild(row));
+            const overallLabel = document.querySelector('#ultimate-sort-btn > span');
+            const overallText = document.getElementById('ultimate-sort-text');
+            if (overallLabel) overallLabel.textContent = costMode ? 'Value score' : 'Overall';
+            if (overallText) overallText.textContent = 'Score ▼';
+        }
+
+        scoreModeButtons.forEach(button => button.addEventListener('click', () => setScoreMode(button.dataset.scoreMode)));
 
         // --- Fast, composable model filters ---
         const modelFilterInput = document.getElementById('ultimate-model-filter');
