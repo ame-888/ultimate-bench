@@ -535,6 +535,20 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                             <button id="ultimate-filter-clear" class="filter-clear" type="button" hidden>Clear filters</button>
                         </div>
 
+                        <aside class="cost-method" hidden aria-labelledby="cost-method-title">
+                            <div class="cost-method-intro">
+                                <span class="cost-method-kicker">How the ranking works</span>
+                                <h3 id="cost-method-title">Performance, with a measured price penalty.</h3>
+                                <p>Cost efficiency starts with the same three-arena Overall score. It only reduces that score when a model’s representative token cost rises above our $1 baseline, so inexpensive models keep every point they earned.</p>
+                            </div>
+                            <div class="cost-method-steps" aria-label="Cost-efficiency calculation steps">
+                                <div><span>01</span><p><strong>Blend the token price</strong><code>(0.75 × input) + (0.25 × output)</code></p></div>
+                                <div><span>02</span><p><strong>Calculate the penalty</strong><code>{COST_SENSITIVITY_ALPHA} × max(0, log₁₀(blended cost ÷ ${IDEAL_BLENDED_COST}))</code></p></div>
+                                <div><span>03</span><p><strong>Re-rank by the result</strong><code>clamp(overall − penalty, 0, 100)</code></p></div>
+                            </div>
+                            <p class="cost-method-detail"><span aria-hidden="true">↳</span> The 75/25 blend approximates a typical input-heavy request. A tenfold price increase above the baseline costs {COST_SENSITIVITY_ALPHA} points; prices at or below ${IDEAL_BLENDED_COST.toFixed(2)} incur no penalty.</p>
+                        </aside>
+
                         <div class="ultimate-container" role="region" aria-label="Global Ultimate Bench standings" tabindex="0">
                             <div class="ultimate-modern-container">
                                 <div class="ultimate-table-header">
@@ -576,7 +590,7 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                             </div>
                         </div>
                         <p class="leaderboard-note absolute-note"><span>↳</span> Overall scores average each model’s complexity-weighted performance across all three arenas.</p>
-                        <p class="leaderboard-note cost-note" hidden><span>↳</span> Cost efficiency = overall − {COST_SENSITIVITY_ALPHA} × max(0, log₁₀(blended cost / ${IDEAL_BLENDED_COST})), bounded from 0–100. A 100% requires 100% in every arena and a blended cost of ${IDEAL_BLENDED_COST.toFixed(2)} or less. Token prices were checked {PRICING_CHECKED_ON}; select a cost to open its source.</p>
+                        <p class="leaderboard-note cost-note" hidden><span>↳</span> Token prices were checked {PRICING_CHECKED_ON}; select any blended cost to open its published source.</p>
                     </section>
 
                     <!-- Journey to Singularity: Enhanced Section -->
@@ -2604,6 +2618,21 @@ There are currently three levels in use. The fourth level will be unlocked once 
     .filter-count { margin-left: auto; color: #718198; font-size: .7rem; font-weight: 700; white-space: nowrap; }
     .filter-clear { padding: .4rem .55rem; border: 0; background: transparent; color: #d4a72c; font: 700 .68rem var(--font-body); cursor: pointer; white-space: nowrap; }
     .filter-clear:hover { color: #fbbf24; text-decoration: underline; }
+    .cost-method { position: relative; display: grid; grid-template-columns: minmax(17rem, .8fr) minmax(34rem, 1.5fr); gap: 1.5rem 2.5rem; width: min(100%, 82rem); margin: 0 auto .75rem; padding: 1.5rem; overflow: hidden; border: 1px solid #4b3d1c; border-radius: 16px; background: radial-gradient(circle at 0 0, rgba(251,191,36,.1), transparent 34%), #0d1420; box-shadow: inset 3px 0 0 #b8871d; }
+    .cost-method[hidden] { display: none; }
+    .cost-method::after { position: absolute; right: -2rem; bottom: -4rem; width: 12rem; height: 12rem; border: 1px solid rgba(251,191,36,.08); border-radius: 50%; content: ''; }
+    .cost-method-intro, .cost-method-steps, .cost-method-detail { position: relative; z-index: 1; }
+    .cost-method-kicker { display: block; margin-bottom: .55rem; color: #d4a72c; font-size: .61rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    .cost-method h3 { margin: 0 0 .65rem; color: #f7edd1; font-family: var(--font-heading); font-size: clamp(1.1rem, 2vw, 1.4rem); line-height: 1.2; }
+    .cost-method-intro p { margin: 0; color: #91a0b4; font-size: .76rem; line-height: 1.65; }
+    .cost-method-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem; }
+    .cost-method-steps > div { display: grid; grid-template-columns: 1.55rem 1fr; gap: .55rem; align-items: start; padding: .8rem; border: 1px solid #26344c; border-radius: 10px; background: rgba(7,13,23,.72); }
+    .cost-method-steps > div > span { color: #c99826; font: 800 .58rem var(--font-heading); letter-spacing: .06em; }
+    .cost-method-steps p { margin: 0; min-width: 0; }
+    .cost-method-steps strong { display: block; margin-bottom: .35rem; color: #dbe4ef; font-size: .68rem; }
+    .cost-method-steps code { display: block; overflow-wrap: anywhere; color: #91d7ad; font: 600 .62rem/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .cost-method-detail { grid-column: 1 / -1; margin: -.35rem 0 0; color: #718198; font-size: .68rem; line-height: 1.5; }
+    .cost-method-detail span { margin-right: .4rem; color: #fbbf24; }
     .ultimate-bench-section .ultimate-container { overflow-x: auto; width: min(100%, 82rem); margin: 0 auto; border: 1px solid #26344c; border-radius: 16px; background: #0a1220; }
     .ultimate-bench-section .ultimate-modern-container { min-width: 980px; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
     .ultimate-table-header, .ultimate-row-hover { display: grid; grid-template-columns: 64px minmax(230px, 1.5fr) minmax(130px, .75fr) repeat(4, minmax(100px, .7fr)); align-items: center; }
@@ -2647,11 +2676,14 @@ There are currently three levels in use. The fourth level will be unlocked once 
     }
     @media (max-width: 900px) {
         .leaderboard-controls { flex-wrap: wrap; }
+        .cost-method { grid-template-columns: 1fr; }
+        .cost-method-detail { grid-column: auto; }
         .model-search { flex: 1 1 15rem; }
         .provider-filter { order: 3; width: 100%; overflow-x: auto; }
         .provider-filter-btn { flex: 1 0 auto; }
     }
     @media (max-width: 480px) {
+        .cost-method-steps { grid-template-columns: 1fr; }
         .leaderboard-meta div { padding: 1rem .35rem; }
         .leaderboard-meta strong { font-size: 1rem; }
         .leaderboard-meta span { font-size: .52rem; letter-spacing: .05em; }
@@ -3002,6 +3034,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
             });
             document.querySelector('.absolute-note')?.toggleAttribute('hidden', costMode);
             document.querySelector('.cost-note')?.toggleAttribute('hidden', !costMode);
+            document.querySelector('.cost-method')?.toggleAttribute('hidden', !costMode);
 
             const rows = Array.from(document.querySelectorAll('.ultimate-row-hover'));
             rows.forEach(row => {
