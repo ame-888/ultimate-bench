@@ -363,50 +363,77 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                 <div id="achievements-modal" class="modal-overlay">
                     <div class="modal-content achievements-content glass-panel">
                         <button id="achievements-modal-close" class="modal-close-btn">&times;</button>
-                        <h2 class="achievements-title">🏆 Hall of Achievements 🏆</h2>
-                        <p class="achievements-subtitle">Celebrating the finest (and quirkiest) performances</p>
+                        <div class="achievements-eyebrow"><span></span> LIVE LEADERBOARD HONORS <span></span></div>
+                        <h2 class="achievements-title">Hall of Achievements</h2>
+                        <p class="achievements-subtitle">Records, rivalries, and remarkable benchmark runs.</p>
+                        <div class="achievements-summary" aria-label="Achievement summary">
+                            <div><strong>10</strong><span>awards</span></div>
+                            <div><strong>3</strong><span>arenas</span></div>
+                            <div><strong>Live</strong><span>rankings</span></div>
+                        </div>
 
                         <div class="achievements-grid">
                             <div class="achievement-card sota-card">
-                                <div class="ach-icon">👑</div>
+                                <div class="ach-ribbon">THE CROWN</div><div class="ach-icon">♛</div>
                                 <h3>Current SOTA</h3>
                                 <p>The apex intelligence.</p>
                                 <div class="ach-model"><span id="ach-sota">Loading...</span></div>
                             </div>
 
                             <div class="achievement-card vis-card">
-                                <div class="ach-icon">👁️</div>
+                                <div class="ach-ribbon">VISUAL</div><div class="ach-icon">◉</div>
                                 <h3>Visual Master</h3>
                                 <p>Seeing beyond pixels.</p>
                                 <div class="ach-model"><span id="ach-visual">Loading...</span></div>
                             </div>
 
                             <div class="achievement-card dat-card">
-                                <div class="ach-icon">🕸️</div>
+                                <div class="ach-ribbon">DATA</div><div class="ach-icon">⌘</div>
                                 <h3>Data Weaver</h3>
                                 <p>Untangling the web.</p>
                                 <div class="ach-model"><span id="ach-data">Loading...</span></div>
                             </div>
 
                             <div class="achievement-card che-card">
-                                <div class="ach-icon">♟️</div>
+                                <div class="ach-ribbon">CHESS</div><div class="ach-icon">♞</div>
                                 <h3>Grandmaster</h3>
                                 <p>Checkmate in 12.</p>
                                 <div class="ach-model"><span id="ach-chess">Loading...</span></div>
                             </div>
 
                             <div class="achievement-card eff-card">
-                                <div class="ach-icon">💪</div>
-                                <h3>A for Effort</h3>
-                                <p>Tried really hard!</p>
+                                <div class="ach-ribbon">GRIT</div><div class="ach-icon">↗</div>
+                                <h3>Against the Odds</h3>
+                                <p>Lowest positive average — still in the arena.</p>
                                 <div class="ach-model"><span id="ach-effort">Loading...</span></div>
                             </div>
 
                             <div class="achievement-card gli-card">
-                                <div class="ach-icon">👾</div>
+                                <div class="ach-ribbon">WILDCARD</div><div class="ach-icon">⚡</div>
                                 <h3>Glitch in Matrix</h3>
                                 <p>Unexpected behavior.</p>
                                 <div class="ach-model"><span id="ach-glitch">Loading...</span></div>
+                            </div>
+
+                            <div class="achievement-card runner-card">
+                                <div class="ach-ribbon">CHASE PACK</div><div class="ach-icon">Ⅱ</div>
+                                <h3>Hot on the Heels</h3><p>Second place on the global leaderboard.</p>
+                                <div class="ach-model"><span id="ach-runner">Loading...</span></div>
+                            </div>
+                            <div class="achievement-card balance-card">
+                                <div class="ach-ribbon">ALL-ROUNDER</div><div class="ach-icon">◆</div>
+                                <h3>Triple Threat</h3><p>Best average across all three arenas.</p>
+                                <div class="ach-model"><span id="ach-balanced">Loading...</span></div>
+                            </div>
+                            <div class="achievement-card specialist-card">
+                                <div class="ach-ribbon">SPECIALIST</div><div class="ach-icon">✦</div>
+                                <h3>One-Trick Wonder</h3><p>Largest gap between best and worst arena.</p>
+                                <div class="ach-model"><span id="ach-specialist">Loading...</span></div>
+                            </div>
+                            <div class="achievement-card depth-card">
+                                <div class="ach-ribbon">ENDURANCE</div><div class="ach-icon">∞</div>
+                                <h3>Marathon Mind</h3><p>Most scored trials across the benchmark suite.</p>
+                                <div class="ach-model"><span id="ach-depth">Loading...</span></div>
                             </div>
                         </div>
                     </div>
@@ -2289,42 +2316,49 @@ There are currently three levels in use. The fourth level will be unlocked once 
 
     /* Achievements Modal Styling */
     .achievements-content {
-        background: rgba(17, 24, 39, 0.95);
-        border: 1px solid rgba(245, 158, 11, 0.2);
-        box-shadow: 0 0 40px rgba(245, 158, 11, 0.1);
-        max-width: 800px;
+        background: radial-gradient(circle at 50% -10%, rgba(245, 158, 11, .13), transparent 32%), #0b1220;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        box-shadow: 0 32px 90px rgba(0, 0, 0, .65);
+        max-width: 1120px;
         text-align: center;
-        padding: 2.5rem;
+        padding: 2.75rem;
     }
 
     .achievements-title {
-        font-size: 2.2rem;
+        font-size: clamp(2rem, 5vw, 3.25rem);
         font-weight: 900;
         margin-bottom: 0.5rem;
         background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        text-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+        letter-spacing: -.04em;
     }
+
+    .achievements-eyebrow { display:flex; align-items:center; justify-content:center; gap:.75rem; color:#FBBF24; font-size:.7rem; font-weight:900; letter-spacing:.18em; }
+    .achievements-eyebrow span { width:34px; height:1px; background:linear-gradient(90deg, transparent, #F59E0B); }
+    .achievements-eyebrow span:last-child { transform:rotate(180deg); }
 
     .achievements-subtitle {
         color: #9CA3AF;
         font-size: 1.1rem;
-        margin-bottom: 2.5rem;
-        font-style: italic;
+        margin-bottom: 1.25rem;
     }
+    .achievements-summary { width:min(440px,100%); margin:0 auto 2rem; padding:.75rem 1rem; display:flex; justify-content:space-around; background:rgba(15,23,42,.72); border:1px solid rgba(148,163,184,.13); border-radius:999px; }
+    .achievements-summary div { display:flex; gap:.4rem; align-items:baseline; }
+    .achievements-summary strong { color:#F8FAFC; font-size:.95rem; }
+    .achievements-summary span { color:#64748B; font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; }
 
     .achievements-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 1rem;
     }
 
     .achievement-card {
-        background: rgba(0, 0, 0, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 1rem;
-        padding: 1.5rem;
+        background: linear-gradient(145deg, rgba(30,41,59,.72), rgba(8,15,27,.92));
+        border: 1px solid rgba(148, 163, 184, 0.13);
+        border-radius: .9rem;
+        padding: 1.25rem;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         display: flex;
         flex-direction: column;
@@ -2338,7 +2372,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
         position: absolute;
         top: 0; left: 0; right: 0; height: 3px;
         background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-        opacity: 0.3;
+        opacity: 0.55;
     }
 
     .achievement-card:hover {
@@ -2355,10 +2389,13 @@ There are currently three levels in use. The fourth level will be unlocked once 
 
 
     .ach-icon {
-        font-size: 3rem;
-        margin-bottom: 0.75rem;
+        font-size: 1.65rem;
+        width:3.25rem; height:3.25rem; display:grid; place-items:center;
+        margin: .65rem auto 0.75rem;
+        border-radius:50%; background:rgba(245,158,11,.1); border:1px solid rgba(245,158,11,.24); color:#FBBF24;
         filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
     }
+    .ach-ribbon { color:#64748B; font-size:.62rem; font-weight:900; letter-spacing:.15em; }
 
     .achievement-card h3 {
         font-size: 1.2rem;
@@ -2391,6 +2428,9 @@ There are currently three levels in use. The fourth level will be unlocked once 
     .che-card .ach-model { color: #C4B5FD; background: rgba(167, 139, 250, 0.1); border-color: rgba(167, 139, 250, 0.2); }
     .eff-card .ach-model { color: #F9A8D4; background: rgba(236, 72, 153, 0.1); border-color: rgba(236, 72, 153, 0.2); }
     .gli-card .ach-model { color: #10B981; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); font-family: 'Courier New', monospace; font-weight: bold;}
+    .runner-card .ach-model, .balance-card .ach-model, .specialist-card .ach-model, .depth-card .ach-model { color:#BAE6FD; background:rgba(14,165,233,.08); border-color:rgba(14,165,233,.2); }
+    .runner-card:hover, .balance-card:hover, .specialist-card:hover, .depth-card:hover { border-color:rgba(56,189,248,.35); box-shadow:0 10px 24px rgba(14,165,233,.1); }
+    @media (max-width: 640px) { .achievements-content { padding:2.5rem 1rem 1rem; } .achievements-summary span { display:none; } }
 
 </style>
 
@@ -2472,6 +2512,41 @@ There are currently three levels in use. The fourth level will be unlocked once 
 
                 document.getElementById('ach-effort').textContent = effortModel;
                 document.getElementById('ach-glitch').textContent = glitchModel;
+
+                // Compare category-level averages for the cross-discipline honors.
+                const profiles = {};
+                [visualRows, dataRows, chessRows].forEach((rows, categoryIndex) => {
+                    rows.forEach(row => {
+                        const name = row.querySelector('.model-name')?.textContent.trim();
+                        if (!name) return;
+                        const values = Array.from(row.querySelectorAll('.score-cell:not(.rank-cell)'))
+                            .map(cell => Number.parseFloat(cell.textContent.replace('%', '')))
+                            .filter(Number.isFinite);
+                        if (!values.length) return;
+                        profiles[name] ||= { categories: [], trials: 0 };
+                        profiles[name].categories[categoryIndex] = values.reduce((sum, value) => sum + value, 0) / values.length;
+                        profiles[name].trials += values.length;
+                    });
+                });
+
+                const entries = Object.entries(profiles);
+                const balanced = entries
+                    .filter(([, profile]) => profile.categories.filter(Number.isFinite).length === 3)
+                    .sort(([, a], [, b]) => (b.categories.reduce((x, y) => x + y, 0) - a.categories.reduce((x, y) => x + y, 0)))[0]?.[0] || 'None';
+                const categorySpread = profile => {
+                    const scores = profile.categories.filter(Number.isFinite);
+                    return Math.max(...scores) - Math.min(...scores);
+                };
+                const specialist = entries
+                    .filter(([, profile]) => profile.categories.filter(Number.isFinite).length > 1)
+                    .sort(([, a], [, b]) => categorySpread(b) - categorySpread(a))[0]?.[0] || 'None';
+                const depth = [...entries].sort(([, a], [, b]) => b.trials - a.trials)[0]?.[0] || 'None';
+                const globalNames = Array.from(document.querySelectorAll('.ultimate-row-hover .model-name')).map(el => el.textContent.trim());
+
+                document.getElementById('ach-runner').textContent = globalNames[1] || 'None';
+                document.getElementById('ach-balanced').textContent = balanced;
+                document.getElementById('ach-specialist').textContent = specialist;
+                document.getElementById('ach-depth').textContent = depth;
 
                 achModalOverlay.classList.add('active');
                 document.body.style.overflow = 'hidden'; // Prevent background scrolling
