@@ -483,14 +483,12 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                             <div class={`ultimate-model model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="model-info" data-provider={getModelProvider(item.name).name}>
                                                     <strong class="model-name" data-release-date={item.releaseDate}>{item.name}</strong>
-                                                    <span>{getModelProvider(item.name).name}</span>
                                                 </div>
                                                 {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
                                             </div>
                                             {[['visual', item.visualScore], ['data', item.dataScore], ['chess', item.chessScore]].map(([type, score]) => (
                                                 <div class={`ultimate-metric ultimate-${type}-score-cell score-cell`} data-score={score}>
                                                     <strong>{score.toFixed(1)}</strong><small>%</small>
-                                                    <span class="metric-track"><i style={`width:${score}%`}></i></span>
                                                 </div>
                                             ))}
                                             <div class="ultimate-score-cell score-cell"><strong>{item.ultimateScore.toFixed(1)}</strong><small>%</small></div>
@@ -2509,11 +2507,8 @@ There are currently three levels in use. The fourth level will be unlocked once 
     .ultimate-model { display: flex; align-items: center; justify-content: space-between; min-height: 3rem; margin-right: 1.4rem; padding: .35rem .8rem; border-radius: 7px; }
     .ultimate-model .model-info { min-width: 0; }
     .ultimate-model .model-name { display: block; overflow: hidden; color: #edf2f8; font-size: .94rem; text-overflow: ellipsis; white-space: nowrap; }
-    .ultimate-model .model-info > span { display: block; margin-top: .28rem; color: #65758b; font-size: .63rem; font-weight: 700; text-transform: uppercase; }
     .ultimate-metric { position: relative; color: #bac4d1; font-size: 1rem; }
     .ultimate-metric small, .ultimate-score-cell small { margin-left: .1rem; color: #58677b; font-size: .62rem; }
-    .metric-track { display: block; width: 58%; height: 2px; margin-top: .55rem; overflow: hidden; background: #253246; }
-    .metric-track i { display: block; height: 100%; background: #64748b; }
     .ultimate-bench-section .ultimate-score-cell { color: #fbbf24 !important; font-family: var(--font-heading); font-size: 1.35rem; text-align: left !important; }
     .leaderboard-note { margin: 1rem 0 0; color: #718198; font-size: .72rem; line-height: 1.5; }
     .leaderboard-note span { margin-right: .45rem; color: #fbbf24; }
