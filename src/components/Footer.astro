@@ -1,0 +1,43 @@
+---
+const year = new Date().getUTCFullYear();
+---
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-about">
+            <a class="footer-brand" href="/">Ultimate Bench</a>
+            <p>Independent, experimental AI model comparisons with the method and limitations kept in view.</p>
+        </div>
+        <nav aria-label="Project links">
+            <h2>Project</h2>
+            <a href="/about">About</a>
+            <a href="/methodology">Methodology</a>
+            <a href="/analysis">Analysis</a>
+            <a href="/blog">Guides</a>
+        </nav>
+        <nav aria-label="Site policies">
+            <h2>Information</h2>
+            <a href="/contact">Contact</a>
+            <a href="/privacy">Privacy</a>
+            <a href="/terms">Terms</a>
+        </nav>
+    </div>
+    <div class="footer-meta">
+        <span>© {year} Ultimate Bench</span>
+        <span>Scores are experimental results, not product endorsements.</span>
+    </div>
+</footer>
+
+<style>
+    .site-footer { position: relative; z-index: 2; border-top: 1px solid #293346; background: #0b1220; color: #94a3b8; }
+    .footer-inner { display: grid; grid-template-columns: minmax(18rem, 2fr) 1fr 1fr; gap: 3rem; max-width: 78rem; margin: 0 auto; padding: 3.5rem 1.5rem 2.5rem; }
+    .footer-about { max-width: 30rem; }
+    .footer-brand { color: #f8fafc; font-family: var(--font-heading); font-size: 1.2rem; font-weight: 800; text-decoration: none; }
+    .footer-about p { margin: .9rem 0 0; line-height: 1.7; }
+    .site-footer nav { display: flex; flex-direction: column; align-items: flex-start; gap: .65rem; }
+    .site-footer h2 { margin: 0 0 .25rem; color: #e2e8f0; font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; }
+    .site-footer nav a { color: #94a3b8; font-size: .9rem; text-decoration: none; }
+    .site-footer nav a:hover { color: #93c5fd; text-decoration: underline; text-underline-offset: .2rem; }
+    .footer-meta { display: flex; justify-content: space-between; gap: 1rem; max-width: 78rem; margin: 0 auto; padding: 1.25rem 1.5rem 2rem; border-top: 1px solid #202a3a; font-size: .75rem; }
+    @media (max-width: 680px) { .footer-inner { grid-template-columns: 1fr 1fr; } .footer-about { grid-column: 1 / -1; } .footer-meta { flex-direction: column; } }
+</style>

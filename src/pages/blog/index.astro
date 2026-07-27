@@ -1,35 +1,47 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { articles } from '../../data/articles';
 ---
 
-<Layout title="Blog | Ultimate Bench" description="Read updates and analysis from the Ultimate Bench experimental AI benchmark project.">
-    <main>
-        <h1>Articles</h1>
-        <p class="coming-soon">Analysis of the ultimate bench coming soon...</p>
+<Layout title="AI Benchmark Guides | Ultimate Bench" description="Practical, independent guides for reading AI benchmarks, comparing model costs, and building evaluations for real-world decisions.">
+    <main class="blog-page">
+        <header>
+            <p class="eyebrow">From the workbench</p>
+            <h1>Guides to better<br /><span>model decisions.</span></h1>
+            <p class="intro">Practical notes on what AI benchmark numbers mean, what they leave out, and how to test models against work that matters to you.</p>
+        </header>
+        <section class="article-grid" aria-labelledby="latest-title">
+            <h2 id="latest-title">Latest guides</h2>
+            {articles.map((article, index) => (
+                <article class:list={{ featured: index === 0 }}>
+                    <div class="article-meta"><time datetime={article.date}>{new Date(`${article.date}T00:00:00Z`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}</time><span>{article.readingTime}</span></div>
+                    <h3><a href={`/blog/${article.slug}`}>{article.title}</a></h3>
+                    <p>{article.description}</p>
+                    <a class="read-link" href={`/blog/${article.slug}`} aria-label={`Read ${article.title}`}>Read guide <span aria-hidden="true">→</span></a>
+                </article>
+            ))}
+        </section>
+        <aside><strong>Our editorial approach</strong><p>We publish explanatory material independently. Provider names are used for identification; coverage is not sponsored, and benchmark results are not endorsements.</p></aside>
     </main>
 </Layout>
 
 <style>
-    main {
-        max-width: 50rem;
-        margin: 4rem auto;
-        padding: 0 1rem;
-        text-align: center;
-    }
-
-    h1 {
-        font-size: 3rem;
-        font-weight: 900;
-        margin-bottom: 2rem;
-        color: white;
-        background: linear-gradient(to right, #60A5FA, #A78BFA);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .coming-soon {
-        font-size: 1.25rem;
-        color: #9CA3AF;
-        font-style: italic;
-    }
+    .blog-page { max-width: 74rem; margin: 0 auto; padding: clamp(4.5rem,9vw,8rem) 1.25rem 7rem; }
+    header { max-width: 56rem; margin-bottom: 5rem; }
+    .eyebrow { margin: 0 0 1rem; color: #67e8f9; font-size: .72rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { margin: 0; color: #f8fafc; font-size: clamp(3rem,8vw,6.5rem); line-height: .96; letter-spacing: -.065em; }
+    h1 span { color: #60a5fa; }
+    .intro { max-width: 43rem; color: #a7b4c6; font-size: 1.1rem; line-height: 1.8; }
+    .article-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .article-grid>h2 { grid-column: 1/-1; color: #f1f5f9; font-size: 1.3rem; }
+    article { padding: 2rem; border: 1px solid #2b3a50; border-radius: 1.2rem; background: #101a2a; }
+    article.featured { grid-column: 1/-1; }
+    .article-meta { display: flex; gap: 1rem; color: #718198; font-size: .72rem; text-transform: uppercase; }
+    h3 { max-width: 44rem; margin: 1rem 0; font-size: clamp(1.4rem,3vw,2.2rem); line-height: 1.2; }
+    h3 a { color: #f8fafc; text-decoration: none; }
+    article p { max-width: 48rem; color: #9cabbf; line-height: 1.7; }
+    .read-link { display: inline-flex; gap: .5rem; margin-top: .7rem; color: #67e8f9; font-weight: 700; text-decoration: none; }
+    aside { margin-top: 3rem; padding: 1.5rem; border-left: 2px solid #60a5fa; color: #94a3b8; background: #0d1726; }
+    aside strong { color: #e2e8f0; } aside p { margin: .4rem 0 0; line-height: 1.65; }
+    @media(max-width:680px){ .article-grid{grid-template-columns:1fr} article.featured{grid-column:auto} }
 </style>

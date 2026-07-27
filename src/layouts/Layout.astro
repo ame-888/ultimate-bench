@@ -2,6 +2,7 @@
 import Navbar from '../components/Navbar.astro';
 import CookieBanner from '../components/CookieBanner.astro';
 import SitePlayground from '../components/SitePlayground.astro';
+import Footer from '../components/Footer.astro';
 
 const {
     title = 'Ultimate Bench | AI Model Benchmark',
@@ -30,23 +31,20 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
         <slot name="head" />
 	</head>
 	<body>
+        <a class="skip-link" href="#main-content">Skip to main content</a>
         <Navbar />
 
-		<div class="content-wrapper">
+		<div class="content-wrapper" id="main-content">
             <slot />
         </div>
+
+        <Footer />
 
         <!-- Achievement Toast Container -->
         <div id="achievement-toast-container"></div>
 
         <CookieBanner />
         <SitePlayground />
-
-        <!-- Future Progress Bar Floating Button -->
-        <a href="https://future-progress-bar.vercel.app/" target="_blank" rel="noopener noreferrer" class="future-progress-button" aria-label="Visit Future Progress Bar">
-            <span class="button-icon">🔴</span>
-            <span class="button-text">Explore Future Progress ➔</span>
-        </a>
 
 	</body>
 </html>
@@ -73,6 +71,9 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     h1, h2, h3, h4, h5, h6 {
         font-family: var(--font-heading);
     }
+
+    .skip-link { position: fixed; top: .75rem; left: .75rem; z-index: 20000; padding: .7rem 1rem; border-radius: .35rem; background: #fff; color: #111827; font-weight: 700; transform: translateY(-200%); }
+    .skip-link:focus { transform: translateY(0); }
 
     .content-wrapper {
         position: relative;
@@ -145,87 +146,4 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
         font-weight: 600;
     }
 
-    /* Future Progress Bar Button Styles */
-    .future-progress-button {
-        position: fixed;
-        bottom: 2rem;
-        left: 2rem;
-        z-index: 9999;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
-        color: white;
-        padding: 0.75rem 1.25rem;
-        border-radius: 50px;
-        text-decoration: none;
-        font-family: var(--font-heading);
-        font-weight: 700;
-        font-size: 0.95rem;
-        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.1);
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        pointer-events: auto;
-        animation: float-pulse 3s infinite;
-    }
-
-    .future-progress-button:hover {
-        transform: translateY(-5px) scale(1.05);
-        box-shadow: 0 8px 25px rgba(239, 68, 68, 0.6), 0 0 0 2px rgba(255, 255, 255, 0.3);
-        background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
-    }
-
-    .future-progress-button .button-icon {
-        animation: pulse-icon 1.5s infinite;
-    }
-
-    .future-progress-button .button-text {
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-
-    @keyframes float-pulse {
-        0% {
-            transform: translateY(0);
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.1);
-        }
-        50% {
-            transform: translateY(-6px);
-            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.5), 0 0 15px rgba(239, 68, 68, 0.6);
-        }
-        100% {
-            transform: translateY(0);
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.1);
-        }
-    }
-
-    @keyframes pulse-icon {
-        0%, 100% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(1.2);
-        }
-    }
-
-    @media (max-width: 640px) {
-        .future-progress-button {
-            bottom: 1.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 0.6rem 1rem;
-            font-size: 0.85rem;
-            animation: none; /* Disable complex animations on mobile for performance/ux */
-            animation: mobile-pulse 3s infinite;
-        }
-
-        @keyframes mobile-pulse {
-            0% { transform: translateX(-50%) scale(1); }
-            50% { transform: translateX(-50%) scale(1.05); box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6); }
-            100% { transform: translateX(-50%) scale(1); }
-        }
-
-        .future-progress-button:hover {
-            transform: translateX(-50%) translateY(-2px);
-        }
-    }
 </style>
