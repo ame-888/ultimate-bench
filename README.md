@@ -16,7 +16,7 @@ Ultimate Bench is an independent experimental benchmark and static Astro site fo
 | `/blog/` | Practical AI evaluation guides |
 | `/arcade/` | Interactive arcade |
 
-The Visual Bench methodology page now documents Levels 1–5. Documentation for Level 6 remains in progress.
+The Visual Bench methodology page documents Levels 1–5. Level 6 remains planned, is not operationally defined, and is excluded from current evaluation and score aggregation.
 
 Astro generates these pages into `dist/`. The post-build sitemap generator discovers every generated HTML route rather than relying on a manually maintained route list. `robots.txt`, `sitemap-index.xml`, and `sitemap-0.xml` are served from the site root.
 
