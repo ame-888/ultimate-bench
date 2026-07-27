@@ -1,6 +1,7 @@
 ---
 import Navbar from '../components/Navbar.astro';
 import CookieBanner from '../components/CookieBanner.astro';
+import SitePlayground from '../components/SitePlayground.astro';
 
 const {
     title = 'Ultimate Bench | AI Model Benchmark',
@@ -39,6 +40,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
         <div id="achievement-toast-container"></div>
 
         <CookieBanner />
+        <SitePlayground />
 
         <!-- Future Progress Bar Floating Button -->
         <a href="https://future-progress-bar.vercel.app/" target="_blank" rel="noopener noreferrer" class="future-progress-button" aria-label="Visit Future Progress Bar">
