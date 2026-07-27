@@ -35,12 +35,22 @@ const process = [
             <h1>Rigorous by design.<br /><em>Private by necessity.</em></h1>
             <p class="hero-copy">A clear view of how Ultimate Bench creates fair, useful comparisons—without disclosing the exact task set or procedures that keep the evaluation resistant to gaming.</p>
             <nav class="jump-links" aria-label="On this page">
+                <a href="#protocols">Protocols</a>
                 <a href="#principles">Principles</a>
                 <a href="#process">Process</a>
                 <a href="#scoring">Scoring</a>
                 <a href="#limitations">Limitations</a>
             </nav>
         </header>
+
+        <section id="protocols" class="protocol-card" aria-labelledby="protocols-title">
+            <div>
+                <p class="section-label">Detailed benchmark protocols</p>
+                <h2 id="protocols-title">From general principles to level-specific methods.</h2>
+                <p>This page describes the benchmark’s general principles and aggregation. Dedicated methodology pages document the exact structure, scoring, interpretation, and limitations of individual levels.</p>
+            </div>
+            <a href="/methodology/visual-bench/">Read the Visual Bench level protocols <span aria-hidden="true">→</span></a>
+        </section>
 
         <section class="trust-note" aria-labelledby="transparency-title">
             <div class="lock-mark" aria-hidden="true">
@@ -144,6 +154,12 @@ const process = [
     .jump-links { display: flex; flex-wrap: wrap; gap: .55rem; }
     .jump-links a { padding: .55rem .9rem; border: 1px solid rgba(148,163,184,.18); border-radius: 99px; color: #cbd5e1; font-size: .76rem; font-weight: 700; text-decoration: none; transition: .2s ease; }
     .jump-links a:hover { border-color: var(--mint); color: var(--mint); transform: translateY(-2px); }
+    .jump-links a:focus-visible, .protocol-card a:focus-visible { outline: 3px solid var(--mint); outline-offset: 4px; }
+    .protocol-card { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; margin-bottom: 2rem; padding: clamp(1.5rem, 4vw, 2.5rem); border: 1px solid rgba(96,165,250,.25); border-radius: 1.5rem; background: rgba(30,41,59,.48); scroll-margin-top: 5rem; }
+    .protocol-card h2 { margin: 0; color: #f8fafc; font-size: clamp(1.5rem, 3vw, 2rem); letter-spacing: -.035em; }
+    .protocol-card p:last-child { max-width: 48rem; margin: .8rem 0 0; color: #94a3b8; line-height: 1.7; }
+    .protocol-card > a { color: #bfdbfe; font-size: .86rem; font-weight: 800; text-underline-offset: .25em; white-space: nowrap; }
+    .protocol-card > a:hover { color: #fff; }
     .trust-note { display: grid; grid-template-columns: auto 1fr auto; gap: 1.5rem; align-items: start; padding: clamp(1.5rem, 4vw, 2.5rem); border: 1px solid rgba(94,234,212,.2); border-radius: 1.5rem; background: linear-gradient(120deg, rgba(19,78,74,.2), rgba(15,23,42,.72)); box-shadow: 0 25px 70px rgba(0,0,0,.18); }
     .lock-mark { display: grid; place-items: center; width: 3.25rem; height: 3.25rem; border: 1px solid rgba(94,234,212,.25); border-radius: 1rem; background: rgba(94,234,212,.08); }
     .lock-mark svg { width: 1.35rem; fill: none; stroke: var(--mint); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
@@ -197,6 +213,8 @@ const process = [
         .process-list li::after { display: none; } .process-list h3 { margin-top: 0; }
         .score-section { padding-inline: 0; }
         .correction-card { align-items: flex-start; flex-direction: column; padding: 1.5rem; }
+        .protocol-card { grid-template-columns: 1fr; gap: 1.25rem; }
+        .protocol-card > a { white-space: normal; }
     }
     @media (max-width: 520px) { .trust-note { grid-template-columns: 1fr; } .status-pill { grid-column: 1; } .limitation-grid { grid-template-columns: 1fr; } .limitation-grid p { border: 0 !important; border-bottom: 1px solid rgba(148,163,184,.14) !important; } .limitation-grid p:last-child { border-bottom: 0 !important; } }
     @media (prefers-reduced-motion: reduce) { .pillar-card, .jump-links a { transition: none; } }

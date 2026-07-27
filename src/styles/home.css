@@ -723,6 +723,19 @@
         margin-bottom: 0.25rem;
     }
 
+    .benchmark-description .methodology-link a {
+        color: #93c5fd;
+        font-weight: 700;
+        text-underline-offset: .22em;
+    }
+
+    .benchmark-description .methodology-link a:hover { color: #dbeafe; }
+    .benchmark-description .methodology-link a:focus-visible {
+        outline: 3px solid #60a5fa;
+        outline-offset: 3px;
+        border-radius: .15rem;
+    }
+
     /* Ranking Controls Styles */
     .ranking-controls {
         display: flex;
