@@ -352,32 +352,6 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
 
 <Layout title="AI Model Leaderboard | Ultimate Bench" description="Compare AI models across Ultimate Bench's experimental visual, data, and chess benchmark evaluations.">
     <main>
-        <header class="homepage-hero">
-            <div class="hero-copy">
-                <span class="hero-kicker">Independent AI evaluation</span>
-                <h1>See how the leading models <span>really compare.</span></h1>
-                <p>One clear leaderboard across visual understanding, data retrieval, and chess reasoning. Harder creatures mean harder tests.</p>
-                <div class="hero-actions">
-                    <a href="#global-leaderboard" class="hero-primary">View leaderboard <span aria-hidden="true">↓</span></a>
-                    <a href="/methodology" class="hero-secondary">How scoring works</a>
-                </div>
-            </div>
-            <div class="arena-key" aria-label="Benchmark categories">
-                <div class="arena-card visual-arena">
-                    <span class="arena-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M8 25c4-7 9-11 16-11s12 4 16 11c-4 7-9 11-16 11S12 32 8 25Z"/><circle cx="24" cy="25" r="7"/><circle cx="24" cy="25" r="3"/></svg></span>
-                    <span><strong>Visual</strong><small>Perception & spatial skill</small></span>
-                </div>
-                <div class="arena-card data-arena">
-                    <span class="arena-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><ellipse cx="24" cy="12" rx="14" ry="6"/><path d="M10 12v12c0 3 6 6 14 6s14-3 14-6V12M10 24v12c0 3 6 6 14 6s14-3 14-6V24"/></svg></span>
-                    <span><strong>Data</strong><small>Search & synthesis</small></span>
-                </div>
-                <div class="arena-card chess-arena">
-                    <span class="arena-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="m17 37 2-9c-3-4-2-10 3-14l-2-6 11 5c5 4 5 10 1 15l3 9H17Z"/><path d="M14 41h24M25 17h.1"/></svg></span>
-                    <span><strong>Chess</strong><small>Planning & reasoning</small></span>
-                </div>
-            </div>
-        </header>
-
         <div class="leaderboard-grid">
             <!-- Benchmarks Section -->
             <section class="leaderboard-section full-width">
@@ -2422,40 +2396,6 @@ There are currently three levels in use. The fourth level will be unlocked once 
     @media (max-width: 640px) { .achievements-content { padding:2.5rem 1rem 1rem; } .achievements-summary span { display:none; } }
 
     /* Homepage refresh: a quieter, clearer frame for the benchmark data. */
-    .homepage-hero {
-        display: grid;
-        grid-template-columns: minmax(0, 1.2fr) minmax(300px, .8fr);
-        gap: clamp(2rem, 6vw, 6rem);
-        align-items: center;
-        max-width: 78rem;
-        margin: 0 auto 4.5rem;
-        padding: clamp(2rem, 5vw, 4.5rem);
-        border: 1px solid rgba(148, 163, 184, .14);
-        border-radius: 24px;
-        background: radial-gradient(circle at 85% 10%, rgba(56, 189, 248, .1), transparent 35%), #0c1424;
-        box-shadow: 0 24px 70px rgba(2, 6, 23, .35);
-    }
-    .hero-kicker { display: block; margin-bottom: 1rem; color: #7dd3fc; font-size: .72rem; font-weight: 800; letter-spacing: .17em; text-transform: uppercase; }
-    .homepage-hero h1 { max-width: 720px; margin: 0; text-align: left; font-size: clamp(2.3rem, 5vw, 4.5rem); line-height: 1.03; letter-spacing: -.05em; background: none; -webkit-text-fill-color: #f8fafc; }
-    .homepage-hero h1 span { color: #7dd3fc; -webkit-text-fill-color: #7dd3fc; }
-    .hero-copy > p { max-width: 620px; margin: 1.4rem 0 0; color: #9caec4; font-size: 1rem; line-height: 1.75; }
-    .hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.8rem; }
-    .hero-actions a { padding: .78rem 1.05rem; border-radius: 9px; color: #e2e8f0; font-size: .82rem; font-weight: 700; text-decoration: none; transition: border-color .2s, background .2s, transform .2s; }
-    .hero-actions a:hover { transform: translateY(-2px); }
-    .hero-primary { background: #0284c7; }
-    .hero-primary:hover { background: #0ea5e9; }
-    .hero-secondary { border: 1px solid #334155; background: #111c2f; }
-    .hero-secondary:hover { border-color: #64748b; }
-    .arena-key { display: grid; gap: .7rem; }
-    .arena-card { display: flex; align-items: center; gap: 1rem; padding: .9rem; border: 1px solid #22304a; border-radius: 12px; background: rgba(15, 23, 42, .78); }
-    .arena-icon { display: grid; flex: 0 0 46px; place-items: center; width: 46px; height: 46px; border-radius: 10px; background: rgba(56, 189, 248, .09); color: #7dd3fc; }
-    .arena-icon svg { width: 29px; height: 29px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-    .arena-card strong, .arena-card small { display: block; }
-    .arena-card strong { margin-bottom: .18rem; color: #f1f5f9; font-size: .9rem; }
-    .arena-card small { color: #718198; font-size: .72rem; }
-    .data-arena .arena-icon { color: #a7f3d0; background: rgba(16, 185, 129, .08); }
-    .chess-arena .arena-icon { color: #c4b5fd; background: rgba(139, 92, 246, .09); }
-
     #home-wrapper > .benchmark-description { max-width: 750px; margin: 0 auto 1.3rem; padding: 0; border: 0; background: transparent; text-align: center; }
     #home-wrapper > .benchmark-description p { color: #8493a8; line-height: 1.65; }
     .ultimate-bench-section { scroll-margin-top: 6rem; }
@@ -2534,14 +2474,8 @@ There are currently three levels in use. The fourth level will be unlocked once 
 
     @media (max-width: 800px) {
         main { margin-top: 1.5rem; }
-        .homepage-hero { grid-template-columns: 1fr; margin-bottom: 3rem; padding: 2rem 1.25rem; }
-        .arena-key { grid-template-columns: repeat(3, 1fr); }
-        .arena-card { flex-direction: column; align-items: flex-start; gap: .6rem; }
     }
     @media (max-width: 560px) {
-        .homepage-hero h1 { font-size: 2.35rem; }
-        .arena-key { grid-template-columns: 1fr; }
-        .arena-card { flex-direction: row; align-items: center; }
         .ultimate-modern-container { overflow-x: auto; }
         .ultimate-title-container { border-radius: 18px; }
         .ultimate-title { font-size: clamp(2.35rem, 14vw, 3.7rem); }
