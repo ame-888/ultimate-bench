@@ -4,114 +4,166 @@ import { benchmarks } from '../data/benchmarks';
 
 const editionDate = 'July 27, 2026';
 const isScore = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
-const average = (values: number[]) => values.reduce((sum, value) => sum + value, 0) / values.length;
-const scoreAverage = (scores: Record<string, unknown>) => {
-    const valid = Object.values(scores).filter(isScore);
-    return valid.length ? average(valid) : null;
-};
+const mean = (values: number[]) => values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
+const scoreMean = (scores: Record<string, unknown>) => mean(Object.values(scores).filter(isScore));
 const format = (value: number | null, digits = 1) => value === null ? '—' : `${value.toFixed(digits)}%`;
-
-// Match the leaderboard's last-entry-wins behavior where a model has been rerun.
 const unique = <T extends { name: string }>(rows: T[]) => [...new Map(rows.map((row) => [row.name, row])).values()];
-const visual = unique(benchmarks.models);
-const data = unique(benchmarks.dataRetrieval || []);
-const chess = unique(benchmarks.chessModels || []);
 
-const categoryRows = [
-    { name: 'Visual reasoning', rows: visual, levels: 5, accent: 'violet' },
-    { name: 'Data retrieval', rows: data, levels: 4, accent: 'cyan' },
-    { name: 'Chess', rows: chess, levels: 5, accent: 'mint' },
-].map((category) => ({
+const categories = [
+    { id: 'visual', short: 'Visual', name: 'Visual reasoning', rows: unique(benchmarks.models), keys: ['lvl1', 'lvl2', 'lvl3', 'lvl4', 'lvl5'] },
+    { id: 'data', short: 'Data', name: 'Data retrieval', rows: unique(benchmarks.dataRetrieval || []), keys: ['worm', 'koala', 'crow', 'octopus'] },
+    { id: 'chess', short: 'Chess', name: 'Chess', rows: unique(benchmarks.chessModels || []), keys: ['mouse', 'spider', 'wolf', 'hawk', 'python'] },
+];
+
+const rankedCategories = categories.map((category) => ({
     ...category,
-    leader: category.rows
-        .map((row) => ({ name: row.name, score: scoreAverage(row.scores) }))
-        .filter((row): row is { name: string; score: number } => row.score !== null)
-        .sort((a, b) => b.score - a.score)[0],
+    ranking: category.rows
+        .map((row) => ({ name: row.name, score: scoreMean(row.scores), coverage: Object.values(row.scores).filter(isScore).length }))
+        .filter((row): row is { name: string; score: number; coverage: number } => row.score !== null)
+        .sort((a, b) => b.score - a.score),
 }));
 
-const commonNames = visual
-    .map(({ name }) => name)
-    .filter((name) => data.some((row) => row.name === name) && chess.some((row) => row.name === name));
+const allNames = new Set(rankedCategories.flatMap((category) => category.rows.map(({ name }) => name)));
+const crossDomain = [...allNames].map((name) => {
+    const scores = rankedCategories.map((category) => {
+        const row = category.rows.find((candidate) => candidate.name === name);
+        return row ? scoreMean(row.scores) : null;
+    });
+    return { name, scores, overall: scores.every(isScore) ? mean(scores as number[]) : null };
+}).filter((row): row is { name: string; scores: number[]; overall: number } => row.overall !== null)
+  .sort((a, b) => b.overall - a.overall);
 
-const crossDomain = commonNames.map((name) => {
-    const categoryScores = [visual, data, chess].map((rows) => scoreAverage(rows.find((row) => row.name === name)!.scores));
-    const completeScores = categoryScores.filter(isScore);
-    return { name, categoryScores, overall: completeScores.length === 3 ? average(completeScores) : null };
-}).filter((row) => row.overall !== null).sort((a, b) => b.overall! - a.overall!);
+const visualDifficulty = rankedCategories[0].keys.map((key, index) => {
+    const values = rankedCategories[0].rows.map((row) => row.scores[key as keyof typeof row.scores]).filter(isScore);
+    return { label: `L${index + 1}`, average: mean(values) ?? 0, solved: values.filter((value) => value > 0).length, tested: values.length };
+});
 
-const sol = visual.find((row) => row.name === 'GPT-5.6 Sol (high)')!;
-const solScores = Object.values(sol.scores).filter(isScore);
-const solRetention = solScores[0] ? (solScores[3] / solScores[0]) * 100 : 0;
-const geminiBase = visual.find((row) => row.name === 'Gemini 3.6 Flash')!;
-const geminiCode = visual.find((row) => row.name === 'Gemini 3.6 Flash (with code execution)')!;
-const executionLift = ['lvl1', 'lvl2', 'lvl3'].map((level) =>
-    Number(geminiCode.scores[level as keyof typeof geminiCode.scores]) - Number(geminiBase.scores[level as keyof typeof geminiBase.scores])
-);
-const totalUniqueModels = new Set([...visual, ...data, ...chess].map(({ name }) => name)).size;
+const executionPairs = [
+    ['Gemini 3.6 Flash', 'Gemini 3.6 Flash (with code execution)'],
+    ['Gemini 3.1 Pro Preview', 'Gemini 3.1 Pro Preview (with code execution)'],
+    ['Gemini 3.1 Flashlite GA', 'Gemini 3.1 Flashlite GA (with code execution)'],
+].map(([baseName, toolName]) => {
+    const base = rankedCategories[0].rows.find((row) => row.name === baseName)!;
+    const tool = rankedCategories[0].rows.find((row) => row.name === toolName)!;
+    const comparableKeys = rankedCategories[0].keys.filter((key) => isScore(base.scores[key as keyof typeof base.scores]) && isScore(tool.scores[key as keyof typeof tool.scores]));
+    const baseAverage = mean(comparableKeys.map((key) => Number(base.scores[key as keyof typeof base.scores])))!;
+    const toolAverage = mean(comparableKeys.map((key) => Number(tool.scores[key as keyof typeof tool.scores])))!;
+    return { name: baseName, baseAverage, toolAverage, lift: toolAverage - baseAverage, levels: comparableKeys.length };
+});
+
+const leader = crossDomain[0];
+const runnerUp = crossDomain[1];
+const lead = leader.overall - runnerUp.overall;
+const hardLevelAverage = visualDifficulty[3].average;
+const totalRuns = rankedCategories.reduce((sum, category) => sum + category.rows.length, 0);
 ---
 
-<Layout title="Results Analysis | Ultimate Bench" description="Updated, in-depth analysis of Ultimate Bench results across visual reasoning, data retrieval, and chess.">
+<Layout title="Analysis | Ultimate Bench" description="A data-first analysis of Ultimate Bench results across visual reasoning, data retrieval, and chess.">
     <main class="analysis-page">
         <header class="analysis-hero">
-            <p class="eyebrow">Results desk · {editionDate}</p>
-            <h1>The scores tell a<br /><em>more complicated story.</em></h1>
-            <p class="deck">A living editorial analysis of the current Ultimate Bench dataset: who leads, where performance breaks, and what the leaderboard cannot safely claim.</p>
-            <div class="snapshot" aria-label="Dataset snapshot">
-                <span><strong>{totalUniqueModels}</strong> unique configurations</span>
-                <span><strong>3</strong> benchmark families</span>
-                <span><strong>{crossDomain.length}</strong> cross-domain comparisons</span>
+            <div>
+                <p class="eyebrow">Analysis · updated {editionDate}</p>
+                <h1>What the benchmark<br /><em>actually shows.</em></h1>
+                <p class="deck">Numbers first: category leaders, difficulty curves, tool impact, and the models that hold up across every test.</p>
+            </div>
+            <div class="hero-result">
+                <span>Overall leader</span>
+                <strong>{leader.name}</strong>
+                <div><b>{format(leader.overall)}</b><small>3-category average</small></div>
             </div>
         </header>
 
-        <section class="brief" aria-labelledby="brief-title">
-            <p class="section-label">Executive read</p>
-            <h2 id="brief-title">The current result in four sentences.</h2>
-            <div class="brief-grid">
-                <p><strong>GPT-5.6 Sol (high) is the broadest performer.</strong> It leads the comparable cross-domain group at {format(crossDomain[0].overall)}, with no category below {format(Math.min(...crossDomain[0].categoryScores.filter(isScore)))}.</p>
-                <p><strong>Specialists still win individual rooms.</strong> Gemini 3.5 Flash with code execution leads the valid-score visual average, while Gemini 3.1 Pro Preview leads chess.</p>
-                <p><strong>Difficulty remains the dominant separator.</strong> Even Sol falls from {sol.scores.lvl1}% at Visual Level 1 to {sol.scores.lvl4}% at Level 4—a {format(solRetention)} retention rate.</p>
-                <p><strong>Coverage changes the meaning of “best.”</strong> Only {crossDomain.length} configurations have numeric results in all three families, so category wins and all-domain strength must stay separate.</p>
+        <section class="kpi-grid" aria-label="Key benchmark statistics">
+            <article><span>Lead over #2</span><strong>+{lead.toFixed(1)}</strong><small>percentage points</small></article>
+            <article><span>Complete models</span><strong>{crossDomain.length}</strong><small>tested in all 3 categories</small></article>
+            <article><span>Visual L4 average</span><strong>{format(hardLevelAverage)}</strong><small>across {visualDifficulty[3].tested} valid runs</small></article>
+            <article><span>Published runs</span><strong>{totalRuns}</strong><small>unique category configurations</small></article>
+        </section>
+
+        <section class="data-section" aria-labelledby="leaders-title">
+            <div class="section-head">
+                <div><p class="section-label">01 · category rankings</p><h2 id="leaders-title">Who wins each test?</h2></div>
+                <p>Mean score across every valid level. Zeroes count; INVALID and UNAVAILABLE results do not.</p>
+            </div>
+            <div class="ranking-grid">
+                {rankedCategories.map((category) => (
+                    <article class="ranking-card">
+                        <header><div><span>{category.name}</span><strong>{format(category.ranking[0].score)}</strong></div><small>{category.ranking[0].name}</small></header>
+                        <ol>
+                            {category.ranking.slice(0, 5).map((row, index) => (
+                                <li>
+                                    <span class="rank">{index + 1}</span>
+                                    <div class="model"><span>{row.name}</span><i style={`--score:${row.score}%`}></i></div>
+                                    <strong>{format(row.score)}</strong>
+                                </li>
+                            ))}
+                        </ol>
+                    </article>
+                ))}
             </div>
         </section>
 
-        <section class="section" aria-labelledby="leaders-title">
-            <div class="section-heading"><div><p class="section-label">Category leaders</p><h2 id="leaders-title">Three tests, three different shapes.</h2></div><p>These averages use every numeric level recorded in a category, including zeroes. INVALID and UNAVAILABLE cells are omitted rather than silently converted to failures.</p></div>
-            <div class="leader-grid">
-                {categoryRows.map((category) => <article class:list={['leader-card', category.accent]}><p>{category.name}</p><h3>{category.leader.name}</h3><strong>{format(category.leader.score)}</strong><small>mean across valid recorded levels</small></article>)}
+        <section class="data-section difficulty" aria-labelledby="difficulty-title">
+            <div class="section-head">
+                <div><p class="section-label">02 · difficulty curve</p><h2 id="difficulty-title">Visual performance collapses after Level 3.</h2></div>
+                <p>The average falls to {format(hardLevelAverage)} at Level 4. Level 5 is currently at 0% across every valid run.</p>
+            </div>
+            <div class="chart" role="img" aria-label="Average visual score by difficulty level">
+                {visualDifficulty.map((level) => (
+                    <div class="bar-column">
+                        <div class="bar-value">{format(level.average)}</div>
+                        <div class="bar-track"><i style={`--height:${Math.max(level.average, .6)}%`}></i></div>
+                        <strong>{level.label}</strong>
+                        <small>{level.solved}/{level.tested} scored above 0</small>
+                    </div>
+                ))}
+            </div>
+            <div class="plain-finding"><strong>Read it plainly:</strong> high scores on Levels 1–3 do not imply frontier-level success. Level 4 separates the field; Level 5 remains unsolved.</div>
+        </section>
+
+        <section class="data-section" aria-labelledby="tools-title">
+            <div class="section-head">
+                <div><p class="section-label">03 · tool impact</p><h2 id="tools-title">How much does code execution help?</h2></div>
+                <p>Like-for-like visual configurations, averaged only across levels where both versions have numeric results.</p>
+            </div>
+            <div class="tool-table">
+                <div class="tool-row tool-head"><span>Model pair</span><span>Base</span><span>With code</span><span>Lift</span></div>
+                {executionPairs.map((pair) => (
+                    <div class="tool-row">
+                        <div><strong>{pair.name}</strong><small>{pair.levels} comparable levels</small></div>
+                        <span>{format(pair.baseAverage)}</span><span>{format(pair.toolAverage)}</span><b>+{pair.lift.toFixed(1)} pts</b>
+                    </div>
+                ))}
+            </div>
+            <p class="caveat">Code execution improves every matched pair here, but this is a system comparison—not proof that the underlying model alone became better. Invalid assisted runs are excluded.</p>
+        </section>
+
+        <section class="data-section" aria-labelledby="overall-title">
+            <div class="section-head">
+                <div><p class="section-label">04 · complete field</p><h2 id="overall-title">Who performs across all three?</h2></div>
+                <p>Unweighted mean of the three category averages. Only configurations with a numeric result in every category qualify.</p>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>#</th><th>Configuration</th>{rankedCategories.map((category) => <th>{category.short}</th>)}<th>Overall</th></tr></thead>
+                    <tbody>{crossDomain.map((row, index) => <tr><td>{String(index + 1).padStart(2, '0')}</td><td>{row.name}</td>{row.scores.map((score) => <td>{format(score)}</td>)}<td><strong>{format(row.overall)}</strong></td></tr>)}</tbody>
+                </table>
             </div>
         </section>
 
-        <section class="section split" aria-labelledby="findings-title">
-            <div><p class="section-label">What moved the result</p><h2 id="findings-title">Capability is conditional.</h2></div>
-            <div class="findings">
-                <article><span>01</span><div><h3>Tools produce a large, visible lift</h3><p>On the first three visual levels, Gemini 3.6 Flash with code execution gains <strong>+{executionLift[0]}, +{executionLift[1]}, and +{executionLift[2]} points</strong> over the base configuration. That is evidence about the configured system—not the underlying model in isolation. Its Level 4 run is INVALID, so the assisted version cannot yet support a complete five-level claim.</p></div></article>
-                <article><span>02</span><div><h3>The hardest levels are still largely unsolved</h3><p>Visual Level 5 has no positive score in the current table. In chess, Hawk and Python are also all zero. The leaderboard therefore measures progress through the present frontier more clearly than mastery of it.</p></div></article>
-                <article><span>03</span><div><h3>Averages can conceal very different profiles</h3><p>Gemini 3.1 Pro Preview ranks second in the cross-domain comparison largely because of its {format(crossDomain[1].categoryScores[2])} chess average; its data result is {format(crossDomain[1].categoryScores[1])}. GPT-5.6 Sol instead stays between {format(Math.min(...crossDomain[0].categoryScores.filter(isScore)))} and {format(Math.max(...crossDomain[0].categoryScores.filter(isScore)))} across all three categories.</p></div></article>
+        <section class="bottom-line" aria-labelledby="bottom-line-title">
+            <p class="section-label">Bottom line</p>
+            <h2 id="bottom-line-title">Three conclusions supported by the data.</h2>
+            <div>
+                <article><b>1</b><p><strong>{leader.name} is the most balanced.</strong> It leads the complete field and scores between {format(Math.min(...leader.scores))} and {format(Math.max(...leader.scores))} across the three categories.</p></article>
+                <article><b>2</b><p><strong>There is no universal category winner.</strong> {rankedCategories.map((category) => category.ranking[0].name).filter((name, index, names) => names.indexOf(name) === index).length} different configurations lead the three benchmark families.</p></article>
+                <article><b>3</b><p><strong>The benchmark is measuring a frontier, not mastery.</strong> Visual Level 5, chess Hawk, and chess Python all have no positive result.</p></article>
             </div>
+            <footer><span>Calculated directly from the published dataset at build time.</span><a href="/methodology">Methods and limitations →</a></footer>
         </section>
-
-        <section class="section" aria-labelledby="table-title">
-            <div class="section-heading"><div><p class="section-label">Comparable field</p><h2 id="table-title">The cross-domain top five.</h2></div><p>The overall figure is the unweighted mean of each category average. It is an analytical lens, not a replacement for the level-by-level leaderboard.</p></div>
-            <div class="table-wrap"><table><thead><tr><th>Rank / configuration</th><th>Visual</th><th>Data</th><th>Chess</th><th>Cross-domain</th></tr></thead><tbody>{crossDomain.slice(0, 5).map((row, index) => <tr><td><span>{String(index + 1).padStart(2, '0')}</span>{row.name}</td>{row.categoryScores.map((score) => <td>{format(score)}</td>)}<td><strong>{format(row.overall)}</strong></td></tr>)}</tbody></table></div>
-        </section>
-
-        <aside class="method-note"><div><p class="section-label">How to read this edition</p><h2>Analysis updates with the results.</h2></div><p>Leader cards and comparison figures are calculated directly from the published dataset at build time. They describe tested configurations, not vendors as a whole. Zero is retained as a measured result; INVALID and UNAVAILABLE are excluded; missing categories disqualify a model from the cross-domain table. Small gaps should not be read as statistically decisive because uncertainty intervals are not published.</p><a href="/methodology">Read methodology →</a></aside>
     </main>
 </Layout>
 
 <style>
-    .analysis-page { --lime:#bef264; --cyan:#67e8f9; max-width:76rem; margin:auto; padding:clamp(4rem,8vw,7rem) 1.25rem 7rem; color:#aab8ca; }
-    .analysis-hero { max-width:64rem; margin-bottom:clamp(5rem,10vw,9rem); } .eyebrow,.section-label { margin:0 0 1rem; color:var(--lime); font-size:.7rem; font-weight:850; letter-spacing:.17em; text-transform:uppercase; }
-    h1 { margin:0; color:#f8fafc; font-size:clamp(3.2rem,7.8vw,6.7rem); line-height:.94; letter-spacing:-.07em; } h1 em { color:var(--cyan); font-style:normal; }
-    .deck { max-width:47rem; margin:1.7rem 0; font-size:clamp(1rem,2vw,1.18rem); line-height:1.8; }
-    .snapshot { display:flex; flex-wrap:wrap; gap:.7rem; } .snapshot span { padding:.65rem .85rem; border:1px solid #26364d; border-radius:.7rem; font-size:.75rem; } .snapshot strong { color:#f8fafc; font-size:1rem; }
-    h2 { margin:0; color:#f8fafc; font-size:clamp(2rem,4.4vw,3.4rem); line-height:1.07; letter-spacing:-.05em; }
-    .brief { padding:clamp(1.5rem,5vw,3rem); border:1px solid rgba(103,232,249,.22); border-radius:1.5rem; background:linear-gradient(130deg,rgba(8,47,73,.35),rgba(15,23,42,.72)); }
-    .brief-grid { display:grid; grid-template-columns:1fr 1fr; gap:0; margin-top:2.2rem; } .brief-grid p { margin:0; padding:1.4rem 1.5rem 1.4rem 0; border-top:1px solid #2a394c; line-height:1.72; } .brief-grid p:nth-child(even) { padding-left:1.5rem; border-left:1px solid #2a394c; } strong { color:#eaf2fb; }
-    .section { padding-top:clamp(5rem,10vw,8rem); } .section-heading { display:grid; grid-template-columns:1fr .75fr; align-items:end; gap:4rem; margin-bottom:2rem; } .section-heading>p { margin:0; line-height:1.75; }
-    .leader-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; } .leader-card { min-height:16rem; padding:1.6rem; border:1px solid #29384c; border-radius:1.2rem; background:#111c2c; display:flex; flex-direction:column; } .leader-card>p { margin:0; color:#8fa0b6; font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.1em; } .leader-card h3 { margin:2rem 0 auto; color:#f8fafc; font-size:1.15rem; line-height:1.35; } .leader-card>strong { margin-top:1.5rem; color:var(--cyan); font-size:2.5rem; letter-spacing:-.05em; } .leader-card small { color:#708096; } .leader-card.mint>strong { color:#5eead4; } .leader-card.violet>strong { color:#c4b5fd; }
-    .split { display:grid; grid-template-columns:.55fr 1fr; gap:5rem; } .findings article { display:grid; grid-template-columns:2.5rem 1fr; gap:1rem; padding:1.7rem 0; border-top:1px solid #29384c; } .findings span { color:var(--lime); font-size:.72rem; font-weight:800; } .findings h3 { margin:0 0 .6rem; color:#f8fafc; } .findings p { margin:0; line-height:1.75; }
-    .table-wrap { overflow-x:auto; border:1px solid #29384c; border-radius:1rem; } table { width:100%; border-collapse:collapse; min-width:720px; } th,td { padding:1.1rem; border-bottom:1px solid #26364a; text-align:right; font-size:.82rem; } th { color:#73839a; text-transform:uppercase; letter-spacing:.08em; font-size:.65rem; } th:first-child,td:first-child { text-align:left; } td:first-child { color:#dbe6f3; font-weight:700; } td:first-child span { display:inline-block; width:2rem; color:#64748b; font-size:.68rem; } tbody tr:last-child td { border:0; } td:last-child strong { color:var(--cyan); }
-    .method-note { display:grid; grid-template-columns:.7fr 1fr auto; align-items:center; gap:3rem; margin-top:7rem; padding:2rem; border:1px solid rgba(190,242,100,.25); border-radius:1.3rem; background:rgba(30,41,59,.45); } .method-note h2 { font-size:1.6rem; } .method-note>p { margin:0; font-size:.83rem; line-height:1.7; } .method-note a { color:#0f172a; background:var(--lime); padding:.8rem 1rem; border-radius:.65rem; font-weight:800; font-size:.78rem; text-decoration:none; white-space:nowrap; }
-    @media(max-width:760px){.brief-grid,.section-heading,.split,.method-note{grid-template-columns:1fr;gap:1.5rem}.brief-grid p:nth-child(even){padding-left:0;border-left:0}.leader-grid{grid-template-columns:1fr}.leader-card{min-height:13rem}.split{gap:2rem}.method-note{align-items:start}}
+    .analysis-page{--blue:#60a5fa;--cyan:#22d3ee;--lime:#a3e635;max-width:78rem;margin:auto;padding:clamp(3.5rem,7vw,6rem) 1.25rem 7rem;color:#a9b7c9}.analysis-hero{display:grid;grid-template-columns:1fr 19rem;gap:4rem;align-items:end;padding-bottom:3rem;border-bottom:1px solid #2a394d}.eyebrow,.section-label{margin:0 0 .9rem;color:var(--cyan);font-size:.68rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase}.analysis-hero h1{margin:0;color:#f8fafc;font-size:clamp(2.8rem,7vw,5.9rem);line-height:.96;letter-spacing:-.065em}.analysis-hero h1 em{color:var(--cyan);font-style:normal}.deck{max-width:43rem;margin:1.4rem 0 0;font-size:1.05rem;line-height:1.75}.hero-result{padding:1.4rem;border:1px solid rgba(34,211,238,.3);border-radius:1rem;background:linear-gradient(145deg,rgba(8,47,73,.55),rgba(15,23,42,.8))}.hero-result>span{display:block;color:#7dd3fc;font-size:.66rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.hero-result>strong{display:block;margin:.8rem 0 1.5rem;color:#f8fafc;font-size:1.05rem;line-height:1.35}.hero-result div{display:flex;align-items:end;gap:.65rem}.hero-result b{color:#fff;font-size:2.35rem;letter-spacing:-.06em}.hero-result small{padding-bottom:.35rem;color:#7890a8}.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #29384b;border-radius:1rem;margin-top:1.25rem;overflow:hidden}.kpi-grid article{padding:1.25rem;border-right:1px solid #29384b}.kpi-grid article:last-child{border:0}.kpi-grid span,.kpi-grid small{display:block;font-size:.68rem}.kpi-grid span{color:#8292a7;font-weight:700;text-transform:uppercase;letter-spacing:.08em}.kpi-grid strong{display:block;margin:.55rem 0 .25rem;color:#f8fafc;font-size:1.8rem}.kpi-grid small{color:#66778d}.data-section{padding-top:clamp(5rem,9vw,7.5rem)}.section-head{display:grid;grid-template-columns:1fr .65fr;gap:3rem;align-items:end;margin-bottom:1.8rem}.section-head h2,.bottom-line h2{margin:0;color:#f8fafc;font-size:clamp(1.9rem,4vw,3rem);line-height:1.08;letter-spacing:-.05em}.section-head>p{margin:0;line-height:1.7}.ranking-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}.ranking-card{overflow:hidden;border:1px solid #29384b;border-radius:1rem;background:#111c2c}.ranking-card header{padding:1.35rem;border-bottom:1px solid #29384b}.ranking-card header div{display:flex;align-items:start;justify-content:space-between;gap:1rem}.ranking-card header span{color:#dbe7f5;font-weight:700}.ranking-card header strong{color:var(--cyan);font-size:1.45rem}.ranking-card header small{display:block;margin-top:.35rem;color:#74869d;font-size:.7rem}.ranking-card ol{list-style:none;margin:0;padding:.4rem 1.25rem 1rem}.ranking-card li{display:grid;grid-template-columns:1.25rem 1fr auto;gap:.65rem;align-items:center;padding:.8rem 0;border-bottom:1px solid #223146}.ranking-card li:last-child{border:0}.rank{color:#64748b;font-size:.7rem}.model{min-width:0}.model span{display:block;overflow:hidden;color:#cbd5e1;font-size:.75rem;white-space:nowrap;text-overflow:ellipsis}.model i{display:block;width:var(--score);height:3px;margin-top:.45rem;border-radius:2px;background:linear-gradient(90deg,var(--blue),var(--cyan))}.ranking-card li>strong{color:#eff6ff;font-size:.75rem}.chart{height:22rem;display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(.5rem,3vw,2rem);padding:2rem 2rem 1.2rem;border:1px solid #29384b;border-radius:1rem;background:linear-gradient(180deg,rgba(30,41,59,.55),rgba(15,23,42,.3))}.bar-column{display:grid;grid-template-rows:1.5rem 1fr auto auto;text-align:center}.bar-value{color:#e2e8f0;font-size:.75rem;font-weight:700}.bar-track{position:relative;border-bottom:1px solid #42516a;background:repeating-linear-gradient(to bottom,transparent 0,transparent calc(25% - 1px),rgba(148,163,184,.1) 25%)}.bar-track i{position:absolute;right:15%;bottom:0;left:15%;height:var(--height);min-height:2px;border-radius:.35rem .35rem 0 0;background:linear-gradient(180deg,var(--cyan),#2563eb)}.bar-column>strong{margin-top:.7rem;color:#f8fafc}.bar-column>small{margin-top:.25rem;color:#66788f;font-size:.65rem}.plain-finding{padding:1rem 1.2rem;border-left:3px solid var(--lime);background:rgba(163,230,53,.06);font-size:.82rem;line-height:1.65}.plain-finding strong{color:#d9f99d}.tool-table,.table-wrap{overflow-x:auto;border:1px solid #29384b;border-radius:1rem}.tool-row{display:grid;grid-template-columns:minmax(18rem,1fr) repeat(3,8rem);align-items:center;min-width:680px;padding:1rem 1.25rem;border-bottom:1px solid #29384b}.tool-row:last-child{border:0}.tool-row>div strong,.tool-row>div small{display:block}.tool-row>div strong{color:#e2e8f0;font-size:.82rem}.tool-row>div small{margin-top:.25rem;color:#64748b;font-size:.68rem}.tool-row>span{color:#c4d0df}.tool-row>b{color:var(--lime)}.tool-head{color:#718198;background:#111c2c;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.caveat{margin:.8rem 0 0;color:#73849a;font-size:.72rem;line-height:1.6}table{width:100%;min-width:760px;border-collapse:collapse}th,td{padding:1rem 1.1rem;border-bottom:1px solid #26364a;text-align:right;font-size:.78rem}th{color:#718198;background:#111c2c;font-size:.63rem;text-transform:uppercase;letter-spacing:.08em}th:nth-child(2),td:nth-child(2){text-align:left}td:first-child{color:#617188}td:nth-child(2){color:#dce7f5;font-weight:700}td:last-child strong{color:var(--cyan)}tbody tr:last-child td{border:0}.bottom-line{margin-top:clamp(5rem,9vw,8rem);padding:clamp(1.5rem,4vw,2.5rem);border:1px solid rgba(34,211,238,.25);border-radius:1.25rem;background:linear-gradient(130deg,rgba(8,47,73,.28),rgba(15,23,42,.75))}.bottom-line>div{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:2rem}.bottom-line article{display:grid;grid-template-columns:1.5rem 1fr;gap:.8rem;padding:1.3rem;border-top:1px solid #2a4052}.bottom-line article+article{border-left:1px solid #2a4052}.bottom-line article b{color:var(--cyan)}.bottom-line article p{margin:0;font-size:.82rem;line-height:1.7}.bottom-line article strong{color:#f1f5f9}.bottom-line footer{display:flex;justify-content:space-between;gap:1rem;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid #2a4052;color:#6f8197;font-size:.7rem}.bottom-line a{color:#a5f3fc;font-weight:700;text-decoration:none}@media(max-width:850px){.analysis-hero{grid-template-columns:1fr}.hero-result{max-width:22rem}.kpi-grid{grid-template-columns:1fr 1fr}.kpi-grid article:nth-child(2){border-right:0}.kpi-grid article:nth-child(-n+2){border-bottom:1px solid #29384b}.ranking-grid{grid-template-columns:1fr}.section-head{grid-template-columns:1fr;gap:1rem}.bottom-line>div{grid-template-columns:1fr}.bottom-line article+article{border-left:0}.bottom-line footer{flex-direction:column}}@media(max-width:520px){.analysis-page{padding-top:3rem}.kpi-grid{grid-template-columns:1fr 1fr}.kpi-grid strong{font-size:1.45rem}.chart{height:18rem;padding:1.5rem .5rem 1rem}.bar-track i{right:22%;left:22%}.bar-column>small{font-size:.56rem}}
 </style>
