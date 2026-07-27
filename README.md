@@ -8,12 +8,15 @@ Ultimate Bench is an independent experimental benchmark and static Astro site fo
 | --- | --- |
 | `/` | Benchmark leaderboard |
 | `/methodology/` | Methodology, aggregation, and interpretation notes |
+| `/methodology/visual-bench/` | Detailed Visual Bench level protocols |
 | `/about/` | Project overview |
 | `/contact/` | Contact information |
 | `/privacy/` | Privacy policy |
 | `/terms/` | Terms of service (governing law is pending owner/legal review) |
 | `/blog/` | Practical AI evaluation guides |
 | `/arcade/` | Interactive arcade |
+
+Visual Bench Level 1 (Mole) is documented in full. Protocols for additional levels will be added progressively.
 
 Astro generates these pages into `dist/`. The post-build sitemap generator discovers every generated HTML route rather than relying on a manually maintained route list. `robots.txt`, `sitemap-index.xml`, and `sitemap-0.xml` are served from the site root.
 

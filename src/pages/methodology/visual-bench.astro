@@ -1,0 +1,131 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import '../../styles/content-pages.css';
+
+const levels = Array.from({ length: 6 }, (_, index) => index + 1);
+---
+
+<Layout title="Visual Bench Methodology | Ultimate Bench" description="Detailed protocols for Visual Bench, including the Level 1 Mole character-localization evaluation.">
+    <main class="content-page visual-methodology">
+        <header class="page-heading">
+            <span class="page-kicker">Benchmark protocols</span>
+            <h1>Visual Bench Methodology</h1>
+            <p>Visual Bench contains six progressively structured levels. This page publishes the complete Level 1 protocol; documentation for the remaining levels will be added progressively.</p>
+        </header>
+
+        <nav class="level-navigation" aria-label="Visual Bench levels">
+            <a class="current" href="#level-1" aria-current="page"><span>Level 1</span><strong>Mole</strong></a>
+            {levels.slice(1).map((level) => (
+                <span class="pending"><strong>Level {level}</strong><small>Protocol documentation in progress</small></span>
+            ))}
+        </nav>
+
+        <article id="level-1" class="content-card protocol" aria-labelledby="level-1-title">
+            <header class="protocol-heading">
+                <p class="protocol-level">Visual Bench — Level 1</p>
+                <h2 id="level-1-title">Mole</h2>
+                <p class="protocol-subtitle">Repeated Coordinate-Based Character Localization</p>
+            </header>
+
+            <section aria-labelledby="purpose"><h3 id="purpose">Purpose</h3>
+                <p>Level 1 evaluates whether a multimodal model can consistently identify and retrieve visual entities from fixed positions within a structured two-dimensional grid.</p>
+                <p>The task is designed to assess three related capabilities:</p>
+                <ul><li>recognition of depicted fictional characters;</li><li>grounding of numerical coordinates within a visual grid;</li><li>consistency of responses across repeated presentations of an identical prompt.</li></ul>
+            </section>
+
+            <section aria-labelledby="stimulus"><h3 id="stimulus">Visual stimulus</h3>
+                <p>The model is presented with a fixed 10 × 10 grid containing 100 character images. All depicted characters originate from the same television series or fictional property.</p><p>The grid remains unchanged throughout the Level 1 evaluation.</p>
+            </section>
+
+            <section aria-labelledby="coordinates"><h3 id="coordinates">Coordinate system</h3>
+                <p>Positions are defined using a one-based row–column coordinate system.</p>
+                <ul><li>The first coordinate identifies the row, counted from top to bottom.</li><li>The second coordinate identifies the column, counted from left to right.</li><li>The upper-left cell is position (1,1).</li><li>The lower-right cell is position (10,10).</li></ul>
+                <p>For example, position (3,7) refers to the cell in the third row and seventh column.</p>
+            </section>
+
+            <section aria-labelledby="prompt"><h3 id="prompt">Prompt structure</h3>
+                <p>Each prompt contains the grid and ten coordinate-based questions presented simultaneously.</p><p>Each question follows the general format:</p>
+                <blockquote>Which character is located at position (a,b)?</blockquote>
+                <p>The model is expected to provide one identifiable character name for each of the ten requested positions.</p>
+            </section>
+
+            <section aria-labelledby="administration"><h3 id="administration">Repeated-administration procedure</h3>
+                <p>The exact same evaluation prompt is administered ten times.</p><p>Across all ten administrations, the following elements remain unchanged:</p>
+                <ul><li>the grid image;</li><li>the placement of all characters;</li><li>the ten queried coordinates;</li><li>the wording and order of the questions;</li><li>the scoring criteria.</li></ul>
+                <p>The repeated use of an identical stimulus is intentional. It allows the benchmark to observe whether the model produces stable and correct answers when faced with the same visual information and instructions on multiple occasions.</p>
+                <p>The evaluation therefore contains:</p><ul><li>10 unique queried positions;</li><li>10 repeated administrations of each query;</li><li>100 scored response instances in total.</li></ul>
+                <p><strong>These response instances should not be interpreted as 100 independent test items.</strong> They represent ten repetitions of the same ten items.</p>
+            </section>
+
+            <section aria-labelledby="scoring"><h3 id="scoring">Scoring</h3>
+                <p>Each response instance is scored dichotomously:</p><ul><li>1 point is awarded when the model correctly identifies the character located at the requested coordinate.</li><li>0 points are awarded when the model provides an incorrect character, omits the answer, or produces an answer that cannot be reliably matched to the requested coordinate.</li></ul>
+                <p>Each administration produces a score between 0 and 10.</p><p>The final Level 1 score is the sum of all correct responses across the ten administrations:</p>
+                <figure class="score-formula">
+                    <math display="block" aria-label="S sub Mole equals the sum from r equals 1 to 10 of the sum from q equals 1 to 10 of x sub r q">
+                        <msub><mi>S</mi><mtext>Mole</mtext></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>r</mi><mo>=</mo><mn>1</mn></mrow><mn>10</mn></munderover><munderover><mo>∑</mo><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><mn>10</mn></munderover><msub><mi>x</mi><mrow><mi>r</mi><mi>q</mi></mrow></msub>
+                    </math>
+                    <figcaption>Final Level 1 score: correct response instances summed over ten questions in each of ten administrations.</figcaption>
+                </figure>
+                <p>where:</p><ul><li><var>r</var> represents one of the ten repeated administrations;</li><li><var>q</var> represents one of the ten coordinate questions;</li><li><var>x<sub>rq</sub></var> equals 1 for a correct response;</li><li><var>x<sub>rq</sub></var> equals 0 for an incorrect, missing, or non-evaluable response.</li></ul>
+                <p>The final score ranges from 0 to 100 and is displayed as a percentage.</p><p>A score of 100 indicates that the model correctly identified all ten requested characters in all ten administrations.</p>
+            </section>
+
+            <section aria-labelledby="invalid"><h3 id="invalid">Invalid-result rule</h3>
+                <p>A result is classified as <strong>INVALID</strong> when the model fails to produce a properly evaluable response on three consecutive administrations.</p><p>An administration may be considered non-evaluable when the model:</p>
+                <ul><li>fails to answer the requested questions;</li><li>produces output that cannot be reliably associated with the ten coordinates;</li><li>returns unrelated content;</li><li>refuses the task;</li><li>experiences a severe generation or formatting failure that prevents scoring.</li></ul>
+                <p>Incorrect but properly structured answers remain evaluable and receive zero points. They do not count toward the three-consecutive-failure rule.</p>
+                <p>Response validity is determined through manual review. When three consecutive administrations are classified as non-evaluable, testing is terminated and the Level 1 result is recorded as INVALID.</p>
+                <p>For leaderboard aggregation, INVALID is assigned a numerical value of zero. However, INVALID remains conceptually distinct from an ordinary score of zero:</p>
+                <dl class="validity-comparison"><div><dt>0 points</dt><dd>The model completed the evaluation but did not answer any item correctly.</dd></div><div><dt>INVALID</dt><dd>Repeated output failures prevented the evaluation from being completed reliably.</dd></div></dl>
+            </section>
+
+            <section aria-labelledby="interpretation"><h3 id="interpretation">Interpretation</h3>
+                <p>A higher Level 1 score indicates that the model more reliably combines character recognition with absolute coordinate grounding under repeated identical conditions.</p><p>Because the same items are administered repeatedly, the final score jointly reflects:</p>
+                <ul><li>answer correctness;</li><li>visual recognition stability;</li><li>coordinate-grounding stability;</li><li>response-format reliability;</li><li>susceptibility to stochastic variation between generations.</li></ul>
+                <p>The score does not independently isolate accuracy from consistency. For example, a model that gives the same incorrect answer in every administration is highly consistent but receives no points, while a model that alternates between correct and incorrect answers receives partial credit.</p>
+                <p>Accordingly, Level 1 should be interpreted as a measure of <strong>repeatable correct performance</strong>, rather than as a pure measure of either recognition accuracy or response consistency alone.</p>
+            </section>
+
+            <section aria-labelledby="limitations"><h3 id="limitations">Limitations and potential confounders</h3>
+                <p>Performance may be influenced by factors other than coordinate grounding, including:</p><ul><li>the model’s prior familiarity with the depicted characters;</li><li>visual similarity between characters;</li><li>character aliases, translated names, titles, or spelling variants;</li><li>image resolution, compression, cropping, and cell dimensions;</li><li>row–column transposition errors;</li><li>loss of answer order in the multi-question response;</li><li>subjective decisions during manual review;</li><li>stochastic changes in model output across repeated generations.</li></ul>
+                <p>The fixed grid and fixed coordinates improve comparability between administrations and models. However, they also limit the breadth of the visual sample. Results therefore describe performance on this specific Level 1 stimulus and should not be treated as a comprehensive measure of visual-spatial ability.</p>
+            </section>
+
+            <section aria-labelledby="record"><h3 id="record">Recommended result record</h3>
+                <p>For each model, the Level 1 evaluation record should preserve:</p><ul><li>benchmark and stimulus version;</li><li>exact model name and version;</li><li>date of testing;</li><li>model configuration and reasoning settings;</li><li>availability of tools or code execution;</li><li>score obtained in each of the ten administrations;</li><li>total score;</li><li>original model responses;</li><li>accepted character-name variants;</li><li>non-evaluable administrations and their reasons;</li><li>whether the final result was classified as INVALID.</li></ul>
+            </section>
+        </article>
+    </main>
+</Layout>
+
+<style>
+    .visual-methodology { --page-accent: #5eead4; --page-accent-rgb: 94, 234, 212; max-width: 72rem; }
+    .level-navigation { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin-bottom: 2rem; }
+    .level-navigation > * { min-width: 0; padding: 1rem; border: 1px solid rgba(148,163,184,.16); border-radius: .85rem; background: rgba(30,41,59,.5); }
+    .level-navigation a { color: #ccfbf1; text-decoration: none; }
+    .level-navigation a:hover { border-color: var(--page-accent); }
+    .level-navigation a:focus-visible { outline: 3px solid var(--page-accent); outline-offset: 3px; }
+    .level-navigation span, .level-navigation strong, .level-navigation small { display: block; }
+    .level-navigation span, .level-navigation small { color: #8291a5; }
+    .level-navigation strong { color: #e2e8f0; font-size: .9rem; }
+    .level-navigation small { margin-top: .25rem; font-size: .72rem; line-height: 1.35; }
+    .level-navigation .current { border-color: rgba(94,234,212,.45); }
+    .level-navigation .current span { color: #99f6e4; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; }
+    .protocol { scroll-margin-top: 2rem; }
+    .protocol-heading { padding-bottom: 1.5rem; border-bottom: 1px solid rgba(148,163,184,.16); }
+    .protocol-heading .protocol-level { margin: 0; color: var(--page-accent); font-size: .75rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .protocol-heading h2 { margin: .35rem 0; font-size: clamp(2.25rem, 6vw, 4rem); }
+    .protocol-subtitle { margin: 0 !important; color: #cbd5e1; font-size: clamp(1rem, 2.5vw, 1.25rem); font-weight: 600; }
+    .protocol section { max-width: 52rem; }
+    .protocol section h3 { margin: 2.6rem 0 .8rem; color: #f8fafc; font-size: clamp(1.3rem, 3vw, 1.7rem); letter-spacing: -.025em; }
+    blockquote { margin: 1rem 0 1.5rem; padding: .9rem 1.2rem; border-left: 3px solid var(--page-accent); color: #f1f5f9; background: rgba(15,23,42,.5); }
+    .score-formula { max-width: 34rem; margin: 1.5rem 0; padding: 1.25rem; overflow-x: auto; border: 1px solid rgba(94,234,212,.22); border-radius: 1rem; text-align: center; background: rgba(15,23,42,.55); }
+    .score-formula math { color: #f8fafc; font-size: clamp(1.25rem, 4vw, 1.8rem); }
+    .score-formula figcaption { margin-top: .8rem; color: #94a3b8; font-size: .75rem; line-height: 1.5; }
+    .validity-comparison { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin: 1rem 0 1.5rem; }
+    .validity-comparison div { padding: 1rem; border: 1px solid rgba(148,163,184,.16); border-radius: .75rem; background: rgba(15,23,42,.4); }
+    .validity-comparison dt { color: #f8fafc; font-weight: 800; }
+    .validity-comparison dd { margin: .35rem 0 0; color: #a8b5c7; font-size: .9rem; line-height: 1.6; }
+    @media (max-width: 700px) { .level-navigation { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 440px) { .level-navigation, .validity-comparison { grid-template-columns: 1fr; } }
+</style>
