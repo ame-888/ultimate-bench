@@ -477,83 +477,74 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                     </div>
 
                     <!-- Ultimate Global Bench Section -->
-                    <div class="ultimate-bench-section" id="global-leaderboard">
-                        <div class="home-column-header ultimate-title-container">
-                            <span class="ultimate-orbit ultimate-orbit-left" aria-hidden="true"></span>
+                    <section class="ultimate-bench-section" id="global-leaderboard" aria-labelledby="ultimate-leaderboard-title">
+                        <header class="ultimate-title-container">
+                            <div class="ultimate-sigil" aria-hidden="true"><span>UB</span></div>
                             <div class="ultimate-heading-copy">
-                                <span class="leaderboard-kicker"><span aria-hidden="true">✦</span> Cross-benchmark standings <span aria-hidden="true">✦</span></span>
-                                <h2 class="ultimate-title"><span>GLOBAL</span> ULTIMATE BENCH</h2>
-                                <p class="leaderboard-subtitle">Three disciplines. One weighted view of overall performance.</p>
+                                <span class="leaderboard-kicker">The definitive all-arena ranking</span>
+                                <h2 class="ultimate-title" id="ultimate-leaderboard-title"><span>Global</span>Ultimate Bench</h2>
+                                <p class="leaderboard-subtitle">The models that can do it all—ranked across vision, retrieval, and strategic reasoning.</p>
                             </div>
-                            <span class="ultimate-orbit ultimate-orbit-right" aria-hidden="true"></span>
-                        </div>
-                        <div class="benchmark-desktop-container ultimate-container">
-                            <div class="benchmark-container visual-table ultimate-modern-container">
-                                <div class="header-row unified-header-row ultimate-header-glass" style="grid-template-columns: 80px minmax(340px, max-content) 1fr 1fr 1fr 1.5fr; padding: 1rem; align-items: flex-end;">
-                                    <div class="col-header" style="justify-content: flex-end;"><h3>RANK</h3><div class="creature-icon"></div></div>
-                                    <div class="col-header model-col-header" style="justify-content: flex-end; align-items: flex-start; padding-left: 0.5rem;"><h3>MODEL</h3><div class="creature-icon"></div></div>
-                                    <div class="col-header" style="justify-content: flex-end; text-align: center;">
-                                        <div class="header-title-wrapper" id="ultimate-visual-sort-btn" style="border-bottom: none; cursor: pointer; transition: opacity 0.2s ease; margin-bottom: 0; padding-bottom: 0;">
-                                            <h3 style="color: #D1D5DB; font-weight: 900; text-align: center;" id="ultimate-visual-sort-text">VISUAL ▼</h3>
-                                        </div>
-                                        <div class="creature-icon"></div>
-                                    </div>
-                                    <div class="col-header" style="justify-content: flex-end; text-align: center;">
-                                        <div class="header-title-wrapper" id="ultimate-data-sort-btn" style="border-bottom: none; cursor: pointer; transition: opacity 0.2s ease; margin-bottom: 0; padding-bottom: 0;">
-                                            <h3 style="color: #D1D5DB; font-weight: 900; text-align: center;" id="ultimate-data-sort-text">DATA ▼</h3>
-                                        </div>
-                                        <div class="creature-icon"></div>
-                                    </div>
-                                    <div class="col-header" style="justify-content: flex-end; text-align: center;">
-                                        <div class="header-title-wrapper" id="ultimate-chess-sort-btn" style="border-bottom: none; cursor: pointer; transition: opacity 0.2s ease; margin-bottom: 0; padding-bottom: 0;">
-                                            <h3 style="color: #D1D5DB; font-weight: 900; text-align: center;" id="ultimate-chess-sort-text">CHESS ▼</h3>
-                                        </div>
-                                        <div class="creature-icon"></div>
-                                    </div>
-                                    <div class="col-header" style="justify-content: flex-end; text-align: center;">
-                                        <div class="header-title-wrapper" id="ultimate-sort-btn" style="border-bottom: none; cursor: pointer; transition: opacity 0.2s ease; margin-bottom: 0; padding-bottom: 0;">
-                                            <h3 style="color: #F59E0B; font-weight: 900; text-align: center;" id="ultimate-sort-text">ULTIMATE AVG ▼</h3>
-                                        </div>
-                                        <div class="creature-icon"></div>
-                                    </div>
+                            <div class="title-rule" aria-hidden="true"><span></span><i>✦</i><span></span></div>
+                            <div class="leaderboard-meta" aria-label="Leaderboard overview">
+                                <div><strong>{ultimateBenchList.length}</strong><span>qualified models</span></div>
+                                <div><strong>3</strong><span>benchmark arenas</span></div>
+                                <div><strong>{sotaScore.toFixed(1)}%</strong><span>frontier score</span></div>
+                            </div>
+                        </header>
+
+                        {ultimateBenchList.length > 0 && (
+                            <div class="leaderboard-crown" aria-label={`Current leader: ${sotaModelName}`}>
+                                <div class="crown-rank"><span>01</span><small>World leader</small></div>
+                                <div class="crown-model">
+                                    <span class="crown-eyebrow">Current champion</span>
+                                    <strong>{sotaModelName}</strong>
+                                    <small>{getModelProvider(sotaModelName).name}</small>
                                 </div>
-                                {ultimateBenchList.map((item, index) => (
-                                    <div class={`benchmark-row unified-row ultimate-row-hover `} style="grid-template-columns: 80px minmax(340px, max-content) 1fr 1fr 1fr 1.5fr; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(55, 65, 81, 0.5);">
-                                        <div class="benchmark-cell" style="justify-content: center; font-size: 1.25rem;">
-                                            <div class="rank" set:html={getRankDisplay(item.rank)}></div>
-                                        </div>
-                                        <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`} style="justify-content: flex-start; border-radius: 4px; padding-right: 2rem;">
-                                            <div class="benchmark-content" style="padding-left: 0.5rem;">
+                                <div class="crown-scores">
+                                    <div><span>Visual</span><strong>{ultimateBenchList[0].visualScore.toFixed(1)}</strong></div>
+                                    <div><span>Data</span><strong>{ultimateBenchList[0].dataScore.toFixed(1)}</strong></div>
+                                    <div><span>Chess</span><strong>{ultimateBenchList[0].chessScore.toFixed(1)}</strong></div>
+                                </div>
+                                <div class="crown-total"><span>Ultimate score</span><strong>{sotaScore.toFixed(1)}<small>%</small></strong></div>
+                            </div>
+                        )}
+
+                        <div class="ultimate-container" role="region" aria-label="Global Ultimate Bench standings" tabindex="0">
+                            <div class="ultimate-modern-container">
+                                <div class="ultimate-table-header">
+                                    <span>Rank</span><span>Model</span>
+                                    <button id="ultimate-visual-sort-btn"><span>Visual</span><small id="ultimate-visual-sort-text">Score ▼</small></button>
+                                    <button id="ultimate-data-sort-btn"><span>Data</span><small id="ultimate-data-sort-text">Score ▼</small></button>
+                                    <button id="ultimate-chess-sort-btn"><span>Chess</span><small id="ultimate-chess-sort-text">Score ▼</small></button>
+                                    <button id="ultimate-sort-btn" class="overall-sort"><span>Overall</span><small id="ultimate-sort-text">Score ▼</small></button>
+                                </div>
+                                <div class="ultimate-table-body">
+                                    {ultimateBenchList.map((item) => (
+                                        <div class={`ultimate-row-hover rank-${item.rank}`}>
+                                            <div class="ultimate-rank"><span>{String(item.rank).padStart(2, '0')}</span>{item.rank <= 3 && <i aria-hidden="true">{item.rank === 1 ? '◆' : '◇'}</i>}</div>
+                                            <div class={`ultimate-model model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="model-info" data-provider={getModelProvider(item.name).name}>
-                                                    <div class="model-name" data-release-date={item.releaseDate} style="font-size: 1.1rem; font-weight: 600;">
-                                                        {item.name}
-                                                        {isNew(item.releaseDate) && <span class="new-badge" style="transform: scale(0.8); margin-left: 0.5rem;">NEW</span>}
-                                                    </div>
+                                                    <strong class="model-name" data-release-date={item.releaseDate}>{item.name}</strong>
+                                                    <span>{getModelProvider(item.name).name}</span>
                                                 </div>
+                                                {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
                                             </div>
+                                            {[['visual', item.visualScore], ['data', item.dataScore], ['chess', item.chessScore]].map(([type, score]) => (
+                                                <div class={`ultimate-metric ultimate-${type}-score-cell score-cell`} data-score={score}>
+                                                    <strong>{score.toFixed(1)}</strong><small>%</small>
+                                                    <span class="metric-track"><i style={`width:${score}%`}></i></span>
+                                                </div>
+                                            ))}
+                                            <div class="ultimate-score-cell score-cell"><strong>{item.ultimateScore.toFixed(1)}</strong><small>%</small></div>
                                         </div>
-                                        <div class="benchmark-cell score-cell ultimate-visual-score-cell" data-score={item.visualScore} style="justify-content: center; text-align: center; font-size: 1.1rem; color: #9CA3AF;">
-                                            {item.visualScore.toFixed(1)}%
-                                        </div>
-                                        <div class="benchmark-cell score-cell ultimate-data-score-cell" data-score={item.dataScore} style="justify-content: center; text-align: center; font-size: 1.1rem; color: #9CA3AF;">
-                                            {item.dataScore.toFixed(1)}%
-                                        </div>
-                                        <div class="benchmark-cell score-cell ultimate-chess-score-cell" data-score={item.chessScore} style="justify-content: center; text-align: center; font-size: 1.1rem; color: #9CA3AF;">
-                                            {item.chessScore.toFixed(1)}%
-                                        </div>
-                                        <div class="benchmark-cell score-cell ultimate-score-cell" style="justify-content: center; text-align: center; font-size: 1.25rem; font-weight: 900; color: #F59E0B; text-shadow: 0 0 5px rgba(245, 158, 11, 0.3); transition: all 0.2s ease;">
-                                            {item.ultimateScore.toFixed(1)}%
-                                        </div>
-                                    </div>
-                                ))}
-                                {ultimateBenchList.length === 0 && (
-                                    <div style="padding: 2rem; text-align: center; color: #9CA3AF; font-style: italic;">
-                                        No models currently span all three benchmarks.
-                                    </div>
-                                )}
+                                    ))}
+                                </div>
+                                {ultimateBenchList.length === 0 && <div class="ultimate-empty">No models currently span all three benchmarks.</div>}
                             </div>
                         </div>
-                    </div>
+                        <p class="leaderboard-note"><span>↳</span> Overall scores average each model’s complexity-weighted performance across all three arenas.</p>
+                    </section>
 
                     <!-- Journey to Singularity: Enhanced Section -->
                     <section class="singularity-journey-section" aria-labelledby="journey-title">
@@ -2557,6 +2548,88 @@ There are currently three levels in use. The fourth level will be unlocked once 
         .ultimate-orbit { display: none; }
     }
 
+    /* Showpiece leaderboard — editorial, high-contrast, and built around the result. */
+    .ultimate-bench-section { max-width: 86rem; margin-inline: auto; }
+    .ultimate-bench-section .ultimate-title-container {
+        display: flex; flex-direction: column; align-items: center; min-height: 30rem;
+        margin-bottom: 0 !important; padding: clamp(3rem, 7vw, 6.5rem) clamp(1.25rem, 5vw, 5rem) 2rem;
+        border: 1px solid rgba(251,191,36,.24); border-radius: 28px 28px 0 0; overflow: hidden;
+        background: radial-gradient(circle at 50% 35%, rgba(245,158,11,.19), transparent 31%),
+                    radial-gradient(circle at 10% 0%, rgba(56,189,248,.08), transparent 25%), #080d17;
+    }
+    .ultimate-bench-section .ultimate-title-container::before { width: 70rem; height: 70rem; opacity: .34; }
+    .ultimate-sigil { position: relative; z-index: 2; display: grid; place-items: center; width: 4.25rem; height: 4.25rem; margin-bottom: 1.75rem; transform: rotate(45deg); border: 1px solid #fbbf24; background: #111827; box-shadow: 0 0 0 8px rgba(251,191,36,.05), 0 0 40px rgba(245,158,11,.2); }
+    .ultimate-sigil span { transform: rotate(-45deg); color: #fde68a; font-family: var(--font-heading); font-size: .95rem; font-weight: 900; letter-spacing: -.08em; }
+    .ultimate-heading-copy { max-width: 72rem; text-align: center; }
+    .ultimate-title-container .leaderboard-kicker { margin: 0 0 1rem; color: #fbbf24; font-size: clamp(.67rem, 1vw, .78rem); letter-spacing: .28em; }
+    .ultimate-bench-section .ultimate-title { margin: 0; font-size: clamp(3.6rem, 9.2vw, 8.8rem); line-height: .78; letter-spacing: -.075em; text-transform: uppercase; }
+    .ultimate-bench-section .ultimate-title span { display: block; margin: 0 0 .3em; padding-left: .42em; color: #f8fafc; font-size: .18em; line-height: 1; letter-spacing: .42em; -webkit-text-fill-color: #f8fafc; }
+    .ultimate-title-container .leaderboard-subtitle { max-width: 47rem; margin: 2rem auto 0; color: #aab6c8; font-size: clamp(.95rem, 1.6vw, 1.12rem); line-height: 1.7; }
+    .title-rule { display: flex; align-items: center; gap: 1rem; width: min(32rem, 80%); margin: 2rem auto; color: #fbbf24; }
+    .title-rule span { height: 1px; flex: 1; background: linear-gradient(90deg, transparent, rgba(251,191,36,.65)); }
+    .title-rule span:last-child { transform: rotate(180deg); }
+    .title-rule i { font-style: normal; font-size: .7rem; }
+    .leaderboard-meta { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(3, 1fr); width: min(44rem, 100%); border-top: 1px solid #222c3d; }
+    .leaderboard-meta div { display: flex; flex-direction: column; gap: .25rem; padding: 1.25rem; text-align: center; }
+    .leaderboard-meta div + div { border-left: 1px solid #222c3d; }
+    .leaderboard-meta strong { color: #f8fafc; font-family: var(--font-heading); font-size: 1.25rem; }
+    .leaderboard-meta span { color: #6f7f95; font-size: .63rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .leaderboard-crown { display: grid; grid-template-columns: .65fr 2fr 2fr 1fr; align-items: center; gap: 1.5rem; padding: 1.6rem 2rem; border: 1px solid rgba(251,191,36,.32); border-top: 0; background: linear-gradient(100deg, #171508, #15120b 50%, #0f1724); box-shadow: 0 18px 50px rgba(0,0,0,.28); }
+    .crown-rank span { display: block; color: #fbbf24; font-family: var(--font-heading); font-size: 2rem; font-weight: 900; }
+    .crown-rank small, .crown-eyebrow, .crown-total > span { color: #a88b42; font-size: .6rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+    .crown-model { display: flex; flex-direction: column; gap: .25rem; }
+    .crown-model strong { color: #fff7d6; font-family: var(--font-heading); font-size: clamp(1.15rem, 2.5vw, 1.7rem); }
+    .crown-model small { color: #817860; }
+    .crown-scores { display: grid; grid-template-columns: repeat(3,1fr); gap: .5rem; }
+    .crown-scores div { padding-left: .8rem; border-left: 1px solid #3e3825; }
+    .crown-scores span, .crown-scores strong { display: block; }
+    .crown-scores span { margin-bottom: .3rem; color: #817860; font-size: .62rem; text-transform: uppercase; }
+    .crown-scores strong { color: #d9d3c3; font-size: .95rem; }
+    .crown-total { text-align: right; }
+    .crown-total strong { display: block; color: #fbbf24; font-family: var(--font-heading); font-size: 2rem; }
+    .crown-total strong small { font-size: .45em; }
+    .ultimate-bench-section .ultimate-container { overflow-x: auto; margin-top: 1rem; border: 1px solid #26344c; border-radius: 16px; background: #0a1220; }
+    .ultimate-bench-section .ultimate-modern-container { min-width: 760px; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+    .ultimate-table-header, .ultimate-row-hover { display: grid; grid-template-columns: 76px minmax(260px, 2fr) repeat(3, minmax(92px, .8fr)) minmax(110px, .9fr); align-items: center; }
+    .ultimate-table-header { min-height: 4.3rem; padding: 0 1.25rem; border-bottom: 1px solid #26344c; background: #0e192a; }
+    .ultimate-table-header > span, .ultimate-table-header button { color: #718198; font: 700 .62rem var(--font-body); letter-spacing: .13em; text-align: left; text-transform: uppercase; }
+    .ultimate-table-header button { padding: .6rem 0; border: 0; background: none; cursor: pointer; }
+    .ultimate-table-header button span, .ultimate-table-header button small { display: block; }
+    .ultimate-table-header button small { margin-top: .2rem; color: #46566d; font-size: .55rem; }
+    .ultimate-table-header .overall-sort span { color: #fbbf24; }
+    .ultimate-row-hover { min-height: 5.35rem; padding: 0 1.25rem; border-bottom: 1px solid rgba(38,52,76,.72); cursor: default; transition: background .2s; }
+    .ultimate-row-hover:last-child { border-bottom: 0; }
+    .ultimate-row-hover:hover { border-radius: 0 !important; background: #111e31 !important; }
+    .ultimate-rank { display: flex; align-items: center; gap: .5rem; color: #526177; font-family: var(--font-heading); font-size: 1rem; font-weight: 800; }
+    .ultimate-rank i { color: #a77918; font-size: .55rem; font-style: normal; }
+    .rank-1 .ultimate-rank span { color: #fbbf24; }
+    .ultimate-model { display: flex; align-items: center; justify-content: space-between; min-height: 3rem; margin-right: 1.4rem; padding: .35rem .8rem; border-radius: 7px; }
+    .ultimate-model .model-info { min-width: 0; }
+    .ultimate-model .model-name { display: block; overflow: hidden; color: #edf2f8; font-size: .94rem; text-overflow: ellipsis; white-space: nowrap; }
+    .ultimate-model .model-info > span { display: block; margin-top: .28rem; color: #65758b; font-size: .63rem; font-weight: 700; text-transform: uppercase; }
+    .ultimate-metric { position: relative; color: #bac4d1; font-size: 1rem; }
+    .ultimate-metric small, .ultimate-score-cell small { margin-left: .1rem; color: #58677b; font-size: .62rem; }
+    .metric-track { display: block; width: 58%; height: 2px; margin-top: .55rem; overflow: hidden; background: #253246; }
+    .metric-track i { display: block; height: 100%; background: #64748b; }
+    .ultimate-bench-section .ultimate-score-cell { color: #fbbf24 !important; font-family: var(--font-heading); font-size: 1.35rem; text-align: left !important; }
+    .leaderboard-note { margin: 1rem 0 0; color: #718198; font-size: .72rem; line-height: 1.5; }
+    .leaderboard-note span { margin-right: .45rem; color: #fbbf24; }
+    .ultimate-empty { padding: 3rem; color: #94a3b8; text-align: center; }
+    @media (max-width: 760px) {
+        .ultimate-bench-section .ultimate-title-container { min-height: 0; border-radius: 20px 20px 0 0; }
+        .ultimate-bench-section .ultimate-title { font-size: clamp(3.25rem, 17vw, 5.2rem); }
+        .leaderboard-crown { grid-template-columns: 52px 1fr auto; padding: 1.2rem; }
+        .crown-scores { display: none; }
+        .crown-total strong { font-size: 1.5rem; }
+    }
+    @media (max-width: 480px) {
+        .leaderboard-meta div { padding: 1rem .35rem; }
+        .leaderboard-meta strong { font-size: 1rem; }
+        .leaderboard-meta span { font-size: .52rem; letter-spacing: .05em; }
+        .crown-rank small, .crown-model small { display: none; }
+        .leaderboard-crown { grid-template-columns: 42px minmax(0,1fr) auto; gap: .7rem; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
         .ultimate-title, .ultimate-title-container::before { animation: none; }
     }
@@ -2772,20 +2845,21 @@ There are currently three levels in use. The fourth level will be unlocked once 
 
                     // Reset all other headers
                     const visText = document.getElementById('ultimate-visual-sort-text');
-                    if (visText) visText.textContent = 'VISUAL ▼';
+                    if (visText) visText.textContent = 'Score ▼';
                     const dataText = document.getElementById('ultimate-data-sort-text');
-                    if (dataText) dataText.textContent = 'DATA ▼';
+                    if (dataText) dataText.textContent = 'Score ▼';
                     const chessText = document.getElementById('ultimate-chess-sort-text');
-                    if (chessText) chessText.textContent = 'CHESS ▼';
+                    if (chessText) chessText.textContent = 'Score ▼';
                     const avgText = document.getElementById('ultimate-sort-text');
-                    if (avgText) avgText.textContent = 'ULTIMATE AVG ▼';
+                    if (avgText) avgText.textContent = 'Score ▼';
 
                     textEl.textContent = ascending ? `${defaultText} ▲` : `${defaultText} ▼`;
 
                     const tableContainer = document.querySelector('.ultimate-modern-container');
                     if (!tableContainer) return;
 
-                    const rows = Array.from(tableContainer.querySelectorAll('.benchmark-row'));
+                    const tableBody = tableContainer.querySelector('.ultimate-table-body');
+                    const rows = Array.from(tableContainer.querySelectorAll('.ultimate-row-hover'));
 
                     rows.sort((a, b) => {
                         const cellA = a.querySelector(cellClass);
@@ -2804,8 +2878,8 @@ There are currently three levels in use. The fourth level will be unlocked once 
 
                         if (scoreA === scoreB) {
                             // Secondary sort by Rank (which is always ascending naturally)
-                            const rankA = parseInt(a.querySelector('.rank').textContent.replace(/\D/g, '')) || 999;
-                            const rankB = parseInt(b.querySelector('.rank').textContent.replace(/\D/g, '')) || 999;
+                            const rankA = parseInt(a.querySelector('.ultimate-rank').textContent.replace(/\D/g, '')) || 999;
+                            const rankB = parseInt(b.querySelector('.ultimate-rank').textContent.replace(/\D/g, '')) || 999;
                             return rankA - rankB;
                         }
 
@@ -2813,7 +2887,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
                     });
 
                     // Re-append sorted rows
-                    rows.forEach(row => tableContainer.appendChild(row));
+                    if (tableBody) rows.forEach(row => tableBody.appendChild(row));
                 });
             }
         }
