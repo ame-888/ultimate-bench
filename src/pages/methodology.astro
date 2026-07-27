@@ -1,32 +1,202 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import '../styles/content-pages.css';
+
+const pillars = [
+    {
+        number: '01',
+        title: 'Multi-domain by design',
+        copy: 'Models are evaluated across visual reasoning, structured data work, and chess—three distinct ways to test how reliably a system can interpret, transform, and reason.',
+    },
+    {
+        number: '02',
+        title: 'Consistent conditions',
+        copy: 'Within each category, models face the same task families and scoring standard. Runs are checked before results are accepted into the published dataset.',
+    },
+    {
+        number: '03',
+        title: 'Comparable, not absolute',
+        copy: 'Scores make differences easier to explore; they do not reduce model quality to one universal number or predict performance for every real-world use case.',
+    },
+];
+
+const process = [
+    { title: 'Define', copy: 'We select bounded task families that reward correct outputs and meaningful reasoning—not presentation style or verbosity.' },
+    { title: 'Evaluate', copy: 'Each eligible model is tested under controlled, category-consistent conditions and against the same evaluation targets.' },
+    { title: 'Verify', copy: 'Outputs and score records are reviewed for obvious run failures, inconsistencies, and data-entry errors before publication.' },
+    { title: 'Publish', copy: 'Category results and the aggregate are added to the public leaderboard with enough context to compare models responsibly.' },
+];
 ---
 
-<Layout title="Methodology | Ultimate Bench" description="Understand the benchmark categories, aggregation approach, data source, and limitations behind Ultimate Bench results.">
-    <main>
-        <h1>Methodology</h1>
-        <section>
-            <h2>What Ultimate Bench compares</h2>
-            <p>Ultimate Bench is an independent experimental benchmark that presents model results across visual, data, and chess evaluations. The leaderboard is intended as a comparative project, not a complete measure of model quality or suitability for a particular use.</p>
+<Layout title="Methodology | Ultimate Bench" description="How Ultimate Bench evaluates and compares AI models—our principles, score aggregation, safeguards, and limitations.">
+    <main class="methodology-page">
+        <header class="methodology-hero">
+            <p class="eyebrow"><span aria-hidden="true"></span> Behind the benchmark</p>
+            <h1>Rigorous by design.<br /><em>Private by necessity.</em></h1>
+            <p class="hero-copy">A clear view of how Ultimate Bench creates fair, useful comparisons—without disclosing the exact task set or procedures that keep the evaluation resistant to gaming.</p>
+            <nav class="jump-links" aria-label="On this page">
+                <a href="#principles">Principles</a>
+                <a href="#process">Process</a>
+                <a href="#scoring">Scoring</a>
+                <a href="#limitations">Limitations</a>
+            </nav>
+        </header>
 
-            <h2>Scores and aggregation</h2>
-            <p>The published benchmark records are maintained in <code>src/data/benchmarks.ts</code>. The global Ultimate average shown on the leaderboard is the arithmetic mean of a model's visual, data, and chess scores when all three are available. Category-specific details and level descriptions appear alongside their leaderboard tables.</p>
-
-            <h2>Interpretation and limitations</h2>
-            <p>Results reflect the tasks, evaluation conditions, model versions, and data recorded by this project. They should not be interpreted as independent replication, a vendor guarantee, or a substitute for evaluation against your own requirements. Methodology and result provenance should be reviewed before making consequential decisions.</p>
-
-            <h2>Corrections</h2>
-            <p>Questions or corrections can be sent through the <a href="/contact">contact page</a>.</p>
+        <section class="trust-note" aria-labelledby="transparency-title">
+            <div class="lock-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 10 0v3M6 10h12v10H6z" /></svg>
+            </div>
+            <div>
+                <p class="section-label">A note on transparency</p>
+                <h2 id="transparency-title">We explain the standard, not the answer key.</h2>
+                <p>Publishing exact prompts, cases, weights, or operational details would make it easier to optimize for the benchmark instead of the underlying capabilities. We therefore keep those elements private while documenting the evaluation scope, aggregation rule, quality controls, and known limitations.</p>
+            </div>
+            <span class="status-pill"><span></span> Method protected</span>
         </section>
+
+        <section id="principles" class="section-block" aria-labelledby="principles-title">
+            <div class="section-intro">
+                <div>
+                    <p class="section-label">What we measure</p>
+                    <h2 id="principles-title">Three principles shape every comparison.</h2>
+                </div>
+                <p>Ultimate Bench is an independent experimental benchmark. It is designed to reveal useful differences between models, not to declare a single model “best” for every person or task.</p>
+            </div>
+            <div class="pillar-grid">
+                {pillars.map((pillar) => (
+                    <article class="pillar-card">
+                        <span class="card-number">{pillar.number}</span>
+                        <h3>{pillar.title}</h3>
+                        <p>{pillar.copy}</p>
+                    </article>
+                ))}
+            </div>
+        </section>
+
+        <section id="process" class="section-block process-section" aria-labelledby="process-title">
+            <div class="section-intro compact">
+                <div>
+                    <p class="section-label">Evaluation lifecycle</p>
+                    <h2 id="process-title">From task design to leaderboard.</h2>
+                </div>
+                <p>The exact execution method remains confidential, but every published result follows the same high-level path.</p>
+            </div>
+            <ol class="process-list">
+                {process.map((step, index) => (
+                    <li>
+                        <span class="step-index">{String(index + 1).padStart(2, '0')}</span>
+                        <div><h3>{step.title}</h3><p>{step.copy}</p></div>
+                    </li>
+                ))}
+            </ol>
+        </section>
+
+        <section id="scoring" class="score-section" aria-labelledby="scoring-title">
+            <div class="score-copy">
+                <p class="section-label">Scoring &amp; aggregation</p>
+                <h2 id="scoring-title">One summary score,<br />three distinct signals.</h2>
+                <p>Each category retains its own score because domain-level performance is often more informative than a single rank. When all three category scores are available, the Ultimate average is their arithmetic mean.</p>
+                <p class="data-note">Published benchmark records are maintained in <code>src/data/benchmarks.ts</code>. Category tables contain additional level descriptions and context.</p>
+            </div>
+            <div class="formula-card" aria-label="Ultimate average formula">
+                <p>Ultimate average</p>
+                <div class="fraction">
+                    <span><b>Visual</b> + <b>Data</b> + <b>Chess</b></span>
+                    <span>3</span>
+                </div>
+                <small>Calculated only when all three scores are available</small>
+            </div>
+        </section>
+
+        <section id="limitations" class="section-block limitations" aria-labelledby="limitations-title">
+            <div class="section-intro compact">
+                <div>
+                    <p class="section-label">Read results responsibly</p>
+                    <h2 id="limitations-title">What the scores cannot tell you.</h2>
+                </div>
+            </div>
+            <div class="limitation-grid">
+                <p><strong>Not a universal measure.</strong> A benchmark samples capabilities; it cannot represent every workflow, language, risk, or user preference.</p>
+                <p><strong>Results are time-bound.</strong> Scores reflect the tested model version and evaluation conditions. Providers may update models after a run.</p>
+                <p><strong>Small gaps need caution.</strong> Nearby scores should not be treated as decisive proof that one model is categorically superior.</p>
+                <p><strong>Not independent certification.</strong> Results are not a vendor guarantee, safety audit, or substitute for testing against your own requirements.</p>
+            </div>
+        </section>
+
+        <aside class="correction-card">
+            <div><p class="section-label">Help us keep it accurate</p><h2>Spot something that needs attention?</h2></div>
+            <a href="/contact">Submit a correction <span aria-hidden="true">→</span></a>
+        </aside>
     </main>
 </Layout>
 
 <style>
-    main { max-width: 50rem; margin: 4rem auto; padding: 0 1rem; }
-    h1 { font-size: 2.5rem; text-align: center; color: white; }
-    section { background: rgba(31, 41, 55, 0.5); border: 1px solid rgba(255,255,255,.1); border-radius: 1rem; padding: 2rem; color: #D1D5DB; line-height: 1.8; }
-    h2 { color: white; margin-top: 1.75rem; }
-    h2:first-child { margin-top: 0; }
-    a { color: #60A5FA; }
-    code { color: #F3F4F6; }
+    .methodology-page { --mint: #5eead4; --blue: #60a5fa; max-width: 72rem; margin: 0 auto; padding: clamp(4.5rem, 9vw, 8rem) 1.25rem 7rem; color: #cbd5e1; }
+    .methodology-hero { position: relative; max-width: 58rem; margin-bottom: clamp(4rem, 9vw, 7.5rem); }
+    .methodology-hero::after { content: ''; position: absolute; z-index: -1; width: 32rem; height: 24rem; top: -9rem; right: -23rem; border-radius: 50%; background: rgba(45, 212, 191, .1); filter: blur(80px); }
+    .eyebrow, .section-label { color: var(--mint); font-size: .72rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    .eyebrow { display: flex; align-items: center; gap: .7rem; margin: 0 0 1.25rem; }
+    .eyebrow span { width: 2.5rem; height: 1px; background: var(--mint); }
+    h1 { margin: 0; color: #f8fafc; font-size: clamp(3rem, 7.2vw, 6.2rem); line-height: .98; letter-spacing: -.065em; }
+    h1 em { color: #94a3b8; font-style: normal; }
+    .hero-copy { max-width: 43rem; margin: 1.8rem 0 2rem; color: #94a3b8; font-size: clamp(1rem, 2vw, 1.15rem); line-height: 1.75; }
+    .jump-links { display: flex; flex-wrap: wrap; gap: .55rem; }
+    .jump-links a { padding: .55rem .9rem; border: 1px solid rgba(148,163,184,.18); border-radius: 99px; color: #cbd5e1; font-size: .76rem; font-weight: 700; text-decoration: none; transition: .2s ease; }
+    .jump-links a:hover { border-color: var(--mint); color: var(--mint); transform: translateY(-2px); }
+    .trust-note { display: grid; grid-template-columns: auto 1fr auto; gap: 1.5rem; align-items: start; padding: clamp(1.5rem, 4vw, 2.5rem); border: 1px solid rgba(94,234,212,.2); border-radius: 1.5rem; background: linear-gradient(120deg, rgba(19,78,74,.2), rgba(15,23,42,.72)); box-shadow: 0 25px 70px rgba(0,0,0,.18); }
+    .lock-mark { display: grid; place-items: center; width: 3.25rem; height: 3.25rem; border: 1px solid rgba(94,234,212,.25); border-radius: 1rem; background: rgba(94,234,212,.08); }
+    .lock-mark svg { width: 1.35rem; fill: none; stroke: var(--mint); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .section-label { margin: 0 0 .6rem; }
+    .trust-note h2, .section-block h2, .score-section h2, .correction-card h2 { margin: 0; color: #f8fafc; font-size: clamp(1.6rem, 3.5vw, 2.4rem); line-height: 1.18; letter-spacing: -.04em; }
+    .trust-note p:last-child { max-width: 48rem; margin: .8rem 0 0; color: #a8b5c7; line-height: 1.75; }
+    .status-pill { display: flex; align-items: center; gap: .45rem; white-space: nowrap; color: #99f6e4; font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+    .status-pill span { width: .45rem; height: .45rem; border-radius: 50%; background: var(--mint); box-shadow: 0 0 10px var(--mint); }
+    .section-block { padding-top: clamp(5rem, 10vw, 8rem); scroll-margin-top: 5rem; }
+    .section-intro { display: grid; grid-template-columns: 1.05fr .8fr; align-items: end; gap: 4rem; margin-bottom: 2.25rem; }
+    .section-intro > p { margin: 0; color: #94a3b8; line-height: 1.75; }
+    .section-intro.compact { align-items: start; }
+    .pillar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .pillar-card { min-height: 15rem; padding: 1.7rem; border: 1px solid rgba(148,163,184,.13); border-radius: 1.25rem; background: rgba(30,41,59,.38); transition: border-color .25s, transform .25s; }
+    .pillar-card:hover { transform: translateY(-4px); border-color: rgba(94,234,212,.32); }
+    .card-number { color: var(--mint); font: 700 .72rem var(--font-body); letter-spacing: .1em; }
+    .pillar-card h3 { margin: 3.5rem 0 .65rem; color: #f8fafc; font-size: 1.12rem; }
+    .pillar-card p { margin: 0; color: #94a3b8; font-size: .91rem; line-height: 1.7; }
+    .process-list { display: grid; grid-template-columns: repeat(4, 1fr); margin: 3rem 0 0; padding: 0; list-style: none; counter-reset: steps; }
+    .process-list li { position: relative; padding: 0 1.5rem 0 0; }
+    .process-list li:not(:last-child)::after { content: ''; position: absolute; top: 1rem; left: 2.8rem; right: .7rem; height: 1px; background: linear-gradient(90deg, rgba(94,234,212,.65), rgba(94,234,212,.08)); }
+    .step-index { display: grid; place-items: center; position: relative; z-index: 1; width: 2rem; height: 2rem; border-radius: 50%; color: #081a1b; background: var(--mint); font-size: .66rem; font-weight: 900; }
+    .process-list h3 { margin: 1.2rem 0 .45rem; color: #f8fafc; font-size: 1rem; }
+    .process-list p { margin: 0; color: #8897aa; font-size: .84rem; line-height: 1.7; }
+    .score-section { display: grid; grid-template-columns: 1fr .9fr; gap: clamp(2rem, 7vw, 6rem); align-items: center; margin-top: clamp(5rem, 11vw, 9rem); padding: clamp(2rem, 6vw, 4rem); border-block: 1px solid rgba(148,163,184,.14); scroll-margin-top: 5rem; }
+    .score-copy > p:not(.section-label) { color: #94a3b8; line-height: 1.75; }
+    .data-note { padding-left: 1rem; border-left: 2px solid rgba(94,234,212,.45); font-size: .82rem; }
+    code { color: #ccfbf1; font-size: .85em; }
+    .formula-card { padding: 2.2rem; border: 1px solid rgba(96,165,250,.24); border-radius: 1.5rem; text-align: center; background: radial-gradient(circle at top, rgba(59,130,246,.16), rgba(15,23,42,.72) 68%); }
+    .formula-card > p { margin: 0 0 1.5rem; color: #93c5fd; font-size: .72rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .fraction { display: inline-flex; flex-direction: column; color: #f8fafc; font-size: clamp(1.15rem, 3vw, 1.6rem); }
+    .fraction span:first-child { padding: 0 .8rem .7rem; border-bottom: 1px solid #64748b; }
+    .fraction span:last-child { padding-top: .5rem; }
+    .fraction b:nth-child(1) { color: #a5b4fc; } .fraction b:nth-child(2) { color: #7dd3fc; } .fraction b:nth-child(3) { color: #5eead4; }
+    .formula-card small { display: block; margin-top: 1.5rem; color: #64748b; }
+    .limitation-grid { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid rgba(148,163,184,.14); border-radius: 1.25rem; overflow: hidden; }
+    .limitation-grid p { margin: 0; padding: 1.5rem; color: #94a3b8; font-size: .9rem; line-height: 1.7; }
+    .limitation-grid p:nth-child(odd) { border-right: 1px solid rgba(148,163,184,.14); }
+    .limitation-grid p:nth-child(-n+2) { border-bottom: 1px solid rgba(148,163,184,.14); }
+    .limitation-grid strong { display: block; margin-bottom: .2rem; color: #e2e8f0; }
+    .correction-card { display: flex; justify-content: space-between; align-items: center; gap: 2rem; margin-top: 5rem; padding: 2rem 2.5rem; border-radius: 1.25rem; background: #e2e8f0; }
+    .correction-card .section-label { color: #0f766e; }
+    .correction-card h2 { color: #0f172a; font-size: 1.4rem; }
+    .correction-card a { padding: .85rem 1.1rem; border-radius: .7rem; color: white; background: #0f766e; font-size: .8rem; font-weight: 800; text-decoration: none; white-space: nowrap; }
+    @media (max-width: 760px) {
+        .methodology-page { padding-top: 3.5rem; }
+        .trust-note { grid-template-columns: auto 1fr; } .status-pill { grid-column: 2; }
+        .section-intro, .score-section { grid-template-columns: 1fr; gap: 1.5rem; }
+        .pillar-grid { grid-template-columns: 1fr; } .pillar-card { min-height: auto; } .pillar-card h3 { margin-top: 2rem; }
+        .process-list { grid-template-columns: 1fr; gap: 1.8rem; } .process-list li { display: grid; grid-template-columns: auto 1fr; gap: 1rem; }
+        .process-list li::after { display: none; } .process-list h3 { margin-top: 0; }
+        .score-section { padding-inline: 0; }
+        .correction-card { align-items: flex-start; flex-direction: column; padding: 1.5rem; }
+    }
+    @media (max-width: 520px) { .trust-note { grid-template-columns: 1fr; } .status-pill { grid-column: 1; } .limitation-grid { grid-template-columns: 1fr; } .limitation-grid p { border: 0 !important; border-bottom: 1px solid rgba(148,163,184,.14) !important; } .limitation-grid p:last-child { border-bottom: 0 !important; } }
+    @media (prefers-reduced-motion: reduce) { .pillar-card, .jump-links a { transition: none; } }
 </style>
