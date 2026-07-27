@@ -1,46 +1,46 @@
-# Astro Starter Kit: Basics
+# Ultimate Bench
+
+Ultimate Bench is an independent experimental benchmark and static Astro site for comparing AI model results across visual, data, and chess evaluations. It includes the benchmark leaderboard, supporting methodology and policy pages, a small blog placeholder, and an interactive arcade.
+
+## Public routes
+
+| Route | Purpose |
+| --- | --- |
+| `/` | Benchmark leaderboard |
+| `/methodology/` | Methodology, aggregation, and interpretation notes |
+| `/about/` | Project overview |
+| `/contact/` | Contact information |
+| `/privacy/` | Privacy policy |
+| `/terms/` | Terms of service (governing law is pending owner/legal review) |
+| `/blog/` | Blog landing page |
+| `/arcade/` | Interactive arcade |
+
+Astro generates these pages into `dist/`. The post-build sitemap generator discovers every generated HTML route rather than relying on a manually maintained route list. `robots.txt`, `sitemap-index.xml`, and `sitemap-0.xml` are served from the site root.
+
+## Benchmark data and presentation
+
+Published benchmark records live in [`src/data/benchmarks.ts`](src/data/benchmarks.ts). The leaderboard rendering and client-side sorting live in [`src/pages/index.astro`](src/pages/index.astro); shared rank labels are in [`src/data/RaritySystem.ts`](src/data/RaritySystem.ts). Update benchmark records deliberately and review score provenance before publication.
+
+The site presents recorded experimental results. The repository does not currently include an automated evaluation runner, raw evaluation artifacts, statistical uncertainty analysis, or independent result-verification workflow. A successful site build validates rendering and types handled by Astro, but does **not** validate the accuracy, reproducibility, or representativeness of benchmark scores.
+
+## Local development
+
+Requires a current Node.js release supported by Astro 5 and npm.
 
 ```sh
-npm create astro@latest -- --template basics
+npm ci
+npm run dev       # development server, normally http://localhost:4321
+npx astro check   # Astro diagnostics (requires optional @astrojs/check and TypeScript packages)
+npm run build     # production build plus sitemap generation
+npm run preview   # preview the generated dist/ build
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+After building, manually review every public route, canonical and social metadata, consent choices, `robots.txt`, and both sitemap files. Advertising code must remain absent until advertising consent is granted.
 
-## 🚀 Project Structure
+## Deployment
 
-Inside of your Astro project, you'll see the following folders and files:
+The canonical production origin is <https://ultimate-bench.vercel.app/>. Connect the repository to Vercel, use `npm run build` as the build command, and publish `dist/` (the Astro preset is static output). Each deployment should start from `npm ci`, pass the production build, and be smoke-tested at its deployment URL before promotion. Canonical metadata intentionally continues to point to the production origin on preview deployments.
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
+## Legal and privacy review
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+The Terms contain an explicit placeholder because the owner has not supplied a governing-law jurisdiction. The owner and qualified counsel must complete that section. The privacy and consent text should also be reviewed for the operator's actual hosting, analytics, advertising configuration, audience, retention practices, and regulatory obligations before production use.

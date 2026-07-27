@@ -5,6 +5,6 @@ import react from '@astrojs/react';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://bubble-burst-clock.vercel.app/',
+  site: 'https://ultimate-bench.vercel.app/',
   integrations: [react()]
 });

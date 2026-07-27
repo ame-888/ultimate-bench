@@ -1,0 +1,32 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Methodology | Ultimate Bench" description="Understand the benchmark categories, aggregation approach, data source, and limitations behind Ultimate Bench results.">
+    <main>
+        <h1>Methodology</h1>
+        <section>
+            <h2>What Ultimate Bench compares</h2>
+            <p>Ultimate Bench is an independent experimental benchmark that presents model results across visual, data, and chess evaluations. The leaderboard is intended as a comparative project, not a complete measure of model quality or suitability for a particular use.</p>
+
+            <h2>Scores and aggregation</h2>
+            <p>The published benchmark records are maintained in <code>src/data/benchmarks.ts</code>. The global Ultimate average shown on the leaderboard is the arithmetic mean of a model's visual, data, and chess scores when all three are available. Category-specific details and level descriptions appear alongside their leaderboard tables.</p>
+
+            <h2>Interpretation and limitations</h2>
+            <p>Results reflect the tasks, evaluation conditions, model versions, and data recorded by this project. They should not be interpreted as independent replication, a vendor guarantee, or a substitute for evaluation against your own requirements. Methodology and result provenance should be reviewed before making consequential decisions.</p>
+
+            <h2>Corrections</h2>
+            <p>Questions or corrections can be sent through the <a href="/contact">contact page</a>.</p>
+        </section>
+    </main>
+</Layout>
+
+<style>
+    main { max-width: 50rem; margin: 4rem auto; padding: 0 1rem; }
+    h1 { font-size: 2.5rem; text-align: center; color: white; }
+    section { background: rgba(31, 41, 55, 0.5); border: 1px solid rgba(255,255,255,.1); border-radius: 1rem; padding: 2rem; color: #D1D5DB; line-height: 1.8; }
+    h2 { color: white; margin-top: 1.75rem; }
+    h2:first-child { margin-top: 0; }
+    a { color: #60A5FA; }
+    code { color: #F3F4F6; }
+</style>
