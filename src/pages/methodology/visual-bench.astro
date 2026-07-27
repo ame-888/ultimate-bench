@@ -9,7 +9,7 @@ import '../../styles/content-pages.css';
         <header class="page-heading">
             <span class="page-kicker">Benchmark protocols</span>
             <h1>Visual Bench Methodology</h1>
-            <p>Visual Bench contains six progressively structured levels. This page publishes the protocols for Levels 1–5; documentation for Level 6 is in progress.</p>
+            <p>Visual Bench Levels 1–5 have defined and documented protocols. Level 6 is planned but has not yet been operationally defined.</p>
         </header>
 
         <nav class="level-navigation" aria-label="Visual Bench levels">
@@ -18,7 +18,7 @@ import '../../styles/content-pages.css';
             <a href="#level-3-chimpanzee"><span>Level 3</span><strong>Chimpanzee</strong></a>
             <a href="#level-4-owl"><span>Level 4</span><strong>Owl</strong></a>
             <a href="#level-5-eagle"><span>Level 5</span><strong>Eagle</strong></a>
-            <span class="pending"><strong>Level 6</strong><small>Protocol documentation in progress</small></span>
+            <a href="#level-6-beholder" class="pending"><span>Level 6</span><strong>Beholder</strong><small>Planned — protocol not yet defined</small></a>
         </nav>
 
         <aside class="level-comparison" aria-labelledby="documented-levels-title">
@@ -29,6 +29,7 @@ import '../../styles/content-pages.css';
                 <div><dt>Level 3 — Chimpanzee</dt><dd>Level 2 image processed by an imperfect background-removal tool; direct numerical-coordinate retrieval.</dd></div>
                 <div id="level-4-owl"><dt>Level 4 — Owl</dt><dd>Separate 17 × 11 grid with a central spanning image; horizontal and vertical anchor-based midpoint localization.</dd></div>
                 <div><dt>Level 5 — Eagle</dt><dd>Separate very large mixed-source grid; characters from multiple shows; animation and live action; irregular automatic cropping; mixed spatial arrangement; localized color inversion; horizontal, vertical, and diagonal midpoint localization.</dd></div>
+                <div><dt>Level 6 — Beholder</dt><dd>Planned evaluation; protocol not yet defined; no published results; excluded from current scoring.</dd></div>
             </dl>
             <p>Mole, Rhino, and Chimpanzee use direct coordinate localization. Owl introduces relational midpoint localization in a larger irregular grid. Eagle extends that relation to diagonal orientations in a very large, mixed-source grid subjected to irregular cropping, mixed placement, and spatially heterogeneous color inversion. <strong>Level 5 uses one fixed image; it is not a temporal or tracking task.</strong></p>
         </aside>
@@ -583,6 +584,21 @@ import '../../styles/content-pages.css';
             <section aria-labelledby="eagle-record"><h3 id="eagle-record">Recommended model-result record</h3>
                 <p>For each model, preserve:</p>
                 <ul><li>benchmark and stimulus version;</li><li>exact model name and version;</li><li>evaluation date;</li><li>model configuration and reasoning settings;</li><li>tool or code-execution availability;</li><li>score in each of the ten administrations;</li><li>item-level correctness;</li><li>total Level 5 score;</li><li>original model responses;</li><li>accepted character-name variants;</li><li>query orientation;</li><li>anchor and target corruption conditions, where documented;</li><li>manually assigned error annotations, where defensible;</li><li>non-evaluable administrations and reasons;</li><li>final INVALID status, where applicable.</li></ul>
+            </section>
+        </article>
+
+        <article id="level-6-beholder" class="content-card protocol planned-protocol" aria-labelledby="level-6-beholder-title">
+            <header class="protocol-heading">
+                <h2 id="level-6-beholder-title">Visual Bench — Level 6: Beholder</h2>
+                <p class="protocol-subtitle">Planned Evaluation</p>
+            </header>
+
+            <section aria-labelledby="beholder-status"><h3 id="beholder-status">Current status</h3>
+                <p>Level 6 has not yet been operationally defined.</p>
+                <p>No final stimulus, task procedure, scoring protocol, capability construct, or administration method has been established. Accordingly, no methodological claims are currently made for this level.</p>
+                <p>The level will remain inactive until its design has been:</p>
+                <ul><li>explicitly specified;</li><li>reviewed for ambiguity;</li><li>assigned a reproducible scoring procedure;</li><li>tested for human interpretability;</li><li>documented before model evaluation begins.</li></ul>
+                <p>Any future Level 6 implementation should be released as a new version of the Visual Bench protocol.</p>
             </section>
         </article>
     </main>
