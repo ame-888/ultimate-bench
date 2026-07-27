@@ -2,22 +2,23 @@
 import Layout from '../../layouts/Layout.astro';
 import '../../styles/content-pages.css';
 
-const levels = Array.from({ length: 6 }, (_, index) => index + 1);
+const undocumentedLevels = [5, 6];
 ---
 
-<Layout title="Visual Bench Methodology | Ultimate Bench" description="Detailed protocols for Visual Bench Levels 1–3: Mole, Rhino, and Chimpanzee character-localization evaluations.">
+<Layout title="Visual Bench Methodology | Ultimate Bench" description="Detailed protocols for Visual Bench Levels 1–4: Mole, Rhino, Chimpanzee, and Owl character-localization evaluations.">
     <main class="content-page visual-methodology">
         <header class="page-heading">
             <span class="page-kicker">Benchmark protocols</span>
             <h1>Visual Bench Methodology</h1>
-            <p>Visual Bench contains six progressively structured levels. This page publishes the complete protocols for Levels 1–3; documentation for Levels 4–6 is in progress.</p>
+            <p>Visual Bench contains six progressively structured levels. This page publishes the complete protocols for Levels 1–4; documentation for Levels 5–6 is in progress.</p>
         </header>
 
         <nav class="level-navigation" aria-label="Visual Bench levels">
             <a href="#level-1"><span>Level 1</span><strong>Mole</strong></a>
             <a href="#level-2-rhino"><span>Level 2</span><strong>Rhino</strong></a>
             <a href="#level-3-chimpanzee"><span>Level 3</span><strong>Chimpanzee</strong></a>
-            {levels.slice(3).map((level) => (
+            <a href="#level-4-owl"><span>Level 4</span><strong>Owl</strong></a>
+            {undocumentedLevels.map((level) => (
                 <span class="pending"><strong>Level {level}</strong><small>Protocol documentation in progress</small></span>
             ))}
         </nav>
@@ -25,11 +26,12 @@ const levels = Array.from({ length: 6 }, (_, index) => index + 1);
         <aside class="level-comparison" aria-labelledby="documented-levels-title">
             <h2 id="documented-levels-title">Documented-level comparison</h2>
             <dl>
-                <div><dt>Level 1 — Mole</dt><dd>Intact 10 × 10 grid; ten fixed coordinate queries; ten identical administrations.</dd></div>
-                <div><dt>Level 2 — Rhino</dt><dd>Same source grid and queries; the same lateral half removed from every column; surviving strips concatenated; ten identical administrations.</dd></div>
-                <div><dt>Level 3 — Chimpanzee</dt><dd>Complete Level 2 image used as input; imperfect automatic background removal applied to the complete image; further nonuniform information loss and segmentation artifacts; the same coordinate queries and ten identical administrations.</dd></div>
+                <div><dt>Level 1 — Mole</dt><dd>10 × 10 intact grid; direct numerical-coordinate queries; one target character per question.</dd></div>
+                <div><dt>Level 2 — Rhino</dt><dd>Level 1 grid after systematic lateral cropping; direct numerical-coordinate queries; partial visual evidence.</dd></div>
+                <div><dt>Level 3 — Chimpanzee</dt><dd>Level 2 image after imperfect automatic background removal; direct numerical-coordinate queries; compound visual degradation.</dd></div>
+                <div><dt>Level 4 — Owl</dt><dd>Different 17 × 11 grid; central 5 × 3 region occupied by one spanning image; two named anchors, horizontal or vertical midpoint derivation, and one midpoint target per question.</dd></div>
             </dl>
-            <p>Each documented level preserves the same required model behavior while changing the visual condition: Mole uses the intact grid, Rhino uses that grid after systematic removal of one lateral half of every column, and Chimpanzee processes the complete Rhino image with an imperfect automatic background-removal system.</p>
+            <p>Mole uses direct coordinate localization in an intact grid, Rhino applies systematic lateral cropping, and Chimpanzee adds imperfect automatic background removal. Owl is not another degradation of the Level 1 stimulus: it introduces a new grid and a different, relational task structure.</p>
         </aside>
 
         <article id="level-1" class="content-card protocol" aria-labelledby="level-1-title">
@@ -385,6 +387,123 @@ const levels = Array.from({ length: 6 }, (_, index) => index + 1);
                 <ul><li>benchmark and stimulus version;</li><li>identity of the corresponding Level 1 and Level 2 stimuli;</li><li>exact model name and version;</li><li>date of testing;</li><li>model configuration and reasoning settings;</li><li>availability of tools or code execution;</li><li>score obtained in each of the ten administrations;</li><li>total Level 3 score;</li><li>corresponding Level 1 and Level 2 scores;</li><li>additional absolute loss from Level 2 to Level 3;</li><li>Level 3 retention relative to Level 2, where calculable;</li><li>total absolute loss from Level 1 to Level 3;</li><li>original model responses;</li><li>accepted character-name variants;</li><li>non-evaluable administrations and their reasons;</li><li>whether the final result was classified as INVALID.</li></ul>
             </section>
         </article>
+        <article id="level-4-owl" class="content-card protocol" aria-labelledby="level-4-owl-title">
+            <header class="protocol-heading">
+                <p class="protocol-level">Visual Bench — Level 4: Owl</p>
+                <h2 id="level-4-owl-title">Owl</h2>
+                <p class="protocol-subtitle">Anchor-Based Orthogonal Midpoint Character Localization</p>
+            </header>
+
+            <section aria-labelledby="owl-purpose"><h3 id="owl-purpose">Purpose</h3>
+                <p>Level 4 evaluates whether a multimodal model can identify a target character through a spatial relationship between two other named characters.</p>
+                <p>Unlike Levels 1–3, the model is not given the numerical coordinates of the target. Instead, it must locate two visual anchors and determine which character occupies the unique grid cell positioned exactly between them.</p>
+                <p>The task primarily assesses:</p><ul><li>recognition and localization of multiple named visual entities;</li><li>binding of character identities to their spatial positions;</li><li>horizontal and vertical relational reasoning;</li><li>identification of a discrete midpoint between two visual anchors;</li><li>retention of multiple intermediate results during a multi-stage task;</li><li>consistency across repeated administrations of an identical relational prompt.</li></ul>
+            </section>
+
+            <section aria-labelledby="owl-relationship"><h3 id="owl-relationship">Relationship to Levels 1–3</h3>
+                <p>Levels 1–3 ask the model to identify the character located at an explicitly supplied numerical coordinate. Level 4 changes both the visual stimulus and the required reasoning process.</p>
+                <p>The model must now:</p><ol><li>identify the first named anchor character;</li><li>locate the first anchor within the grid;</li><li>identify the second named anchor character;</li><li>locate the second anchor within the grid;</li><li>determine whether the anchors are horizontally or vertically aligned;</li><li>identify the unique cell at their midpoint;</li><li>recognize the character occupying that midpoint cell;</li><li>associate the final answer with the correct question.</li></ol>
+                <p>Level 4 therefore replaces direct coordinate retrieval with anchor-based relational localization.</p>
+            </section>
+
+            <section aria-labelledby="owl-stimulus"><h3 id="owl-stimulus">Visual stimulus</h3>
+                <p>The Level 4 stimulus is a character grid organized into 17 logical columns and 11 logical rows. The complete outer structure therefore corresponds to a 17 × 11 rectangular arrangement.</p>
+                <p>The center of the grid is interrupted by a rectangular region spanning 5 columns and 3 rows. This central 5 × 3 region contains one continuous image rather than fifteen independently populated character cells.</p>
+                <p>The central image creates a visually and structurally distinct region within the larger grid. The remaining character cells retain their identifiable row and column relationships around that region.</p>
+                <p>The exact Level 4 stimulus must remain fixed across models within the same benchmark version.</p>
+            </section>
+
+            <section aria-labelledby="owl-central-structure"><h3 id="owl-central-structure">Structural interpretation of the central region</h3>
+                <p>The central 5 × 3 image should be documented as a single spanning visual region rather than as fifteen ordinary character cells.</p>
+                <p>Its presence may increase the difficulty of parsing the grid by:</p><ul><li>interrupting the otherwise repetitive cell structure;</li><li>altering the visual continuity of rows and columns;</li><li>creating a large, salient region near the center;</li><li>requiring the model to preserve logical spatial relationships around a nonstandard area.</li></ul>
+                <p>However, Level 4 should not be described as isolating resistance to distraction or irregular-layout understanding. Those factors may contribute to performance, but they are not independently measured.</p>
+                <p>The benchmark record should explicitly document whether the central image may serve as a query anchor, may serve as a midpoint target, and whether queries are restricted to ordinary character cells outside the central region.</p>
+                <p>If these details were not formally recorded for historical evaluations, do not invent them. Mark them as not yet documented and record them prospectively for future benchmark versions.</p>
+            </section>
+
+            <section aria-labelledby="owl-query"><h3 id="owl-query">Query structure</h3>
+                <p>Each Level 4 question follows the general format:</p><blockquote>Which character is between character X and character Y?</blockquote><p>Character X and character Y serve as visual anchors.</p>
+                <p>For every valid Level 4 query:</p><ul><li>both anchors occupy ordinary identifiable positions in the grid;</li><li>both anchors lie on the same row or the same column;</li><li>the two anchor cells have exactly one intervening midpoint cell;</li><li>the midpoint is therefore unique;</li><li>the relationship is either horizontal or vertical;</li><li>diagonal relationships are not used in Level 4.</li></ul>
+                <p>The required answer is the character occupying the single cell located directly between the two anchor cells.</p>
+            </section>
+
+            <section aria-labelledby="owl-horizontal"><h3 id="owl-horizontal">Horizontal queries</h3>
+                <p>In a horizontal query, character X and character Y occupy the same row, their columns differ by two positions, and one cell lies directly between them.</p>
+                <p>If the anchor positions are <var>(r,c<sub>1</sub>)</var> and <var>(r,c<sub>2</sub>)</var>, then the midpoint occupies:</p>
+                <figure class="score-formula"><math display="block" aria-label="open parenthesis r comma the quantity c one plus c two divided by two close parenthesis"><mrow><mo>(</mo><mi>r</mi><mo>,</mo><mfrac><mrow><msub><mi>c</mi><mn>1</mn></msub><mo>+</mo><msub><mi>c</mi><mn>2</mn></msub></mrow><mn>2</mn></mfrac><mo>)</mo></mrow></math><figcaption>Horizontal midpoint coordinates when the anchors are exactly two columns apart.</figcaption></figure>
+                <p>The difference between <var>c<sub>1</sub></var> and <var>c<sub>2</sub></var> is exactly two grid positions.</p>
+            </section>
+
+            <section aria-labelledby="owl-vertical"><h3 id="owl-vertical">Vertical queries</h3>
+                <p>In a vertical query, character X and character Y occupy the same column, their rows differ by two positions, and one cell lies directly between them.</p>
+                <p>If the anchor positions are <var>(r<sub>1</sub>,c)</var> and <var>(r<sub>2</sub>,c)</var>, then the midpoint occupies:</p>
+                <figure class="score-formula"><math display="block" aria-label="open parenthesis the quantity r one plus r two divided by two comma c close parenthesis"><mrow><mo>(</mo><mfrac><mrow><msub><mi>r</mi><mn>1</mn></msub><mo>+</mo><msub><mi>r</mi><mn>2</mn></msub></mrow><mn>2</mn></mfrac><mo>,</mo><mi>c</mi><mo>)</mo></mrow></math><figcaption>Vertical midpoint coordinates when the anchors are exactly two rows apart.</figcaption></figure>
+                <p>The difference between <var>r<sub>1</sub></var> and <var>r<sub>2</sub></var> is exactly two grid positions.</p>
+            </section>
+
+            <section aria-labelledby="owl-sequence"><h3 id="owl-sequence">Operational reasoning sequence</h3>
+                <p>A correct response requires successful completion of several dependent stages:</p>
+                <h4>Stage 1: Anchor recognition</h4><p>The model must visually recognize character X and character Y.</p>
+                <h4>Stage 2: Anchor localization</h4><p>The model must identify the grid position occupied by each anchor.</p>
+                <h4>Stage 3: Relational alignment</h4><p>The model must determine whether the anchors share a row or a column.</p>
+                <h4>Stage 4: Midpoint identification</h4><p>The model must identify the unique intervening cell between the two anchors.</p>
+                <h4>Stage 5: Target recognition</h4><p>The model must recognize and name the character occupying the midpoint cell.</p>
+                <p>Failure at any stage may produce an incorrect final answer. The benchmark observes only the final response and therefore does not independently determine which intermediate stage caused a particular error unless the model’s explanation or additional review evidence makes that distinction possible.</p>
+            </section>
+
+            <section aria-labelledby="owl-prompt"><h3 id="owl-prompt">Prompt structure</h3><p>Each administration contains the Level 4 grid and ten relational questions in a single prompt.</p><p>Each question asks the model to identify the character positioned between a specified pair of anchor characters. The model is expected to provide one identifiable character name for each of the ten questions while preserving the question order.</p></section>
+
+            <section aria-labelledby="owl-administration"><h3 id="owl-administration">Repeated-administration procedure</h3>
+                <p>The exact same Level 4 grid and the exact same ten relational questions are administered ten times.</p><p>Across all ten administrations, the following remain unchanged:</p><ul><li>the grid image;</li><li>the position of every character;</li><li>the central 5 × 3 image;</li><li>the two anchors used in each question;</li><li>the orientation of each relationship;</li><li>the midpoint target for each question;</li><li>the wording and order of the questions;</li><li>the scoring criteria.</li></ul>
+                <p>The repeated use of the identical prompt is intentional. It measures whether the model can repeatedly complete the same multi-stage relational localization task correctly.</p><p>The evaluation contains:</p><ul><li>10 unique relational questions;</li><li>10 repeated administrations of each question;</li><li>100 scored response instances.</li></ul><p>These 100 response instances are repeated measurements of ten unique relational items. They must not be described as 100 independent questions.</p>
+            </section>
+
+            <section aria-labelledby="owl-scoring"><h3 id="owl-scoring">Scoring</h3>
+                <p>Each response instance is scored dichotomously:</p><ul><li><strong>1 point</strong> is awarded when the model correctly identifies the character occupying the unique midpoint cell between the two named anchors.</li><li><strong>0 points</strong> are awarded when the model provides an incorrect character, omits the answer, or produces an answer that cannot be reliably associated with the corresponding question.</li></ul><p>Each administration produces a score between 0 and 10.</p><p>The final Level 4 score is the total number of correct responses across all ten administrations:</p>
+                <figure class="score-formula"><math display="block" aria-label="S sub Owl equals the sum from r equals 1 to 10 of the sum from q equals 1 to 10 of x sub r q"><msub><mi>S</mi><mtext>Owl</mtext></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>r</mi><mo>=</mo><mn>1</mn></mrow><mn>10</mn></munderover><munderover><mo>∑</mo><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><mn>10</mn></munderover><msub><mi>x</mi><mrow><mi>r</mi><mi>q</mi></mrow></msub></math><figcaption>Final Owl score: correct response instances summed over ten relational questions in each of ten administrations.</figcaption></figure>
+                <p>where:</p><ul><li><var>r</var> represents one of the ten repeated administrations;</li><li><var>q</var> represents one of the ten relational questions;</li><li><var>x<sub>rq</sub> = 1</var> for a correct response;</li><li><var>x<sub>rq</sub> = 0</var> for an incorrect, missing, or non-evaluable response.</li></ul><p>The final score ranges from <strong>0 to 100</strong> and is displayed as a percentage. A score of 100 indicates that the model correctly identified the midpoint character in all ten relational items across all ten administrations.</p>
+            </section>
+
+            <section aria-labelledby="owl-invalid"><h3 id="owl-invalid">Invalid-result rule</h3>
+                <p>A result is classified as <strong>INVALID</strong> when the model fails to produce a properly evaluable response on three consecutive administrations.</p><p>An administration may be considered non-evaluable when the model:</p><ul><li>fails to answer the requested questions;</li><li>produces output that cannot be reliably associated with the ten relational queries;</li><li>returns unrelated content;</li><li>refuses the task;</li><li>experiences a severe generation or formatting failure that prevents scoring.</li></ul><p>Incorrect but properly structured answers remain evaluable and receive zero points. They do not count toward the three-consecutive-failure rule.</p><p>Response validity is determined through manual review. When three consecutive administrations are classified as non-evaluable, testing is terminated and the Level 4 result is recorded as <strong>INVALID</strong>.</p><p>For leaderboard aggregation, INVALID is assigned a numerical value of zero while remaining conceptually distinct from a completed score of zero:</p><dl class="validity-comparison"><div><dt>0 points</dt><dd>The model completed the evaluation but answered no relational item correctly.</dd></div><div><dt>INVALID</dt><dd>Repeated response failures prevented reliable completion of the evaluation.</dd></div></dl>
+            </section>
+
+            <section aria-labelledby="owl-interpretation"><h3 id="owl-interpretation">Primary interpretation</h3>
+                <p>A higher Level 4 score indicates that the model can more reliably identify a visual target through an explicitly defined horizontal or vertical relationship between two named anchors.</p><p>The task is best interpreted as measuring:</p><blockquote><strong>repeatable correct anchor-based midpoint localization in a structured visual array.</strong></blockquote>
+                <p>Performance reflects a combination of:</p><ul><li>character recognition;</li><li>visual search;</li><li>identity-to-location binding;</li><li>relational spatial reasoning;</li><li>midpoint identification;</li><li>short-term retention of multiple anchor positions;</li><li>target recognition;</li><li>response-order preservation;</li><li>stability across repeated generations.</li></ul>
+            </section>
+
+            <section aria-labelledby="owl-dependency"><h3 id="owl-dependency">Multi-stage dependency</h3>
+                <p>Level 4 is structurally more demanding than direct coordinate retrieval because the target position is not supplied explicitly. The model must derive it from two other entities.</p>
+                <figure class="reasoning-chain"><p aria-label="recognize X, then locate X, then recognize Y, then locate Y, then derive midpoint, then recognize target"><span>recognize X</span><span aria-hidden="true">→</span><span>locate X</span><span aria-hidden="true">→</span><span>recognize Y</span><span aria-hidden="true">→</span><span>locate Y</span><span aria-hidden="true">→</span><span>derive midpoint</span><span aria-hidden="true">→</span><span>recognize target</span></p><figcaption>The dependent operations required to produce a correct final answer.</figcaption></figure>
+                <p>An error at any point in this chain can cause the final response to be incorrect. This makes Level 4 sensitive to compounded error across multiple dependent stages.</p>
+            </section>
+
+            <section aria-labelledby="owl-not-isolate"><h3 id="owl-not-isolate">What Level 4 does not isolate</h3>
+                <p>Level 4 should not be presented as a pure measure of spatial reasoning. Successful performance also depends on:</p><ul><li>recognizing both anchor characters;</li><li>recognizing the midpoint character;</li><li>uniquely matching character names to visual instances;</li><li>maintaining the identities and positions of multiple entities;</li><li>correctly parsing the larger grid;</li><li>preserving answer order across ten questions.</li></ul>
+                <p>The benchmark’s final score does not reveal whether a failure was caused by:</p><ul><li>failure to recognize an anchor;</li><li>incorrect anchor localization;</li><li>confusion between the roles of X and Y;</li><li>failure to determine horizontal or vertical alignment;</li><li>incorrect midpoint reasoning;</li><li>failure to recognize the midpoint character;</li><li>output-format or answer-order error.</li></ul>
+            </section>
+
+            <section aria-labelledby="owl-comparison"><h3 id="owl-comparison">Comparison with Levels 1–3</h3>
+                <p>Levels 1–3 use direct numerical coordinate queries. Level 4 uses relational queries and a different stimulus. Consequently, differences between Level 4 and earlier scores cannot be attributed to a single controlled visual transformation.</p><p>Level 4 differs simultaneously in:</p><ul><li>grid dimensions;</li><li>central layout;</li><li>number of visible positions;</li><li>query type;</li><li>number of visual entities required for each answer;</li><li>reasoning depth;</li><li>target-location derivation.</li></ul><p>Level 4 scores should therefore be interpreted independently rather than as a direct robustness-retention measurement relative to Level 3.</p>
+            </section>
+
+            <section aria-labelledby="owl-difficulty"><h3 id="owl-difficulty">Potential sources of difficulty</h3><p>Level 4 may be more difficult because it requires the model to:</p><ul><li>search a larger visual field;</li><li>recognize at least three relevant characters per item;</li><li>preserve the distinction between two named anchors and one target;</li><li>locate multiple entities before producing an answer;</li><li>determine orientation;</li><li>infer an unstated midpoint position;</li><li>avoid selecting one of the anchors as the answer;</li><li>maintain question-specific bindings across ten simultaneous queries;</li><li>navigate a grid whose regular structure is interrupted by a large central image.</li></ul></section>
+
+            <section aria-labelledby="owl-confounders"><h3 id="owl-confounders">Potential confounders and sources of bias</h3><p>Performance may be influenced by:</p><ul><li>the visual familiarity of the anchor and target characters;</li><li>similarity between character appearances;</li><li>character aliases, translated names, titles, or spelling variants;</li><li>duplicated character identities within the grid;</li><li>ambiguity when an anchor character appears more than once;</li><li>unequal visual prominence of different anchors;</li><li>different difficulty between horizontal and vertical relationships;</li><li>the distribution of queries across edge, central, upper, lower, left, and right regions;</li><li>proximity of anchors or midpoint targets to the central 5 × 3 image;</li><li>differences in cell size, image quality, compression, or cropping;</li><li>question-order effects;</li><li>confusion between the anchor order and the required midpoint target;</li><li>subjective decisions during manual scoring;</li><li>stochastic variation across repeated generations.</li></ul></section>
+
+            <section aria-labelledby="owl-uniqueness"><h3 id="owl-uniqueness">Anchor uniqueness requirement</h3><p>For a relational query to be unambiguous, character X and character Y should each identify one unique intended position within the grid.</p><p>If the same named character appears in multiple cells, the prompt must provide sufficient disambiguating information or the item should be excluded.</p><p>The benchmark protocol should record:</p><ul><li>whether characters may appear more than once;</li><li>how duplicate anchors are handled;</li><li>how ambiguous items are detected;</li><li>whether any item was excluded after review.</li></ul><p>Do not invent these details for historical tests if they were not formally recorded.</p></section>
+
+            <section aria-labelledby="owl-orientation"><h3 id="owl-orientation">Orientation balance</h3><p>The benchmark should record how many of the ten unique questions use horizontal midpoint relationships and how many use vertical midpoint relationships.</p><p>An approximately balanced distribution is desirable if Level 4 is intended to represent both orientations comparably. If the historical question set is not balanced, report the actual distribution rather than implying equal coverage.</p></section>
+
+            <section aria-labelledby="owl-central-interaction"><h3 id="owl-central-interaction">Central-region interaction</h3><p>The benchmark record should state whether anchor or target positions may:</p><ul><li>occur directly adjacent to the central 5 × 3 image;</li><li>lie on opposite sides of the central image;</li><li>occupy positions whose visual row or column is interrupted by the central image;</li><li>occur inside the central spanning region.</li></ul><p>These design choices may materially affect item difficulty. If they were not previously recorded, mark them as unavailable and document them prospectively.</p></section>
+
+            <section aria-labelledby="owl-errors"><h3 id="owl-errors">Recommended supplementary error analysis</h3><p>Where the model provides reasoning or where manual review permits a defensible classification, errors may be categorized as:</p><ul><li>anchor-recognition error;</li><li>anchor-localization error;</li><li>duplicate-anchor ambiguity;</li><li>orientation error;</li><li>midpoint-selection error;</li><li>target-recognition error;</li><li>answer-order error;</li><li>non-evaluable response.</li></ul><p>These categories should be treated as supplementary descriptive annotations unless a standardized annotation protocol is established. They must not be inferred confidently from the final answer alone.</p></section>
+
+            <section aria-labelledby="owl-reproducibility"><h3 id="owl-reproducibility">Reproducibility requirements</h3><p>The Level 4 stimulus and evaluation record should preserve:</p><ul><li>the exact 17 × 11 grid image;</li><li>image dimensions and file format;</li><li>the exact position and dimensions of the central 5 × 3 region;</li><li>whether the central image is queryable;</li><li>the identity and logical position of every ordinary character cell;</li><li>the ten anchor pairs;</li><li>the orientation of each pair;</li><li>the correct midpoint target for each pair;</li><li>evidence that each midpoint is unique;</li><li>treatment of duplicate character identities;</li><li>exact prompt wording;</li><li>question order;</li><li>accepted character-name variants;</li><li>cryptographic hash of the stimulus image;</li><li>benchmark and stimulus version.</li></ul></section>
+
+            <section aria-labelledby="owl-record"><h3 id="owl-record">Recommended model-result record</h3><p>For each model, the Level 4 evaluation record should preserve:</p><ul><li>benchmark and stimulus version;</li><li>exact model name and version;</li><li>date of testing;</li><li>model configuration and reasoning settings;</li><li>availability of tools or code execution;</li><li>score obtained in each of the ten administrations;</li><li>item-level correctness across all administrations;</li><li>total Level 4 score;</li><li>original model responses;</li><li>accepted character-name variants;</li><li>manually assigned error annotations, where available;</li><li>non-evaluable administrations and their reasons;</li><li>whether the final result was classified as INVALID.</li></ul></section>
+        </article>
     </main>
 </Layout>
 
@@ -420,6 +539,9 @@ const levels = Array.from({ length: 6 }, (_, index) => index + 1);
     .score-formula { max-width: 34rem; margin: 1.5rem 0; padding: 1.25rem; overflow-x: auto; border: 1px solid rgba(94,234,212,.22); border-radius: 1rem; text-align: center; background: rgba(15,23,42,.55); }
     .score-formula math { color: #f8fafc; font-size: clamp(1.25rem, 4vw, 1.8rem); }
     .score-formula figcaption { margin-top: .8rem; color: #94a3b8; font-size: .75rem; line-height: 1.5; }
+    .reasoning-chain { max-width: 52rem; margin: 1.5rem 0; }
+    .reasoning-chain p { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; color: #f8fafc; }
+    .reasoning-chain figcaption { color: #94a3b8; font-size: .75rem; }
     .supplementary-formulas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
     .supplementary-formulas .score-formula { min-width: 0; margin: .75rem 0; }
     .validity-comparison { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin: 1rem 0 1.5rem; }
