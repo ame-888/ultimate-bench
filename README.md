@@ -16,7 +16,7 @@ Ultimate Bench is an independent experimental benchmark and static Astro site fo
 | `/blog/` | Practical AI evaluation guides |
 | `/arcade/` | Interactive arcade |
 
-Visual Bench Levels 1 (Mole), 2 (Rhino), 3 (Chimpanzee), and 4 (Owl) are documented in full. Protocols for Levels 5–6 will be added progressively.
+The Visual Bench methodology page now documents Levels 1–5. Documentation for Level 6 remains in progress.
 
 Astro generates these pages into `dist/`. The post-build sitemap generator discovers every generated HTML route rather than relying on a manually maintained route list. `robots.txt`, `sitemap-index.xml`, and `sitemap-0.xml` are served from the site root.
 
