@@ -24,14 +24,21 @@ function isNew(dateStr) {
     return diffDays >= -1 && diffDays <= 30;
 }
 
+const modelProviders = [
+    { match: 'gemini', name: 'Google', slug: 'google' },
+    { match: 'muse', name: 'Microsoft', slug: 'microsoft' },
+    { match: 'gpt', name: 'OpenAI', slug: 'openai' },
+    { match: 'grok', name: 'xAI', slug: 'xai' },
+    { match: 'claude', name: 'Anthropic', slug: 'anthropic' }
+];
+
+function getModelProvider(name) {
+    const provider = modelProviders.find(({ match }) => name.toLowerCase().includes(match));
+    return provider || { name: 'Other', slug: 'other' };
+}
+
 function getModelColorClass(name) {
-    const lowerName = name.toLowerCase();
-    if (lowerName.includes('gemini')) return 'model-bg-gemini';
-    if (lowerName.includes('muse')) return 'model-bg-muse';
-    if (lowerName.includes('gpt')) return 'model-bg-gpt';
-    if (lowerName.includes('grok')) return 'model-bg-grok';
-    if (lowerName.includes('claude')) return 'model-bg-claude';
-    return '';
+    return `model-bg-${getModelProvider(name).slug}`;
 }
 
 // --- Ranking Logic ---
@@ -466,13 +473,22 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                 <!-- Homepage Combined View -->
                 <div id="home-wrapper">
                     <div class="benchmark-description">
-                        <p>Welcome to Ultimate Bench. This is the Global Leaderboard summarizing the models' performance across all tasks using the Intrinsic Complexity scoring method.</p>
+                        <p>Welcome to Ultimate Bench. The global leaderboard summarizes model performance across all tasks using the Intrinsic Complexity scoring method.</p>
                     </div>
 
                     <!-- Ultimate Global Bench Section -->
                     <div class="ultimate-bench-section" id="global-leaderboard">
                         <div class="home-column-header ultimate-title-container" style="justify-content: center; margin-bottom: 2rem; position: relative;">
-                            <h2 class="ultimate-title">GLOBAL ULTIMATE BENCH</h2>
+                            <div>
+                                <span class="leaderboard-kicker">Cross-benchmark standings</span>
+                                <h2 class="ultimate-title">GLOBAL ULTIMATE BENCH</h2>
+                                <p class="leaderboard-subtitle">Three disciplines. One weighted view of overall performance.</p>
+                            </div>
+                        </div>
+                        <div class="provider-legend" aria-label="Model provider key">
+                            {modelProviders.map(provider => (
+                                <span class={`provider-key model-bg-${provider.slug}`}>{provider.name}</span>
+                            ))}
                         </div>
                         <div class="benchmark-desktop-container ultimate-container">
                             <div class="benchmark-container visual-table ultimate-modern-container">
@@ -511,9 +527,9 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                         </div>
                                         <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`} style="justify-content: flex-start; border-radius: 4px; padding-right: 2rem;">
                                             <div class="benchmark-content" style="padding-left: 0.5rem;">
-                                                <div class="model-info">
+                                                <div class="model-info" data-provider={getModelProvider(item.name).name}>
                                                     <div class="model-name" data-release-date={item.releaseDate} style="font-size: 1.1rem; font-weight: 600;">
-                                                        {item.name === 'Claude 4.6 Sonnet (adaptative thinking)' ? 'Claude 4.6 Sonnet (Adaptative)' : item.name}
+                                                        {item.name}
                                                         {isNew(item.releaseDate) && <span class="new-badge" style="transform: scale(0.8); margin-left: 0.5rem;">NEW</span>}
                                                     </div>
                                                 </div>
@@ -703,7 +719,7 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                             <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="benchmark-content">
                                                     <div class="rank" set:html={getRankDisplay(item.rank)}></div>
-                                                    <div class="model-info">
+                                                    <div class="model-info" data-provider={getModelProvider(item.name).name}>
                                                         <div class="model-name" data-release-date={item.releaseDate}>
                                                             {item.name}
                                                             {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
@@ -742,7 +758,7 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                             <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="benchmark-content">
                                                     <div class="rank" set:html={getRankDisplay(item.rank)}></div>
-                                                    <div class="model-info">
+                                                    <div class="model-info" data-provider={getModelProvider(item.name).name}>
                                                         <div class="model-name" data-release-date={item.releaseDate}>
                                                             {item.name}
                                                             {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
@@ -781,7 +797,7 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
                                             <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="benchmark-content">
                                                     <div class="rank" set:html={getRankDisplay(item.rank)}></div>
-                                                    <div class="model-info">
+                                                    <div class="model-info" data-provider={getModelProvider(item.name).name}>
                                                         <div class="model-name" data-release-date={item.releaseDate}>
                                                             {item.name}
                                                             {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
@@ -802,8 +818,8 @@ const sotaModelName = ultimateBenchList.length > 0 ? ultimateBenchList[0].name :
 
                 <div id="visual-benchmark-wrapper" class="hidden">
                     <div class="benchmark-description">
-                        <p>This is the Visual Bench, the first of our Ultimate Bench series.<br>
-                        Its goal is measuring the visual capabilities of an AI model, including:</p>
+                        <p>Visual Bench is the first benchmark in the Ultimate Bench series.<br>
+                        Its goal is to measure the visual capabilities of an AI model, including:</p>
                         <ul>
                             <li>recognizing characters</li>
                             <li>spatial understanding</li>
@@ -916,7 +932,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                             <div class={`benchmark-content `}>
                                                 <div class={`rank `} set:html={getRankDisplay(item.rank)}>
                                                 </div>
-                                                <div class="model-info">
+                                                <div class="model-info" data-provider={getModelProvider(item.name).name}>
                                                     <div class="model-name" data-release-date={item.releaseDate}>
                                                         {item.name}
                                                         {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
@@ -944,14 +960,14 @@ There are currently five levels in use. The sixth level will be unlocked once al
 
                 <div id="chess-benchmark-wrapper" class="hidden">
                     <div class="benchmark-description">
-                        <p>This is the Chess Bench, the third of our Ultimate Bench series.<br>
-                        Its goal is measuring how well AI models can play chess and solve complex positional puzzles. The challenges include:</p>
+                        <p>Chess Bench is the third benchmark in the Ultimate Bench series.<br>
+                        Its goal is to measure how well AI models can play chess and solve complex positional puzzles. The challenges include:</p>
                         <ul>
                             <li>Understanding spatial coordinates and valid moves</li>
                             <li>Looking ahead multiple steps to predict opponent responses</li>
                             <li>Identifying forced mates and positional advantages</li>
                         </ul>
-                        <p>The levels are presented in increasingly more difficult formats in order to test the limits of the AI models.</p>
+                        <p>The levels are presented in increasingly difficult formats to test the limits of the AI models.</p>
                     </div>
 
                     <div class="ranking-controls">
@@ -1057,7 +1073,7 @@ There are currently five levels in use. The sixth level will be unlocked once al
                                                 <div class={`benchmark-content `}>
                                                     <div class={`rank `} set:html={getRankDisplay(item.rank)}>
                                                     </div>
-                                                    <div class="model-info">
+                                                    <div class="model-info" data-provider={getModelProvider(item.name).name}>
                                                         <div class="model-name" data-release-date={item.releaseDate}>
                                                             {item.name}
                                                             {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
@@ -1087,14 +1103,14 @@ There are currently five levels in use. The sixth level will be unlocked once al
 
                 <div id="data-benchmark-wrapper" class="hidden">
                     <div class="benchmark-description">
-                        <p>This is the Data Retrieval Bench, the second of our Ultimate Bench series.<br>
-                        Its goal is measuring how well AI models can search the web for very specific and obscure information, and get the correct answer against every odd. The challenges include:</p>
+                        <p>Data Retrieval Bench is the second benchmark in the Ultimate Bench series.<br>
+                        Its goal is to measure how well AI models can search the web for specific, obscure information and find the correct answer despite the odds. The challenges include:</p>
                         <ul>
                             <li>understanding what the questions are referring to, without a clear confirmation</li>
                             <li>searching for the correct websites, not getting distracted</li>
                             <li>often needing visual capabilities to recognize information from images</li>
                         </ul>
-                        <p>The levels are presented in increasingly more difficult formats in order to test the limits of the AI models.<br>
+                        <p>The levels are presented in increasingly difficult formats to test the limits of the AI models.<br>
 There are currently three levels in use. The fourth level will be unlocked once all lower levels score at least 75%</p>
                     </div>
                     <div class="ranking-controls">
@@ -1157,7 +1173,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
                                             <h3>OCTOPUS</h3>
                                             <span class="tooltip-container">
                                                 <span class="tooltip-icon">ⓘ</span>
-                                                <div class="tooltip-text"><strong>OCTOPUS (Level 4):</strong> Tests Advanced Multi-Modal Data Navigation, needle in the haystack, deep multilingual understanding and more advanced syncophancy testing.</div>
+                                                <div class="tooltip-text"><strong>OCTOPUS (Level 4):</strong> Tests advanced multimodal data navigation, needle-in-a-haystack retrieval, deep multilingual understanding, and more advanced sycophancy resistance.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon octopus-icon">
@@ -1200,7 +1216,7 @@ There are currently three levels in use. The fourth level will be unlocked once 
                                                 <div class={`benchmark-content `}>
                                                     <div class={`rank `} set:html={getRankDisplay(item.rank)}>
                                                     </div>
-                                                    <div class="model-info">
+                                                    <div class="model-info" data-provider={getModelProvider(item.name).name}>
                                                         <div class="model-name" data-release-date={item.releaseDate}>
                                                             {item.name}
                                                             {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
@@ -1553,7 +1569,35 @@ There are currently three levels in use. The fourth level will be unlocked once 
     .model-info {
         flex: 1;
         min-width: 0; /* Text truncate */
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
     }
+
+    .model-info::before,
+    .provider-key {
+        flex: 0 0 auto;
+        border: 1px solid var(--provider-border, #64748b);
+        border-radius: 999px;
+        background: var(--provider-bg, rgba(100, 116, 139, 0.14));
+        color: var(--provider-color, #cbd5e1);
+        font-size: 0.56rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        line-height: 1;
+    }
+    .model-info::before {
+        content: attr(data-provider);
+        min-width: 3.8rem;
+        padding: 0.32rem 0.45rem;
+        text-align: center;
+    }
+    .model-bg-openai { --provider-color:#a7f3d0; --provider-border:#10b981; --provider-bg:rgba(16,185,129,.12); }
+    .model-bg-anthropic { --provider-color:#fdba74; --provider-border:#c96832; --provider-bg:rgba(201,104,50,.13); }
+    .model-bg-google { --provider-color:#93c5fd; --provider-border:#4285f4; --provider-bg:rgba(66,133,244,.13); }
+    .model-bg-xai { --provider-color:#e2e8f0; --provider-border:#94a3b8; --provider-bg:rgba(148,163,184,.11); }
+    .model-bg-microsoft { --provider-color:#67e8f9; --provider-border:#06b6d4; --provider-bg:rgba(6,182,212,.12); }
+    .model-bg-other { --provider-color:#cbd5e1; --provider-border:#64748b; --provider-bg:rgba(100,116,139,.12); }
 
     .model-name {
         font-size: 0.6rem; /* Reduced font size to fit horizontally on mobile */
@@ -1985,6 +2029,30 @@ There are currently three levels in use. The fourth level will be unlocked once 
     }
 
     /* Ultimate Bench Styles */
+    .leaderboard-kicker {
+        display: block;
+        margin-bottom: .35rem;
+        color: #fbbf24;
+        font-size: .68rem;
+        font-weight: 800;
+        letter-spacing: .18em;
+        text-align: center;
+        text-transform: uppercase;
+    }
+    .leaderboard-subtitle {
+        margin: .35rem 0 0;
+        color: #94a3b8;
+        font-size: .9rem;
+        text-align: center;
+    }
+    .provider-legend {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: .5rem;
+        margin: -1rem 0 1.25rem;
+    }
+    .provider-key { padding: .4rem .65rem; }
     .ultimate-title-container::before {
         content: '';
         position: absolute;
@@ -2031,11 +2099,11 @@ There are currently three levels in use. The fourth level will be unlocked once 
     }
 
     .ultimate-modern-container {
-        background-color: rgba(17, 24, 39, 0.95);
-        border: 2px solid rgba(245, 158, 11, 0.5);
-        border-radius: 12px;
-
-        animation: subtle-gold-pulse 4s ease-in-out infinite;
+        overflow: hidden;
+        padding: 0;
+        background: linear-gradient(145deg, rgba(17,24,39,.98), rgba(15,23,42,.95));
+        border: 1px solid rgba(245, 158, 11, 0.35);
+        border-radius: 18px;
         position: relative;
         z-index: 1;
         margin-bottom: 2rem;
@@ -2046,6 +2114,15 @@ There are currently three levels in use. The fourth level will be unlocked once 
         transition: all 0.25s ease-out;
         position: relative;
         cursor: pointer;
+    }
+
+    .ultimate-row-hover:nth-child(odd) { background: rgba(255,255,255,.018); }
+
+    @media (max-width: 800px) {
+        .ultimate-container { overflow-x: auto; padding-bottom: .5rem; }
+        .ultimate-modern-container { min-width: 760px; }
+        .ultimate-title { font-size: clamp(1.55rem, 8vw, 2.5rem); letter-spacing: .08em; }
+        .model-info::before { min-width: 0; }
     }
 
     .ultimate-row-hover:hover {

@@ -46,7 +46,7 @@ export const benchmarks = {
             }
         },
         {
-            name: 'Claude 4.5 Sonnet (adaptative thinking)',
+            name: 'Claude 4.5 Sonnet (adaptive thinking)',
             scores: {
                 'lvl1': 24,
                 'lvl2': 4,
@@ -56,7 +56,7 @@ export const benchmarks = {
             }
         },
         {
-            name: 'Claude 4.5 Haiku (adaptative thinking)',
+            name: 'Claude 4.5 Haiku (adaptive thinking)',
             scores: {
                 'lvl1': 6,
                 'lvl2': 1,
@@ -86,7 +86,7 @@ export const benchmarks = {
             }
         },
         {
-            name: 'Claude 4.6 Sonnet (adaptative thinking)',
+            name: 'Claude 4.6 Sonnet (adaptive thinking)',
             scores: {
                 'lvl1': 12,
                 'lvl2': 5,
@@ -351,7 +351,7 @@ export const benchmarks = {
         { name: 'Grok 4.3 Fast', scores: { worm: 27, koala: 21, crow: 7, octopus: 0 } },
         { name: 'Gemini 3.1 Pro Preview', scores: { worm: 20, koala: 11, crow: 11, octopus: 0 } },
         { name: 'Muse Spark (thinking)', scores: { worm: 13, koala: 'INVALID', crow: 'INVALID', octopus: 'INVALID' } },
-        { name: 'Claude 4.6 Sonnet (adaptative thinking)', scores: { worm: 9, koala: 10, crow: 3, octopus: 0 }, releaseDate: '2026-02-21' },
+        { name: 'Claude 4.6 Sonnet (adaptive thinking)', scores: { worm: 9, koala: 10, crow: 3, octopus: 0 }, releaseDate: '2026-02-21' },
         { name: 'GPT-5.5 Instant (0529)', scores: { worm: 28, koala: 1, crow: 0, octopus: 0 } },
 
         { name: 'GPT-5.5 Instant (0529)', scores: { worm: 28, koala: 1, crow: 0, octopus: 0 } },
@@ -374,7 +374,7 @@ export const benchmarks = {
         { name: 'GPT-5.5 Instant (0529)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Gemini 3.5 Flash', scores: { mouse: 40, spider: 43, wolf: 17, hawk: 0, python: 0 } },
         { name: 'Claude 4.6 Sonnet (max thinking)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
-        { name: 'Claude 4.6 Sonnet (adaptative thinking)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
+        { name: 'Claude 4.6 Sonnet (adaptive thinking)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Muse Spark (thinking)', scores: { mouse: 3, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Gemini 3.0 Flash Preview', scores: { mouse: 24, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'GPT-5.5', scores: { mouse: 39, spider: 48, wolf: 22, hawk: 0, python: 0 } },
