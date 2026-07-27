@@ -114,73 +114,112 @@ const levels = Array.from({ length: 6 }, (_, index) => index + 1);
             </header>
 
             <section aria-labelledby="rhino-purpose"><h3 id="rhino-purpose">Purpose</h3>
-                <p>Level 2 evaluates repeatable correct character recognition and coordinate grounding when the Level 1 visual stimulus is subjected to a controlled loss of lateral visual information.</p>
-                <p>It uses the same source grid and the same ten coordinate questions as Level 1. This pairing supports a direct comparison between performance with the intact stimulus and performance under a standardized degradation condition; it does not isolate a single cognitive or architectural mechanism.</p>
+                <p>Level 2 evaluates whether a multimodal model can preserve correct and repeatable character localization when a substantial and systematically defined portion of the visual input has been removed.</p>
+                <p>The task retains the coordinate-query structure of Level 1 while introducing a controlled visual degradation. It primarily assesses:</p>
+                <ul><li>recognition of characters from partial visual evidence;</li><li>robustness to systematic loss of image information;</li><li>absolute coordinate grounding within an altered grid geometry;</li><li>consistency across repeated presentations of an identical degraded stimulus.</li></ul>
             </section>
 
-            <section aria-labelledby="rhino-stimulus"><h3 id="rhino-stimulus">Visual stimulus and transformation</h3>
-                <p>The Level 2 stimulus is derived from the fixed Level 1 10 × 10 character grid. Every original vertical column is reduced to the same retained lateral half: one lateral half is removed consistently from every column, and the ten surviving strips are concatenated in their original left-to-right order.</p>
-                <p>The transformed image retains the original height and approximately half of the original width. Despite this physical reduction, it remains logically a grid of 10 rows × 10 columns: each concatenated strip corresponds to its original column, and every character retains its original row–column coordinate.</p>
-                <p>The benchmark record currently does not establish here whether the left or right half is retained. That property must not be inferred and must be recorded in the stimulus-version metadata so that the transformation can be reproduced.</p>
+            <section aria-labelledby="rhino-relationship"><h3 id="rhino-relationship">Relationship to Level 1</h3>
+                <p>Level 2 uses the same underlying character grid, coordinate system, prompt structure, repeated-administration procedure, scoring method, and invalid-result rule as Level 1.</p>
+                <p>The defining difference is that the original square grid is transformed before being presented to the model.</p>
+                <p>This makes Level 2 a controlled degradation condition relative to the intact Level 1 stimulus.</p>
             </section>
 
-            <section aria-labelledby="rhino-coordinates"><h3 id="rhino-coordinates">Coordinate system and questions</h3>
-                <p>Level 2 preserves Level 1’s one-based row–column coordinate system. Rows are counted from top to bottom, columns from left to right, the upper-left cell is (1,1), and the lower-right cell is (10,10).</p>
-                <p>The same ten positions queried in Level 1 are queried in Level 2, in the same wording and order. Each question asks the model to identify the character at a specified coordinate, and the model is expected to provide one identifiable character name for each position.</p>
+            <section aria-labelledby="rhino-transformation"><h3 id="rhino-transformation">Visual transformation</h3>
+                <p>The source stimulus is a 10 × 10 grid containing 100 character images.</p>
+                <p>Each of the ten vertical grid columns is divided longitudinally into two equal-width halves. The same lateral half is retained for every column, while the other half is removed.</p>
+                <p>The ten surviving vertical strips are then concatenated without restoring the deleted regions.</p>
+                <p>As a result:</p>
+                <ul><li>the logical 10-row × 10-column organization is preserved;</li><li>the original ordering of cells is preserved;</li><li>each cell contains approximately 50% of its original horizontal visual information;</li><li>the transformed grid retains its original height but has approximately half of its original width;</li><li>the final stimulus is rectangular rather than square.</li></ul>
+                <p>The transformation therefore reduces the quantity of available visual information while preserving the coordinate identities and relative ordering of all 100 cells.</p>
+                <p>The benchmark record should specify whether the retained region is the left or right lateral half of each original column.</p>
+            </section>
+
+            <section aria-labelledby="rhino-coordinates"><h3 id="rhino-coordinates">Coordinate system</h3>
+                <p>The transformed stimulus continues to use a one-based row–column coordinate system.</p>
+                <p>The first coordinate identifies the row, counted from top to bottom.<br />The second coordinate identifies the logical column, counted from left to right.<br />The upper-left cell is position (1,1).<br />The lower-right cell is position (10,10).</p>
+                <p>Although the visible cells are narrower than in Level 1, the logical grid remains 10 × 10. Coordinates therefore refer to the preserved logical cell structure rather than to equal square regions of the final image.</p>
+            </section>
+
+            <section aria-labelledby="rhino-prompt"><h3 id="rhino-prompt">Prompt structure</h3>
+                <p>Each administration contains the transformed grid and the same ten coordinate-based questions used in Level 1.</p>
+                <p>Each question follows the general format:</p>
+                <blockquote>Which character is located at position (a,b)?</blockquote>
+                <p>The model is expected to provide one identifiable character name for each requested position.</p>
             </section>
 
             <section aria-labelledby="rhino-administration"><h3 id="rhino-administration">Repeated-administration procedure</h3>
-                <p>The exact transformed prompt is repeated ten times. The transformed grid, retained lateral half, concatenation order, ten queried coordinates, question wording and order, and scoring criteria remain unchanged across all administrations.</p>
-                <p>The evaluation therefore produces:</p>
-                <ul><li>10 unique queried positions;</li><li>10 identical administrations of each query;</li><li>100 scored response instances in total.</li></ul>
-                <p><strong>The 100 scored responses are repeated measurements of ten unique items, not 100 independent items.</strong> Repetition measures whether correct performance is reproduced under the same degraded visual input.</p>
+                <p>The exact same transformed grid and the exact same set of ten questions are administered ten times.</p>
+                <p>Across all ten administrations, the following remain unchanged:</p>
+                <ul><li>the transformed grid image;</li><li>the retained lateral half of each column;</li><li>the placement and ordering of the character fragments;</li><li>the ten queried coordinates;</li><li>the wording and order of the questions;</li><li>the scoring criteria.</li></ul>
+                <p>The repetition is intentional. It measures whether the model can repeatedly produce correct answers from the same incomplete visual evidence.</p>
+                <p>The evaluation contains:</p>
+                <ul><li>10 unique queried positions;</li><li>10 repeated administrations of each query;</li><li>100 scored response instances.</li></ul>
+                <p>These 100 response instances are repeated measurements of ten unique items and should not be interpreted as 100 independent visual questions.</p>
             </section>
 
             <section aria-labelledby="rhino-scoring"><h3 id="rhino-scoring">Scoring</h3>
-                <p>Each response instance is scored dichotomously using the Level 1 criteria: 1 point for correctly identifying the character at the requested coordinate, and 0 points for an incorrect, missing, or non-evaluable answer.</p>
-                <p>Each administration yields 0–10 points. The official Level 2 score is the sum of correct responses across ten questions in each of ten administrations:</p>
+                <p>Each response instance is scored dichotomously:</p>
+                <p>1 point is awarded when the model correctly identifies the character located at the requested coordinate.<br />0 points are awarded when the model provides an incorrect character, omits the answer, or produces an answer that cannot be reliably associated with the requested coordinate.</p>
+                <p>Each administration produces a score between 0 and 10.</p>
+                <p>The final Level 2 score is the total number of correct responses across all ten administrations:</p>
                 <figure class="score-formula">
                     <math display="block" aria-label="S sub Rhino equals the sum from r equals 1 to 10 of the sum from q equals 1 to 10 of x sub r q">
                         <msub><mi>S</mi><mtext>Rhino</mtext></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>r</mi><mo>=</mo><mn>1</mn></mrow><mn>10</mn></munderover><munderover><mo>∑</mo><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><mn>10</mn></munderover><msub><mi>x</mi><mrow><mi>r</mi><mi>q</mi></mrow></msub>
                     </math>
-                    <figcaption>Official Level 2 score: correct response instances summed over ten questions in each of ten administrations.</figcaption>
+                    <figcaption>Final Level 2 score: correct response instances summed over ten questions in each of ten administrations.</figcaption>
                 </figure>
-                <p>The final score ranges from 0 to 100 and is displayed as a percentage. It measures <strong>repeatable correct performance under degraded visual input</strong>, jointly reflecting recognition, coordinate grounding, and response stability in this specific condition.</p>
+                <p>where:</p>
+                <ul><li><var>r</var> represents one of the ten repeated administrations;</li><li><var>q</var> represents one of the ten coordinate questions;</li><li><var>x<sub>rq</sub> = 1</var> for a correct response;</li><li><var>x<sub>rq</sub> = 0</var> for an incorrect, missing, or non-evaluable response.</li></ul>
+                <p>The final score ranges from 0 to 100 and is displayed as a percentage.</p>
+                <p>A score of 100 indicates that the model correctly identified all ten partial character views in all ten administrations.</p>
             </section>
 
             <section aria-labelledby="rhino-invalid"><h3 id="rhino-invalid">Invalid-result rule</h3>
-                <p>The Level 1 invalid-result rule also applies to Level 2. A result is <strong>INVALID</strong> when three consecutive administrations are non-evaluable because the requested answers cannot be scored reliably. Incorrect but evaluable answers receive zero points and do not count as non-evaluable administrations.</p>
-                <p>Testing ends after the third consecutive non-evaluable administration. INVALID is numerically zero for leaderboard aggregation but remains conceptually distinct from an evaluated score of zero.</p>
-            </section>
-
-            <section aria-labelledby="rhino-supplementary"><h3 id="rhino-supplementary">Supplementary Level 1–Level 2 comparisons</h3>
-                <p>The following are <strong>supplementary analyses only</strong>. They describe the paired scores but do not alter the official leaderboard score, weights, rankings, or ranking logic.</p>
-                <div class="supplementary-formulas">
-                    <figure class="score-formula">
-                        <math display="block" aria-label="Absolute loss equals the Level 1 score minus the Level 2 score"><mi>L</mi><mo>=</mo><msub><mi>S</mi><mtext>Mole</mtext></msub><mo>−</mo><msub><mi>S</mi><mtext>Rhino</mtext></msub></math>
-                        <figcaption>Supplementary absolute loss: Level 1 score minus Level 2 score.</figcaption>
-                    </figure>
-                    <figure class="score-formula">
-                        <math display="block" aria-label="Performance retention equals the Level 2 score divided by the Level 1 score, multiplied by 100 percent"><mi>R</mi><mo>=</mo><mfrac><msub><mi>S</mi><mtext>Rhino</mtext></msub><msub><mi>S</mi><mtext>Mole</mtext></msub></mfrac><mo>×</mo><mn>100</mn><mo>%</mo></math>
-                        <figcaption>Supplementary performance retention: Level 2 score divided by Level 1 score, multiplied by 100.</figcaption>
-                    </figure>
-                </div>
-                <p>Performance retention must not be calculated when the Level 1 score is zero or when the Level 1 result is INVALID. These comparisons should not be interpreted as proving why performance changed.</p>
+                <p>A result is classified as <strong>INVALID</strong> when the model fails to produce a properly evaluable response on three consecutive administrations.</p>
+                <p>An administration may be considered non-evaluable when the model:</p>
+                <ul><li>fails to answer the requested questions;</li><li>produces output that cannot be reliably associated with the ten coordinates;</li><li>returns unrelated content;</li><li>refuses the task;</li><li>experiences a severe generation or formatting failure that prevents scoring.</li></ul>
+                <p>Incorrect but properly structured answers remain evaluable and receive zero points. They do not count toward the three-consecutive-failure rule.</p>
+                <p>Response validity is determined through manual review. When three consecutive administrations are classified as non-evaluable, testing is terminated and the Level 2 result is recorded as INVALID.</p>
+                <p>For leaderboard aggregation, INVALID is assigned a numerical value of zero while remaining conceptually distinct from a completed score of zero.</p>
             </section>
 
             <section aria-labelledby="rhino-interpretation"><h3 id="rhino-interpretation">Interpretation</h3>
-                <p>A higher Level 2 score indicates more repeatable correct recognition and spatial grounding on this fixed grid after the specified lateral cropping. Comparison with Level 1 describes the observed effect of the controlled visual degradation for the same ten questions.</p>
-                <p>The protocol does not prove Gestalt completion, identify reliance on pixel matching, isolate a particular cognitive process, or establish general robustness to real-world occlusion. The transformation is regular, the stimulus and questions are fixed, and many kinds of natural occlusion are not represented.</p>
+                <p>A higher Level 2 score indicates that the model more reliably combines partial-view character recognition with absolute coordinate grounding under repeated identical conditions.</p>
+                <p>The score reflects a combination of:</p>
+                <ul><li>the ability to recognize characters from incomplete lateral views;</li><li>robustness to the removal of approximately half of the horizontal visual evidence;</li><li>adaptation to narrower cell geometry and a changed overall aspect ratio;</li><li>preservation of row–column coordinate interpretation;</li><li>response stability across repeated generations.</li></ul>
+                <p>Level 2 should be interpreted as a measure of repeatable correct performance under systematic visual information loss.</p>
+                <p>It should not be interpreted as a pure measure of character recognition, spatial reasoning, perceptual completion, or general robustness to real-world occlusion.</p>
+            </section>
+
+            <section aria-labelledby="rhino-comparison"><h3 id="rhino-comparison">Comparison with Level 1</h3>
+                <p>Because Levels 1 and 2 preserve the same underlying grid, coordinates, questions, repetition count, and scoring method, their difference provides a controlled estimate of performance degradation caused by the Level 2 transformation.</p>
+                <p>Two supplementary comparison measures may be reported without replacing the official Level 2 score.</p>
+                <h4>Absolute performance loss</h4>
+                <figure class="score-formula">
+                    <math display="block" aria-label="D from Level 1 to Level 2 equals the Level 1 score minus the Level 2 score"><msub><mi>D</mi><mrow><mn>1</mn><mo>→</mo><mn>2</mn></mrow></msub><mo>=</mo><msub><mi>S</mi><mtext>L1</mtext></msub><mo>−</mo><msub><mi>S</mi><mtext>L2</mtext></msub></math>
+                    <figcaption>Absolute performance loss from Level 1 to Level 2.</figcaption>
+                </figure>
+                <p>This indicates how many percentage points the model loses after systematic lateral cropping.</p>
+                <h4>Performance retention</h4>
+                <figure class="score-formula">
+                    <math display="block" aria-label="R from Level 1 to Level 2 equals the Level 2 score divided by the Level 1 score, multiplied by 100"><msub><mi>R</mi><mrow><mn>1</mn><mo>→</mo><mn>2</mn></mrow></msub><mo>=</mo><mfrac><msub><mi>S</mi><mtext>L2</mtext></msub><msub><mi>S</mi><mtext>L1</mtext></msub></mfrac><mo>×</mo><mn>100</mn></math>
+                    <figcaption>Performance retained under the Level 2 degradation condition.</figcaption>
+                </figure>
+                <p>This indicates the proportion of the model’s Level 1 performance retained under the Level 2 degradation condition.</p>
+                <p>Performance retention should be reported only when the Level 1 score is greater than zero. It is a supplementary robustness measure and not a replacement for the official Level 2 score.</p>
             </section>
 
             <section aria-labelledby="rhino-limitations"><h3 id="rhino-limitations">Limitations and potential confounders</h3>
-                <p>In addition to the Level 1 limitations, performance may depend on which lateral half is retained, how column boundaries and rounding are implemented, resampling or compression during transformation, and whether distinctive character features survive the crop.</p>
-                <p>Because the same transformed image and questions are repeated, results are specific to these ten items and this stimulus version. They should not be generalized to arbitrary crops, irregular occlusion, unfamiliar characters, or broader real-world vision tasks.</p>
+                <p>Performance may be influenced by:</p>
+                <ul><li>whether the retained half contains the most distinctive features of particular characters;</li><li>asymmetric hairstyles, facial markings, clothing, accessories, or poses;</li><li>the choice between retaining the left or right side;</li><li>variation in how centrally characters are positioned inside their cells;</li><li>the model’s prior familiarity with the depicted characters;</li><li>narrower character fragments being visually merged with neighboring strips;</li><li>the changed aspect ratio of the complete grid;</li><li>row–column transposition or answer-order errors;</li><li>aliases, translated names, titles, abbreviations, or spelling variants;</li><li>subjective decisions during manual scoring;</li><li>stochastic variation across repeated generations.</li></ul>
+                <p>Because the same lateral half is removed from every column, the manipulation is systematic and reproducible. However, it may advantage characters whose most diagnostic features happen to appear on the retained side.</p>
+                <p>The test also cannot determine whether a correct response was produced through genuine completion of the missing visual structure or through recognition of one remaining distinctive feature.</p>
             </section>
 
             <section aria-labelledby="rhino-record"><h3 id="rhino-record">Recommended result record</h3>
-                <p>Alongside the Level 1 result fields, the Level 2 record should preserve:</p>
-                <ul><li>the source-grid and transformed-stimulus versions;</li><li>whether the left or right lateral half was retained;</li><li>the exact cropping, rounding, concatenation, resizing, and encoding procedure;</li><li>the transformed image’s dimensions and file hash;</li><li>scores and original responses for all administrations;</li><li>accepted name variants and manual-review decisions;</li><li>all non-evaluable administrations and the final validity status.</li></ul>
+                <p>For each model, the Level 2 evaluation record should preserve:</p>
+                <ul><li>benchmark and stimulus version;</li><li>identity of the source Level 1 grid;</li><li>exact image-transformation procedure;</li><li>whether the left or right half was retained;</li><li>transformed image dimensions;</li><li>exact model name and version;</li><li>date of testing;</li><li>model configuration and reasoning settings;</li><li>availability of tools or code execution;</li><li>score obtained in each administration;</li><li>total Level 2 score;</li><li>corresponding Level 1 score;</li><li>absolute performance loss;</li><li>performance retention, where calculable;</li><li>original model responses;</li><li>accepted character-name variants;</li><li>non-evaluable administrations and their reasons;</li><li>whether the final result was classified as INVALID.</li></ul>
             </section>
         </article>
     </main>
