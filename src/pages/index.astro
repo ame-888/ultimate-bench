@@ -386,7 +386,8 @@ const sotaScore = Math.max(0, ...ultimateBenchList.map(item => item.ultimateScor
 const sotaModelName = ultimateBenchList.find(item => item.ultimateScore === sotaScore)?.name ?? "None";
 const chartWidth = 1200;
 const chartHeight = 640;
-const chartPad = { left: 82, right: 42, top: 42, bottom: 72 };
+// Give labels above the highest-scoring point room to breathe.
+const chartPad = { left: 82, right: 42, top: 72, bottom: 72 };
 const minCostPower = Math.floor(Math.log10(Math.min(...ultimateBenchList.map(item => item.blendedCost))));
 const maxCostPower = Math.ceil(Math.log10(Math.max(...ultimateBenchList.map(item => item.blendedCost))));
 const costTicks = Array.from({ length: maxCostPower - minCostPower + 1 }, (_, index) => 10 ** (minCostPower + index));
@@ -548,7 +549,7 @@ function getRankDisplay(rank) {
                                 <p>Every frontier model offers a performance level no cheaper model can match. Everything below the gold line is dominated by a stronger bargain.</p>
                                 <div class="pareto-stat"><strong>{paretoModels.length}</strong><span>frontier models</span></div>
                             </header>
-                            <div class="pareto-legend" aria-hidden="true"><span><i class="frontier-dot"></i>Pareto frontier</span><span><i></i>Other models</span><small>0 → current SOTA · Best direction ↖</small></div>
+                            <div class="pareto-legend" aria-hidden="true"><span><i class="frontier-dot"></i>Pareto frontier</span><span><i></i>Other models</span><small>Higher score · Lower cost ↖</small></div>
                             <div class="pareto-chart-wrap">
                                 <svg class="pareto-chart" viewBox={`0 0 ${chartWidth} ${chartHeight}`} role="img" aria-labelledby="pareto-svg-title pareto-svg-desc">
                                     <title id="pareto-svg-title">Model performance versus blended token cost</title>
@@ -556,7 +557,6 @@ function getRankDisplay(rank) {
                                     <rect class="chart-plot-bg" x={chartPad.left} y={chartPad.top} width={chartWidth - chartPad.left - chartPad.right} height={chartHeight - chartPad.top - chartPad.bottom} rx="14"/>
                                     {scoreTicks.map((tick, index) => <g class={`chart-grid ${index === scoreTicks.length - 1 ? 'sota-grid' : ''}`}><line x1={chartPad.left} y1={chartY(tick)} x2={chartWidth - chartPad.right} y2={chartY(tick)}/><text x={chartPad.left - 18} y={chartY(tick) + 5}>{tick.toFixed(1)}%</text></g>)}
                                     {costTicks.map(tick => <g class="chart-grid chart-grid-x"><line x1={chartX(tick)} y1={chartPad.top} x2={chartX(tick)} y2={chartHeight - chartPad.bottom}/><text x={chartX(tick)} y={chartHeight - chartPad.bottom + 32}>${tick < 1 ? tick.toFixed(2) : tick}</text></g>)}
-                                    <g class="sota-marker" transform={`translate(${chartWidth - chartPad.right - 10} ${chartPad.top})`}><rect x="-164" y="-17" width="164" height="26" rx="13"/><text x="-12" y="1">SOTA · {sotaScore.toFixed(1)}%</text></g>
                                     <text class="axis-title" x={(chartWidth + chartPad.left - chartPad.right) / 2} y={chartHeight - 15}>BLENDED COST · USD PER 1M TOKENS · LOG SCALE</text>
                                     <text class="axis-title axis-title-y" transform={`translate(20 ${(chartHeight - chartPad.bottom + chartPad.top) / 2}) rotate(-90)`}>OVERALL SCORE · 0 TO SOTA</text>
                                     <polyline class="frontier-glow" points={frontierPoints}/><polyline class="frontier-line" points={frontierPoints}/>
@@ -2661,8 +2661,6 @@ There are currently three levels in use. The fourth level will be unlocked once 
     .chart-grid-x text { text-anchor: middle; }
     .chart-grid.sota-grid line { stroke: rgba(251,191,36,.75); stroke-width: 1.5; stroke-dasharray: none; }
     .chart-grid.sota-grid text { fill: #fcd34d; font-weight: 800; }
-    .sota-marker rect { fill: #3b2e0c; stroke: #8b6b19; }
-    .sota-marker text { fill: #fde68a; font: 800 11px var(--font-body); letter-spacing: .08em; text-anchor: end; }
     .axis-title { fill: #64748b; font: 800 11px var(--font-body); letter-spacing: 1.7px; text-anchor: middle; }
     .frontier-glow, .frontier-line { fill: none; stroke-linecap: round; stroke-linejoin: round; }
     .frontier-glow { stroke: rgba(251,191,36,.2); stroke-width: 18; }
