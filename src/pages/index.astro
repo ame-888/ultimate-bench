@@ -110,6 +110,9 @@ function computeRanks(items, scoreKeys) {
 
 // --- Unify Benchmark Data for Visual Mode ---
 const unifiedDataMap = new Map();
+const releaseDateByModel = new Map(
+    benchmarks.models.map(model => [model.name, model.releaseDate])
+);
 
 benchmarks.models.forEach(m => {
     unifiedDataMap.set(m.name, {
@@ -153,7 +156,7 @@ const dataDataMap = new Map();
 (benchmarks.dataRetrieval || []).forEach(m => {
     dataDataMap.set(m.name, {
         name: m.name,
-        releaseDate: m.releaseDate,
+        releaseDate: m.releaseDate ?? releaseDateByModel.get(m.name),
         worm: m.scores?.worm,
         koala: m.scores?.koala,
         crow: m.scores?.crow,
@@ -247,7 +250,7 @@ const chessDataMap = new Map();
 (benchmarks.chessModels || []).forEach(m => {
     chessDataMap.set(m.name, {
         name: m.name,
-        releaseDate: m.releaseDate,
+        releaseDate: m.releaseDate ?? releaseDateByModel.get(m.name),
         mouse: m.scores?.mouse,
         spider: m.scores?.spider,
         wolf: m.scores?.wolf,
