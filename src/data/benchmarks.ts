@@ -7,6 +7,7 @@ export const benchmarks = {
     models: [
         {
             name: 'Muse Spark 1.1',
+            releaseDate: '2026-07-15',
             scores: {
                 'lvl1': 68,
                 'lvl2': 40,
@@ -27,6 +28,7 @@ export const benchmarks = {
         },
         {
             name: 'GPT-5.5 Instant (0529)',
+            releaseDate: '2026-05-29',
             scores: {
                 'lvl1': 48,
                 'lvl2': 33,
@@ -77,6 +79,7 @@ export const benchmarks = {
         },
         {
             name: 'Claude 4.6 Sonnet (max thinking)',
+            releaseDate: '2026-02-21',
             scores: {
                 'lvl1': 14,
                 'lvl2': 6,
@@ -98,6 +101,7 @@ export const benchmarks = {
         },
         {
             name: 'Gemini 3.5 Flash',
+            releaseDate: '2026-05-22',
             scores: {
                 'lvl1': 79,
                 'lvl2': 76,
@@ -130,6 +134,7 @@ export const benchmarks = {
         },
         {
             name: 'Gemini 3.1 Flashlite GA',
+            releaseDate: '2026-05-09',
             scores: {
                 'lvl1': 38,
                 'lvl2': 33,
@@ -191,6 +196,7 @@ export const benchmarks = {
         },
         {
             name: 'Gemini 3.0 Flash Preview',
+            releaseDate: '2025-12-23',
             scores: {
                 'lvl1': 81,
                 'lvl2': 60,
@@ -222,6 +228,7 @@ export const benchmarks = {
         },
         {
             name: 'Muse Spark (thinking)',
+            releaseDate: '2026-05-27',
             scores: {
                 'lvl1': 'INVALID',
                 'lvl2': 'INVALID',
@@ -232,6 +239,7 @@ export const benchmarks = {
         },
         {
             name: 'GPT-5.5 Instant (0505)',
+            releaseDate: '2026-05-05',
             scores: {
                 'lvl1': 30,
                 'lvl2': 38,
@@ -242,6 +250,7 @@ export const benchmarks = {
         },
         {
             name: 'Grok 4.3 Fast',
+            releaseDate: '2026-05-09',
             scores: {
                 'lvl1': 6,
                 'lvl2': 4,
@@ -252,6 +261,7 @@ export const benchmarks = {
         },
         {
             name: 'GPT-5.5',
+            releaseDate: '2026-06-02',
             scores: {
                 'lvl1': 71,
                 'lvl2': 64,
@@ -272,6 +282,7 @@ export const benchmarks = {
         },
         {
             name: 'GPT-5.6 Sol (high)',
+            releaseDate: '2026-07-12',
             scores: {
                 'lvl1': 86,
                 'lvl2': 71,
@@ -282,6 +293,7 @@ export const benchmarks = {
         },
         {
             name: 'Claude 5 Fable (high)',
+            releaseDate: '2026-07-18',
             scores: {
                 'lvl1': 72,
                 'lvl2': 71,
