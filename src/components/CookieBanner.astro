@@ -16,7 +16,7 @@
         </div>
     </div>
 </div>
-<button id="reopen-cookie-settings" class="reopen-cookie-settings" hidden>Cookie preferences</button>
+<button id="reopen-cookie-settings" class="reopen-cookie-settings" aria-controls="cookie-banner" aria-expanded="false" hidden>Cookie preferences</button>
 
 <script>
     const CONSENT_KEY = "ultimate_bench_cookie_consent";
@@ -53,18 +53,22 @@
             accept.hidden = manageMode;
             reject.hidden = manageMode;
             reopen.hidden = true;
+            reopen.setAttribute('aria-expanded', 'true');
+            (manageMode ? advertising : accept).focus();
         };
 
         const storeConsent = (advertisingAllowed) => {
             localStorage.setItem(CONSENT_KEY, JSON.stringify({ necessary: true, advertising: advertisingAllowed }));
             banner.hidden = true;
             reopen.hidden = false;
+            reopen.setAttribute('aria-expanded', 'false');
             if (advertisingAllowed) loadAdsense();
         };
 
         if (consent && typeof consent.advertising === "boolean") {
             advertising.checked = consent.advertising;
             reopen.hidden = false;
+            reopen.setAttribute('aria-expanded', 'false');
             if (consent.advertising) loadAdsense();
         } else {
             showBanner();

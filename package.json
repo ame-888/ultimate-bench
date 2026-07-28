@@ -1,5 +1,5 @@
 {
-  "name": "bubble-burst-clock",
+  "name": "ultimate-bench",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
@@ -7,7 +7,8 @@
     "build": "astro build && node scripts/generate-sitemap.mjs",
     "test": "node --test",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "check": "astro check"
   },
   "dependencies": {
     "@astrojs/react": "^4.4.0",

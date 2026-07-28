@@ -1,6 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { benchmarks } from '../data/benchmarks';
+import { ARENA_LIST } from '../data/benchmarkSpec';
+import { buildLeaderboard } from '../data/leaderboard';
 
 const editionDate = 'July 27, 2026';
 const isScore = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
@@ -9,27 +11,20 @@ const scoreMean = (scores: Record<string, unknown>) => mean(Object.values(scores
 const format = (value: number, digits = 1) => `${value.toFixed(digits)}%`;
 const unique = <T extends { name: string }>(rows: T[]) => [...new Map(rows.map((row) => [row.name, row])).values()];
 
-const domains = [
-    { name: 'Visual', rows: unique(benchmarks.models) },
-    { name: 'Retrieval', rows: unique(benchmarks.dataRetrieval || []) },
-    { name: 'Chess', rows: unique(benchmarks.chessModels || []) },
-];
-
-const commonNames = domains[0].rows.map(({ name }) => name).filter((name) => domains.every(({ rows }) => rows.some((row) => row.name === name)));
-const profiles = commonNames.map((name) => {
-    const scores = domains.map(({ rows }) => scoreMean(rows.find((row) => row.name === name)!.scores));
-    const best = Math.max(...scores);
-    const worst = Math.min(...scores);
-    return { name, scores, average: mean(scores), spread: best - worst, bestDomain: domains[scores.indexOf(best)].name };
-}).sort((a, b) => b.average - a.average);
-
-const mostBalanced = [...profiles].sort((a, b) => a.spread - b.spread)[0];
-const mostSpecialized = [...profiles].sort((a, b) => b.spread - a.spread)[0];
-const domainLeaders = domains.map((domain) => domain.rows.map((row) => ({ name: row.name, score: scoreMean(row.scores) })).sort((a, b) => b.score - a.score)[0]);
+const canonical = buildLeaderboard(benchmarks);
+const domains = ARENA_LIST.map(arena => ({ name: arena.shortName, arena, rows: canonical.arenaRows[arena.id] }));
+const profiles = canonical.rows.map(row => {
+    const scores = ARENA_LIST.map(arena => row.scores[arena.id]);
+    const best = Math.max(...scores); const worst = Math.min(...scores);
+    return { name: row.name, scores, average: row.score, spread: best - worst, bestDomain: ARENA_LIST[scores.indexOf(best)].name };
+});
+const mostBalanced = [...profiles].sort((a,b) => a.spread-b.spread)[0];
+const mostSpecialized = [...profiles].sort((a,b) => b.spread-a.spread)[0];
+const domainLeaders = domains.map(domain => domain.rows[0]).filter(Boolean);
 
 const visualKeys = ['lvl1', 'lvl2', 'lvl3', 'lvl4', 'lvl5'];
 const visualCurve = visualKeys.map((key, index) => {
-    const values = domains[0].rows.map((row) => row.scores[key as keyof typeof row.scores]).filter(isScore);
+    const values = benchmarks.models.map((row) => row.scores[key as keyof typeof row.scores]).filter(isScore);
     return { label: `L${index + 1}`, score: mean(values) };
 });
 const drops = visualCurve.slice(1).map((level, index) => ({ from: visualCurve[index].label, to: level.label, drop: visualCurve[index].score - level.score }));
@@ -40,8 +35,8 @@ const executionPairs = [
     ['Gemini 3.1 Pro Preview', 'Gemini 3.1 Pro Preview (with code execution)'],
     ['Gemini 3.1 Flashlite GA', 'Gemini 3.1 Flashlite GA (with code execution)'],
 ].flatMap(([baseName, toolName]) => {
-    const base = domains[0].rows.find((row) => row.name === baseName);
-    const tool = domains[0].rows.find((row) => row.name === toolName);
+    const base = benchmarks.models.find((row) => row.name === baseName);
+    const tool = benchmarks.models.find((row) => row.name === toolName);
     if (!base || !tool) return [];
     const keys = visualKeys.filter((key) => isScore(base.scores[key as keyof typeof base.scores]) && isScore(tool.scores[key as keyof typeof tool.scores]));
     const baseAverage = mean(keys.map((key) => Number(base.scores[key as keyof typeof base.scores])));
@@ -67,13 +62,13 @@ const executionPairs = [
       <article class="finding feature" data-topic="reliability" data-tilt>
         <p class="number">01 / TRANSFER</p><h2>A high score in one arena does not travel automatically.</h2>
         <div class="callouts"><div><span>Most balanced</span><strong>{mostBalanced.name}</strong><small>{mostBalanced.spread.toFixed(1)} point range</small></div><div><span>Most specialized</span><strong>{mostSpecialized.name}</strong><small>{mostSpecialized.spread.toFixed(1)} point range · strongest in {mostSpecialized.bestDomain}</small></div></div>
-        <p class="note">Range is the gap between a configuration’s best and worst category average. Lower means more consistent—not necessarily better.</p>
+        <p class="note">Range is the gap between a qualified configuration’s best and worst canonical arena score. Lower means more consistent—not necessarily better.</p>
       </article>
 
       <article class="finding" data-topic="difficulty" data-tilt>
         <p class="number">02 / THE CLIFF</p><h2>The biggest visual drop is {cliff.from} → {cliff.to}.</h2><strong class="mega">−{cliff.drop.toFixed(1)}<i>pts</i></strong>
         <div class="curve">{visualCurve.map((level) => <div><i style={`--h:${Math.max(level.score, 1)}%`}></i><b>{level.label}</b><small>{format(level.score)}</small></div>)}</div>
-        <p class="note">This is the field average at each level, so it reveals where the task—not a single model—changes character.</p>
+        <p class="note">This exploratory flat mean includes numeric results at each Visual level and omits statuses. It is distinct from the canonical progressively weighted score.</p>
       </article>
 
       <article class="finding" data-topic="tools" data-tilt>
@@ -85,13 +80,13 @@ const executionPairs = [
       <article class="finding feature" data-topic="reliability" data-tilt>
         <p class="number">04 / SHAPE OF PERFORMANCE</p><h2>Compare profiles, not just totals.</h2>
         <div class="profile-table"><div class="profile-head"><span>Configuration</span>{domains.map((d) => <span>{d.name}</span>)}<span>Range</span></div>{profiles.map((row) => <div class="profile-row"><strong>{row.name}</strong>{row.scores.map((score) => <span><i style={`--w:${score}%`}></i><b>{format(score, 0)}</b></span>)}<em>{row.spread.toFixed(1)}</em></div>)}</div>
-        <p class="note">Only configurations with results in all three categories appear. Bars use simple, unweighted category means.</p>
+        <p class="note">Only globally qualified configurations appear. Bars use canonical progressively weighted arena scores; the displayed average is canonical Overall.</p>
       </article>
 
       <article class="finding leaders" data-topic="reliability" data-tilt>
-        <p class="number">05 / NO SINGLE CROWN</p><h2>Each arena rewards a different shape of system.</h2>
+        <p class="number">05 / NO SINGLE CROWN</p><h2>Canonical arena leaders reflect different task-specific strengths.</h2>
         {domainLeaders.map((leader, index) => <div><span>{domains[index].name}</span><strong>{leader.name}</strong><b>{format(leader.score)}</b></div>)}
-        <p class="note">That disagreement is the point: selecting a model by one headline number hides the task-specific trade-off.</p>
+        <p class="note">That disagreement is the point: an arena leader is highest only on that current Ultimate Bench arena, not generally the most intelligent model.</p>
       </article>
     </section>
 

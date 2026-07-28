@@ -28,9 +28,9 @@ const links = [
             {links.map(({ href, label }) => (
                 <a href={href} class="nav-link" aria-current={currentPath === href ? 'page' : undefined}>{label}</a>
             ))}
-            <button id="achievements-btn" class="nav-link achievements-link" aria-label="Open achievements">
+            {currentPath === '/' && <button id="achievements-btn" class="nav-link achievements-link" aria-label="Open benchmark-specific achievements">
                 <span aria-hidden="true">🏆</span><span>Achievements</span>
-            </button>
+            </button>}
             <a href="/arcade" id="nav-arcade" class="nav-link arcade-link" aria-current={currentPath === '/arcade' ? 'page' : undefined}>Arcade</a>
         </div>
     </div>
@@ -252,32 +252,7 @@ const links = [
         });
     }
 
-    // Pet Notification Logic
-    function checkPetNotification() {
-        try {
-            // Check if user has a pet
-            const hasPet = localStorage.getItem('pixel_pet');
-            // Check if notification already seen
-            const notificationSeen = localStorage.getItem('pet_notification_seen');
-
-            if (hasPet && !notificationSeen) {
-                // Create indicator
-                const indicator = document.createElement('span');
-                indicator.className = 'pet-notification';
-                indicator.textContent = '⬅'; // Or ✨
-                indicator.setAttribute('aria-label', 'New Pet!');
-
-                // Assuming pet link exists somewhere or we want to add the indicator somewhere
-                // (The original code seems to have had a specific target that got lost. Let's just catch the error)
-            }
-        } catch (e) {
-            console.warn('Pet notification check failed:', e);
-        }
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
-        checkPetNotification();
-
         // Also highlight active link
         const currentPath = window.location.pathname;
         const currentSearch = window.location.search;

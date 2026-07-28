@@ -1,0 +1,16 @@
+import { build } from 'esbuild';
+import { writeFile, rm } from 'node:fs/promises';
+import { pathToFileURL } from 'node:url';
+const bundle = `/tmp/ultimate-bench-migration-${process.pid}.mjs`;
+await build({ entryPoints: [new URL('../test/scoring-api.ts', import.meta.url).pathname], bundle: true, platform: 'node', format: 'esm', outfile: bundle });
+const { benchmarks, ARENA_LIST, activeLevels, buildLeaderboard } = await import(pathToFileURL(bundle));
+const oldWeights={visual:[10,15,35,100,250],'data-retrieval':[10,20,45,120],chess:[10,20,45,120,250]};
+const unique=(rows)=>[...new Map(rows.map(r=>[r.name,r])).values()];
+const oldScore=(arena,scores)=>{let n=0,d=0,u=0;activeLevels(arena).forEach((l,i)=>{const v=scores[l.key];if(v==='UNAVAILABLE'||v===undefined){u++;return}d+=oldWeights[arena.id][i];n+=(typeof v==='number'?v:0)*oldWeights[arena.id][i]});return {score:d?n/d:null,qualifies:u<=1}};
+const built=buildLeaderboard(benchmarks);const oldA={};const sections=[];
+for(const arena of ARENA_LIST){const current=new Map(built.arenaRows[arena.id].map(r=>[r.name,r.score]));const prior=unique(benchmarks[arena.dataKey]).map(r=>({name:r.name,...oldScore(arena,r.scores)}));oldA[arena.id]=new Map(prior.map(r=>[r.name,r]));sections.push(`## ${arena.name}\n\n| Model | Previous | Progressive Level Weighting |\n| --- | ---: | ---: |\n${prior.map(r=>`| ${r.name} | ${r.score?.toFixed(4) ?? 'Not computable'} | ${current.get(r.name)?.toFixed(4) ?? 'Not computable'} |`).join('\n')}`)}
+const names=[...oldA.visual.keys()].filter(n=>ARENA_LIST.every(a=>oldA[a.id].has(n)&&oldA[a.id].get(n).qualifies&&oldA[a.id].get(n).score!==null));
+const oldRows=names.map(name=>({name,score:ARENA_LIST.reduce((s,a)=>s+oldA[a.id].get(name).score,0)/3})).sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name));let rank=0,last;oldRows.forEach((r,i)=>{if(r.score!==last)rank=i+1;r.rank=rank;last=r.score});const newMap=new Map(built.rows.map(r=>[r.name,r]));
+const overall=`## Overall and rank migration\n\n| Model | Previous Overall | Previous rank | New Overall | New rank | Rank changed |\n| --- | ---: | ---: | ---: | ---: | --- |\n${oldRows.map(r=>{const n=newMap.get(r.name);return `| ${r.name} | ${r.score.toFixed(4)} | ${r.rank} | ${n?.score.toFixed(4) ?? 'Not qualified'} | ${n?.rank ?? '—'} | ${n?.rank===r.rank?'No':'Yes'} |`}).join('\n')}\n\n### Models whose canonical rank changed\n\n${oldRows.filter(r=>newMap.get(r.name)?.rank!==r.rank).map(r=>`- ${r.name}: ${r.rank} → ${newMap.get(r.name)?.rank ?? 'not qualified'}`).join('\n')||'- None'}`;
+await writeFile(new URL('../reports/scoring-migration.md',import.meta.url),`# Progressive Level Weighting migration report\n\nGenerated from the preserved level results. “Previous” reproduces the former arena-specific weighted implementation; new values use universal weights 1, 2, 4, 8, 16. Values show four decimals for auditability; the website displays one decimal.\n\n${sections.join('\n\n')}\n\n${overall}\n`);
+await rm(bundle, { force: true });
