@@ -5,13 +5,13 @@ const principles = [
     {
         number: '01',
         title: 'Curiosity first',
-        copy: 'We ask focused questions, then build experiments that let the results do the talking.',
+        copy: 'Each evaluation starts with a focused question and an experiment that lets the results do the talking.',
         icon: '?',
     },
     {
         number: '02',
         title: 'Context included',
-        copy: 'A score without a story is just a number wearing a tiny hat. We show the method and the limits.',
+        copy: 'A score without a story is just a number wearing a tiny hat. Ultimate Bench shows the method and the limits.',
         icon: '≋',
     },
     {
@@ -30,7 +30,7 @@ const principles = [
 
         <section class="hero" aria-labelledby="about-title">
             <div class="eyebrow"><span class="status-dot"></span> Independent by design</div>
-            <h1 id="about-title">We put AI models<br />on the <span>workbench.</span></h1>
+            <h1 id="about-title">AI models, placed<br />on the <span>workbench.</span></h1>
             <p class="hero-copy" id="about-desc1">Ultimate Bench is an independent experimental benchmark for AI models—built for people who want more than a shiny score and a victory lap.</p>
             <div class="hero-actions">
                 <a class="primary-link" href="/methodology">Inspect the method <span aria-hidden="true">↗</span></a>
@@ -42,14 +42,14 @@ const principles = [
             <div class="manifesto-label"><span>THE SHORT VERSION</span><span class="squiggle" aria-hidden="true">⌁⌁⌁</span></div>
             <div class="manifesto-copy">
                 <h2 id="about-welcome">Benchmarks should illuminate,<br /><em>not decorate.</em></h2>
-                <p id="about-desc2">We design practical evaluations that make model capabilities—and their awkward edges—easier to understand. The goal is not to crown a permanent champion. It is to offer a useful snapshot, explain how we made it, and leave enough breadcrumbs for you to challenge it.</p>
+                <p id="about-desc2">Ultimate Bench presents practical evaluations that make model capabilities—and their awkward edges—easier to understand. The goal is not to crown a permanent champion. It is to offer a useful snapshot, explain how it was made, and leave enough breadcrumbs for you to challenge it.</p>
             </div>
         </section>
 
         <section class="principles" aria-labelledby="principles-title">
             <div class="section-heading">
                 <p>HOUSE RULES</p>
-                <h2 id="principles-title">How we keep the bolts tight.</h2>
+                <h2 id="principles-title">How the project keeps the bolts tight.</h2>
             </div>
             <div class="principle-grid">
                 {principles.map((principle) => (
@@ -62,6 +62,23 @@ const principles = [
                         <p>{principle.copy}</p>
                     </article>
                 ))}
+            </div>
+        </section>
+
+        <section class="transparency" aria-labelledby="transparency-title">
+            <div class="transparency-heading">
+                <p>BEHIND THE BENCH</p>
+                <h2 id="transparency-title">Operator &amp; Transparency</h2>
+            </div>
+            <div class="transparency-content">
+                <p><strong>Ultimate Bench is an independent benchmark project created and maintained by <a href="https://github.com/ame-888" target="_blank" rel="noopener noreferrer">Ame-888</a>.</strong> It is currently a solo project and is not affiliated with, sponsored by, or funded by OpenAI, Google, Anthropic, xAI, Meta, or any other AI model provider.</p>
+                <p>The benchmark is experimental and may contain errors or methodological limitations. Criticism, corrections, and reproducibility work are welcome.</p>
+                <p>The operator uses a public pseudonym as part of the project’s public identity. The operator’s legal name should not be displayed or inferred.</p>
+                <div class="transparency-links" aria-label="Operator and project links">
+                    <a href="https://github.com/ame-888" target="_blank" rel="noopener noreferrer">View Ame-888 on GitHub <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+                    <a href="https://github.com/ame-888/ultimate-bench" target="_blank" rel="noopener noreferrer">View the Ultimate Bench source code <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+                    <a href="/contact">Report an error or suggest a correction <span aria-hidden="true">→</span></a>
+                </div>
             </div>
         </section>
 
@@ -124,6 +141,17 @@ const principles = [
     .principle-card h3 { margin: 0 0 .8rem; color: var(--ink); font-size: 1.25rem; }
     .principle-card p { margin: 0; color: var(--muted); font-size: .92rem; line-height: 1.7; }
 
+    .transparency { display: grid; grid-template-columns: minmax(12rem, .75fr) 2fr; gap: clamp(2rem, 7vw, 7rem); margin-bottom: clamp(5rem, 9vw, 8rem); padding: clamp(2rem, 5vw, 3.5rem); border: 1px solid #333c4b; border-radius: .75rem; background: linear-gradient(120deg, rgba(23, 32, 47, .9), rgba(199, 243, 107, .04)); box-shadow: inset 0 1px rgba(255,255,255,.04); }
+    .transparency-heading p { margin: 0 0 .8rem; color: var(--lime); font-size: .68rem; font-weight: 800; letter-spacing: .18em; }
+    .transparency-heading h2 { margin: 0; color: var(--ink); font-size: clamp(1.7rem, 3vw, 2.6rem); line-height: 1.1; letter-spacing: -.04em; }
+    .transparency-content > p { margin: 0 0 1.25rem; color: var(--muted); line-height: 1.8; }
+    .transparency-content strong { color: var(--ink); }
+    .transparency-content p a { color: var(--lime); text-underline-offset: .2rem; }
+    .transparency-links { display: flex; flex-direction: column; align-items: flex-start; gap: .8rem; margin-top: 2rem; }
+    .transparency-links a { color: var(--ink); font-weight: 700; text-decoration-color: #5d6572; text-underline-offset: .3rem; transition: color .2s ease, text-decoration-color .2s ease; }
+    .transparency-links a:hover { color: var(--orange); text-decoration-color: var(--orange); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
     .field-note { position: relative; margin: 0 0 1rem auto; max-width: 45rem; padding: 2.75rem clamp(1.5rem, 5vw, 3.5rem) 2rem; border: 1px solid rgba(255, 122, 69, .45); background: linear-gradient(105deg, rgba(255, 122, 69, .08), rgba(199, 243, 107, .04)); transform: rotate(-.6deg); }
     .note-tab { position: absolute; top: 0; left: 1.5rem; padding: .4rem .7rem; color: #111827; background: var(--orange); font-size: .62rem; font-weight: 900; letter-spacing: .12em; transform: translateY(-50%); }
     .field-note p { margin: 0 0 .55rem; color: var(--ink); font-family: var(--font-heading); font-size: clamp(1.2rem, 3vw, 1.75rem); font-weight: 700; }
@@ -136,6 +164,7 @@ const principles = [
         .principle-grid { grid-template-columns: 1fr; }
         .principle-card { min-height: auto; }
         .card-top { margin-bottom: 2rem; }
+        .transparency { grid-template-columns: 1fr; gap: 1.5rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
