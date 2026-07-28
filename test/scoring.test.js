@@ -1,0 +1,32 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
+const bundle = `/tmp/ultimate-bench-scoring-${process.pid}.mjs`;
+execFileSync('node_modules/.bin/esbuild', ['test/scoring-api.ts', '--bundle', '--platform=node', '--format=esm', `--outfile=${bundle}`]);
+const api = await import(pathToFileURL(bundle));
+const { ARENAS, ARENA_LIST, LEVEL_STATUSES, progressiveWeight, activeLevels, calculateArenaScore, calculateOverall, assignTiedRanks, exploratorySort, qualifiesGlobally, validateArenaDefinition, validateBenchmarkRecords, buildLeaderboard, benchmarks } = api;
+
+
+const visualScores = { lvl1:86,lvl2:71,lvl3:65,lvl4:25,lvl5:0 };
+test('universal progressive weights are generated as 2^(level - 1)',()=>assert.deepEqual([1,2,3,4,5,6].map(progressiveWeight),[1,2,4,8,16,32]));
+test('invalid level numbers fail',()=>assert.throws(()=>progressiveWeight(0),/positive integer/));
+test('ordinary progressively weighted aggregation retains full precision',()=>assert.equal(calculateArenaScore(ARENAS.visual,visualScores).score,688/31));
+test('numeric zero is included with full weight',()=>{const r=calculateArenaScore(ARENAS.visual,{lvl1:0,lvl2:0,lvl3:0,lvl4:0,lvl5:0});assert.equal(r.denominator,31);assert.equal(r.included,5);assert.equal(r.score,0)});
+test('INVALID contributes zero and retains weight',()=>{const r=calculateArenaScore(ARENAS.dataRetrieval,{worm:10,koala:'INVALID',crow:10,octopus:10});assert.equal(r.score,130/15);assert.equal(r.denominator,15)});
+test('UNAVAILABLE and NOT_TESTED are excluded with reduced coverage',()=>{const r=calculateArenaScore(ARENAS.dataRetrieval,{worm:10,koala:'UNAVAILABLE',crow:10,octopus:'NOT_TESTED'});assert.equal(r.score,10);assert.equal(r.denominator,5);assert.equal(r.coverage,'2/4 active levels included')});
+test('missing active result fails validation',()=>assert.throws(()=>calculateArenaScore(ARENAS.dataRetrieval,{worm:1,koala:2,crow:3}),/Octopus result is missing/));
+test('unknown result status fails validation',()=>assert.throws(()=>calculateArenaScore(ARENAS.dataRetrieval,{worm:1,koala:2,crow:3,octopus:'PENDING'}),/Unknown or invalid/));
+test('planned and locked levels are excluded',()=>{const arena={name:'Test',levels:[{number:1,key:'a',name:'A',status:'Active',weight:1},{number:2,key:'b',name:'B',status:'Planned',weight:2},{number:3,key:'c',name:'C',status:'Locked',weight:4,unlockCondition:'A reaches 75'}]};const r=calculateArenaScore(arena,{a:50});assert.equal(r.score,50);assert.equal(r.denominator,1)});
+test('locked definition requires explicit condition',()=>assert.throws(()=>validateArenaDefinition({name:'Test',levels:[{number:1,key:'a',name:'A',status:LEVEL_STATUSES.LOCKED,weight:1}]}),/without an unlock condition/));
+test('planned result is rejected by record validation',()=>{const copy={models:[{name:'x',scores:{lvl1:1,lvl2:1,lvl3:1,lvl4:1,lvl5:1,lvl6:1}}],dataRetrieval:[],chessModels:[]};assert.throws(()=>validateBenchmarkRecords(copy),/Planned but x has a published result/)});
+test('arena active structures are Visual 1–5, Data Retrieval 1–4, Chess 1–5',()=>assert.deepEqual(ARENA_LIST.map(a=>activeLevels(a).map(l=>l.number)),[[1,2,3,4,5],[1,2,3,4],[1,2,3,4,5]]));
+test('Overall is exact arithmetic mean of three canonical arenas',()=>assert.equal(calculateOverall([688/31,311/15,469/31]),(688/31+311/15+469/31)/3));
+test('Overall rejects incomplete inputs',()=>assert.throws(()=>calculateOverall([1,2]),/three computable/));
+test('ties share a rank and stable order is not a performance tie-break',()=>assert.deepEqual(assignTiedRanks([{name:'B',score:5},{name:'A',score:5},{name:'C',score:4}]).map(x=>[x.name,x.rank]),[['A',1],['B',1],['C',3]]));
+test('cost is absent from and cannot affect canonical score or rank',()=>{const a=assignTiedRanks([{name:'A',score:10,cost:100},{name:'B',score:9,cost:1}]);assert.deepEqual(a.map(x=>x.name),['A','B'])});
+test('exploratory sorting does not mutate rows or canonical values',()=>{const rows=[{name:'A',score:1,flat:9},{name:'B',score:2,flat:1}];const sorted=exploratorySort(rows,(a,b)=>b.flat-a.flat);assert.notEqual(sorted,rows);assert.deepEqual(rows.map(x=>x.score),[1,2])});
+test('GPT-5.6 Sol worked example matches all canonical values',()=>{const built=buildLeaderboard(benchmarks);const row=built.rows.find(x=>x.name==='GPT-5.6 Sol (high)');assert.equal(row.scores.visual,688/31);assert.equal(row.scores['data-retrieval'],311/15);assert.equal(row.scores.chess,469/31);assert.equal(row.score,(688/31+311/15+469/31)/3)});
+test('global qualification separates computability from per-arena coverage',()=>{const okay={computable:true,unavailable:1,notTested:0};assert.equal(qualifiesGlobally(Object.fromEntries(ARENA_LIST.map(a=>[a.id,okay]))),true);const bad={...okay,notTested:1};assert.equal(qualifiesGlobally(Object.fromEntries(ARENA_LIST.map(a=>[a.id,a.id==='visual'?bad:okay]))),false)});
+test('all published benchmark records pass canonical validation',()=>assert.equal(validateBenchmarkRecords(benchmarks),true));
+test('homepage exploratory sorting clones records and official mode is default', async()=>{const fs=await import('node:fs/promises');const [script,page]=await Promise.all([fs.readFile('src/scripts/home-page.js','utf8'),fs.readFile('src/pages/index.astro','utf8')]);assert.match(script,/rawList\.map\(item => \(\{ \.\.\.item \}\)\)/);assert.match(script,/method === 'canonical'/);assert.equal((page.match(/<option value="canonical">Progressive Level Weighting \(official\)<\/option>/g)||[]).length,3)});

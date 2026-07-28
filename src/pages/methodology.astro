@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import '../styles/content-pages.css';
+import { ARENA_LIST, activeLevels, plannedLevels } from '../data/benchmarkSpec';
 
 const pillars = [
     {
@@ -32,8 +33,8 @@ const process = [
     <main class="methodology-page">
         <header class="methodology-hero">
             <p class="eyebrow"><span aria-hidden="true"></span> Behind the benchmark</p>
-            <h1>Rigorous by design.<br /><em>Private by necessity.</em></h1>
-            <p class="hero-copy">A clear view of how Ultimate Bench creates fair, useful comparisons—without disclosing the exact task set or procedures that keep the evaluation resistant to gaming.</p>
+            <h1>Rigorous by design.<br /><em>Transparent where public.</em></h1>
+            <p class="hero-copy">A clear view of the public protocols, scoring rules, safeguards, and protected test material behind the current experimental comparison.</p>
             <nav class="jump-links" aria-label="On this page">
                 <a href="#protocols">Protocols</a>
                 <a href="#principles">Principles</a>
@@ -47,7 +48,7 @@ const process = [
             <div>
                 <p class="section-label">Detailed benchmark protocols</p>
                 <h2 id="protocols-title">From general principles to level-specific methods.</h2>
-                <p>This page describes the benchmark’s general principles and aggregation. The dedicated Visual Bench methodology now documents the complete protocols for Level 1 — Mole, Level 2 — Rhino, and Level 3 — Chimpanzee.</p>
+                <p>This page describes the benchmark’s general principles and aggregation. The dedicated Visual Bench methodology now documents the complete public protocols for Active Levels 1–5. Level 6 — Beholder is Planned and excluded.</p>
             </div>
             <div class="protocol-links">
                 <a href="/methodology/visual-bench/">Read the Visual Bench level protocols <span aria-hidden="true">→</span></a>
@@ -62,9 +63,9 @@ const process = [
             <div>
                 <p class="section-label">A note on transparency</p>
                 <h2 id="transparency-title">We explain the standard, not the answer key.</h2>
-                <p>Publishing exact prompts, cases, weights, or operational details would make it easier to optimize for the benchmark instead of the underlying capabilities. We therefore keep those elements private while documenting the evaluation scope, aggregation rule, quality controls, and known limitations.</p>
+                <p>Public protocol includes the construct, already-published prompt templates, administration count, transformation categories, scoring, validity rules, model configuration, limitations, and reproducibility expectations. Protected material is limited to held-out stimuli, exact queried items or coordinates, answer keys, unreleased cases, and details whose release would directly enable memorization or gaming.</p>
             </div>
-            <span class="status-pill"><span></span> Method protected</span>
+            <span class="status-pill"><span></span> Public protocol · protected cases</span>
         </section>
 
         <section id="principles" class="section-block" aria-labelledby="principles-title">
@@ -105,23 +106,15 @@ const process = [
         </section>
 
         <section id="scoring" class="score-section" aria-labelledby="scoring-title">
-            <div class="score-copy">
-                <p class="section-label">Scoring &amp; aggregation</p>
-                <h2 id="scoring-title">One summary score,<br />three distinct signals.</h2>
-                <p>Each category retains its own score because domain-level performance is often more informative than a single rank. When all three category scores are available, the Ultimate average is their arithmetic mean.</p>
-                <p>Cost efficiency is anchored to an ideal rather than normalized against the current cohort. Models at or below a $1 blended token cost keep their Ultimate average; above $1, the score loses 15 points for every tenfold increase in cost. This reserves 100% for a model that scores 100% in all three categories while costing $1 or less.</p>
-                <p class="data-note">Published benchmark records are maintained in <code>src/data/benchmarks.ts</code>. Category tables contain additional level descriptions and context.</p>
-            </div>
-            <div class="formula-card" aria-label="Ultimate average formula">
-                <p>Ultimate average</p>
-                <div class="fraction">
-                    <span><b>Visual</b> + <b>Data</b> + <b>Chess</b></span>
-                    <span>3</span>
-                </div>
-                <small>Calculated only when all three scores are available</small>
-            </div>
+            <div class="score-copy"><p class="section-label">Scoring &amp; aggregation</p><h2 id="scoring-title">Progressive Level Weighting,<br />three distinct signals.</h2>
+            <p>Every arena uses the same editorial rule: Active Level <em>n</em> has weight <code>2^(n−1)</code>, so each later level receives twice the influence of the preceding level. These weights are transparent design choices, not psychometrically validated complexity measurements.</p>
+            <p><code>Arena score = Σ(level result × included Active weight) / Σ(included Active weights)</code>. Visual Bench uses Levels 1–5 and denominator 31; Data Retrieval Bench uses Levels 1–4 and denominator 15; Chess Bench uses Levels 1–5 and denominator 31 when coverage is complete.</p>
+            <p><strong>Overall = (Visual + Data Retrieval + Chess) / 3</strong>, calculated at full precision and rounded only for display. Token price affects only cost comparisons, chart position, and Pareto membership—never results, canonical scores, or ranks.</p></div>
+            <div class="formula-card" aria-label="Progressive Level Weighting formula"><p>Universal weights</p><div class="fraction"><span><b>1, 2, 4, 8, 16, 32</b></span><span>Level 1 → Level 6</span></div><small>Status, not the existence of a future weight, determines inclusion.</small></div>
         </section>
-
+        <section class="section-block" aria-labelledby="structure-title"><div class="section-intro"><div><p class="section-label">Current structure</p><h2 id="structure-title">Active and Planned levels.</h2></div></div><div class="pillar-grid">{ARENA_LIST.map(arena => <article class="pillar-card"><h3>{arena.name}</h3><p>{activeLevels(arena).length} Active; {plannedLevels(arena).length} Planned.</p><ul>{arena.levels.map(level => <li>Level {level.number} — {level.name}: <strong>{level.status}</strong>{level.status === 'Active' ? ` · weight ${level.weight}` : ' · excluded'}</li>)}</ul></article>)}</div></section>
+        <section class="section-block" aria-labelledby="status-rules-title"><div class="section-intro"><div><p class="section-label">Coverage and qualification</p><h2 id="status-rules-title">Every result state has one rule.</h2></div></div><div class="limitation-grid"><p><strong>Numeric 0–100:</strong> valid and fully weighted, including zero.</p><p><strong>Invalid:</strong> attempted but failed validity; contributes zero and retains weight.</p><p><strong>Unavailable:</strong> could not run; excludes the result and weight and reduces displayed coverage.</p><p><strong>Not tested:</strong> not attempted; excluded and counts as incomplete coverage.</p><p><strong>Missing:</strong> a validation error for any Active level.</p><p><strong>Locked / Planned:</strong> excluded. Locked requires a protocol and unlock condition; Planned has no operational protocol.</p></div><p>A model qualifies globally only with a computable score in all three arenas, canonical values for every Active record, and no more than one Unavailable or Not tested level in any arena. Equal full-precision scores share rank; alphabetical order between ties is presentation only. Alternate arena modes reorder rows for exploration and never modify canonical scores.</p></section>
+        <section class="section-block" aria-labelledby="worked-example-title"><div class="section-intro"><div><p class="section-label">Recorded worked example</p><h2 id="worked-example-title">GPT-5.6 Sol (high).</h2></div></div><p><strong>Visual:</strong> <code>(86 + 2×71 + 4×65 + 8×25 + 16×0) / 31 = 688 / 31 = 22.1935…</code> → 22.2%.</p><p><strong>Data Retrieval:</strong> <code>(51 + 2×46 + 4×36 + 8×3) / 15 = 311 / 15 = 20.7333…</code> → 20.7%.</p><p><strong>Chess:</strong> <code>(97 + 2×68 + 4×59 + 8×0 + 16×0) / 31 = 469 / 31 = 15.1290…</code> → 15.1%.</p><p><strong>Overall:</strong> the mean of those unrounded values is 19.3519… → 19.4%.</p><p>Raw trials are individual administration outcomes; arena aggregates apply Progressive Level Weighting; Overall averages arena aggregates; cost comparisons place Overall beside separate price data.</p></section>
         <section id="limitations" class="section-block limitations" aria-labelledby="limitations-title">
             <div class="section-intro compact">
                 <div>

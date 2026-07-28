@@ -1484,7 +1484,7 @@
         .ultimate-title, .ultimate-title-container::before { animation: none; }
     }
 
-/* Journey to Singularity. */
+/* Decorative capability journey. */
 .singularity-journey-section { position:relative; isolation:isolate; max-width:1040px; margin:4rem auto; padding:clamp(2rem,5vw,4.5rem); overflow:hidden; border:1px solid rgba(96,165,250,.16); border-radius:32px; background:linear-gradient(145deg,rgba(10,20,40,.98),rgba(15,23,42,.94)); box-shadow:0 30px 80px rgba(0,0,0,.35),inset 0 1px rgba(255,255,255,.04); }
     .singularity-journey-section::before { content:""; position:absolute; inset:-30% 20% 35%; z-index:-1; background:radial-gradient(ellipse,rgba(59,130,246,.22),transparent 65%); filter:blur(30px); }
     .journey-stars { position:absolute; inset:0; z-index:-1; opacity:.7; }
@@ -1542,3 +1542,9 @@
     @media (max-width:800px) { .journey-dashboard { grid-template-columns:1fr 1fr; } .sota-loading-container { grid-row:1 / span 2; height:500px; } .journey-stat-card,.milestone-details-panel { grid-column:2; } }
     @media (max-width:580px) { .singularity-journey-section { padding:2.5rem 1rem; border-radius:22px; } .journey-dashboard { display:block; } .journey-stat-card { max-width:250px; margin:0 auto 2rem; text-align:center; } .sota-loading-container { width:260px; height:470px; margin:auto; transform:translateX(25px); } .milestone-details-panel { margin-top:2rem; } .sota-node-label b { font-size:.62rem; } }
     @media (prefers-reduced-motion:reduce) { .journey-stars i,.rocket-orbit,.sota-bar-fill,.journey-mini-track span { animation:none; } }
+/* Keyboard/touch-accessible benchmark explanations and canonical statuses. */
+.tooltip-container:focus-within .tooltip-text { visibility: visible; opacity: 1; }
+.tooltip-icon { border: 0; padding: 0; background: transparent; color: inherit; cursor: help; font: inherit; }
+.status-badge.planned { display: inline-block; padding: .25rem .45rem; border: 1px solid #6b7280; border-radius: 999px; color: #d1d5db; font-size: .68rem; font-weight: 700; text-transform: uppercase; }
+.journey-disclaimer { max-width: 42rem; color: #fef3c7; font-weight: 700; line-height: 1.5; }
+.benchmark-status-legend { max-width: 90rem; margin: 2rem auto; padding: 1.5rem; }

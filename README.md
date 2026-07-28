@@ -1,49 +1,54 @@
 # Ultimate Bench
 
-Ultimate Bench is an independent experimental benchmark and static Astro site for comparing AI model results across visual, data, and chess evaluations. It includes the benchmark leaderboard, supporting methodology and policy pages, a small blog placeholder, and an interactive arcade.
+Ultimate Bench is an independent experimental benchmark and static Astro site comparing recorded AI model results across **Visual Bench**, **Data Retrieval Bench**, and **Chess Bench**. It does not measure general intelligence or progress toward AGI.
 
-## Public routes
+## Canonical scoring and statuses
+
+Ultimate Bench uses **Progressive Level Weighting** in every arena. Active Level `n` has weight `2^(n-1)`, producing weights `1, 2, 4, 8, 16, 32`. An arena score is `Σ(result × included active weight) / Σ(included active weights)`. Overall is the equal-weight arithmetic mean of the three full-precision arena scores. Values are rounded only for display. Token price never affects level results, arena scores, Overall, or canonical ranks; it appears only in a separate cost/performance comparison and Pareto frontier.
+
+- **Visual Bench:** Levels 1–5 (Mole, Rhino, Chimpanzee, Owl, Eagle) Active; Level 6 (Beholder) Planned. Full-coverage denominator: 31.
+- **Data Retrieval Bench:** Levels 1–4 (Worm, Koala, Crow, Octopus) Active; Levels 5–6 (Raven, Athena) Planned. Full-coverage denominator: 15.
+- **Chess Bench:** Levels 1–5 (Mouse, Spider, Wolf, Hawk, Python) Active; Level 6 (Hydra) Planned. Full-coverage denominator: 31.
+
+A numeric zero is valid and retains its weight. `INVALID` contributes zero and retains its weight. `UNAVAILABLE` is excluded with its weight and reduces displayed coverage. `NOT_TESTED` means not attempted, is excluded, and counts as incomplete coverage. Missing active results and unknown statuses are validation errors. Planned and Locked levels are excluded; a Locked level additionally requires a complete protocol and explicit unlock condition. No current level is Locked and no current record uses `NOT_TESTED`.
+
+Global qualification requires computable scores in all three arenas, canonical status values for every active result, and no more than one `UNAVAILABLE` or `NOT_TESTED` active level in any arena. Equal full-precision scores share rank; alphabetical ordering between ties is presentation only.
+
+Canonical definitions are in [`src/data/benchmarkSpec.ts`](src/data/benchmarkSpec.ts), calculations and validation in [`src/data/scoring.ts`](src/data/scoring.ts), and derived leaderboards in [`src/data/leaderboard.ts`](src/data/leaderboard.ts). Published level results remain in [`src/data/benchmarks.ts`](src/data/benchmarks.ts). The scoring migration audit is [`reports/scoring-migration.md`](reports/scoring-migration.md).
+
+## Public and protected benchmark information
+
+Public protocols may describe the evaluated construct, already-public prompt templates, administration count, transformation categories, scoring, validity rules, model configuration, limitations, and reproducibility expectations. Exact held-out stimuli, queried items or coordinates, answer keys, unreleased cases, and details that directly enable memorization or gaming remain protected. Visual Bench Levels 1–5 have public detailed protocols; Level 6 is Planned and not operationally defined.
+
+## Routes
 
 | Route | Purpose |
 | --- | --- |
-| `/` | Benchmark leaderboard |
-| `/methodology/` | Methodology, aggregation, and interpretation notes |
-| `/methodology/visual-bench/` | Detailed Visual Bench level protocols |
-| `/about/` | Project overview |
-| `/contact/` | Contact information |
-| `/privacy/` | Privacy policy |
-| `/terms/` | Terms of service (governing law is pending owner/legal review) |
-| `/blog/` | Practical AI evaluation guides |
-| `/arcade/` | Interactive arcade |
+| `/` | Canonical leaderboard, arena results, status legend, and cost comparison |
+| `/methodology/` | Canonical scoring, statuses, qualification, transparency, and limitations |
+| `/methodology/visual-bench/` | Detailed Visual Bench Levels 1–5 and Planned Level 6 |
+| `/analysis/` | Canonical findings and clearly labeled exploratory statistics |
+| `/about/`, `/contact/` | Project and contact information |
+| `/privacy/`, `/terms/` | Implementation-specific policy and rights terms |
+| `/blog/` | Evaluation guides |
+| `/arcade/` | Optional local browser games |
 
-The Visual Bench methodology page documents Levels 1–5. Level 6 remains planned, is not operationally defined, and is excluded from current evaluation and score aggregation.
+Contact for general inquiries, corrections, result disputes, and privacy requests: **ultimatebench.contact@gmail.com**.
 
-Astro generates these pages into `dist/`. The post-build sitemap generator discovers every generated HTML route rather than relying on a manually maintained route list. `robots.txt`, `sitemap-index.xml`, and `sitemap-0.xml` are served from the site root.
-
-## Benchmark data and presentation
-
-Published benchmark records live in [`src/data/benchmarks.ts`](src/data/benchmarks.ts). The leaderboard rendering and client-side sorting live in [`src/pages/index.astro`](src/pages/index.astro); shared rank labels are in [`src/data/RaritySystem.ts`](src/data/RaritySystem.ts). Update benchmark records deliberately and review score provenance before publication.
-
-The site presents recorded experimental results. The repository does not currently include an automated evaluation runner, raw evaluation artifacts, statistical uncertainty analysis, or independent result-verification workflow. A successful site build validates rendering and types handled by Astro, but does **not** validate the accuracy, reproducibility, or representativeness of benchmark scores.
-
-## Local development
-
-Requires a current Node.js release supported by Astro 5 and npm.
+## Development and verification
 
 ```sh
 npm ci
-npm run dev       # development server, normally http://localhost:4321
-npx astro check   # Astro diagnostics (requires optional @astrojs/check and TypeScript packages)
-npm run build     # production build plus sitemap generation
-npm run preview   # preview the generated dist/ build
+npm test
+npm run build
+npm run check
+npm run dev
 ```
 
-After building, manually review every public route, canonical and social metadata, consent choices, `robots.txt`, and both sitemap files. Advertising code must remain absent until advertising consent is granted.
+The build validates benchmark records before rendering and then generates sitemaps from every generated HTML route. The repository does not include an evaluation runner, raw evaluation artifacts, uncertainty analysis, or independent result verification. A successful build validates data shape and presentation, not the accuracy or representativeness of recorded results.
 
-## Deployment
+## Licensing and review
 
-The canonical production origin is <https://ultimate-bench.vercel.app/>. Connect the repository to Vercel, use `npm run build` as the build command, and publish `dist/` (the Astro preset is static output). Each deployment should start from `npm ci`, pass the production build, and be smoke-tested at its deployment URL before promotion. Canonical metadata intentionally continues to point to the production origin on preview deployments.
+Original software code is licensed under the [MIT License](LICENSE), permitting inspection, forks, modification, and redistribution under its terms. The MIT License does not cover branding, editorial content, benchmark prompts or protocols, protected test materials, benchmark datasets or result records, or non-code assets; see [RIGHTS-NOTICE.md](RIGHTS-NOTICE.md). Public results may be referenced or quoted with attribution, but there is no general open-data license.
 
-## Legal and privacy review
-
-The terms, privacy policy, and consent text should be reviewed for the operator's actual hosting, analytics, advertising configuration, audience, retention practices, and regulatory obligations before production use.
+The content-rights notice, Terms, Privacy Policy, consent language, hosting configuration, retention practices, and regulatory obligations require final owner and professional legal review.

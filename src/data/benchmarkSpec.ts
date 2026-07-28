@@ -1,0 +1,18 @@
+export const RESULT_STATUSES = { INVALID: 'INVALID', UNAVAILABLE: 'UNAVAILABLE', NOT_TESTED: 'NOT_TESTED' } as const;
+export type ResultStatus = typeof RESULT_STATUSES[keyof typeof RESULT_STATUSES];
+export type BenchmarkResult = number | ResultStatus;
+export const LEVEL_STATUSES = { ACTIVE: 'Active', LOCKED: 'Locked', PLANNED: 'Planned' } as const;
+export type LevelStatus = typeof LEVEL_STATUSES[keyof typeof LEVEL_STATUSES];
+export type ArenaId = 'visual' | 'data-retrieval' | 'chess';
+export interface LevelDefinition { number:number; key:string; name:string; status:LevelStatus; weight:number; description:string; unlockCondition?:string }
+export interface ArenaDefinition { id:ArenaId; name:string; shortName:string; dataKey:'models'|'dataRetrieval'|'chessModels'; description:string; levels:readonly LevelDefinition[] }
+export function progressiveWeight(level:number):number { if(!Number.isInteger(level)||level<1) throw new RangeError('Level number must be a positive integer.'); return 2 ** (level-1); }
+const level=(number:number,key:string,name:string,status:LevelStatus,description:string):LevelDefinition=>Object.freeze({number,key,name,status,weight:progressiveWeight(number),description});
+export const ARENAS = Object.freeze({
+ visual:Object.freeze({id:'visual',name:'Visual Bench',shortName:'Visual',dataKey:'models',description:'Repeated visual recognition and spatial-grounding evaluations under progressively transformed stimuli.',levels:Object.freeze([level(1,'lvl1','Mole',LEVEL_STATUSES.ACTIVE,'Active and scored.'),level(2,'lvl2','Rhino',LEVEL_STATUSES.ACTIVE,'Active and scored.'),level(3,'lvl3','Chimpanzee',LEVEL_STATUSES.ACTIVE,'Active and scored.'),level(4,'lvl4','Owl',LEVEL_STATUSES.ACTIVE,'Active and scored.'),level(5,'lvl5','Eagle',LEVEL_STATUSES.ACTIVE,'Active and scored.'),level(6,'lvl6','Beholder',LEVEL_STATUSES.PLANNED,'Planned future level. Protocol not yet defined.')])}),
+ dataRetrieval:Object.freeze({id:'data-retrieval',name:'Data Retrieval Bench',shortName:'Data Retrieval',dataKey:'dataRetrieval',description:'Search, synthesis, and source-confidence evaluations across four active levels.',levels:Object.freeze([level(1,'worm','Worm',LEVEL_STATUSES.ACTIVE,'Active and scored.'),level(2,'koala','Koala',LEVEL_STATUSES.ACTIVE,'Active and scored.'),level(3,'crow','Crow',LEVEL_STATUSES.ACTIVE,'Active and scored.'),level(4,'octopus','Octopus',LEVEL_STATUSES.ACTIVE,'Active and scored.'),level(5,'raven','Raven',LEVEL_STATUSES.PLANNED,'Planned future level. Protocol not yet defined.'),level(6,'athena','Athena',LEVEL_STATUSES.PLANNED,'Planned future level. Protocol not yet defined.')])}),
+ chess:Object.freeze({id:'chess',name:'Chess Bench',shortName:'Chess',dataKey:'chessModels',description:'Chess-position evaluations across five active, progressively demanding levels.',levels:Object.freeze([level(1,'mouse','Mouse',LEVEL_STATUSES.ACTIVE,'Active and scored.'),level(2,'spider','Spider',LEVEL_STATUSES.ACTIVE,'Active and scored.'),level(3,'wolf','Wolf',LEVEL_STATUSES.ACTIVE,'Active and scored.'),level(4,'hawk','Hawk',LEVEL_STATUSES.ACTIVE,'Active and scored.'),level(5,'python','Python',LEVEL_STATUSES.ACTIVE,'Active and scored.'),level(6,'hydra','Hydra',LEVEL_STATUSES.PLANNED,'Planned future level. Protocol not yet defined.')])})
+} satisfies Record<string,ArenaDefinition>);
+export const ARENA_LIST:readonly ArenaDefinition[]=Object.freeze(Object.values(ARENAS));
+export const activeLevels=(arena:ArenaDefinition)=>arena.levels.filter(({status})=>status===LEVEL_STATUSES.ACTIVE);
+export const plannedLevels=(arena:ArenaDefinition)=>arena.levels.filter(({status})=>status===LEVEL_STATUSES.PLANNED);

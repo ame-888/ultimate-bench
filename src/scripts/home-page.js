@@ -115,16 +115,18 @@ function init() {
                 const globalNames = Array.from(document.querySelectorAll('.ultimate-row-hover .model-name')).map(el => el.textContent.trim());
 
                 document.getElementById('ach-runner').textContent = globalNames[1] || 'None';
-                document.getElementById('ach-balanced').textContent = balanced;
+                document.getElementById('ach-balanced').textContent = firstSota;
                 document.getElementById('ach-specialist').textContent = specialist;
                 document.getElementById('ach-depth').textContent = depth;
 
                 achModalOverlay.classList.add('active');
+                achModalCloseBtn.focus();
                 document.body.style.overflow = 'hidden'; // Prevent background scrolling
             });
 
             const closeAchModal = () => {
                 achModalOverlay.classList.remove('active');
+                achBtn.focus();
                 document.body.style.overflow = '';
             };
 
@@ -138,6 +140,7 @@ function init() {
         }
 
 
+        let modalReturnFocus = null;
         function openModal(mode) {
             if (!modalOverlay || !modalBody) return;
 
@@ -165,7 +168,10 @@ function init() {
             if (targetWrapper) {
                 targetWrapper.classList.remove('hidden');
                 modalBody.appendChild(targetWrapper);
+                modalReturnFocus = document.activeElement;
                 modalOverlay.classList.add('active');
+                document.querySelector(`.expand-btn[data-target="${mode}"]`)?.setAttribute('aria-expanded', 'true');
+                modalCloseBtn?.focus();
                 document.body.style.overflow = 'hidden'; // Prevent background scrolling
                 adjustFontSizes();
             }
@@ -175,6 +181,8 @@ function init() {
             if (!modalOverlay || !modalBody) return;
 
             modalOverlay.classList.remove('active');
+            document.querySelectorAll('.expand-btn').forEach(button => button.setAttribute('aria-expanded', 'false'));
+            if (modalReturnFocus instanceof HTMLElement) modalReturnFocus.focus();
             document.body.style.overflow = ''; // Restore background scrolling
 
             const handleTransitionEnd = (e) => {
@@ -202,6 +210,23 @@ function init() {
                 if (e.target === modalOverlay) closeModal();
             });
         }
+
+        document.addEventListener('keydown', event => {
+            const activeDialog = [modalOverlay, achModalOverlay].find(dialog => dialog?.classList.contains('active'));
+            if (event.key === 'Escape') {
+                if (modalOverlay?.classList.contains('active')) closeModal();
+                if (achModalOverlay?.classList.contains('active')) achModalCloseBtn?.click();
+            }
+            if (event.key === 'Tab' && activeDialog) {
+                const focusable = [...activeDialog.querySelectorAll('button, a[href], select, input, [tabindex]:not([tabindex="-1"])')]
+                    .filter(element => !element.hasAttribute('disabled'));
+                if (!focusable.length) return;
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+                if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+                else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+            }
+        });
 
         // --- Ultimate Bench Sorting Logic ---
         function setupUltimateSort(btnId, textId, cellClass, defaultText, color) {
@@ -357,10 +382,10 @@ function init() {
 
         // --- Milestone Details Logic ---
         const milestoneData = {
-            'SINGULARITY': {
+            '100% MARKER': {
                 score: '100%',
                 color: '#FBBF24',
-                desc: 'The Singularity is reached. AI capabilities surpass human comprehension, marking the beginning of a new era.'
+                desc: 'Decorative 100% endpoint. It is not a validated capability threshold or an AGI claim.'
             },
             'EVENT HORIZON': {
                 score: '80%',
@@ -370,7 +395,7 @@ function init() {
             'SUPERNOVA': {
                 score: '60%',
                 color: '#F97316',
-                desc: 'An explosion of intelligence. Models are capable of mastering complex multi-domain tasks with ease.'
+                desc: 'Decorative waypoint only; it does not assert a scientifically validated capability stage.'
             },
             'STAR': {
                 score: '40%',
@@ -380,7 +405,7 @@ function init() {
             'NEBULA': {
                 score: '20%',
                 color: '#A855F7',
-                desc: 'The birthplace of modern AI. Systems begin to show sparks of true intelligence and reasoning capabilities.'
+                desc: 'Decorative starting waypoint only; it does not measure intelligence or AGI progress.'
             },
             'INCEPTION': {
                 score: '0%',
@@ -520,7 +545,11 @@ function init() {
                 return { val: 0, isAttempted: false };
             });
 
-            if (method === 'baseline') {
+            if (method === 'canonical') {
+                let numerator = 0, denominator = 0;
+                rawVals.forEach((r, i) => { if (r.isAttempted) { const weight = 2 ** i; numerator += r.val * weight; denominator += weight; } });
+                return denominator ? numerator / denominator : 0;
+            } else if (method === 'baseline') {
                 return rawVals.map(r => r.val); // Handled specially in the sorter
             } else if (method === 'average') {
                 let sum = 0;
@@ -553,9 +582,10 @@ function init() {
         }
 
         const tooltips = {
+            'canonical': 'Official Progressive Level Weighting order. Each Active level has twice the weight of the preceding level. This is the only mode used for canonical arena scores and Overall.',
             'baseline': 'Sorts descending by Level 1. If tied, looks at Level 2, then Level 3, and so on. Highlights models with the highest foundational capability.',
-            'average': 'Sums the scores of all available levels and divides by the total number of levels. Treats INVALID/UNAVAILABLE as 0%. Highlights the best "all-rounder" models.',
-            'crucible': 'Applies an escalating multiplier to the levels (Lvl1 x1, Lvl2 x2, etc.) before summing. Heavily penalizes models that only do well on the easy baseline.',
+            'average': 'Exploratory flat mean of included results. INVALID contributes zero; UNAVAILABLE is excluded. Changes row order only.',
+            'crucible': 'Exploratory Linear Level Multiplier (Level 1 x1, Level 2 x2, and so on). Changes row order only and is not the official score.',
             'resilience': 'Calculates the retention percentage between the hardest level attempted and Level 1. Highlights models that don\'t suffer from "Contextual Collapse".'
         };
 
@@ -640,7 +670,7 @@ function init() {
                 const method = e.target.value;
                 if (chessTooltip) chessTooltip.textContent = tooltips[method];
 
-                const sorted = sortAndRank(chessRawList, ['mouse', 'spider', 'wolf', 'hawk', 'python', 'hydra'], method);
+                const sorted = sortAndRank(chessRawList, ['mouse', 'spider', 'wolf', 'hawk', 'python'], method);
                 updateTableDOM('chess-table-body', sorted);
             });
         }
@@ -659,7 +689,7 @@ function init() {
         }
 
         function sortAndRank(rawList, keys, method) {
-            let list = [...rawList];
+            let list = rawList.map(item => ({ ...item }));
 
             let globalHardestKey = keys[0]; // Default to the first level
             for (let i = keys.length - 1; i >= 0; i--) {

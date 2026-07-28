@@ -1,12 +1,11 @@
 ---
 import Navbar from '../components/Navbar.astro';
 import CookieBanner from '../components/CookieBanner.astro';
-import SitePlayground from '../components/SitePlayground.astro';
 import Footer from '../components/Footer.astro';
 
 const {
     title = 'Ultimate Bench | AI Model Benchmark',
-    description = 'Ultimate Bench is an independent experimental benchmark comparing AI model performance across visual, data, and chess evaluations.'
+    description = 'Ultimate Bench is an independent experimental benchmark comparing AI model results across Visual Bench, Data Retrieval Bench, and Chess Bench.'
 } = Astro.props;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 ---
@@ -44,7 +43,6 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
         <div id="achievement-toast-container"></div>
 
         <CookieBanner />
-        <SitePlayground />
 
 	</body>
 </html>
