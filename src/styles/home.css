@@ -1566,3 +1566,8 @@
 .semantic-summary-table th, .semantic-summary-table td { padding: .65rem .5rem; text-align: left; }
 .semantic-summary-table thead th { color: #d1d5db; font-size: .75rem; text-transform: uppercase; }
 .semantic-summary-table .score-cell { justify-content: center; text-align: center; font-size: 1.1rem; font-weight: bold; color: #e0e0e0; }
+
+/* Canonical incomplete-coverage treatment */
+.provisional-row { box-shadow:none!important; filter:none!important; }
+.provisional-badge,.coverage-note b { display:inline-block;color:#fde68a;background:#713f12;border:1px solid #a16207;border-radius:.25rem;padding:.12rem .35rem;font-size:.6rem;letter-spacing:.08em; }
+.coverage-note { display:flex;flex-direction:column;gap:.15rem;margin-top:.3rem;color:#cbd5e1;font-size:.62rem;line-height:1.35;white-space:normal; }

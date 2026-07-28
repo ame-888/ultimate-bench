@@ -606,7 +606,7 @@ function init() {
         }
 
         function getRankDisplayHtml(rank) {
-            if (rank === '-') return '-';
+            if (rank === null) return '—';
             if (rank === 'INVALID') return `<span class="zero-score-glow">INVALID</span>`;
             return `${rank}`;
         }
@@ -695,7 +695,7 @@ function init() {
             // reimplements Progressive Level Weighting in the browser.
             if (method === 'canonical') {
                 return list
-                    .sort((a, b) => a.canonicalRank - b.canonicalRank || a.name.localeCompare(b.name))
+                    .sort((a, b) => (a.canonicalRank === null) - (b.canonicalRank === null) || (a.canonicalRank ?? 0) - (b.canonicalRank ?? 0) || a.name.localeCompare(b.name))
                     .map(item => ({ ...item, rank: item.canonicalRank, _sortValue: item.canonicalScore }));
             }
 
@@ -754,54 +754,9 @@ function init() {
                 }
             });
 
-            const unknownResilience = sorted.filter(i => i._sortValue === 'UNKNOWN');
-            const nonUnknown = sorted.filter(i => i._sortValue !== 'UNKNOWN');
-
-            const bottomFails = unknownResilience.sort((a,b) => a.name.localeCompare(b.name));
-
-            let currentRank = 1;
-            let previousItem = null;
-            let rankedItems = [];
-
-            nonUnknown.forEach((item) => {
-                if (previousItem !== null) {
-                    let isWorse = false;
-                    if (method === 'baseline') {
-                        for (const key of keys) {
-                            const valA = item[key];
-                            const prevA = previousItem[key];
-                            const numA = (valA === 'INVALID') ? 0 : (typeof valA === 'number' ? valA : 0);
-                            const prevNumA = (prevA === 'INVALID') ? 0 : (typeof prevA === 'number' ? prevA : 0);
-
-                            if (numA < prevNumA) {
-                                isWorse = true;
-                                break;
-                            } else if (numA > prevNumA) {
-                                break;
-                            }
-                        }
-                    } else {
-                        if (item._sortValue < previousItem._sortValue) {
-                            isWorse = true;
-                        }
-                    }
-
-                    if (isWorse) {
-                        currentRank++;
-                    }
-                }
-                item.rank = currentRank;
-                rankedItems.push(item);
-                previousItem = item;
-            });
-
-            bottomFails.forEach(item => {
-                item.rank = '-';
-                item.isUnknownResilience = true;
-                rankedItems.push(item);
-            });
-
-            return rankedItems;
+            // Exploratory modes may change presentation order, but official rank is
+            // immutable server metadata. In particular, provisional rows stay unranked.
+            return sorted.map(item => ({ ...item, rank: item.canonicalRank }));
         }
 
         adjustFontSizes();

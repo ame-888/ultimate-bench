@@ -144,7 +144,7 @@ const unifiedRawList = Array.from(unifiedDataMap.values()).map(m => {
 });
 
 const visualArenaRows = canonicalLeaderboard.arenaRows.visual;
-const unifiedList = visualArenaRows.map(row => ({ ...unifiedRawList.find(item => item.name === row.name), rank: row.rank, canonicalScore: row.score, canonicalRank: row.rank }));
+const unifiedList = visualArenaRows.map(row => ({ ...unifiedRawList.find(item => item.name === row.name), rank: row.rank, canonicalScore: row.score, canonicalRank: row.rank, rankEligible: row.canonical.rankEligible, coverage: row.canonical.coverage, weightCoverage: row.canonical.weightCoverage }));
 
 // Calculate best AI scores for each column to apply the golden aura
 const bestAiScores = { lvl1: -1, lvl2: -1, lvl3: -1, lvl4: -1, lvl5: -1 };
@@ -182,7 +182,7 @@ const dataRawList = Array.from(dataDataMap.values()).map(m => {
     return m;
 });
 
-const dataList = canonicalLeaderboard.arenaRows['data-retrieval'].map(row => ({ ...dataRawList.find(item => item.name === row.name), rank: row.rank, canonicalScore: row.score, canonicalRank: row.rank }));
+const dataList = canonicalLeaderboard.arenaRows['data-retrieval'].map(row => ({ ...dataRawList.find(item => item.name === row.name), rank: row.rank, canonicalScore: row.score, canonicalRank: row.rank, rankEligible: row.canonical.rankEligible, coverage: row.canonical.coverage, weightCoverage: row.canonical.weightCoverage }));
 
 const bestDataAiScores = { worm: -1, koala: -1, crow: -1, octopus: -1 };
 dataList.forEach(item => {
@@ -222,7 +222,7 @@ const chessRawList = Array.from(chessDataMap.values()).map(m => {
     return m;
 });
 
-const chessList = canonicalLeaderboard.arenaRows.chess.map(row => ({ ...chessRawList.find(item => item.name === row.name), rank: row.rank, canonicalScore: row.score, canonicalRank: row.rank }));
+const chessList = canonicalLeaderboard.arenaRows.chess.map(row => ({ ...chessRawList.find(item => item.name === row.name), rank: row.rank, canonicalScore: row.score, canonicalRank: row.rank, rankEligible: row.canonical.rankEligible, coverage: row.canonical.coverage, weightCoverage: row.canonical.weightCoverage }));
 
 const bestChessAiScores = { mouse: -1, spider: -1, wolf: -1, hawk: -1, python: -1, hydra: -1 };
 chessList.forEach(item => {
@@ -289,7 +289,7 @@ const frontierPoints = [...paretoModels].sort((a, b) => a.blendedCost - b.blende
 
 function getRankDisplay(rank) {
 
-    if (rank === '-') return '-';
+    if (rank === null) return '—';
     if (rank === 'INVALID') return `<span class="zero-score-glow">INVALID</span>`;
     return `${rank}`;
 }
@@ -484,7 +484,7 @@ function getRankDisplay(rank) {
                                                 <div class="model-info" data-provider={getModelProvider(item.name).name}>
                                                     <div class="model-name-line">
                                                         <strong class="model-name" data-release-date={item.releaseDate}>{item.name}</strong>
-                                                        {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
+                                                        {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
                                                     </div>
                                                 </div>
                                             </th>
@@ -602,10 +602,10 @@ function getRankDisplay(rank) {
                                         <caption class="sr-only">Canonical {arena.title} standings</caption>
                                         <thead><tr><th scope="col">Rank</th><th scope="col">Model</th><th scope="col">Score</th></tr></thead>
                                         <tbody>{arena.rows.map(item => (
-                                            <tr class="benchmark-row unified-row" data-model-name={item.name}>
+                                            <tr class={`benchmark-row unified-row ${item.rank === null ? 'provisional-row' : ''}`} data-model-name={item.name} aria-label={`${item.name}, ${item.rank === null ? 'provisional, insufficient coverage for an official rank' : `official rank ${item.rank}`}`}>
                                                 <td class="rank" set:html={getRankDisplay(item.rank)}></td>
-                                                <th scope="row" class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}><span class="model-name" data-release-date={item.releaseDate}>{item.name}</span>{isNew(item.releaseDate) && <span class="new-badge">NEW</span>}</th>
-                                                <td class="benchmark-cell score-cell">{item.score.toFixed(1)}%</td>
+                                                <th scope="row" class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}><span class="model-name" data-release-date={item.releaseDate}>{item.name}</span>{isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}</th>
+                                                <td class="benchmark-cell score-cell">{item.score.toFixed(1)}%{item.rank === null && <small class="coverage-note"><b>PROVISIONAL</b><span>Insufficient coverage for an official rank</span><span>{item.canonical.coverage} · {item.canonical.weightCoverage}</span></small>}</td>
                                             </tr>
                                         ))}</tbody>
                                     </table>
@@ -733,7 +733,7 @@ There are currently five levels in use. Level 6 remains under development and is
                                 const item = unifiedList[i];
 
                                 return (
-                                    <div class="benchmark-row unified-row" data-model-name={item.name}>
+                                    <div class={`benchmark-row unified-row ${item.rank === null ? 'provisional-row' : ''}`} data-model-name={item.name} aria-label={`${item.name}, ${item.rank === null ? 'provisional, insufficient coverage for an official rank' : `official rank ${item.rank}`}`}>
                                         {/* Model Column */}
                                         <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
                                             <div class={`benchmark-content `}>
@@ -742,8 +742,9 @@ There are currently five levels in use. Level 6 remains under development and is
                                                 <div class="model-info" data-provider={getModelProvider(item.name).name}>
                                                     <div class="model-name-line">
                                                         <div class="model-name" data-release-date={item.releaseDate}>{item.name}</div>
-                                                        {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
+                                                        {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
                                                     </div>
+                                                    {item.rank === null && <small class="coverage-note"><span>Insufficient coverage for an official rank</span><span>{item.coverage} · {item.weightCoverage}</span></small>}
                                                 </div>
                                             </div>
                                         </div>
@@ -881,7 +882,7 @@ There are currently five levels in use. Level 6 remains under development and is
                                 {rowsChess.map(i => {
                                 const item = chessList[i];
                                 return (
-                                    <div class="benchmark-row unified-row" data-model-name={item.name}>
+                                    <div class={`benchmark-row unified-row ${item.rank === null ? 'provisional-row' : ''}`} data-model-name={item.name} aria-label={`${item.name}, ${item.rank === null ? 'provisional, insufficient coverage for an official rank' : `official rank ${item.rank}`}`}>
                                         <div class={`benchmark-cell model-cell ${item ? getModelColorClass(item.name) : ''}`} style="flex: 2;">
                                             {item && (
                                                 <div class={`benchmark-content `}>
@@ -890,8 +891,9 @@ There are currently five levels in use. Level 6 remains under development and is
                                                     <div class="model-info" data-provider={getModelProvider(item.name).name}>
                                                         <div class="model-name-line">
                                                             <div class="model-name" data-release-date={item.releaseDate}>{item.name}</div>
-                                                            {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
+                                                            {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
                                                         </div>
+                                                        {item.rank === null && <small class="coverage-note"><span>Insufficient coverage for an official rank</span><span>{item.coverage} · {item.weightCoverage}</span></small>}
                                                     </div>
                                                 </div>
                                             )}
@@ -1031,7 +1033,7 @@ There are four Active levels. Raven and Athena are Planned future levels with pr
                                 {rowsData.map(i => {
                                 const item = dataList[i];
                                 return (
-                                    <div class="benchmark-row unified-row" data-model-name={item.name}>
+                                    <div class={`benchmark-row unified-row ${item.rank === null ? 'provisional-row' : ''}`} data-model-name={item.name} aria-label={`${item.name}, ${item.rank === null ? 'provisional, insufficient coverage for an official rank' : `official rank ${item.rank}`}`}>
                                         <div class={`benchmark-cell model-cell ${item ? getModelColorClass(item.name) : ''}`} style="flex: 2;">
                                             {item && (
                                                 <div class={`benchmark-content `}>
@@ -1040,8 +1042,9 @@ There are four Active levels. Raven and Athena are Planned future levels with pr
                                                     <div class="model-info" data-provider={getModelProvider(item.name).name}>
                                                         <div class="model-name-line">
                                                             <div class="model-name" data-release-date={item.releaseDate}>{item.name}</div>
-                                                            {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
+                                                            {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
                                                         </div>
+                                                        {item.rank === null && <small class="coverage-note"><span>Insufficient coverage for an official rank</span><span>{item.coverage} · {item.weightCoverage}</span></small>}
                                                     </div>
                                                 </div>
                                             )}
@@ -1077,6 +1080,6 @@ There are four Active levels. Raven and Athena are Planned future levels with pr
 <script
     id="home-page-config"
     type="application/json"
-    set:html={JSON.stringify({ TIME_OFFSET, unifiedRawList: unifiedList, dataRawList: dataList, chessRawList: chessList, canonicalLeaders: { overall: canonicalModels[0]?.name, visual: visualArenaRows[0]?.name, data: dataArenaRows[0]?.name, chess: chessArenaRows[0]?.name } }).replaceAll('<', '\\u003c')}
+    set:html={JSON.stringify({ TIME_OFFSET, unifiedRawList: unifiedList, dataRawList: dataList, chessRawList: chessList, canonicalLeaders: { overall: canonicalModels[0]?.name, visual: canonicalLeaderboard.arenaLeaders.visual?.name, data: canonicalLeaderboard.arenaLeaders['data-retrieval']?.name, chess: canonicalLeaderboard.arenaLeaders.chess?.name } }).replaceAll('<', '\\u003c')}
 ></script>
 <script src="../scripts/home-page.js"></script>
