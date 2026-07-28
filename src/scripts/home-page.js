@@ -4,7 +4,7 @@ if (!(configElement instanceof HTMLScriptElement)) {
     throw new Error('Home page configuration is missing.');
 }
 
-const { TIME_OFFSET, unifiedRawList, dataRawList, chessRawList } = JSON.parse(configElement.textContent || '{}');
+const { TIME_OFFSET, unifiedRawList, dataRawList, chessRawList, canonicalLeaders } = JSON.parse(configElement.textContent || '{}');
 
 function init() {
         const visualWrapper = document.getElementById('visual-benchmark-wrapper');
@@ -23,10 +23,10 @@ function init() {
         if (achBtn && achModalOverlay && achModalCloseBtn) {
             achBtn.addEventListener('click', () => {
                 // Populate data
-                const firstSota = document.querySelector('.ultimate-row-hover .model-name')?.textContent || 'None';
-                const firstVisual = document.querySelector('#visual-table-body .benchmark-row .model-name')?.textContent || 'None';
-                const firstData = document.querySelector('#data-table-body .benchmark-row .model-name')?.textContent || 'None';
-                const firstChess = document.querySelector('#chess-table-body .benchmark-row .model-name')?.textContent || 'None';
+                const firstSota = canonicalLeaders?.overall || 'None';
+                const firstVisual = canonicalLeaders?.visual || 'None';
+                const firstData = canonicalLeaders?.data || 'None';
+                const firstChess = canonicalLeaders?.chess || 'None';
 
                 document.getElementById('ach-sota').textContent = firstSota;
                 document.getElementById('ach-visual').textContent = firstVisual;
@@ -239,6 +239,8 @@ function init() {
                     ascending = !ascending;
 
                     // Reset all other headers
+                    document.querySelectorAll('.ultimate-table-header th[aria-sort]').forEach(header => header.setAttribute('aria-sort', 'none'));
+                    btn.closest('th')?.setAttribute('aria-sort', ascending ? 'ascending' : 'descending');
                     const visText = document.getElementById('ultimate-visual-sort-text');
                     if (visText) visText.textContent = 'Score ▼';
                     const dataText = document.getElementById('ultimate-data-sort-text');
@@ -546,9 +548,7 @@ function init() {
             });
 
             if (method === 'canonical') {
-                let numerator = 0, denominator = 0;
-                rawVals.forEach((r, i) => { if (r.isAttempted) { const weight = 2 ** i; numerator += r.val * weight; denominator += weight; } });
-                return denominator ? numerator / denominator : 0;
+                return item.canonicalScore;
             } else if (method === 'baseline') {
                 return rawVals.map(r => r.val); // Handled specially in the sorter
             } else if (method === 'average') {
@@ -690,6 +690,14 @@ function init() {
 
         function sortAndRank(rawList, keys, method) {
             let list = rawList.map(item => ({ ...item }));
+
+            // Official mode consumes immutable server-generated standings; it never
+            // reimplements Progressive Level Weighting in the browser.
+            if (method === 'canonical') {
+                return list
+                    .sort((a, b) => a.canonicalRank - b.canonicalRank || a.name.localeCompare(b.name))
+                    .map(item => ({ ...item, rank: item.canonicalRank, _sortValue: item.canonicalScore }));
+            }
 
             let globalHardestKey = keys[0]; // Default to the first level
             for (let i = keys.length - 1; i >= 0; i--) {

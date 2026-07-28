@@ -26,3 +26,27 @@ export const modelPricing = {
 export function blendedCost({ input, output }: { input: number; output: number }) {
     return (0.75 * input) + (0.25 * output);
 }
+
+export type Pricing = { input: number; output: number; source?: string };
+export type ValidPricing = Pricing & { blendedCost: number };
+
+/** Pricing is deliberately validated separately from benchmark qualification. */
+export function validatePricing(pricing: unknown): { valid: true; value: ValidPricing } | { valid: false; diagnostic: string } {
+    if (!pricing || typeof pricing !== 'object') return { valid: false, diagnostic: 'verified pricing is unavailable' };
+    const { input, output, source } = pricing as Pricing;
+    if (!Number.isFinite(input) || !Number.isFinite(output)) return { valid: false, diagnostic: 'input and output prices must be finite numbers' };
+    if (input < 0 || output < 0) return { valid: false, diagnostic: 'input and output prices must be non-negative' };
+    const cost = blendedCost({ input, output });
+    if (!Number.isFinite(cost) || cost <= 0) return { valid: false, diagnostic: 'blended cost must be finite and greater than zero for logarithmic plotting' };
+    return { valid: true, value: { input, output, source, blendedCost: cost } };
+}
+
+export function createParetoChartDomain(costs: number[]): { empty: boolean; minPower: number; maxPower: number; x: (cost: number) => number } {
+    const valid = costs.filter(cost => Number.isFinite(cost) && cost > 0);
+    if (!valid.length) return { empty: true, minPower: -1, maxPower: 1, x: () => 0.5 };
+    let minPower = Math.floor(Math.log10(Math.min(...valid)));
+    let maxPower = Math.ceil(Math.log10(Math.max(...valid)));
+    if (minPower === maxPower) { minPower -= 1; maxPower += 1; }
+    const range = maxPower - minPower;
+    return { empty: false, minPower, maxPower, x: cost => Number.isFinite(cost) && cost > 0 ? (Math.log10(cost) - minPower) / range : 0.5 };
+}
