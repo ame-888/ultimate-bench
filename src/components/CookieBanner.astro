@@ -1,99 +1,31 @@
-<div id="cookie-banner" class="cookie-banner" role="dialog" aria-modal="true" aria-labelledby="cookie-title" hidden>
-    <div class="cookie-content">
-        <div>
-            <h2 id="cookie-title">Cookie preferences</h2>
-            <p>We use necessary browser storage for your preferences. With your permission, we also load Google AdSense, which may use cookies or similar technologies for advertising. See our <a href="/privacy">Privacy Policy</a>.</p>
-            <div id="cookie-options" class="cookie-options" hidden>
-                <label><input type="checkbox" checked disabled /> Necessary storage (always active)</label>
-                <label><input id="advertising-consent" type="checkbox" /> Advertising cookies and services</label>
-            </div>
-        </div>
-        <div class="cookie-actions">
-            <button id="accept-cookies" class="cookie-btn primary">Accept advertising</button>
-            <button id="reject-cookies" class="cookie-btn">Reject non-essential cookies</button>
-            <button id="manage-cookies" class="cookie-btn">Manage preferences</button>
-            <button id="save-cookies" class="cookie-btn primary" hidden>Save preferences</button>
-        </div>
+<div id="cookie-notice" class="cookie-banner" role="region" aria-labelledby="cookie-notice-title" hidden>
+    <div class="cookie-content"><div><h2 id="cookie-notice-title">Cookie preferences</h2><p>We use necessary browser storage for your preferences. With your permission, we also load Google AdSense, which may use cookies or similar technologies for advertising. See our <a href="/privacy">Privacy Policy</a>.</p></div>
+        <div class="cookie-actions"><button id="accept-cookies" class="cookie-btn primary">Accept advertising</button><button id="reject-cookies" class="cookie-btn">Reject non-essential</button><button id="manage-cookies" class="cookie-btn" aria-controls="cookie-preferences-dialog" aria-expanded="false">Manage preferences</button></div>
     </div>
 </div>
-<button id="reopen-cookie-settings" class="reopen-cookie-settings" aria-controls="cookie-banner" aria-expanded="false" hidden>Cookie preferences</button>
-
+<div id="cookie-preferences-backdrop" class="cookie-dialog-backdrop" hidden>
+    <div id="cookie-preferences-dialog" class="cookie-dialog" role="dialog" aria-modal="true" aria-labelledby="cookie-dialog-title" aria-describedby="cookie-dialog-description">
+        <h2 id="cookie-dialog-title">Manage cookie preferences</h2><p id="cookie-dialog-description">Necessary storage is always active. Advertising remains optional.</p>
+        <div class="cookie-options"><label><input type="checkbox" checked disabled /> Necessary storage (always active)</label><label><input id="advertising-consent" type="checkbox" /> Advertising cookies and services</label></div>
+        <div class="cookie-actions"><button id="save-cookies" class="cookie-btn primary">Save preferences</button><button id="cancel-cookie-settings" class="cookie-btn">Cancel</button></div>
+    </div>
+</div>
+<button id="reopen-cookie-settings" class="reopen-cookie-settings" aria-controls="cookie-preferences-dialog" aria-expanded="false" hidden>Cookie preferences</button>
 <script>
-    const CONSENT_KEY = "ultimate_bench_cookie_consent";
-
-    function loadAdsense() {
-        if (document.querySelector('script[data-consent-service="adsense"]')) return;
-        const script = document.createElement("script");
-        script.async = true;
-        script.crossOrigin = "anonymous";
-        script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5230972214569734";
-        script.dataset.consentService = "adsense";
-        document.head.appendChild(script);
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        const banner = document.getElementById("cookie-banner");
-        const options = document.getElementById("cookie-options");
-        const advertising = document.getElementById("advertising-consent");
-        const accept = document.getElementById("accept-cookies");
-        const reject = document.getElementById("reject-cookies");
-        const manage = document.getElementById("manage-cookies");
-        const save = document.getElementById("save-cookies");
-        const reopen = document.getElementById("reopen-cookie-settings");
-        if (!(banner && options && advertising instanceof HTMLInputElement && accept && reject && manage && save && reopen)) return;
-
-        const stored = localStorage.getItem(CONSENT_KEY);
-        let consent = null;
-        try { consent = stored ? JSON.parse(stored) : null; } catch { localStorage.removeItem(CONSENT_KEY); }
-
-        const showBanner = (manageMode = false) => {
-            banner.hidden = false;
-            options.hidden = !manageMode;
-            save.hidden = !manageMode;
-            accept.hidden = manageMode;
-            reject.hidden = manageMode;
-            reopen.hidden = true;
-            reopen.setAttribute('aria-expanded', 'true');
-            (manageMode ? advertising : accept).focus();
-        };
-
-        const storeConsent = (advertisingAllowed) => {
-            localStorage.setItem(CONSENT_KEY, JSON.stringify({ necessary: true, advertising: advertisingAllowed }));
-            banner.hidden = true;
-            reopen.hidden = false;
-            reopen.setAttribute('aria-expanded', 'false');
-            if (advertisingAllowed) loadAdsense();
-        };
-
-        if (consent && typeof consent.advertising === "boolean") {
-            advertising.checked = consent.advertising;
-            reopen.hidden = false;
-            reopen.setAttribute('aria-expanded', 'false');
-            if (consent.advertising) loadAdsense();
-        } else {
-            showBanner();
-        }
-
-        accept.addEventListener("click", () => storeConsent(true));
-        reject.addEventListener("click", () => storeConsent(false));
-        manage.addEventListener("click", () => showBanner(true));
-        save.addEventListener("click", () => storeConsent(advertising.checked));
-        reopen.addEventListener("click", () => showBanner(true));
-    });
+const CONSENT_KEY="ultimate_bench_cookie_consent";
+function loadAdsense(){if(document.querySelector('script[data-consent-service="adsense"]'))return;const script=document.createElement("script");script.async=true;script.crossOrigin="anonymous";script.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5230972214569734";script.dataset.consentService="adsense";document.head.appendChild(script)}
+document.addEventListener("DOMContentLoaded",()=>{const notice=document.getElementById("cookie-notice"),backdrop=document.getElementById("cookie-preferences-backdrop"),dialog=document.getElementById("cookie-preferences-dialog"),advertising=document.getElementById("advertising-consent"),accept=document.getElementById("accept-cookies"),reject=document.getElementById("reject-cookies"),manage=document.getElementById("manage-cookies"),save=document.getElementById("save-cookies"),cancel=document.getElementById("cancel-cookie-settings"),reopen=document.getElementById("reopen-cookie-settings");if(!(notice&&backdrop&&dialog&&advertising instanceof HTMLInputElement&&accept&&reject&&manage&&save&&cancel&&reopen))return;
+let consent=null,lastOpener=null,scrollY=0,reopened=false;try{const stored=localStorage.getItem(CONSENT_KEY);consent=stored?JSON.parse(stored):null}catch{localStorage.removeItem(CONSENT_KEY)}
+const background=[...document.body.children].filter(el=>!el.contains(notice)&&!el.contains(backdrop)&&!el.contains(reopen));
+const setBackgroundInert=value=>background.forEach(el=>{if('inert' in el)el.inert=value;else value?el.setAttribute('aria-hidden','true'):el.removeAttribute('aria-hidden')});
+const closeDialog=restore=>{backdrop.hidden=true;manage.setAttribute('aria-expanded','false');reopen.setAttribute('aria-expanded','false');setBackgroundInert(false);document.body.style.overflow='';window.scrollTo(0,scrollY);if(restore&&lastOpener instanceof HTMLElement)lastOpener.focus()};
+const openDialog=(opener,isReopened)=>{lastOpener=opener;reopened=isReopened;advertising.checked=Boolean(consent?.advertising);backdrop.hidden=false;notice.hidden=true;reopen.hidden=true;manage.setAttribute('aria-expanded','true');reopen.setAttribute('aria-expanded','true');scrollY=window.scrollY;document.body.style.overflow='hidden';setBackgroundInert(true);advertising.focus()};
+const storeConsent=allowed=>{consent={necessary:true,advertising:allowed};localStorage.setItem(CONSENT_KEY,JSON.stringify(consent));notice.hidden=true;closeDialog(false);reopen.hidden=false;if(allowed)loadAdsense();reopen.focus()};
+if(consent&&typeof consent.advertising==='boolean'){reopen.hidden=false;if(consent.advertising)loadAdsense()}else notice.hidden=false;
+accept.addEventListener('click',()=>storeConsent(true));reject.addEventListener('click',()=>storeConsent(false));manage.addEventListener('click',()=>openDialog(manage,false));reopen.addEventListener('click',()=>openDialog(reopen,true));save.addEventListener('click',()=>storeConsent(advertising.checked));cancel.addEventListener('click',()=>{closeDialog(true);if(!consent)notice.hidden=false;else reopen.hidden=false});
+dialog.addEventListener('keydown',event=>{if(event.key==='Escape'&&reopened){event.preventDefault();closeDialog(true);reopen.hidden=false}if(event.key!=='Tab')return;const focusable=[...dialog.querySelectorAll('button,input:not([disabled]),a[href]')].filter(el=>!el.hidden);if(!focusable.length)return;const first=focusable[0],last=focusable.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}});
+});
 </script>
-
 <style>
-    .cookie-banner { position: fixed; inset: auto 0 0; background: rgba(17,24,39,.98); color: #F3F4F6; padding: 1rem; z-index: 10000; border-top: 1px solid #374151; }
-    .cookie-banner[hidden], [hidden] { display: none !important; }
-    .cookie-content { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
-    .cookie-content h2 { margin: 0 0 .4rem; font-size: 1.1rem; }
-    .cookie-content p { margin: 0; font-size: .875rem; line-height: 1.5; }
-    .cookie-content a { color: #34D399; }
-    .cookie-options { display: flex; flex-direction: column; gap: .5rem; margin-top: 1rem; font-size: .875rem; }
-    .cookie-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .5rem; min-width: 22rem; }
-    .cookie-btn, .reopen-cookie-settings { border: 1px solid #6B7280; background: #1F2937; color: #F3F4F6; padding: .6rem .9rem; border-radius: 4px; font-weight: 600; cursor: pointer; }
-    .cookie-btn.primary { background: #10B981; border-color: #10B981; color: #111827; }
-    .reopen-cookie-settings { position: fixed; right: 5rem; bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px)); z-index: 9998; min-height: 2.8rem; font-size: .75rem; }
-    @media (max-width: 479px) { .reopen-cookie-settings { right: 1.25rem; bottom: calc(5rem + env(safe-area-inset-bottom, 0px)); } }
-    @media (max-width: 767px) { .cookie-content { flex-direction: column; align-items: stretch; } .cookie-actions { min-width: 0; justify-content: flex-start; } }
+.cookie-banner{position:fixed;inset:auto 0 0;background:rgba(17,24,39,.98);color:#F3F4F6;padding:1rem;z-index:10000;border-top:1px solid #374151}.cookie-banner[hidden],[hidden]{display:none!important}.cookie-content{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1.5rem}.cookie-content h2,.cookie-dialog h2{margin:0 0 .4rem;font-size:1.1rem}.cookie-content p,.cookie-dialog p{margin:0;font-size:.875rem;line-height:1.5}.cookie-content a{color:#34D399}.cookie-options{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0;font-size:.875rem}.cookie-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:.5rem;min-width:22rem}.cookie-btn,.reopen-cookie-settings{border:1px solid #6B7280;background:#1F2937;color:#F3F4F6;padding:.6rem .9rem;border-radius:4px;font-weight:600;cursor:pointer}.cookie-btn.primary{background:#10B981;border-color:#10B981;color:#111827}.cookie-dialog-backdrop{position:fixed;inset:0;z-index:10001;display:grid;place-items:center;padding:1rem;background:rgba(0,0,0,.72)}.cookie-dialog{width:min(32rem,100%);padding:1.5rem;border:1px solid #4B5563;border-radius:10px;background:#111827;color:#F3F4F6;box-shadow:0 24px 80px #000}.reopen-cookie-settings{position:fixed;right:5rem;bottom:calc(1.25rem + env(safe-area-inset-bottom,0px));z-index:9998;min-height:2.8rem;font-size:.75rem}@media(max-width:479px){.reopen-cookie-settings{right:1.25rem;bottom:calc(5rem + env(safe-area-inset-bottom,0px))}}@media(max-width:767px){.cookie-content{flex-direction:column;align-items:stretch}.cookie-actions{min-width:0;justify-content:flex-start}}@media(prefers-reduced-motion:reduce){.cookie-banner,.cookie-dialog,.cookie-dialog-backdrop{animation:none!important;transition:none!important}}
 </style>

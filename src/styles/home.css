@@ -1548,3 +1548,21 @@
 .status-badge.planned { display: inline-block; padding: .25rem .45rem; border: 1px solid #6b7280; border-radius: 999px; color: #d1d5db; font-size: .68rem; font-weight: 700; text-transform: uppercase; }
 .journey-disclaimer { max-width: 42rem; color: #fef3c7; font-weight: 700; line-height: 1.5; }
 .benchmark-status-legend { max-width: 90rem; margin: 2rem auto; padding: 1.5rem; }
+
+/* Respect OS motion preferences without hiding content or focus feedback. */
+@media (prefers-reduced-motion: reduce) {
+    html:focus-within { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    .journey-stars i, .journey-path, .journey-node, .glow, .ripple, .sparkle, .modal-overlay, .tooltip-text { animation: none !important; transition: none !important; }
+    *:hover { transform: none !important; }
+}
+.semantic-leaderboard-table { display: block; width: 100%; border-collapse: collapse; }
+.semantic-leaderboard-table thead, .semantic-leaderboard-table tbody { display: block; }
+.semantic-leaderboard-table th, .semantic-leaderboard-table td { min-width: 0; padding: 0; font-weight: inherit; text-align: inherit; }
+.semantic-leaderboard-table .ultimate-table-header > th { color: #718198; font: 700 .62rem var(--font-body); letter-spacing: .13em; text-transform: uppercase; }
+.semantic-summary-wrap { overflow-x: auto; }
+.semantic-summary-table { width: 100%; border-collapse: collapse; }
+.semantic-summary-table thead tr, .semantic-summary-table tbody tr { display: grid; grid-template-columns: 3rem minmax(100px, 3fr) minmax(80px, 1.5fr); align-items: center; }
+.semantic-summary-table th, .semantic-summary-table td { padding: .65rem .5rem; text-align: left; }
+.semantic-summary-table thead th { color: #d1d5db; font-size: .75rem; text-transform: uppercase; }
+.semantic-summary-table .score-cell { justify-content: center; text-align: center; font-size: 1.1rem; font-weight: bold; color: #e0e0e0; }

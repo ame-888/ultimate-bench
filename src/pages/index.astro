@@ -1,10 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { benchmarks } from '../data/benchmarks';
-import { ARENAS, activeLevels } from '../data/benchmarkSpec';
+import { ARENAS } from '../data/benchmarkSpec';
 import { buildLeaderboard } from '../data/leaderboard';
 import { validateBenchmarkRecords } from '../data/scoring';
-import { blendedCost, modelPricing, PRICING_CHECKED_ON } from '../data/modelPricing';
+import { createParetoChartDomain, modelPricing, PRICING_CHECKED_ON, validatePricing } from '../data/modelPricing';
 import CreatureIcon from '../components/CreatureIcon.astro';
 import { getSimulatedDate, TIME_OFFSET } from '../scripts/TimeUtils';
 
@@ -143,7 +143,8 @@ const unifiedRawList = Array.from(unifiedDataMap.values()).map(m => {
     return m;
 });
 
-const unifiedList = canonicalLeaderboard.arenaRows.visual.map(row => ({ ...unifiedRawList.find(item => item.name === row.name), rank: row.rank }));
+const visualArenaRows = canonicalLeaderboard.arenaRows.visual;
+const unifiedList = visualArenaRows.map(row => ({ ...unifiedRawList.find(item => item.name === row.name), rank: row.rank, canonicalScore: row.score, canonicalRank: row.rank }));
 
 // Calculate best AI scores for each column to apply the golden aura
 const bestAiScores = { lvl1: -1, lvl2: -1, lvl3: -1, lvl4: -1, lvl5: -1 };
@@ -181,7 +182,7 @@ const dataRawList = Array.from(dataDataMap.values()).map(m => {
     return m;
 });
 
-const dataList = canonicalLeaderboard.arenaRows['data-retrieval'].map(row => ({ ...dataRawList.find(item => item.name === row.name), rank: row.rank }));
+const dataList = canonicalLeaderboard.arenaRows['data-retrieval'].map(row => ({ ...dataRawList.find(item => item.name === row.name), rank: row.rank, canonicalScore: row.score, canonicalRank: row.rank }));
 
 const bestDataAiScores = { worm: -1, koala: -1, crow: -1, octopus: -1 };
 dataList.forEach(item => {
@@ -191,63 +192,7 @@ dataList.forEach(item => {
         if (typeof item.octopus === 'number' && item.octopus > bestDataAiScores.octopus) bestDataAiScores.octopus = item.octopus;
 });
 
-// --- Canonical Progressive Level Weighting arena logic ---
-function computeGlobalScores(list, weights, keys) {
-    const globalScores = list.map(item => {
-        let multiplierSum = 0;
-        let divisorSum = 0;
-        let attemptedCount = 0;
-        let unavailableCount = 0;
-
-        keys.forEach(k => {
-            let val = item[k];
-            if (val === 'UNAVAILABLE') {
-                unavailableCount++;
-            }
-            if (val === 'UNAVAILABLE' || val === undefined) {
-                // Ignore completely
-                return;
-            }
-
-            attemptedCount++;
-            let numVal = val === 'INVALID' ? 0 : (typeof val === 'number' ? val : 0);
-
-            const weight = weights[k];
-            multiplierSum += (numVal * weight);
-            divisorSum += weight;
-        });
-
-        const score = divisorSum > 0 ? (multiplierSum / divisorSum) : 0;
-
-        return {
-            ...item,
-            globalScore: score,
-            hasData: attemptedCount > 0,
-            qualifiesForGlobal: unavailableCount <= 1
-        };
-    });
-
-    // Filter out models with no data, sort descending, assign rank
-    const sorted = globalScores
-        .filter(item => item.hasData && item.qualifiesForGlobal)
-        .sort((a, b) => b.globalScore - a.globalScore);
-
-    let currentRank = 1;
-    let prevScore = null;
-    return sorted.map(item => {
-        if (prevScore !== null && item.globalScore < prevScore) {
-            currentRank++;
-        }
-        prevScore = item.globalScore;
-        return { ...item, rank: currentRank };
-    });
-}
-
-const visualWeights = Object.fromEntries(activeLevels(ARENAS.visual).map(level => [level.key, level.weight]));
-const dataWeights = Object.fromEntries(activeLevels(ARENAS.dataRetrieval).map(level => [level.key, level.weight]));
-
-const visualGlobalList = computeGlobalScores(unifiedRawList, visualWeights, ['lvl1', 'lvl2', 'lvl3', 'lvl4', 'lvl5']);
-const dataGlobalList = computeGlobalScores(dataRawList, dataWeights, ['worm', 'koala', 'crow', 'octopus']);
+const dataArenaRows = canonicalLeaderboard.arenaRows['data-retrieval'];
 
 const rowsData = Array.from({ length: dataList.length }, (_, i) => i);
 
@@ -277,7 +222,7 @@ const chessRawList = Array.from(chessDataMap.values()).map(m => {
     return m;
 });
 
-const chessList = canonicalLeaderboard.arenaRows.chess.map(row => ({ ...chessRawList.find(item => item.name === row.name), rank: row.rank }));
+const chessList = canonicalLeaderboard.arenaRows.chess.map(row => ({ ...chessRawList.find(item => item.name === row.name), rank: row.rank, canonicalScore: row.score, canonicalRank: row.rank }));
 
 const bestChessAiScores = { mouse: -1, spider: -1, wolf: -1, hawk: -1, python: -1, hydra: -1 };
 chessList.forEach(item => {
@@ -289,8 +234,7 @@ chessList.forEach(item => {
     if (typeof item.hydra === 'number' && item.hydra > bestChessAiScores.hydra) bestChessAiScores.hydra = item.hydra;
 });
 
-const chessWeights = Object.fromEntries(activeLevels(ARENAS.chess).map(level => [level.key, level.weight]));
-const chessGlobalList = computeGlobalScores(chessRawList, chessWeights, ['mouse', 'spider', 'wolf', 'hawk', 'python', 'hydra']);
+const chessArenaRows = canonicalLeaderboard.arenaRows.chess;
 
 const rowsChess = Array.from({ length: chessList.length }, (_, i) => i);
 
@@ -313,41 +257,34 @@ function getPixelMedal(rank) {
 
 
 // --- Global Ultimate Bench Logic: shared canonical utilities ---
-let ultimateBenchList = canonicalLeaderboard.rows.map(item => ({
-    name: item.name,
-    releaseDate: releaseDateByModel.get(item.name),
-    visualScore: item.scores.visual,
-    dataScore: item.scores['data-retrieval'],
-    chessScore: item.scores.chess,
-    ultimateScore: item.score,
-    rank: item.rank,
-    coverage: item.results
+const canonicalModels = canonicalLeaderboard.rows.map(item => ({
+    name: item.name, releaseDate: releaseDateByModel.get(item.name),
+    visualScore: item.scores.visual, dataScore: item.scores['data-retrieval'], chessScore: item.scores.chess,
+    ultimateScore: item.score, rank: item.rank, coverage: item.results
 }));
-
-// Pricing is optional and affects only the separate cost/performance visualization.
-ultimateBenchList = ultimateBenchList.flatMap(item => {
-    const pricing = modelPricing[item.name];
-    if (!pricing) return [];
-    return [{ ...item, blendedCost: blendedCost(pricing), pricingSource: pricing.source }];
+const pricingDiagnostics = [];
+const pricedModels = canonicalModels.flatMap(item => {
+    const result = validatePricing(modelPricing[item.name]);
+    if (!result.valid) { pricingDiagnostics.push(`${item.name}: ${result.diagnostic}`); return []; }
+    return [{ ...item, blendedCost: result.value.blendedCost, pricingSource: result.value.source }];
 });
-
-const paretoModels = ultimateBenchList.filter(item => !ultimateBenchList.some(other =>
+const omittedPricingCount = canonicalModels.length - pricedModels.length;
+const paretoModels = pricedModels.filter(item => !pricedModels.some(other =>
     other !== item && other.blendedCost <= item.blendedCost && other.ultimateScore >= item.ultimateScore &&
     (other.blendedCost < item.blendedCost || other.ultimateScore > item.ultimateScore)
 ));
 const paretoNames = new Set(paretoModels.map(item => item.name));
-const sotaScore = Math.max(0, ...ultimateBenchList.map(item => item.ultimateScore));
-const sotaModelName = ultimateBenchList.find(item => item.ultimateScore === sotaScore)?.name ?? "None";
-const chartWidth = 1200;
-const chartHeight = 640;
-// Give labels above the highest-scoring point room to breathe.
+const sotaScore = Math.max(0, ...canonicalModels.map(item => item.ultimateScore));
+const sotaModelName = canonicalModels.find(item => item.ultimateScore === sotaScore)?.name ?? "None";
+const chartWidth = 1200, chartHeight = 640;
 const chartPad = { left: 82, right: 42, top: 72, bottom: 72 };
-const minCostPower = Math.floor(Math.log10(Math.min(...ultimateBenchList.map(item => item.blendedCost))));
-const maxCostPower = Math.ceil(Math.log10(Math.max(...ultimateBenchList.map(item => item.blendedCost))));
+const chartDomain = createParetoChartDomain(pricedModels.map(item => item.blendedCost));
+const { minPower: minCostPower, maxPower: maxCostPower } = chartDomain;
 const costTicks = Array.from({ length: maxCostPower - minCostPower + 1 }, (_, index) => 10 ** (minCostPower + index));
-const scoreTicks = Array.from({ length: 5 }, (_, index) => (sotaScore * index) / 4);
-const chartX = (cost) => chartPad.left + ((Math.log10(cost) - minCostPower) / (maxCostPower - minCostPower)) * (chartWidth - chartPad.left - chartPad.right);
-const chartY = (score) => chartPad.top + ((sotaScore - score) / sotaScore) * (chartHeight - chartPad.top - chartPad.bottom);
+const scoreDomainMax = sotaScore > 0 ? sotaScore : 1;
+const scoreTicks = Array.from({ length: 5 }, (_, index) => (scoreDomainMax * index) / 4);
+const chartX = (cost) => chartPad.left + chartDomain.x(cost) * (chartWidth - chartPad.left - chartPad.right);
+const chartY = (score) => chartPad.top + ((scoreDomainMax - score) / scoreDomainMax) * (chartHeight - chartPad.top - chartPad.bottom);
 const frontierPoints = [...paretoModels].sort((a, b) => a.blendedCost - b.blendedCost).map(item => `${chartX(item.blendedCost)},${chartY(item.ultimateScore)}`).join(' ');
 
 function getRankDisplay(rank) {
@@ -361,6 +298,7 @@ function getRankDisplay(rank) {
 
 <Layout title="AI Model Leaderboard | Ultimate Bench" description="Compare AI models across Ultimate Bench's experimental visual, data, and chess benchmark evaluations.">
     <main>
+        <h1 class="sr-only">Ultimate Bench experimental AI model leaderboard</h1>
         <div class="leaderboard-grid">
             <!-- Benchmarks Section -->
             <section class="leaderboard-section full-width">
@@ -455,7 +393,6 @@ function getRankDisplay(rank) {
 
                 <!-- Homepage Combined View -->
                 <div id="home-wrapper">
-                    <h1 class="sr-only">Ultimate Bench experimental AI model leaderboard</h1>
                     <div class="benchmark-description">
                         <p>Welcome to Ultimate Bench. The global leaderboard summarizes model performance across all tasks using Progressive Level Weighting.</p>
                     </div>
@@ -471,7 +408,7 @@ function getRankDisplay(rank) {
                             </div>
                             <div class="title-rule" aria-hidden="true"><span></span><i>✦</i><span></span></div>
                             <div class="leaderboard-meta" aria-label="Leaderboard overview">
-                                <div><strong>{ultimateBenchList.length}</strong><span>qualified models</span></div>
+                                <div><strong>{canonicalModels.length}</strong><span>qualified models</span></div>
                                 <div><strong>3</strong><span>benchmark arenas</span></div>
                                 <div><strong>{sotaScore.toFixed(1)}%</strong><span>highest current Overall</span></div>
                             </div>
@@ -494,7 +431,7 @@ function getRankDisplay(rank) {
                                     <button type="button" class="provider-filter-btn" data-provider-filter={provider.name} aria-pressed="false">{provider.name}</button>
                                 ))}
                             </div>
-                            <span id="ultimate-filter-count" class="filter-count" aria-live="polite">{ultimateBenchList.length} models</span>
+                            <span id="ultimate-filter-count" class="filter-count" aria-live="polite">{canonicalModels.length} models</span>
                             <button id="ultimate-filter-clear" class="filter-clear" type="button" hidden>Clear filters</button>
                         </div>
 
@@ -515,7 +452,7 @@ function getRankDisplay(rank) {
                                     <text class="axis-title" x={(chartWidth + chartPad.left - chartPad.right) / 2} y={chartHeight - 15}>BLENDED COST · USD PER 1M TOKENS · LOG SCALE</text>
                                     <text class="axis-title axis-title-y" transform={`translate(20 ${(chartHeight - chartPad.bottom + chartPad.top) / 2}) rotate(-90)`}>OVERALL SCORE · CURRENT DATASET</text>
                                     <polyline class="frontier-glow" points={frontierPoints}/><polyline class="frontier-line" points={frontierPoints}/>
-                                    {ultimateBenchList.map(item => (
+                                    {pricedModels.map(item => (
                                         <g class={`pareto-point ${paretoNames.has(item.name) ? 'is-frontier' : ''}`} data-model-name={item.name.toLowerCase()} data-provider={getModelProvider(item.name).name} transform={`translate(${chartX(item.blendedCost)} ${chartY(item.ultimateScore)})`} tabindex="0" role="img" aria-label={`${item.name}: ${item.ultimateScore.toFixed(1)} percent overall at $${item.blendedCost.toFixed(2)} per million tokens`}>
                                             <circle r={paretoNames.has(item.name) ? 9 : 6}/>
                                             {paretoNames.has(item.name) && <text x="12" y="-11">{item.name}</text>}
@@ -524,45 +461,49 @@ function getRankDisplay(rank) {
                                     ))}
                                 </svg>
                             </div>
+                            {pricedModels.length === 0 && <p class="pareto-empty" role="status">No qualified models have valid verified pricing for this cost comparison.</p>}
+                            {omittedPricingCount > 0 && <p class="pareto-omission" role="note">{omittedPricingCount} qualified {omittedPricingCount === 1 ? 'model is' : 'models are'} omitted from this cost comparison because verified pricing is unavailable or invalid.</p>}
                             <p class="pareto-footnote"><span>↳</span> Cost blends 75% input and 25% output token pricing. Prices checked {PRICING_CHECKED_ON}; both axes preserve the raw benchmark data—no invented efficiency score.</p>
                         </section>
 
                         <div class="ultimate-container" role="region" aria-label="Global Ultimate Bench standings" tabindex="0">
-                            <div class="ultimate-modern-container">
-                                <div class="ultimate-table-header">
-                                    <span>Rank</span><span>Model</span><span>Released</span>
-                                    <button id="ultimate-visual-sort-btn"><span>Visual</span><small id="ultimate-visual-sort-text">Score ▼</small></button>
-                                    <button id="ultimate-data-sort-btn"><span>Data</span><small id="ultimate-data-sort-text">Score ▼</small></button>
-                                    <button id="ultimate-chess-sort-btn"><span>Chess</span><small id="ultimate-chess-sort-text">Score ▼</small></button>
-                                    <button id="ultimate-sort-btn" class="overall-sort"><span>Overall</span><small id="ultimate-sort-text">Score ▼</small></button>
-                                </div>
-                                <div class="ultimate-table-body">
-                                    {ultimateBenchList.map((item) => (
-                                        <div class={`ultimate-row-hover rank-${item.rank}`} data-model-name={item.name.toLowerCase()} data-provider={getModelProvider(item.name).name} data-absolute-rank={item.rank}>
-                                            <div class="ultimate-rank"><span>{String(item.rank).padStart(2, '0')}</span><i aria-hidden="true">{item.rank <= 3 ? (item.rank === 1 ? '◆' : '◇') : ''}</i></div>
-                                            <div class={`ultimate-model model-cell ${getModelColorClass(item.name)}`}>
+                            <table class="ultimate-modern-container semantic-leaderboard-table">
+                                <caption class="sr-only">Global canonical Ultimate Bench standings</caption>
+                                <thead><tr class="ultimate-table-header">
+                                    <th scope="col">Rank</th><th scope="col">Model</th><th scope="col">Released</th>
+                                    <th scope="col" aria-sort="none"><button id="ultimate-visual-sort-btn"><span>Visual</span><small id="ultimate-visual-sort-text">Score ▼</small></button></th>
+                                    <th scope="col" aria-sort="none"><button id="ultimate-data-sort-btn"><span>Data</span><small id="ultimate-data-sort-text">Score ▼</small></button></th>
+                                    <th scope="col" aria-sort="none"><button id="ultimate-chess-sort-btn"><span>Chess</span><small id="ultimate-chess-sort-text">Score ▼</small></button></th>
+                                    <th scope="col" aria-sort="descending"><button id="ultimate-sort-btn" class="overall-sort"><span>Overall</span><small id="ultimate-sort-text">Score ▼</small></button></th>
+                                </tr></thead>
+                                <tbody class="ultimate-table-body">
+                                    {canonicalModels.map((item) => (
+                                        <tr class={`ultimate-row-hover rank-${item.rank}`} data-model-name={item.name.toLowerCase()} data-provider={getModelProvider(item.name).name} data-absolute-rank={item.rank}>
+                                            <td class="ultimate-rank"><span>{String(item.rank).padStart(2, '0')}</span><i aria-hidden="true">{item.rank <= 3 ? (item.rank === 1 ? '◆' : '◇') : ''}</i></td>
+                                            <th scope="row" class={`ultimate-model model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="model-info" data-provider={getModelProvider(item.name).name}>
                                                     <div class="model-name-line">
                                                         <strong class="model-name" data-release-date={item.releaseDate}>{item.name}</strong>
                                                         {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="ultimate-release-date">
+                                            </th>
+                                            <td class="ultimate-release-date">
                                                 <time datetime={item.releaseDate}>{formatReleaseDate(item.releaseDate)}</time>
                                                 <span class="release-time-ago">{formatTimeAgo(item.releaseDate)}</span>
-                                            </div>
+                                            </td>
                                             {[['visual', item.visualScore], ['data', item.dataScore], ['chess', item.chessScore]].map(([type, score]) => (
-                                                <div class={`ultimate-metric ultimate-${type}-score-cell score-cell`} data-score={score}>
+                                                <td class={`ultimate-metric ultimate-${type}-score-cell score-cell`} data-score={score}>
                                                     <strong>{score.toFixed(1)}</strong><small>%</small>
-                                                </div>
+                                                </td>
                                             ))}
-                                            <div class="ultimate-score-cell score-cell" data-absolute-score={item.ultimateScore.toFixed(1)}><strong>{item.ultimateScore.toFixed(1)}</strong><small>%</small></div>
-                                        </div>
+                                            <td class="ultimate-score-cell score-cell" data-absolute-score={item.ultimateScore.toFixed(1)}><strong>{item.ultimateScore.toFixed(1)}</strong><small>%</small></td>
+                                        </tr>
                                     ))}
-                                </div>
+                                </tbody>
+                            </table>
                                 <div id="ultimate-filter-empty" class="ultimate-empty" hidden>No models match those filters.</div>
-                                {ultimateBenchList.length === 0 && <div class="ultimate-empty">No models currently span all three benchmarks.</div>}
+                                {canonicalModels.length === 0 && <div class="ultimate-empty">No models currently span all three benchmarks.</div>}
                             </div>
                         </div>
                         <p class="leaderboard-note absolute-note"><span>↳</span> Overall equally averages the three progressively weighted arena scores. Token price does not affect it.</p>
@@ -649,122 +590,28 @@ function getRankDisplay(rank) {
 
 
                     <div class="home-grid">
-                        <!-- Visual Global Column -->
-                        <div class="home-column">
-                            <div class="home-column-header">
-                                <h2>VISUAL BENCH</h2>
-                                <button class="expand-btn" data-target="visual" aria-expanded="false" aria-controls="visual-bench-full">View Visual Bench details</button>
-                            </div>
-                            <div class="benchmark-desktop-container">
-                                <div class="benchmark-container visual-table">
-                                    <div class="header-row unified-header-row" style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
-                                        <div class="col-header model-col-header" style="justify-content: flex-start; padding-left: 0.5rem;"><h3>MODEL</h3><div class="creature-icon"></div></div>
-                                        <div class="col-header" style="justify-content: center; text-align: center;">
-                                            <div class="header-title-wrapper" style="border-bottom: none;">
-                                                <h3 style="color: #D1D5DB; text-align: center;">SCORE</h3>
-                                            </div>
-                                            <div class="creature-icon"></div>
-                                        </div>
-                                    </div>
-                                    {visualGlobalList.map((item, index) => (
-                                        <div class={`benchmark-row unified-row `} style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
-                                            <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
-                                                <div class="benchmark-content">
-                                                    <div class="rank" set:html={getRankDisplay(item.rank)}></div>
-                                                    <div class="model-info" data-provider={getModelProvider(item.name).name}>
-                                                        <div class="model-name-line">
-                                                            <div class="model-name" data-release-date={item.releaseDate}>{item.name}</div>
-                                                            {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="benchmark-cell score-cell" style="justify-content: center; text-align: center; font-size: 1.1rem; font-weight: bold; color: #E0E0E0;">
-                                                {item.globalScore.toFixed(1)}%
-                                            </div>
-                                        </div>
-                                    ))}
+                        {[
+                            { id: 'visual', title: 'VISUAL BENCH', rows: visualArenaRows },
+                            { id: 'data', title: 'DATA RETRIEVAL BENCH', rows: dataArenaRows },
+                            { id: 'chess', title: 'CHESS BENCH', rows: chessArenaRows }
+                        ].map(arena => (
+                            <div class="home-column">
+                                <div class="home-column-header"><h2>{arena.title}</h2><button class="expand-btn" data-target={arena.id} aria-expanded="false" aria-controls={`${arena.id === 'data' ? 'data' : arena.id}-bench-full`}>View {arena.title.replace(' BENCH',' Bench')} details</button></div>
+                                <div class="benchmark-desktop-container semantic-summary-wrap" tabindex="0">
+                                    <table class="benchmark-container semantic-summary-table">
+                                        <caption class="sr-only">Canonical {arena.title} standings</caption>
+                                        <thead><tr><th scope="col">Rank</th><th scope="col">Model</th><th scope="col">Score</th></tr></thead>
+                                        <tbody>{arena.rows.map(item => (
+                                            <tr class="benchmark-row unified-row" data-model-name={item.name}>
+                                                <td class="rank" set:html={getRankDisplay(item.rank)}></td>
+                                                <th scope="row" class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}><span class="model-name" data-release-date={item.releaseDate}>{item.name}</span>{isNew(item.releaseDate) && <span class="new-badge">NEW</span>}</th>
+                                                <td class="benchmark-cell score-cell">{item.score.toFixed(1)}%</td>
+                                            </tr>
+                                        ))}</tbody>
+                                    </table>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Data Global Column -->
-                        <div class="home-column">
-                            <div class="home-column-header">
-                                <h2>DATA RETRIEVAL BENCH</h2>
-                                <button class="expand-btn" data-target="data" aria-expanded="false" aria-controls="data-bench-full">View Data Retrieval Bench details</button>
-                            </div>
-                            <div class="benchmark-desktop-container">
-                                <div class="benchmark-container visual-table">
-                                    <div class="header-row unified-header-row" style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
-                                        <div class="col-header model-col-header" style="justify-content: flex-start; padding-left: 0.5rem;"><h3>MODEL</h3><div class="creature-icon"></div></div>
-                                        <div class="col-header" style="justify-content: center; text-align: center;">
-                                            <div class="header-title-wrapper" style="border-bottom: none;">
-                                                <h3 style="color: #D1D5DB; text-align: center;">SCORE</h3>
-                                            </div>
-                                            <div class="creature-icon"></div>
-                                        </div>
-                                    </div>
-                                    {dataGlobalList.map((item, index) => (
-                                        <div class={`benchmark-row unified-row `} style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
-                                            <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
-                                                <div class="benchmark-content">
-                                                    <div class="rank" set:html={getRankDisplay(item.rank)}></div>
-                                                    <div class="model-info" data-provider={getModelProvider(item.name).name}>
-                                                        <div class="model-name-line">
-                                                            <div class="model-name" data-release-date={item.releaseDate}>{item.name}</div>
-                                                            {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="benchmark-cell score-cell" style="justify-content: center; text-align: center; font-size: 1.1rem; font-weight: bold; color: #E0E0E0;">
-                                                {item.globalScore.toFixed(1)}%
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Chess Global Column -->
-                        <div class="home-column">
-                            <div class="home-column-header">
-                                <h2>CHESS BENCH</h2>
-                                <button class="expand-btn" data-target="chess" aria-expanded="false" aria-controls="chess-bench-full">View Chess Bench details</button>
-                            </div>
-                            <div class="benchmark-desktop-container">
-                                <div class="benchmark-container">
-                                    <div class="header-row unified-header-row" style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);">
-                                        <div class="col-header model-col-header" style="justify-content: flex-start; padding-left: 0.5rem;"><h3>MODEL</h3><div class="creature-icon"></div></div>
-                                        <div class="col-header" style="justify-content: center; text-align: center;">
-                                            <div class="header-title-wrapper" style="border-bottom: none;">
-                                                <h3 style="color: #D1D5DB; text-align: center;">SCORE</h3>
-                                            </div>
-                                            <div class="creature-icon"></div>
-                                        </div>
-                                    </div>
-                                    {chessGlobalList.map((item, index) => (
-                                        <div class={`benchmark-row unified-row `} style="grid-template-columns: minmax(100px, 3fr) minmax(80px, 1.5fr);" data-model-name={item.name}>
-                                            <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
-                                                <div class="benchmark-content">
-                                                    <div class="rank" set:html={getRankDisplay(item.rank)}></div>
-                                                    <div class="model-info" data-provider={getModelProvider(item.name).name}>
-                                                        <div class="model-name-line">
-                                                            <div class="model-name" data-release-date={item.releaseDate}>{item.name}</div>
-                                                            {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="benchmark-cell score-cell" style="justify-content: center; text-align: center; font-size: 1.1rem; font-weight: bold; color: #E0E0E0;">
-                                                {item.globalScore.toFixed(1)}%
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
 
@@ -798,7 +645,7 @@ There are currently five levels in use. Level 6 remains under development and is
                         </select>
                         <small class="ranking-note">Alternate modes reorder this table only; canonical scores, Overall, and official ranks do not change.</small>
                         <span class="tooltip-container">
-                            <button type="button" class="tooltip-icon" id="visual-tooltip-icon" aria-label="Show explanation">ⓘ</button>
+                            <button type="button" class="tooltip-icon" id="visual-tooltip-icon" aria-label="Show Visual ranking method explanation" aria-controls="visual-tooltip-text">ⓘ</button>
                             <div class="tooltip-text" id="visual-tooltip-text">Official Progressive Level Weighting order. Each Active level has twice the weight of the preceding level; alternate modes change ordering only.</div>
                         </span>
                     </div>
@@ -811,8 +658,8 @@ There are currently five levels in use. Level 6 remains under development and is
                                     <div class="header-title-wrapper">
                                         <h3>MOLE</h3>
                                         <span class="tooltip-container">
-                                            <button type="button" class="tooltip-icon" aria-label="Show explanation">ⓘ</button>
-                                            <div class="tooltip-text"><strong>MOLE (Level 1):</strong> Repeated Coordinate-Based Character Localization. The model answers ten coordinate queries about a fixed 10 × 10 character grid. The identical grid, coordinates, and questions are administered ten times, measuring repeatable correct performance in character recognition and absolute spatial grounding.</div>
+                                            <button type="button" class="tooltip-icon" aria-label="Show Mole Level 1 explanation" aria-controls="tooltip-explanation-2">ⓘ</button>
+                                            <div class="tooltip-text" id="tooltip-explanation-2"><strong>MOLE (Level 1):</strong> Repeated Coordinate-Based Character Localization. The model answers ten coordinate queries about a fixed 10 × 10 character grid. The identical grid, coordinates, and questions are administered ten times, measuring repeatable correct performance in character recognition and absolute spatial grounding.</div>
                                         </span>
                                     </div>
                                     <div class="creature-icon mole-icon">
@@ -823,8 +670,8 @@ There are currently five levels in use. Level 6 remains under development and is
                                     <div class="header-title-wrapper">
                                         <h3>RHINO</h3>
                                         <span class="tooltip-container">
-                                            <button type="button" class="tooltip-icon" aria-label="Show explanation">ⓘ</button>
-                                            <div class="tooltip-text"><strong>RHINO (Level 2):</strong> Partial-View Character Localization. The Level 1 grid is transformed by removing the same lateral half of every column and concatenating the remaining strips. The model answers the same ten coordinate questions across ten identical administrations, measuring repeatable correct recognition and spatial grounding under systematic visual information loss.</div>
+                                            <button type="button" class="tooltip-icon" aria-label="Show Rhino Level 2 explanation" aria-controls="tooltip-explanation-3">ⓘ</button>
+                                            <div class="tooltip-text" id="tooltip-explanation-3"><strong>RHINO (Level 2):</strong> Partial-View Character Localization. The Level 1 grid is transformed by removing the same lateral half of every column and concatenating the remaining strips. The model answers the same ten coordinate questions across ten identical administrations, measuring repeatable correct recognition and spatial grounding under systematic visual information loss.</div>
                                         </span>
                                     </div>
                                     <div class="creature-icon rhino-icon">
@@ -835,8 +682,8 @@ There are currently five levels in use. Level 6 remains under development and is
                                     <div class="header-title-wrapper">
                                         <h3>CHIMPANZEE</h3>
                                         <span class="tooltip-container">
-                                            <button type="button" class="tooltip-icon" aria-label="Show explanation">ⓘ</button>
-                                            <div class="tooltip-text">CHIMPANZEE (Level 3): Compound Visual Degradation. The complete Level 2 image is processed by an imperfect automatic background-removal tool, producing additional information loss and segmentation artifacts. The model answers the same ten coordinate questions across ten identical administrations, measuring repeatable correct character localization under compound visual degradation.</div>
+                                            <button type="button" class="tooltip-icon" aria-label="Show Chimpanzee Level 3 explanation" aria-controls="tooltip-explanation-4">ⓘ</button>
+                                            <div class="tooltip-text" id="tooltip-explanation-4">CHIMPANZEE (Level 3): Compound Visual Degradation. The complete Level 2 image is processed by an imperfect automatic background-removal tool, producing additional information loss and segmentation artifacts. The model answers the same ten coordinate questions across ten identical administrations, measuring repeatable correct character localization under compound visual degradation.</div>
                                         </span>
                                     </div>
                                     <div class="creature-icon chimp-icon">
@@ -847,8 +694,8 @@ There are currently five levels in use. Level 6 remains under development and is
                                     <div class="header-title-wrapper">
                                         <h3>OWL</h3>
                                         <span class="tooltip-container">
-                                            <button type="button" class="tooltip-icon" aria-label="Show explanation">ⓘ</button>
-                                            <div class="tooltip-text">OWL (Level 4): Anchor-Based Midpoint Localization. In a 17 × 11 character grid interrupted by a central 5 × 3 image, the model must locate two named characters and identify the character in the single horizontal or vertical cell exactly between them. The task measures repeatable correct relational localization across multiple dependent visual-reasoning stages.</div>
+                                            <button type="button" class="tooltip-icon" aria-label="Show Owl Level 4 explanation" aria-controls="tooltip-explanation-5">ⓘ</button>
+                                            <div class="tooltip-text" id="tooltip-explanation-5">OWL (Level 4): Anchor-Based Midpoint Localization. In a 17 × 11 character grid interrupted by a central 5 × 3 image, the model must locate two named characters and identify the character in the single horizontal or vertical cell exactly between them. The task measures repeatable correct relational localization across multiple dependent visual-reasoning stages.</div>
                                         </span>
                                     </div>
                                     <div class="creature-icon owl-icon">
@@ -859,8 +706,8 @@ There are currently five levels in use. Level 6 remains under development and is
                                     <div class="header-title-wrapper">
                                         <h3>EAGLE</h3>
                                         <span class="tooltip-container">
-                                            <button type="button" class="tooltip-icon" aria-label="Show explanation">ⓘ</button>
-                                            <div class="tooltip-text">EAGLE (Level 5): Relational Localization Under Heterogeneous Visual Corruption. In a large grid containing randomly mixed animated and live-action characters from multiple shows, imperfect cropping and spatially selective color inversion degrade the visual evidence. The model must locate two named anchors and identify the character at their horizontal, vertical, or diagonal midpoint across ten repeated administrations.</div>
+                                            <button type="button" class="tooltip-icon" aria-label="Show Eagle Level 5 explanation" aria-controls="tooltip-explanation-6">ⓘ</button>
+                                            <div class="tooltip-text" id="tooltip-explanation-6">EAGLE (Level 5): Relational Localization Under Heterogeneous Visual Corruption. In a large grid containing randomly mixed animated and live-action characters from multiple shows, imperfect cropping and spatially selective color inversion degrade the visual evidence. The model must locate two named anchors and identify the character at their horizontal, vertical, or diagonal midpoint across ten repeated administrations.</div>
                                         </span>
                                     </div>
                                     <div class="creature-icon eagle-icon">
@@ -871,8 +718,8 @@ There are currently five levels in use. Level 6 remains under development and is
                                     <div class="header-title-wrapper">
                                         <h3>BEHOLDER</h3>
                                         <span class="tooltip-container">
-                                            <button type="button" class="tooltip-icon" aria-label="Show explanation">ⓘ</button>
-                                            <div class="tooltip-text"><strong>BEHOLDER (Level 6):</strong> Planned evaluation. The Level 6 stimulus, task structure, scoring protocol, and measured capabilities have not yet been defined. No model results are currently available.</div>
+                                            <button type="button" class="tooltip-icon" aria-label="Show Beholder Level 6 explanation" aria-controls="tooltip-explanation-7">ⓘ</button>
+                                            <div class="tooltip-text" id="tooltip-explanation-7"><strong>BEHOLDER (Level 6):</strong> Planned evaluation. The Level 6 stimulus, task structure, scoring protocol, and measured capabilities have not yet been defined. No model results are currently available.</div>
                                         </span>
                                     </div>
                                     <div class="creature-icon beholder-icon">
@@ -946,7 +793,7 @@ There are currently five levels in use. Level 6 remains under development and is
                         </select>
                         <small class="ranking-note">Alternate modes reorder this table only; canonical scores, Overall, and official ranks do not change.</small>
                         <span class="tooltip-container">
-                            <button type="button" class="tooltip-icon" id="chess-tooltip-icon" aria-label="Show explanation">ⓘ</button>
+                            <button type="button" class="tooltip-icon" id="chess-tooltip-icon" aria-label="Show Chess ranking method explanation" aria-controls="chess-tooltip-text">ⓘ</button>
                             <div class="tooltip-text" id="chess-tooltip-text">Official Progressive Level Weighting order. Each Active level has twice the weight of the preceding level; alternate modes change ordering only.</div>
                         </span>
                     </div>
@@ -960,8 +807,8 @@ There are currently five levels in use. Level 6 remains under development and is
                                         <div class="header-title-wrapper">
                                             <h3>MOUSE</h3>
                                             <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show explanation">ⓘ</button>
-                                                <div class="tooltip-text"><strong>MOUSE (Level 1):</strong> A test of baseline structural integrity and fundamental laws. The system must demonstrate an active, coherent grasp of basic spatial constraints and avoid immediate cognitive collapse over a short horizon.</div>
+                                                <button type="button" class="tooltip-icon" aria-label="Show Chess Mouse Level 1 explanation" aria-controls="tooltip-explanation-9">ⓘ</button>
+                                                <div class="tooltip-text" id="tooltip-explanation-9"><strong>MOUSE (Level 1):</strong> A test of baseline structural integrity and fundamental laws. The system must demonstrate an active, coherent grasp of basic spatial constraints and avoid immediate cognitive collapse over a short horizon.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon mouse-icon">
@@ -972,8 +819,8 @@ There are currently five levels in use. Level 6 remains under development and is
                                         <div class="header-title-wrapper">
                                             <h3>SPIDER</h3>
                                             <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show explanation">ⓘ</button>
-                                                <div class="tooltip-text"><strong>SPIDER (Level 2):</strong> A trial of cognitive stamina. Here, the march of turns is the primary adversary, testing whether the system's internal state representation can withstand the creeping decay of longer, more drawn-out sequences.</div>
+                                                <button type="button" class="tooltip-icon" aria-label="Show Chess Spider Level 2 explanation" aria-controls="tooltip-explanation-10">ⓘ</button>
+                                                <div class="tooltip-text" id="tooltip-explanation-10"><strong>SPIDER (Level 2):</strong> A trial of cognitive stamina. Here, the march of turns is the primary adversary, testing whether the system's internal state representation can withstand the creeping decay of longer, more drawn-out sequences.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon spider-icon">
@@ -984,8 +831,8 @@ There are currently five levels in use. Level 6 remains under development and is
                                         <div class="header-title-wrapper">
                                             <h3>WOLF</h3>
                                             <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show explanation">ⓘ</button>
-                                                <div class="tooltip-text"><strong>WOLF (Level 3):</strong> An introduction to uncompromising precision. The margin for error shrinks drastically, demanding sharp tactical alertness where minor oversights carry sudden and heavy consequences.</div>
+                                                <button type="button" class="tooltip-icon" aria-label="Show Chess Wolf Level 3 explanation" aria-controls="tooltip-explanation-11">ⓘ</button>
+                                                <div class="tooltip-text" id="tooltip-explanation-11"><strong>WOLF (Level 3):</strong> An introduction to uncompromising precision. The margin for error shrinks drastically, demanding sharp tactical alertness where minor oversights carry sudden and heavy consequences.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon wolf-icon">
@@ -996,8 +843,8 @@ There are currently five levels in use. Level 6 remains under development and is
                                         <div class="header-title-wrapper">
                                             <h3>HAWK</h3>
                                             <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show explanation">ⓘ</button>
-                                                <div class="tooltip-text"><strong>HAWK (Level 4):</strong> An evaluation of psychological friction and self-certainty. The system must navigate external skepticism and defend its own logical calculations, where a single moment of submissive compliance or hesitation results in total failure.</div>
+                                                <button type="button" class="tooltip-icon" aria-label="Show Chess Hawk Level 4 explanation" aria-controls="tooltip-explanation-12">ⓘ</button>
+                                                <div class="tooltip-text" id="tooltip-explanation-12"><strong>HAWK (Level 4):</strong> An evaluation of psychological friction and self-certainty. The system must navigate external skepticism and defend its own logical calculations, where a single moment of submissive compliance or hesitation results in total failure.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon hawk-icon">
@@ -1008,8 +855,8 @@ There are currently five levels in use. Level 6 remains under development and is
                                         <div class="header-title-wrapper">
                                             <h3>PYTHON</h3>
                                             <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show explanation">ⓘ</button>
-                                                <div class="tooltip-text"><strong>PYTHON (Level 5):</strong> A confrontation with flawless execution. The standard is set so high that mere survival or passive defense is treated as defeat, all while the system is subjected to relentless, systematic false accusations.</div>
+                                                <button type="button" class="tooltip-icon" aria-label="Show Chess Python Level 5 explanation" aria-controls="tooltip-explanation-13">ⓘ</button>
+                                                <div class="tooltip-text" id="tooltip-explanation-13"><strong>PYTHON (Level 5):</strong> A confrontation with flawless execution. The standard is set so high that mere survival or passive defense is treated as defeat, all while the system is subjected to relentless, systematic false accusations.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon python-icon">
@@ -1020,8 +867,8 @@ There are currently five levels in use. Level 6 remains under development and is
                                         <div class="header-title-wrapper">
                                             <h3>HYDRA</h3>
                                             <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show explanation">ⓘ</button>
-                                                <div class="tooltip-text"><strong>HYDRA (Level 6):</strong> Planned future level. Protocol not yet defined.</div>
+                                                <button type="button" class="tooltip-icon" aria-label="Show Chess Hydra Level 6 explanation" aria-controls="tooltip-explanation-14">ⓘ</button>
+                                                <div class="tooltip-text" id="tooltip-explanation-14"><strong>HYDRA (Level 6):</strong> Planned future level. Protocol not yet defined.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon hydra-icon">
@@ -1096,7 +943,7 @@ There are four Active levels. Raven and Athena are Planned future levels with pr
                         </select>
                         <small class="ranking-note">Alternate modes reorder this table only; canonical scores, Overall, and official ranks do not change.</small>
                         <span class="tooltip-container">
-                            <button type="button" class="tooltip-icon" id="data-tooltip-icon" aria-label="Show explanation">ⓘ</button>
+                            <button type="button" class="tooltip-icon" id="data-tooltip-icon" aria-label="Show Data Retrieval ranking method explanation" aria-controls="data-tooltip-text">ⓘ</button>
                             <div class="tooltip-text" id="data-tooltip-text">Official Progressive Level Weighting order. Each Active level has twice the weight of the preceding level; alternate modes change ordering only.</div>
                         </span>
                     </div>
@@ -1110,8 +957,8 @@ There are four Active levels. Raven and Athena are Planned future levels with pr
                                         <div class="header-title-wrapper">
                                             <h3>WORM</h3>
                                             <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show explanation">ⓘ</button>
-                                                <div class="tooltip-text"><strong>WORM (Level 1):</strong> Evaluates Baseline Agentic Retrieval. Measures the model's foundational ability to execute a single, focused multimodal web search and extract specific granular data from the noise of the open web.</div>
+                                                <button type="button" class="tooltip-icon" aria-label="Show Data Retrieval Worm Level 1 explanation" aria-controls="tooltip-explanation-16">ⓘ</button>
+                                                <div class="tooltip-text" id="tooltip-explanation-16"><strong>WORM (Level 1):</strong> Evaluates Baseline Agentic Retrieval. Measures the model's foundational ability to execute a single, focused multimodal web search and extract specific granular data from the noise of the open web.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon worm-icon">
@@ -1122,8 +969,8 @@ There are four Active levels. Raven and Athena are Planned future levels with pr
                                         <div class="header-title-wrapper">
                                             <h3>KOALA</h3>
                                             <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show explanation">ⓘ</button>
-                                                <div class="tooltip-text"><strong>KOALA (Level 2):</strong> Tests Parallelized Multi-Hop Execution. Designed to expose 'Lost in the Middle' contextual collapse, this level evaluates a model's stamina and working memory when forced to execute massive batches of unrelated tasks simultaneously.</div>
+                                                <button type="button" class="tooltip-icon" aria-label="Show Data Retrieval Koala Level 2 explanation" aria-controls="tooltip-explanation-17">ⓘ</button>
+                                                <div class="tooltip-text" id="tooltip-explanation-17"><strong>KOALA (Level 2):</strong> Tests Parallelized Multi-Hop Execution. Designed to expose 'Lost in the Middle' contextual collapse, this level evaluates a model's stamina and working memory when forced to execute massive batches of unrelated tasks simultaneously.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon koala-icon">
@@ -1134,8 +981,8 @@ There are four Active levels. Raven and Athena are Planned future levels with pr
                                         <div class="header-title-wrapper">
                                             <h3>CROW</h3>
                                             <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show explanation">ⓘ</button>
-                                                <div class="tooltip-text"><strong>CROW (Level 3):</strong> Measures Epistemic Sovereignty. Tests the model's resistance to sycophancy and anchor bias. To pass, the agent must trust its retrieved data enough to actively defy and correct highly plausible, yet false, user suggestions.</div>
+                                                <button type="button" class="tooltip-icon" aria-label="Show Data Retrieval Crow Level 3 explanation" aria-controls="tooltip-explanation-18">ⓘ</button>
+                                                <div class="tooltip-text" id="tooltip-explanation-18"><strong>CROW (Level 3):</strong> Measures Epistemic Sovereignty. Tests the model's resistance to sycophancy and anchor bias. To pass, the agent must trust its retrieved data enough to actively defy and correct highly plausible, yet false, user suggestions.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon crow-icon">
@@ -1146,8 +993,8 @@ There are four Active levels. Raven and Athena are Planned future levels with pr
                                         <div class="header-title-wrapper">
                                             <h3>OCTOPUS</h3>
                                             <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show explanation">ⓘ</button>
-                                                <div class="tooltip-text"><strong>OCTOPUS (Level 4):</strong> Tests advanced multimodal data navigation, needle-in-a-haystack retrieval, deep multilingual understanding, and more advanced sycophancy resistance.</div>
+                                                <button type="button" class="tooltip-icon" aria-label="Show Data Retrieval Octopus Level 4 explanation" aria-controls="tooltip-explanation-19">ⓘ</button>
+                                                <div class="tooltip-text" id="tooltip-explanation-19"><strong>OCTOPUS (Level 4):</strong> Tests advanced multimodal data navigation, needle-in-a-haystack retrieval, deep multilingual understanding, and more advanced sycophancy resistance.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon octopus-icon">
@@ -1158,8 +1005,8 @@ There are four Active levels. Raven and Athena are Planned future levels with pr
                                         <div class="header-title-wrapper">
                                             <h3>RAVEN</h3>
                                             <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show explanation">ⓘ</button>
-                                                <div class="tooltip-text"><strong>RAVEN (Level 5):</strong> Planned future level. Protocol not yet defined.</div>
+                                                <button type="button" class="tooltip-icon" aria-label="Show Data Retrieval Raven Level 5 explanation" aria-controls="tooltip-explanation-20">ⓘ</button>
+                                                <div class="tooltip-text" id="tooltip-explanation-20"><strong>RAVEN (Level 5):</strong> Planned future level. Protocol not yet defined.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon">
@@ -1170,8 +1017,8 @@ There are four Active levels. Raven and Athena are Planned future levels with pr
                                         <div class="header-title-wrapper">
                                             <h3>ATHENA</h3>
                                             <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show explanation">ⓘ</button>
-                                                <div class="tooltip-text"><strong>ATHENA (Level 6):</strong> Planned future level. Protocol not yet defined.</div>
+                                                <button type="button" class="tooltip-icon" aria-label="Show Data Retrieval Athena Level 6 explanation" aria-controls="tooltip-explanation-21">ⓘ</button>
+                                                <div class="tooltip-text" id="tooltip-explanation-21"><strong>ATHENA (Level 6):</strong> Planned future level. Protocol not yet defined.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon athena-icon">
@@ -1230,6 +1077,6 @@ There are four Active levels. Raven and Athena are Planned future levels with pr
 <script
     id="home-page-config"
     type="application/json"
-    set:html={JSON.stringify({ TIME_OFFSET, unifiedRawList, dataRawList, chessRawList }).replaceAll('<', '\\u003c')}
+    set:html={JSON.stringify({ TIME_OFFSET, unifiedRawList: unifiedList, dataRawList: dataList, chessRawList: chessList, canonicalLeaders: { overall: canonicalModels[0]?.name, visual: visualArenaRows[0]?.name, data: dataArenaRows[0]?.name, chess: chessArenaRows[0]?.name } }).replaceAll('<', '\\u003c')}
 ></script>
 <script src="../scripts/home-page.js"></script>
