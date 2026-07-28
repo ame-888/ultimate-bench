@@ -89,7 +89,7 @@
     .cookie-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .5rem; min-width: 22rem; }
     .cookie-btn, .reopen-cookie-settings { border: 1px solid #6B7280; background: #1F2937; color: #F3F4F6; padding: .6rem .9rem; border-radius: 4px; font-weight: 600; cursor: pointer; }
     .cookie-btn.primary { background: #10B981; border-color: #10B981; color: #111827; }
-    .reopen-cookie-settings { position: fixed; right: 5rem; bottom: 1.25rem; z-index: 9998; min-height: 2.8rem; font-size: .75rem; }
-    @media (max-width: 479px) { .reopen-cookie-settings { right: 1.25rem; bottom: 5rem; } }
+    .reopen-cookie-settings { position: fixed; right: 5rem; bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px)); z-index: 9998; min-height: 2.8rem; font-size: .75rem; }
+    @media (max-width: 479px) { .reopen-cookie-settings { right: 1.25rem; bottom: calc(5rem + env(safe-area-inset-bottom, 0px)); } }
     @media (max-width: 767px) { .cookie-content { flex-direction: column; align-items: stretch; } .cookie-actions { min-width: 0; justify-content: flex-start; } }
 </style>

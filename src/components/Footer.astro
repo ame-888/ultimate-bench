@@ -40,6 +40,7 @@ const year = new Date().getUTCFullYear();
     .site-footer nav a { color: #94a3b8; font-size: .9rem; text-decoration: none; }
     .site-footer nav a:hover { color: #93c5fd; text-decoration: underline; text-underline-offset: .2rem; }
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-    .footer-meta { display: flex; justify-content: space-between; gap: 1rem; max-width: 78rem; margin: 0 auto; padding: 1.25rem 1.5rem 2rem; border-top: 1px solid #202a3a; font-size: .75rem; }
-    @media (max-width: 680px) { .footer-inner { grid-template-columns: 1fr 1fr; } .footer-about { grid-column: 1 / -1; } .footer-meta { flex-direction: column; } }
+    /* Reserve the lower edge for the two persistent floating controls. */
+    .footer-meta { display: flex; justify-content: space-between; gap: 1rem; max-width: 78rem; margin: 0 auto; padding: 1.25rem 1.5rem calc(5.3rem + env(safe-area-inset-bottom, 0px)); border-top: 1px solid #202a3a; font-size: .75rem; }
+    @media (max-width: 680px) { .footer-inner { grid-template-columns: 1fr 1fr; } .footer-about { grid-column: 1 / -1; } .footer-meta { flex-direction: column; padding-bottom: calc(9.05rem + env(safe-area-inset-bottom, 0px)); } }
 </style>
