@@ -20,7 +20,7 @@ const profiles = canonical.rows.map(row => {
 });
 const mostBalanced = [...profiles].sort((a,b) => a.spread-b.spread)[0];
 const mostSpecialized = [...profiles].sort((a,b) => b.spread-a.spread)[0];
-const domainLeaders = domains.map(domain => domain.rows[0]).filter(Boolean);
+const domainLeaders = ARENA_LIST.map(arena => canonical.arenaLeaders[arena.id]).filter((row): row is NonNullable<typeof row> => row !== null);
 
 const visualKeys = ['lvl1', 'lvl2', 'lvl3', 'lvl4', 'lvl5'];
 const visualCurve = visualKeys.map((key, index) => {
