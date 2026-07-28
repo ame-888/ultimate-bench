@@ -236,6 +236,11 @@ chessList.forEach(item => {
 
 const chessArenaRows = canonicalLeaderboard.arenaRows.chess;
 
+// Homepage arena summaries intentionally show only officially ranked results.
+// Incomplete, computable results remain visible separately for transparency.
+const ARENA_PREVIEW_ROWS = 6;
+const provisionalArenaRows = canonicalLeaderboard.arenaRows['data-retrieval'].filter(row => row.rank === null);
+
 const rowsChess = Array.from({ length: chessList.length }, (_, i) => i);
 
 
@@ -591,28 +596,44 @@ function getRankDisplay(rank) {
 
                     <div class="home-grid">
                         {[
-                            { id: 'visual', title: 'VISUAL BENCH', rows: visualArenaRows },
-                            { id: 'data', title: 'DATA RETRIEVAL BENCH', rows: dataArenaRows },
-                            { id: 'chess', title: 'CHESS BENCH', rows: chessArenaRows }
+                            { id: 'visual', title: 'VISUAL BENCH', rows: visualArenaRows.filter(row => row.rank !== null) },
+                            { id: 'data', title: 'DATA RETRIEVAL BENCH', rows: dataArenaRows.filter(row => row.rank !== null) },
+                            { id: 'chess', title: 'CHESS BENCH', rows: chessArenaRows.filter(row => row.rank !== null) }
                         ].map(arena => (
-                            <div class="home-column">
+                            <article class="home-column" data-arena-card>
                                 <div class="home-column-header"><h2>{arena.title}</h2><button class="expand-btn" data-target={arena.id} aria-expanded="false" aria-controls={`${arena.id === 'data' ? 'data' : arena.id}-bench-full`}>View {arena.title.replace(' BENCH',' Bench')} details</button></div>
-                                <div class="benchmark-desktop-container semantic-summary-wrap" tabindex="0">
+                                <div class="benchmark-desktop-container semantic-summary-wrap">
                                     <table class="benchmark-container semantic-summary-table">
                                         <caption class="sr-only">Canonical {arena.title} standings</caption>
-                                        <thead><tr><th scope="col">Rank</th><th scope="col">Model</th><th scope="col">Score</th></tr></thead>
-                                        <tbody>{arena.rows.map(item => (
-                                            <tr class={`benchmark-row unified-row ${item.rank === null ? 'provisional-row' : ''}`} data-model-name={item.name} aria-label={`${item.name}, ${item.rank === null ? 'provisional, insufficient coverage for an official rank' : `official rank ${item.rank}`}`}>
+                                        <thead><tr><th scope="col">Rank</th><th scope="col">Model</th><th scope="col" class="badge-heading">Status</th><th scope="col">Score</th></tr></thead>
+                                        <tbody id={`${arena.id}-arena-summary`}>{arena.rows.map((item, index) => (
+                                            <tr class="benchmark-row unified-row" data-model-name={item.name} hidden={index >= ARENA_PREVIEW_ROWS}>
                                                 <td class="rank" set:html={getRankDisplay(item.rank)}></td>
-                                                <th scope="row" class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}><span class="model-name" data-release-date={item.releaseDate}>{item.name}</span>{isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}</th>
-                                                <td class="benchmark-cell score-cell">{item.score.toFixed(1)}%{item.rank === null && <small class="coverage-note"><b>PROVISIONAL</b><span>Insufficient coverage for an official rank</span><span>{item.canonical.coverage} · {item.canonical.weightCoverage}</span></small>}</td>
+                                                <th scope="row" class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}><span class="model-name" title={item.name}>{item.name}</span></th>
+                                                <td class="benchmark-cell badge-cell">{isNew(releaseDateByModel.get(item.name)) && <span class="new-badge">NEW</span>}</td>
+                                                <td class="benchmark-cell score-cell">{item.score.toFixed(1)}%</td>
                                             </tr>
                                         ))}</tbody>
                                     </table>
                                 </div>
-                            </div>
+                                {arena.rows.length > ARENA_PREVIEW_ROWS && <button class="arena-toggle" type="button" aria-expanded="false" aria-controls={`${arena.id}-arena-summary`}><span>SHOW MORE</span><span aria-hidden="true">⌄</span></button>}
+                            </article>
                         ))}
                     </div>
+
+                    {provisionalArenaRows.length > 0 && <section class="excluded-results" aria-labelledby="excluded-results-title">
+                        <div class="excluded-results-heading">
+                            <div><span class="excluded-kicker">Transparency note</span><h2 id="excluded-results-title">Excluded from official ranking</h2></div>
+                            <p>Scores here are displayed for transparency, but do not qualify for an official position.</p>
+                        </div>
+                        <div class="excluded-results-list">
+                            {provisionalArenaRows.map(item => <article class="excluded-result-card">
+                                <div class="excluded-result-model"><span class="provisional-badge">PROVISIONAL</span><h3 title={item.name}>{item.name}</h3><span class="excluded-arena">Data Retrieval Bench</span></div>
+                                <div class="excluded-result-score"><span>Provisional score</span><strong>{item.score.toFixed(1)}%</strong></div>
+                                <div class="excluded-result-copy"><p><strong>Not eligible for ranking.</strong> There is not enough benchmark coverage for a comparable official rank.</p><dl><div><dt>Level coverage</dt><dd>{item.canonical.coverage}</dd></div><div><dt>Weight coverage</dt><dd>{item.canonical.weightCoverage}</dd></div></dl></div>
+                            </article>)}
+                        </div>
+                    </section>}
                 </div>
 
                 <div id="visual-benchmark-wrapper" class="hidden">

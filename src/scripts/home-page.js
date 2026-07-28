@@ -477,6 +477,20 @@ function init() {
             });
         });
 
+        // Keep arena summaries compact without introducing nested scrolling.
+        document.querySelectorAll('[data-arena-card]').forEach(card => {
+            const toggle = card.querySelector('.arena-toggle');
+            if (!toggle) return;
+
+            const collapsedRows = [...card.querySelectorAll('tbody tr[hidden]')];
+            toggle.addEventListener('click', () => {
+                const expanded = toggle.getAttribute('aria-expanded') === 'true';
+                collapsedRows.forEach(row => { row.hidden = !expanded; });
+                toggle.setAttribute('aria-expanded', String(!expanded));
+                toggle.querySelector('span').textContent = expanded ? 'SHOW MORE' : 'SHOW LESS';
+            });
+        });
+
         // Ensure home wrapper is visible and others hidden on load
         if (homeWrapper) homeWrapper.classList.remove('hidden');
         if (visualWrapper) visualWrapper.classList.add('hidden');
