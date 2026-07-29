@@ -18,7 +18,7 @@ Canonical definitions are in [`src/data/benchmarkSpec.ts`](src/data/benchmarkSpe
 
 ## Public and protected benchmark information
 
-Public protocols describe the evaluated construct, administration count, transformation categories, scoring, validity rules, product/interface configuration, limitations, and audit expectations. Active images, exact questions, character layouts, answer keys, and reconstructable transformation details remain confidential to reduce contamination and benchmark-specific optimization. Visual Bench Levels 1–5 have public operational protocols; Level 6 is Planned and not operationally defined.
+Public protocols describe the evaluated construct, administration count, transformation categories, scoring, validity rules, product/interface configuration, limitations, and audit expectations. Active images, exact questions, character layouts, answer keys, and reconstructable transformation details remain confidential to reduce contamination and benchmark-specific optimization. Visual Bench Levels 1–5 and Chess Bench Levels 1–5 have dedicated public protocols. Visual Level 6 remains undefined; Chess Level 6 has a documented pre-activation protocol but remains Planned and excluded.
 
 ## Routes
 
@@ -27,6 +27,7 @@ Public protocols describe the evaluated construct, administration count, transfo
 | `/` | Canonical leaderboard, arena results, status legend, and cost comparison |
 | `/methodology/` | Canonical scoring, statuses, qualification, transparency, and limitations |
 | `/methodology/visual-bench/` | Visual Bench administration, security, scoring, Active Levels 1–5, and Planned Level 6 |
+| `/methodology/chess-bench/` | Chess Bench match rules, scoring, Active Levels 1–5, and the excluded Planned Hydra protocol |
 | `/analysis/` | Canonical findings and clearly labeled exploratory statistics |
 | `/about/`, `/contact/` | Project and contact information |
 | `/privacy/`, `/terms/` | Implementation-specific policy and rights terms |

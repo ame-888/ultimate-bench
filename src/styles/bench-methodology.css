@@ -1,0 +1,37 @@
+.bench-methodology{--page-accent:#5eead4;--page-accent-rgb:94,234,212;max-width:74rem}
+.bench-methodology .section-navigation{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.6rem;margin:0 0 2rem}
+.bench-methodology .section-navigation a{padding:.75rem;border:1px solid rgba(var(--page-accent-rgb),.3);border-radius:.7rem;color:#ccfbf1;background:rgba(30,41,59,.55);font-size:.78rem;font-weight:700;text-decoration:none}
+.bench-methodology .section-navigation a:hover{border-color:var(--page-accent)}
+.bench-methodology .section-navigation a:focus-visible{outline:3px solid var(--page-accent);outline-offset:2px}
+.bench-methodology .section-navigation .pending{color:#c4b5fd;border-color:rgba(196,181,253,.35)}
+.bench-methodology .content-card+.content-card,.bench-methodology .protocol+.protocol{margin-top:1.5rem}
+.bench-methodology .content-card section{scroll-margin-top:1.5rem}
+.bench-methodology .content-card section+section{margin-top:3rem;padding-top:2.5rem;border-top:1px solid rgba(148,163,184,.14)}
+.bench-methodology .section-label,.bench-methodology .protocol-level{margin:0 0 .2rem!important;color:var(--page-accent);font-size:.7rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+.bench-methodology .content-card h2{margin:.2rem 0 1rem;font-size:clamp(1.55rem,4vw,2.3rem)}
+.bench-methodology .content-card h3{margin:1.8rem 0 .55rem;color:#f8fafc;font-size:1.15rem}
+.bench-methodology .procedure-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin:1.2rem 0 1.5rem}
+.bench-methodology .procedure-grid div,.bench-methodology .callout,.bench-methodology .policy-list div{padding:1rem;border:1px solid rgba(var(--page-accent-rgb),.2);border-radius:.8rem;background:rgba(15,23,42,.48)}
+.bench-methodology .procedure-grid strong,.bench-methodology .procedure-grid span{display:block}
+.bench-methodology .procedure-grid span{margin-top:.25rem;color:#94a3b8;font-size:.8rem;line-height:1.5}
+.bench-methodology .callout{margin:1.25rem 0;border-left:3px solid var(--page-accent)}
+.bench-methodology .callout p{margin:.4rem 0 0}
+.bench-methodology .policy-list{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.bench-methodology .policy-list dt{color:#f8fafc;font-weight:800}
+.bench-methodology .policy-list dd{margin:.35rem 0 0;color:#aab8ca;line-height:1.6}
+.bench-methodology .table-wrap{max-width:100%;overflow-x:auto;border:1px solid rgba(148,163,184,.18);border-radius:.8rem}
+.bench-methodology table{width:100%;border-collapse:collapse;min-width:38rem}
+.bench-methodology th,.bench-methodology td{padding:.8rem 1rem;border-bottom:1px solid rgba(148,163,184,.14);text-align:left;vertical-align:top}
+.bench-methodology thead th{color:#f8fafc;background:rgba(15,23,42,.65)}
+.bench-methodology tbody th{color:#e2e8f0}
+.bench-methodology .total th,.bench-methodology .total td{font-weight:900;color:#f8fafc}
+.bench-methodology .protocol{scroll-margin-top:1.5rem}
+.bench-methodology .protocol header{padding-bottom:1.2rem;border-bottom:1px solid rgba(148,163,184,.14)}
+.bench-methodology .protocol header h2{font-size:clamp(2.2rem,6vw,3.8rem)}
+.bench-methodology .protocol header>p:last-child{margin:0;color:#aab8ca;font-weight:600}
+.bench-methodology .protocol section+section{margin-top:1.8rem;padding-top:1.5rem}
+.bench-methodology .protocol section h3{margin:0 0 .55rem}
+.bench-methodology .protocols{margin:1.5rem 0}
+.bench-methodology .closing-methodology code{display:block;padding:1rem;overflow-x:auto;border-radius:.65rem;color:#f8fafc;background:#0b1220;white-space:nowrap}
+@media(max-width:760px){.bench-methodology .section-navigation{grid-template-columns:repeat(2,minmax(0,1fr))}.bench-methodology .procedure-grid,.bench-methodology .policy-list{grid-template-columns:1fr}}
+@media(max-width:430px){.bench-methodology .section-navigation{grid-template-columns:1fr}.bench-methodology .content-card{padding:1.25rem}.bench-methodology th,.bench-methodology td{padding:.7rem}.bench-methodology .protocol header h2{font-size:2.25rem}}
