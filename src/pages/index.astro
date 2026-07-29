@@ -8,6 +8,7 @@ import { formatAggregateScore } from '../data/formatting';
 import { createParetoChartDomain, modelPricing, PRICING_CHECKED_ON, validatePricing } from '../data/modelPricing';
 import CreatureIcon from '../components/CreatureIcon.astro';
 import { getSimulatedDate, TIME_OFFSET } from '../scripts/TimeUtils';
+import { METHODOLOGY } from '../data/methodologyPublication';
 
 
 
@@ -403,6 +404,8 @@ function getRankDisplay(rank) {
                     <div class="benchmark-description">
                         <p>Welcome to Ultimate Bench. The global leaderboard summarizes model performance across all tasks using Progressive Level Weighting.</p>
                     </div>
+
+                    <aside class="methodology-callout" aria-labelledby="methodology-callout-title"><div><span>Scoring, coverage &amp; qualification</span><h2 id="methodology-callout-title">How Ultimate Bench works</h2><p>Read the complete public protocol behind the scores and their limitations.</p></div><div><a href={METHODOLOGY.canonicalPath}>Read methodology</a><a href={METHODOLOGY.pdfPath} download>Download PDF</a></div></aside>
 
                     <!-- Ultimate Global Bench Section -->
                     <section class="ultimate-bench-section" id="global-leaderboard" aria-labelledby="ultimate-leaderboard-title">

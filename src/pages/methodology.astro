@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import '../styles/content-pages.css';
 import { ARENA_LIST, activeLevels, plannedLevels, canonicalDenominator, operationalWeight } from '../data/benchmarkSpec';
+import { METHODOLOGY } from '../data/methodologyPublication';
 
 const pillars = [
     {
@@ -35,6 +36,8 @@ const process = [
             <p class="eyebrow"><span aria-hidden="true"></span> Behind the benchmark</p>
             <h1>Rigorous by design.<br /><em>Transparent where public.</em></h1>
             <p class="hero-copy">A clear view of the public protocols, scoring rules, safeguards, and protected test material behind the current experimental comparison.</p>
+            <div class="publication-actions"><a class="download" href={METHODOLOGY.pdfPath} download>Download complete methodology</a><a href={METHODOLOGY.canonicalPath}>Read complete methodology online</a></div>
+            <p class="publication-meta">PDF · Version {METHODOLOGY.version} · Updated {METHODOLOGY.revisionDate}</p>
             <nav class="jump-links" aria-label="On this page">
                 <a href="#protocols">Protocols</a>
                 <a href="#principles">Principles</a>
@@ -149,6 +152,7 @@ const process = [
     h1 { margin: 0; color: #f8fafc; font-size: clamp(3rem, 7.2vw, 6.2rem); line-height: .98; letter-spacing: -.065em; }
     h1 em { color: #94a3b8; font-style: normal; }
     .hero-copy { max-width: 43rem; margin: 1.8rem 0 2rem; color: #94a3b8; font-size: clamp(1rem, 2vw, 1.15rem); line-height: 1.75; }
+    .publication-actions{display:flex;flex-wrap:wrap;gap:.7rem;margin-bottom:.7rem}.publication-actions a{display:inline-flex;min-height:46px;box-sizing:border-box;align-items:center;padding:.8rem 1rem;border:1px solid #475569;border-radius:.65rem;color:#e2e8f0;font-size:.85rem;font-weight:800;text-decoration:none}.publication-actions .download{border-color:#14b8a6;background:#0f766e;color:white}.publication-meta{margin:0 0 1.5rem;color:#94a3b8;font-size:.78rem}
     .jump-links { display: flex; flex-wrap: wrap; gap: .55rem; }
     .jump-links a { padding: .55rem .9rem; border: 1px solid rgba(148,163,184,.18); border-radius: 99px; color: #cbd5e1; font-size: .76rem; font-weight: 700; text-decoration: none; transition: .2s ease; }
     .jump-links a:hover { border-color: var(--mint); color: var(--mint); transform: translateY(-2px); }
