@@ -20,7 +20,7 @@ Canonical definitions are in [`src/data/benchmarkSpec.ts`](src/data/benchmarkSpe
 
 ## Public and protected benchmark information
 
-Public protocols describe the evaluated construct, administration count, transformation categories, scoring, validity rules, product/interface configuration, limitations, and audit expectations. Active images, exact questions, character layouts, answer keys, and reconstructable transformation details remain confidential to reduce contamination and benchmark-specific optimization. Visual Bench Levels 1–5 and Chess Bench Levels 1–5 have Active public protocols. Visual Level 6 is Planned; the existing Hydra protocol is Locked and has no model results.
+Public protocols describe the evaluated construct, administration count, transformation categories, scoring, validity rules, product/interface configuration, limitations, and audit expectations. Active images, exact questions, character layouts, answer keys, and reconstructable transformation details remain confidential to reduce contamination and benchmark-specific optimization. Visual Bench Levels 1–5 and Chess Bench Levels 1–5 have Active public protocols. Visual Level 6 is Planned; the existing Hydra protocol is Locked and has no model results. DATA Bench now has a dedicated protocol page for Active Levels 1–4, the proposed Raven structure while it remains Planned, and Planned Athena without an inferred task.
 
 ## Routes
 
@@ -29,6 +29,7 @@ Public protocols describe the evaluated construct, administration count, transfo
 | `/` | Canonical leaderboard, arena results, status legend, and cost comparison |
 | `/methodology/` | Canonical scoring, statuses, qualification, transparency, and limitations |
 | `/methodology/visual-bench/` | Visual Bench administration, security, scoring, Active Levels 1–5, and Planned Level 6 |
+| `/methodology/data-bench/` | DATA Bench administration, exact-answer adjudication, Active Levels 1–4, and Planned Levels 5–6 |
 | `/methodology/chess-bench/` | Chess Bench match rules, progression, scoring, and five Active protocols and the Locked Hydra protocol |
 | `/analysis/` | Canonical findings and clearly labeled exploratory statistics |
 | `/about/`, `/contact/` | Project and contact information |
