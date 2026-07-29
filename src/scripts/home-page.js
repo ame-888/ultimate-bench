@@ -690,7 +690,7 @@ function init() {
                 const method = e.target.value;
                 if (chessTooltip) chessTooltip.textContent = tooltips[method];
 
-                const sorted = sortAndRank(chessRawList, ['mouse', 'spider', 'wolf', 'hawk', 'python'], method);
+                const sorted = sortAndRank(chessRawList, ['mouse', 'spider', 'wolf', 'hawk', 'python', 'hydra'], method);
                 updateTableDOM('chess-table-body', sorted);
             });
         }
