@@ -2,10 +2,11 @@
 import Layout from '../../layouts/Layout.astro';
 import '../../styles/content-pages.css';
 import '../../styles/bench-methodology.css';
-import { ARENAS, activeLevels } from '../../data/benchmarkSpec';
+import { ARENAS, activeLevels, canonicalDenominator, operationalWeight } from '../../data/benchmarkSpec';
 
 const visualLevels = activeLevels(ARENAS.visual);
-const fullWeight = visualLevels.reduce((sum, level) => sum + level.weight, 0);
+const fullWeight = canonicalDenominator(ARENAS.visual);
+const activeWeight = operationalWeight(ARENAS.visual);
 const protocols = [
     { number: 1, name: 'Mole', anchor: 'level-1-mole' },
     { number: 2, name: 'Rhino', anchor: 'level-2-rhino' },
@@ -87,8 +88,8 @@ const protocols = [
             <div class="table-wrap"><table><thead><tr><th>Result</th><th>Meaning</th><th>Composite treatment</th></tr></thead><tbody>
                 <tr><th scope="row">0</th><td>A completed, evaluable level with no correct response instances.</td><td>Zero points; the level’s full weight remains.</td></tr>
                 <tr><th scope="row">INVALID</th><td>Three consecutive administrations could not be evaluated because the requested answers were absent, refused, unrelated, severely malformed, or not reliably mappable. Incorrect but evaluable answers do not trigger INVALID.</td><td>Zero points; the level’s full weight remains. It is distinct from a completed zero.</td></tr>
-                <tr><th scope="row">UNAVAILABLE</th><td>The configuration could not be accessed for that Active level.</td><td>Excluded from numerator and denominator; coverage is incomplete.</td></tr>
-                <tr><th scope="row">NOT_TESTED</th><td>The configuration was not administered at that Active level.</td><td>Excluded from numerator and denominator; coverage is incomplete.</td></tr>
+                <tr><th scope="row">UNAVAILABLE</th><td>The configuration could not be accessed for that Active level.</td><td>Zero numerator contribution; denominator remains 63; Active-level coverage is incomplete.</td></tr>
+                <tr><th scope="row">NOT_TESTED</th><td>The configuration was not administered at that Active level.</td><td>Zero numerator contribution; denominator remains 63; Active-level coverage is incomplete.</td></tr>
                 <tr><th scope="row">Planned</th><td>A future level without an active protocol.</td><td>Excluded from scoring, coverage, and rank eligibility.</td></tr>
             </tbody></table></div>
             <p>After a third consecutive non-evaluable administration, testing stops and the level is stored as INVALID. The published repository does not establish a separate rule for retaining partial points from earlier runs, so this page does not claim one; the canonical aggregate receives the stored INVALID status and treats it as zero.</p>
@@ -139,18 +140,18 @@ const protocols = [
 
     <article class="content-card closing-methodology">
         <section id="weighting" aria-labelledby="weighting-title">
-            <p class="section-label">Official index</p><h2 id="weighting-title">Arena weighting and aggregate score</h2>
+            <p class="section-label">Official index</p><h2 id="weighting-title">Arena weighting and aggregate score</h2><p><strong>Fixed six-level normalization:</strong> the full ladder denominator is permanently 63. Operational weight is {activeWeight}/63, so the current maximum is 49.21%. Beholder reserves 32 points but has no model-level result. Future activation creates earning opportunity without changing the denominator.</p>
             <div class="table-wrap"><table data-visual-weights><thead><tr><th>Active level</th><th>Weight</th><th>Share of complete score</th></tr></thead><tbody>
-                {visualLevels.map(level => <tr data-level={level.number} data-weight={level.weight}><th scope="row">{level.number} — {level.name}</th><td>{level.weight}</td><td>{level.weight}/{fullWeight}</td></tr>)}
-                <tr class="total"><th scope="row">Complete denominator</th><td>{fullWeight}</td><td>100%</td></tr>
+                {visualLevels.map(level => <tr data-level={level.number} data-weight={level.weight}><th scope="row">{level.number} — {level.name}</th><td>{level.weight}</td><td>{level.weight}/63</td></tr>)}
+                <tr><th scope="row">6 — Beholder (Planned)</th><td>32 reserved</td><td>32/63</td></tr><tr class="total"><th scope="row">Full ladder denominator</th><td>{fullWeight}</td><td>Permanent</td></tr>
             </tbody></table></div>
-            <p><code>Visual score = (Mole + 2×Rhino + 4×Chimpanzee + 8×Owl + 16×Eagle) / 31</code></p>
+            <p><code>Visual score = (Mole + 2×Rhino + 4×Chimpanzee + 8×Owl + 16×Eagle) / 63</code></p>
             <p>Later levels contain more complex task conditions, and the official index intentionally gives success under those conditions greater importance. Eagle contributes 16/31 and Owl 8/31 of a complete score. Equal weighting would also be an editorial choice, not an objectively neutral law. Powers of two are transparent, deterministic, monotonic, and easy to reproduce, but these are <strong>editorial importance weights</strong>, not empirically estimated psychometric difficulty parameters.</p>
         </section>
 
         <section id="coverage-ranking" aria-labelledby="coverage-title">
             <p class="section-label">Leaderboard</p><h2 id="coverage-title">Coverage, provisional results, and ranking</h2>
-            <p>Complete Visual coverage means all five Active level results are included. Numeric zero and INVALID both retain coverage and weight. UNAVAILABLE and NOT_TESTED are excluded, reduce the denominator, and make any computable score provisional and ineligible for an official arena rank. Missing Active result fields are data errors rather than statuses.</p>
+            <p>Complete Visual coverage means all five Active level results are included. Numeric zero and INVALID both retain coverage and weight. UNAVAILABLE and NOT_TESTED earn zero without reducing denominator 63, and make the score provisional and ineligible for an official arena rank. Missing Active result fields are data errors rather than statuses.</p>
             <p>Official Visual ranks include only complete-coverage results. Overall qualification requires rank-eligible results in all three arenas. Equal unrounded canonical scores receive the same competition rank and the next rank is skipped. Canonical calculations retain full precision; leaderboard composite displays round to one decimal place. Per-level integer percentages are already exact response counts out of 100.</p>
         </section>
 
@@ -167,7 +168,7 @@ const protocols = [
         </section>
 
         <section id="level-6-beholder" aria-labelledby="beholder-title" data-level-status="Planned">
-            <p class="section-label">Planned · excluded</p><h2 id="beholder-title">Level 6 — Beholder</h2>
+            <p class="section-label">Planned · reserved weight 32</p><h2 id="beholder-title">Level 6 — Beholder</h2>
             <p>Beholder has no active stimulus, task, or scoring protocol. It contributes nothing to the current Visual score, does not affect coverage or rank eligibility, and must not display a model score. Its future protocol must be documented before activation; no methodology is inferred here.</p>
         </section>
     </article>
