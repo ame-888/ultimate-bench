@@ -208,7 +208,8 @@ const chessDataMap = new Map();
         wolf: m.scores?.wolf,
         hawk: m.scores?.hawk,
         python: m.scores?.python,
-        hydra: m.scores?.hydra
+        hydra: m.scores?.hydra,
+        origins: m.origins ?? {}
     });
 });
 
@@ -788,7 +789,7 @@ function getRankDisplay(rank) {
                     <header class="detail-hero">
                         <span class="detail-kicker">Arena 03 · Strategy</span>
                         <h2>Chess Bench</h2>
-                        <p>Five Active levels for practical chatbot chess performance; Hydra is Planned and excluded from current scoring.</p>
+                        <p>Six Active levels for practical chatbot chess performance; Hydra is included at weight 32 under the progression rule.</p>
                     </header>
                     <div class="benchmark-description">
                         <p>Chess Bench is the third benchmark in the Ultimate Bench series.<br>
@@ -888,7 +889,7 @@ function getRankDisplay(rank) {
                                             <h3>HYDRA</h3>
                                             <span class="tooltip-container">
                                                 <button type="button" class="tooltip-icon" aria-label="Show Chess Hydra Level 6 explanation" aria-controls="tooltip-explanation-14">ⓘ</button>
-                                                <div class="tooltip-text" id="tooltip-explanation-14"><strong>HYDRA (Level 6):</strong> Planned future level. Protocol not yet defined.</div>
+                                                <div class="tooltip-text" id="tooltip-explanation-14"><strong>HYDRA (Level 6):</strong> Active simultaneous Chess960 evaluation at weight 32. Administration requires a positive Python result.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon hydra-icon">
@@ -919,12 +920,15 @@ function getRankDisplay(rank) {
                                         </div>
 
                                         {/* Challenge Columns */}
-                                        <div class="benchmark-cell score-cell mouse-score" style="flex: 1;"><span class={` ${item.mouse === 0 || item.mouse === 'INVALID' ? 'zero-score-glow' : ''} ${item.mouse === bestChessAiScores.mouse && item.mouse > 0 ? 'best-score-glow' : ''}`}>{item.mouse !== undefined ? (typeof item.mouse === 'string' ? item.mouse : `${item.mouse}%`) : ''}</span></div>
-                                        <div class="benchmark-cell score-cell spider-score" style="flex: 1;"><span class={` ${item.spider === 0 || item.spider === 'INVALID' ? 'zero-score-glow' : ''} ${item.spider === bestChessAiScores.spider && item.spider > 0 ? 'best-score-glow' : ''}`}>{item.spider !== undefined ? (typeof item.spider === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.spider}</span> : `${item.spider}%`) : ''}</span></div>
-                                        <div class="benchmark-cell score-cell wolf-score" style="flex: 1;"><span class={` ${item.wolf === 0 || item.wolf === 'INVALID' ? 'zero-score-glow' : ''} ${item.wolf === bestChessAiScores.wolf && item.wolf > 0 ? 'best-score-glow' : ''}`}>{item.wolf !== undefined ? (typeof item.wolf === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.wolf}</span> : `${item.wolf}%`) : ''}</span></div>
-                                        <div class="benchmark-cell score-cell hawk-score" style="flex: 1;"><span class={` ${item.hawk === 0 || item.hawk === 'INVALID' ? 'zero-score-glow' : ''} ${item.hawk === bestChessAiScores.hawk && item.hawk > 0 ? 'best-score-glow' : ''}`}>{item.hawk !== undefined ? (typeof item.hawk === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.hawk}</span> : `${item.hawk}%`) : ''}</span></div>
-                                        <div class="benchmark-cell score-cell python-score" style="flex: 1;"><span class={` ${item.python === 0 || item.python === 'INVALID' ? 'zero-score-glow' : ''} ${item.python === bestChessAiScores.python && item.python > 0 ? 'best-score-glow' : ''}`}>{item.python !== undefined ? (typeof item.python === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.python}</span> : `${item.python}%`) : ''}</span></div>
-                                        <div class="benchmark-cell score-cell hydra-score" style="flex: 1;"><span class="status-badge planned" title="Planned future level. Protocol not yet defined.">Planned</span></div>
+                                        {(['mouse','spider','wolf','hawk','python','hydra'] as const).map(level => {
+                                            const value = item[level];
+                                            const gated = item.origins?.[level] === 'progression-gated';
+                                            return <div class={`benchmark-cell score-cell ${level}-score`} style="flex: 1;">
+                                                <span class={`${value === 0 || value === 'INVALID' ? 'zero-score-glow' : ''} ${value === bestChessAiScores[level] && value > 0 ? 'best-score-glow' : ''}`} title={gated ? 'Not administered: prerequisite level not passed. Automatically assigned 0%.' : undefined}>
+                                                    {typeof value === 'string' ? value : `${value}%`}{gated && <small class="progression-gate-label">progression gate</small>}
+                                                </span>
+                                            </div>;
+                                        })}
                                     </div>
                                 );
                                 })}

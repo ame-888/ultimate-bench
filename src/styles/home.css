@@ -1743,3 +1743,14 @@
     .excluded-result-score { padding-left: .75rem; }
     .excluded-result-copy dl { display: grid; gap: .4rem; }
 }
+
+.progression-gate-label {
+    display: block;
+    max-width: 8rem;
+    margin-top: .2rem;
+    color: #67e8f9;
+    font-size: .62rem;
+    font-weight: 700;
+    line-height: 1.15;
+    text-transform: uppercase;
+}

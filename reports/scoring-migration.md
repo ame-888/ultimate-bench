@@ -1,6 +1,6 @@
 # Progressive Level Weighting migration report
 
-Generated from the preserved level results. “Previous” reproduces the former arena-specific weighted implementation; new values use universal weights 1, 2, 4, 8, 16. Values show four decimals for auditability; the website displays one decimal.
+Generated from the preserved level results. “Previous” reproduces the former arena-specific weighted implementation; new values use the current universal Active weights (through 32 for Chess). Chess values therefore include the 29 July 2026 Hydra activation; its progression-gated zero retains weight, changing the complete Chess denominator from 31 to 63. Gated zeroes are not directly played Hydra matches, and pre/post-activation Chess and Overall scores require benchmark-version context. Values show four decimals for auditability; the website displays one decimal.
 
 ## Visual Bench
 
@@ -70,28 +70,28 @@ Generated from the preserved level results. “Previous” reproduces the former
 | Muse Spark 1.1 | 0.0000 | 0.0000 |
 | Gemini 3.1 Flashlite GA | 0.0000 | 0.0000 |
 | Grok 4.3 Fast | 0.0000 | 0.0000 |
-| Gemini 3.1 Pro Preview | 15.8876 | 21.1935 |
+| Gemini 3.1 Pro Preview | 15.8876 | 10.4286 |
 | GPT-5.5 Instant (0505) | 0.0000 | 0.0000 |
 | GPT-5.5 Instant (0529) | 0.0000 | 0.0000 |
-| Gemini 3.5 Flash | 4.5506 | 6.2581 |
+| Gemini 3.5 Flash | 4.5506 | 3.0794 |
 | Claude 4.6 Sonnet (max thinking) | 0.0000 | 0.0000 |
 | Claude 4.6 Sonnet (adaptive thinking) | 0.0000 | 0.0000 |
-| Muse Spark (thinking) | 0.0674 | 0.0968 |
-| Gemini 3.0 Flash Preview | 0.5393 | 0.7742 |
-| GPT-5.5 | 5.2584 | 7.1935 |
-| GPT-5.6 Sol (high) | 11.2022 | 15.1290 |
-| Claude 5 Fable (high) | 3.2697 | 4.4516 |
+| Muse Spark (thinking) | 0.0674 | 0.0476 |
+| Gemini 3.0 Flash Preview | 0.5393 | 0.3810 |
+| GPT-5.5 | 5.2584 | 3.5397 |
+| GPT-5.6 Sol (high) | 11.2022 | 7.4444 |
+| Claude 5 Fable (high) | 3.2697 | 2.1905 |
 
 ## Overall and rank migration
 
 | Model | Previous Overall | Previous rank | New Overall | New rank | Rank changed |
 | --- | ---: | ---: | ---: | ---: | --- |
-| GPT-5.6 Sol (high) | 15.0103 | 1 | 19.3520 | 1 | No |
-| Gemini 3.1 Pro Preview | 10.0145 | 2 | 13.8251 | 2 | No |
-| GPT-5.5 | 8.4068 | 3 | 11.4703 | 3 | No |
-| Gemini 3.5 Flash | 6.1562 | 4 | 8.7104 | 4 | No |
-| Claude 5 Fable (high) | 5.5593 | 5 | 7.9369 | 5 | No |
-| Gemini 3.0 Flash Preview | 4.4103 | 6 | 6.3556 | 6 | No |
+| GPT-5.6 Sol (high) | 15.0103 | 1 | 16.7904 | 1 | No |
+| Gemini 3.1 Pro Preview | 10.0145 | 2 | 10.2368 | 3 | Yes |
+| GPT-5.5 | 8.4068 | 3 | 10.2523 | 2 | Yes |
+| Gemini 3.5 Flash | 6.1562 | 4 | 7.6508 | 4 | No |
+| Claude 5 Fable (high) | 5.5593 | 5 | 7.1832 | 5 | No |
+| Gemini 3.0 Flash Preview | 4.4103 | 6 | 6.2245 | 6 | No |
 | Muse Spark 1.1 | 3.4637 | 7 | 4.8659 | 7 | No |
 | Gemini 3.1 Flashlite GA | 3.1887 | 8 | 4.4846 | 8 | No |
 | GPT-5.5 Instant (0529) | 2.2730 | 9 | 3.3548 | 9 | No |
@@ -99,9 +99,11 @@ Generated from the preserved level results. “Previous” reproduces the former
 | GPT-5.5 Instant (0505) | 1.9317 | 11 | 2.8459 | 10 | Yes |
 | Grok 4.3 Fast | 1.8155 | 12 | 2.3061 | 12 | No |
 | Claude 4.6 Sonnet (adaptive thinking) | 0.9419 | 13 | 1.2337 | 13 | No |
-| Muse Spark (thinking) | 0.2447 | 14 | 0.3211 | 14 | No |
+| Muse Spark (thinking) | 0.2447 | 14 | 0.3048 | 14 | No |
 
 ### Models whose canonical rank changed
 
+- Gemini 3.1 Pro Preview: 2 → 3
+- GPT-5.5: 3 → 2
 - Claude 4.6 Sonnet (max thinking): 10 → 11
 - GPT-5.5 Instant (0505): 11 → 10

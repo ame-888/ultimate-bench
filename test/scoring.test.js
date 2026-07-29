@@ -5,7 +5,7 @@ import { pathToFileURL } from 'node:url';
 const bundle = `/tmp/ultimate-bench-scoring-${process.pid}.mjs`;
 execFileSync('node_modules/.bin/esbuild', ['test/scoring-api.ts', '--bundle', '--platform=node', '--format=esm', `--outfile=${bundle}`]);
 const api = await import(pathToFileURL(bundle));
-const { ARENAS, ARENA_LIST, LEVEL_STATUSES, progressiveWeight, activeLevels, calculateArenaScore, calculateOverall, assignTiedRanks, exploratorySort, qualifiesGlobally, validateArenaDefinition, validateBenchmarkRecords, buildLeaderboard, benchmarks, validatePricing, createParetoChartDomain } = api;
+const { ARENAS, ARENA_LIST, LEVEL_STATUSES, progressiveWeight, activeLevels, calculateArenaScore, calculateOverall, assignTiedRanks, exploratorySort, qualifiesGlobally, validateArenaDefinition, validateBenchmarkRecords, validateProgressionOrigins, passesProgressionGate, buildLeaderboard, benchmarks, validatePricing, createParetoChartDomain } = api;
 
 
 const visualScores = { lvl1:86,lvl2:71,lvl3:65,lvl4:25,lvl5:0 };
@@ -20,13 +20,13 @@ test('unknown result status fails validation',()=>assert.throws(()=>calculateAre
 test('planned and locked levels are excluded',()=>{const arena={name:'Test',levels:[{number:1,key:'a',name:'A',status:'Active',weight:1},{number:2,key:'b',name:'B',status:'Planned',weight:2},{number:3,key:'c',name:'C',status:'Locked',weight:4,unlockCondition:'A reaches 75'}]};const r=calculateArenaScore(arena,{a:50});assert.equal(r.score,50);assert.equal(r.denominator,1)});
 test('locked definition requires explicit condition',()=>assert.throws(()=>validateArenaDefinition({name:'Test',levels:[{number:1,key:'a',name:'A',status:LEVEL_STATUSES.LOCKED,weight:1}]}),/without an unlock condition/));
 test('planned result is rejected by record validation',()=>{const copy={models:[{name:'x',scores:{lvl1:1,lvl2:1,lvl3:1,lvl4:1,lvl5:1,lvl6:1}}],dataRetrieval:[],chessModels:[]};assert.throws(()=>validateBenchmarkRecords(copy),/Planned but x has a published result/)});
-test('arena active structures are Visual 1–5, Data Retrieval 1–4, Chess 1–5',()=>assert.deepEqual(ARENA_LIST.map(a=>activeLevels(a).map(l=>l.number)),[[1,2,3,4,5],[1,2,3,4],[1,2,3,4,5]]));
-test('Overall is exact arithmetic mean of three canonical arenas',()=>assert.equal(calculateOverall([688/31,311/15,469/31]),(688/31+311/15+469/31)/3));
+test('arena active structures are Visual 1–5, Data Retrieval 1–4, Chess 1–6',()=>assert.deepEqual(ARENA_LIST.map(a=>activeLevels(a).map(l=>l.number)),[[1,2,3,4,5],[1,2,3,4],[1,2,3,4,5,6]]));
+test('Overall is exact arithmetic mean of three canonical arenas',()=>assert.equal(calculateOverall([688/31,311/15,469/63]),(688/31+311/15+469/63)/3));
 test('Overall rejects incomplete inputs',()=>assert.throws(()=>calculateOverall([1,2]),/three computable/));
 test('ties share a rank and stable order is not a performance tie-break',()=>assert.deepEqual(assignTiedRanks([{name:'B',score:5},{name:'A',score:5},{name:'C',score:4}]).map(x=>[x.name,x.rank]),[['A',1],['B',1],['C',3]]));
 test('cost is absent from and cannot affect canonical score or rank',()=>{const a=assignTiedRanks([{name:'A',score:10,cost:100},{name:'B',score:9,cost:1}]);assert.deepEqual(a.map(x=>x.name),['A','B'])});
 test('exploratory sorting does not mutate rows or canonical values',()=>{const rows=[{name:'A',score:1,flat:9},{name:'B',score:2,flat:1}];const sorted=exploratorySort(rows,(a,b)=>b.flat-a.flat);assert.notEqual(sorted,rows);assert.deepEqual(rows.map(x=>x.score),[1,2])});
-test('GPT-5.6 Sol worked example matches all canonical values',()=>{const built=buildLeaderboard(benchmarks);const row=built.rows.find(x=>x.name==='GPT-5.6 Sol (high)');assert.equal(row.scores.visual,688/31);assert.equal(row.scores['data-retrieval'],311/15);assert.equal(row.scores.chess,469/31);assert.equal(row.score,(688/31+311/15+469/31)/3)});
+test('GPT-5.6 Sol worked example matches all canonical values',()=>{const built=buildLeaderboard(benchmarks);const row=built.rows.find(x=>x.name==='GPT-5.6 Sol (high)');assert.equal(row.scores.visual,688/31);assert.equal(row.scores['data-retrieval'],311/15);assert.equal(row.scores.chess,469/63);assert.equal(row.score,(688/31+311/15+469/63)/3)});
 test('global qualification requires rank eligibility in every arena',()=>{const eligible={rankEligible:true};assert.equal(qualifiesGlobally(Object.fromEntries(ARENA_LIST.map(a=>[a.id,eligible]))),true);const provisional={rankEligible:false};assert.equal(qualifiesGlobally(Object.fromEntries(ARENA_LIST.map(a=>[a.id,a.id==='visual'?provisional:eligible]))),false)});
 test('all published benchmark records pass canonical validation',()=>assert.equal(validateBenchmarkRecords(benchmarks),true));
 test('homepage exploratory sorting clones records and official mode is default', async()=>{const fs=await import('node:fs/promises');const [script,page]=await Promise.all([fs.readFile('src/scripts/home-page.js','utf8'),fs.readFile('src/pages/index.astro','utf8')]);assert.match(script,/rawList\.map\(item => \(\{ \.\.\.item \}\)\)/);assert.match(script,/method === 'canonical'/);assert.equal((page.match(/<option value="canonical">Progressive Level Weighting \(official\)<\/option>/g)||[]).length,3)});
@@ -106,19 +106,44 @@ test('current Data leader correction preserves scores and Overall population',()
 test('client sorting preserves canonical null ranks in official and exploratory modes',async()=>{const script=await (await import('node:fs/promises')).readFile('src/scripts/home-page.js','utf8');assert.match(script,/rank: item\.canonicalRank/);assert.match(script,/provisional rows stay unranked/);assert.doesNotMatch(script,/item\.rank = currentRank/)});
 test('achievements consume canonical server-generated rank-eligible leaders',async()=>{const [page,script]=await Promise.all([(await import('node:fs/promises')).readFile('src/pages/index.astro','utf8'),(await import('node:fs/promises')).readFile('src/scripts/home-page.js','utf8')]);assert.match(page,/canonicalLeaderboard\.arenaLeaders\['data-retrieval'\]/);assert.match(script,/canonicalLeaders\?\.data/)});
 
-test('Chess methodology documents all six protocols without changing canonical activation',async()=>{
+test('Hydra activation, denominator, migration copy, and public UI are canonical',async()=>{
   const fs=await import('node:fs/promises');
-  const page=await fs.readFile('src/pages/methodology/chess-bench.astro','utf8');
-  for(const [number,name] of [[1,'mouse'],[2,'spider'],[3,'wolf'],[4,'hawk'],[5,'python'],[6,'hydra']]){
-    assert.match(page,new RegExp(`id="level-${number}-${name}"`));
-  }
-  assert.match(page,/Hydra remains Planned/);
-  assert.match(page,/current canonical Chess denominator remains 31/);
-  assert.match(page,/Complete six-level denominator after Hydra activation/);
-  assert.match(page,/progression-gated numeric zeroes/);
+  const [page,home,overview,readme]=await Promise.all([fs.readFile('src/pages/methodology/chess-bench.astro','utf8'),fs.readFile('src/pages/index.astro','utf8'),fs.readFile('src/pages/methodology.astro','utf8'),fs.readFile('README.md','utf8')]);
+  for(const [number,name] of [[1,'mouse'],[2,'spider'],[3,'wolf'],[4,'hawk'],[5,'python'],[6,'hydra']]) assert.match(page,new RegExp(`id="level-${number}-${name}"`));
+  assert.equal(ARENAS.chess.levels[5].status,'Active');
+  assert.deepEqual(activeLevels(ARENAS.chess).map(level=>level.weight),[1,2,4,8,16,32]);
+  assert.equal(activeLevels(ARENAS.chess).reduce((sum,level)=>sum+level.weight,0),63);
+  assert.equal(activeLevels(ARENAS.visual).reduce((sum,level)=>sum+level.weight,0),31);
+  assert.deepEqual(activeLevels(ARENAS.dataRetrieval).map(level=>level.key),['worm','koala','crow','octopus']);
+  for(const text of [page,home,overview,readme]) assert.doesNotMatch(text,/Hydra (?:is|remains) Planned|Chess Bench uses Levels 1–5|current canonical Chess denominator remains 31/);
+  assert.match(page,/Hydra activation · 29 July 2026/); assert.match(page,/Complete denominator[\s\S]*63/);
+  assert.match(home,/progression-gate-label/); assert.match(home,/Not administered: prerequisite level not passed/);
   assert.doesNotMatch(page,/Position ID\s*[#:=-]?\s*\d{1,3}/i);
-  assert.equal(ARENAS.chess.levels[5].status,'Planned');
-  assert.equal(activeLevels(ARENAS.chess).reduce((sum,level)=>sum+level.weight,0),31);
+});
+
+const preservedChess = {
+ 'Muse Spark 1.1':[0,0,0,0,0], 'Gemini 3.1 Flashlite GA':[0,0,0,0,0], 'Grok 4.3 Fast':[0,0,0,0,0],
+ 'Gemini 3.1 Pro Preview':[75,91,100,0,0], 'GPT-5.5 Instant (0505)':[0,0,0,0,0], 'GPT-5.5 Instant (0529)':[0,0,0,0,0],
+ 'Gemini 3.5 Flash':[40,43,17,0,0], 'Claude 4.6 Sonnet (max thinking)':[0,0,0,0,0], 'Claude 4.6 Sonnet (adaptive thinking)':[0,0,0,0,0],
+ 'Muse Spark (thinking)':[3,0,0,0,0], 'Gemini 3.0 Flash Preview':[24,0,0,0,0], 'GPT-5.5':[39,48,22,0,0],
+ 'GPT-5.6 Sol (high)':[97,68,59,0,0], 'Claude 5 Fable (high)':[38,20,15,0,0]
+};
+test('Chess migration preserves every Level 1–5 value and adds gated numeric Hydra zero',()=>{
+ assert.equal(benchmarks.chessModels.length,Object.keys(preservedChess).length);
+ for(const record of benchmarks.chessModels){assert.deepEqual(['mouse','spider','wolf','hawk','python'].map(k=>record.scores[k]),preservedChess[record.name]);assert.equal(record.scores.hydra,0);assert.equal(record.origins.hydra,'progression-gated')}
+});
+test('progression gate distinguishes attempted and gated zero without changing arithmetic',()=>{
+ assert.equal(passesProgressionGate(1),true); for(const value of [0,'INVALID','UNAVAILABLE','NOT_TESTED'])assert.equal(passesProgressionGate(value),false);
+ const attempted={mouse:10,spider:0,wolf:0,hawk:0,python:0,hydra:0};
+ const gated={name:'x',scores:attempted,origins:{wolf:'progression-gated',hawk:'progression-gated',python:'progression-gated',hydra:'progression-gated'}};
+ validateProgressionOrigins(ARENAS.chess,gated);
+ assert.equal(calculateArenaScore(ARENAS.chess,attempted).score,calculateArenaScore(ARENAS.chess,gated.scores).score);
+ assert.equal(calculateArenaScore(ARENAS.chess,gated.scores).denominator,63);
+ assert.throws(()=>validateProgressionOrigins(ARENAS.chess,{...gated,origins:{wolf:'progression-gated'},scores:{...attempted,wolf:1}}),/must be numeric zero/);
+ assert.throws(()=>validateProgressionOrigins(ARENAS.chess,{name:'x',scores:attempted}),/resumes after a failed prerequisite/);
+});
+test('UNAVAILABLE and NOT_TESTED remain excluded rather than becoming gated failures',()=>{
+ for(const status of ['UNAVAILABLE','NOT_TESTED']){const record={name:'x',scores:{mouse:status,spider:10,wolf:10,hawk:10,python:10,hydra:10}};validateProgressionOrigins(ARENAS.chess,record);const score=calculateArenaScore(ARENAS.chess,record.scores);assert.equal(score.denominator,62);assert.equal(score.rankEligible,false)}
 });
 
 test('Visual and Chess methodology share the sibling page UI stylesheet',async()=>{

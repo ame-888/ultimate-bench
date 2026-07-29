@@ -8,7 +8,7 @@ Ultimate Bench uses **Progressive Level Weighting** in every arena. Active Level
 
 - **Visual Bench:** Levels 1–5 (Mole, Rhino, Chimpanzee, Owl, Eagle) Active; Level 6 (Beholder) Planned. Full-coverage denominator: 31.
 - **Data Retrieval Bench:** Levels 1–4 (Worm, Koala, Crow, Octopus) Active; Levels 5–6 (Raven, Athena) Planned. Full-coverage denominator: 15.
-- **Chess Bench:** Levels 1–5 (Mouse, Spider, Wolf, Hawk, Python) Active; Level 6 (Hydra) Planned. Full-coverage denominator: 31.
+- **Chess Bench:** Levels 1–6 (Mouse, Spider, Wolf, Hawk, Python, Hydra) Active. Full-coverage denominator: 63.
 
 A numeric zero is valid and retains its weight. `INVALID` contributes zero and retains its weight. `UNAVAILABLE` is excluded with its weight and reduces displayed coverage. `NOT_TESTED` means not attempted, is excluded, and counts as incomplete coverage. Missing active results and unknown statuses are validation errors. Planned and Locked levels are excluded; a Locked level additionally requires a complete protocol and explicit unlock condition. No current level is Locked and no current record uses `NOT_TESTED`.
 
@@ -18,7 +18,7 @@ Canonical definitions are in [`src/data/benchmarkSpec.ts`](src/data/benchmarkSpe
 
 ## Public and protected benchmark information
 
-Public protocols describe the evaluated construct, administration count, transformation categories, scoring, validity rules, product/interface configuration, limitations, and audit expectations. Active images, exact questions, character layouts, answer keys, and reconstructable transformation details remain confidential to reduce contamination and benchmark-specific optimization. Visual Bench Levels 1–5 and Chess Bench Levels 1–5 have dedicated public protocols. Visual Level 6 remains undefined; Chess Level 6 has a documented pre-activation protocol but remains Planned and excluded.
+Public protocols describe the evaluated construct, administration count, transformation categories, scoring, validity rules, product/interface configuration, limitations, and audit expectations. Active images, exact questions, character layouts, answer keys, and reconstructable transformation details remain confidential to reduce contamination and benchmark-specific optimization. Visual Bench Levels 1–5 and all six Active Chess Bench levels have dedicated public protocols. Visual Level 6 remains undefined; Chess Level 6 Hydra is Active and progression-gated.
 
 ## Routes
 
@@ -27,7 +27,7 @@ Public protocols describe the evaluated construct, administration count, transfo
 | `/` | Canonical leaderboard, arena results, status legend, and cost comparison |
 | `/methodology/` | Canonical scoring, statuses, qualification, transparency, and limitations |
 | `/methodology/visual-bench/` | Visual Bench administration, security, scoring, Active Levels 1–5, and Planned Level 6 |
-| `/methodology/chess-bench/` | Chess Bench match rules, scoring, Active Levels 1–5, and the excluded Planned Hydra protocol |
+| `/methodology/chess-bench/` | Chess Bench match rules, progression, scoring, and all six Active level protocols |
 | `/analysis/` | Canonical findings and clearly labeled exploratory statistics |
 | `/about/`, `/contact/` | Project and contact information |
 | `/privacy/`, `/terms/` | Implementation-specific policy and rights terms |
