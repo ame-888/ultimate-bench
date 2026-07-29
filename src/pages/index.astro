@@ -476,15 +476,15 @@ function getRankDisplay(rank) {
                                 <caption class="sr-only">Global canonical Ultimate Bench standings</caption>
                                 <thead><tr class="ultimate-table-header">
                                     <th scope="col">Rank</th><th scope="col">Model</th><th scope="col">Released</th>
-                                    <th scope="col" aria-sort="none"><button id="ultimate-visual-sort-btn"><span>Visual</span><small id="ultimate-visual-sort-text">Score ▼</small></button></th>
-                                    <th scope="col" aria-sort="none"><button id="ultimate-data-sort-btn"><span>Data</span><small id="ultimate-data-sort-text">Score ▼</small></button></th>
-                                    <th scope="col" aria-sort="none"><button id="ultimate-chess-sort-btn"><span>Chess</span><small id="ultimate-chess-sort-text">Score ▼</small></button></th>
-                                    <th scope="col" aria-sort="descending"><button id="ultimate-sort-btn" class="overall-sort"><span>Overall</span><small id="ultimate-sort-text">Score ▼</small></button></th>
+                                    <th scope="col" aria-sort="none"><button id="ultimate-visual-sort-btn" aria-label="Sort by Visual Score"><span>Visual Score</span><small id="ultimate-visual-sort-text" aria-hidden="true">▼</small></button></th>
+                                    <th scope="col" aria-sort="none"><button id="ultimate-data-sort-btn" aria-label="Sort by Data Score"><span>Data Score</span><small id="ultimate-data-sort-text" aria-hidden="true">▼</small></button></th>
+                                    <th scope="col" aria-sort="none"><button id="ultimate-chess-sort-btn" aria-label="Sort by Chess Score"><span>Chess Score</span><small id="ultimate-chess-sort-text" aria-hidden="true">▼</small></button></th>
+                                    <th scope="col" aria-sort="descending"><button id="ultimate-sort-btn" class="overall-sort" aria-label="Sort by Overall Score"><span>Overall Score</span><small id="ultimate-sort-text" aria-hidden="true">▼</small></button></th>
                                 </tr></thead>
                                 <tbody class="ultimate-table-body">
                                     {canonicalModels.map((item) => (
                                         <tr class={`ultimate-row-hover rank-${item.rank}`} data-model-name={item.name.toLowerCase()} data-provider={getModelProvider(item.name).name} data-absolute-rank={item.rank}>
-                                            <td class="ultimate-rank"><span>{String(item.rank).padStart(2, '0')}</span><i aria-hidden="true">{item.rank <= 3 ? (item.rank === 1 ? '◆' : '◇') : ''}</i></td>
+                                            <td class="ultimate-rank"><span>{String(item.rank).padStart(2, '0')}</span></td>
                                             <th scope="row" class={`ultimate-model model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="model-info" data-provider={getModelProvider(item.name).name}>
                                                     <div class="model-name-line">
