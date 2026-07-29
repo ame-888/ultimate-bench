@@ -669,7 +669,7 @@ function getRankDisplay(rank) {
                             <div class="tooltip-text" id="visual-tooltip-text">Official Progressive Level Weighting order. Each Active level has twice the weight of the preceding level; alternate modes change ordering only.</div>
                         </span>
                     </div>
-                    <div class="benchmark-desktop-container">
+                    <div class="benchmark-desktop-container benchmark-scroll-container" role="region" aria-label="Visual Bench level results" tabindex="0">
                         <div class="benchmark-container visual-table" id="visual-table-body">
                             <!-- Header Row -->
                             <div class="header-row unified-header-row">
@@ -759,12 +759,13 @@ function getRankDisplay(rank) {
                                             <div class={`benchmark-content `}>
                                                 <div class={`rank `} set:html={getRankDisplay(item.rank)}>
                                                 </div>
-                                                <div class="model-info" data-provider={getModelProvider(item.name).name}>
+                                                <div class="model-info">
                                                     <div class="model-name-line">
+                                                        <span class="provider-badge">{getModelProvider(item.name).name}</span>
                                                         <div class="model-name" data-release-date={item.releaseDate}>{item.name}</div>
                                                         {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
                                                     </div>
-                                                    {item.rank === null && <small class="coverage-note"><span>Insufficient coverage for an official rank</span><span>{item.coverage} · {item.weightCoverage}</span></small>}
+                                                    {item.rank === null && <small class="coverage-note" aria-label={`Insufficient coverage for an official rank: ${item.coverage}; ${item.weightCoverage}`}>{item.coverage} · {item.weightCoverage}</small>}
                                                 </div>
                                             </div>
                                         </div>
@@ -820,7 +821,7 @@ function getRankDisplay(rank) {
                         </span>
                     </div>
                     <div class="data-benchmark-layout">
-                        <div class="benchmark-scroll-container data-table-wrapper" style="width: 100%;">
+                        <div class="benchmark-scroll-container data-table-wrapper" style="width: 100%;" role="region" aria-label="Chess Bench level results" tabindex="0">
                             <div class="benchmark-container visual-table" id="chess-table-body">
                                 <!-- Header Row -->
                                 <div class="header-row unified-header-row">
@@ -909,12 +910,13 @@ function getRankDisplay(rank) {
                                                 <div class={`benchmark-content `}>
                                                     <div class={`rank `} set:html={getRankDisplay(item.rank)}>
                                                     </div>
-                                                    <div class="model-info" data-provider={getModelProvider(item.name).name}>
+                                                    <div class="model-info">
                                                         <div class="model-name-line">
+                                                            <span class="provider-badge">{getModelProvider(item.name).name}</span>
                                                             <div class="model-name" data-release-date={item.releaseDate}>{item.name}</div>
                                                             {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
                                                         </div>
-                                                        {item.rank === null && <small class="coverage-note"><span>Insufficient coverage for an official rank</span><span>{item.coverage} · {item.weightCoverage}</span></small>}
+                                                        {item.rank === null && <small class="coverage-note" aria-label={`Insufficient coverage for an official rank: ${item.coverage}; ${item.weightCoverage}`}>{item.coverage} · {item.weightCoverage}</small>}
                                                     </div>
                                                 </div>
                                             )}
@@ -976,7 +978,7 @@ There are four Active levels. Raven is Planned with a documented proposed struct
                         </span>
                     </div>
                     <div class="data-benchmark-layout">
-                        <div class="benchmark-scroll-container data-table-wrapper">
+                        <div class="benchmark-scroll-container data-table-wrapper" role="region" aria-label="DATA Bench level results" tabindex="0">
                             <div class="benchmark-container visual-table" id="data-table-body">
                                 <!-- Header Row -->
                                 <div class="header-row unified-header-row">
@@ -1065,12 +1067,13 @@ There are four Active levels. Raven is Planned with a documented proposed struct
                                                 <div class={`benchmark-content `}>
                                                     <div class={`rank `} set:html={getRankDisplay(item.rank)}>
                                                     </div>
-                                                    <div class="model-info" data-provider={getModelProvider(item.name).name}>
+                                                    <div class="model-info">
                                                         <div class="model-name-line">
+                                                            <span class="provider-badge">{getModelProvider(item.name).name}</span>
                                                             <div class="model-name" data-release-date={item.releaseDate}>{item.name}</div>
                                                             {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
                                                         </div>
-                                                        {item.rank === null && <small class="coverage-note"><span>Insufficient coverage for an official rank</span><span>{item.coverage} · {item.weightCoverage}</span></small>}
+                                                        {item.rank === null && <small class="coverage-note" aria-label={`Insufficient coverage for an official rank: ${item.coverage}; ${item.weightCoverage}`}>{item.coverage} · {item.weightCoverage}</small>}
                                                     </div>
                                                 </div>
                                             )}

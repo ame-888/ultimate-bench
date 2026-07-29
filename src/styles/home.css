@@ -152,8 +152,19 @@
 
     /* Scroll Container for Mobile */
     .benchmark-scroll-container {
-        /* overflow-x: auto; removed to prevent horizontal scrolling */
+        max-width: 100%;
+        overflow-x: visible;
+        overscroll-behavior-inline: contain;
         padding-bottom: 1rem;
+    }
+
+    .benchmark-scroll-container:focus-visible {
+        outline: 2px solid #f59e0b;
+        outline-offset: 3px;
+    }
+
+    @media (max-width: 1100px) {
+        .benchmark-scroll-container { overflow-x: auto; }
     }
 
     .benchmark-container {
@@ -166,14 +177,18 @@
     }
 
     /* Unified Visual Grid */
+    .benchmark-container {
+        --arena-columns: minmax(20rem, 3fr) repeat(6, minmax(5.5rem, 1fr));
+    }
+
     .unified-header-row, .unified-row {
         display: grid;
-        grid-template-columns: minmax(60px, 3fr) repeat(6, minmax(25px, 1fr));
+        grid-template-columns: var(--arena-columns);
         gap: 0.1rem;
     }
 
     .data-table-wrapper .unified-header-row, .data-table-wrapper .unified-row {
-        grid-template-columns: minmax(60px, 3fr) repeat(6, minmax(25px, 1fr));
+        grid-template-columns: var(--arena-columns);
     }
 
     @media (min-width: 640px) {
@@ -290,7 +305,8 @@
         padding: 0.4rem 0.2rem;
         box-sizing: border-box;
         height: 100%;
-        display: flex;
+        display: grid;
+        grid-template-columns: 2rem minmax(0, 1fr);
         align-items: center;
     }
     @media (min-width: 640px) {
@@ -307,11 +323,12 @@
 
     .score-cell {
         justify-content: center;
+        padding-inline: 0.25rem;
         font-size: 0.6rem;
         font-weight: 900;
         text-align: center;
-
-
+        min-width: 0;
+        overflow-wrap: anywhere;
 
     }
 
@@ -329,7 +346,8 @@
 
     /* Content Layout inside Cell */
     .benchmark-content {
-        display: flex;
+        display: grid;
+        grid-template-columns: 2rem minmax(0, 1fr);
         width: 100%;
         align-items: center;
         gap: 0.1rem; /* Reduced gap */
@@ -381,14 +399,13 @@
     }
 
     .model-info {
-        flex: 1;
-        min-width: 0; /* Text truncate */
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
+        min-width: 0;
+        display: grid;
+        gap: 0.35rem;
     }
 
-    .model-info::before,
+    .provider-badge,
+    .ultimate-model .model-info::before,
     .provider-key {
         flex: 0 0 auto;
         border: 1px solid var(--provider-border, #64748b);
@@ -400,7 +417,11 @@
         letter-spacing: 0.04em;
         line-height: 1;
     }
-    .model-info::before {
+    .provider-badge {
+        padding: 0.18rem 0.28rem;
+        text-align: center;
+    }
+    .ultimate-model .model-info::before {
         content: attr(data-provider);
         padding: 0.18rem 0.28rem;
         text-align: center;
@@ -416,13 +437,14 @@
         font-size: 0.6rem; /* Reduced font size to fit horizontally on mobile */
         font-weight: 600; /* Slightly lighter than card title */
         color: white;
-
-
+        min-width: 0;
+        overflow-wrap: anywhere;
 
     }
 
     .model-name-line {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         gap: 0.45rem;
         min-width: 0;
@@ -1598,7 +1620,7 @@
 /* Canonical incomplete-coverage treatment */
 .provisional-row { box-shadow:none!important; filter:none!important; }
 .provisional-badge,.coverage-note b { display:inline-block;color:#fde68a;background:#713f12;border:1px solid #a16207;border-radius:.25rem;padding:.12rem .35rem;font-size:.6rem;letter-spacing:.08em; }
-.coverage-note { display:flex;flex-direction:column;gap:.15rem;margin-top:.3rem;color:#cbd5e1;font-size:.62rem;line-height:1.35;white-space:normal; }
+.coverage-note { display:block;color:#cbd5e1;font-size:.68rem;line-height:1.4;white-space:normal; }
 
 /* Compact arena standings: all content reflows inside the card, never scrolls. */
 .home-grid {
