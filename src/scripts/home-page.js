@@ -229,7 +229,7 @@ function init() {
         });
 
         // --- Ultimate Bench Sorting Logic ---
-        function setupUltimateSort(btnId, textId, cellClass, defaultText, color) {
+        function setupUltimateSort(btnId, textId, cellClass) {
             const btn = document.getElementById(btnId);
             const textEl = document.getElementById(textId);
             let ascending = false;
@@ -242,15 +242,15 @@ function init() {
                     document.querySelectorAll('.ultimate-table-header th[aria-sort]').forEach(header => header.setAttribute('aria-sort', 'none'));
                     btn.closest('th')?.setAttribute('aria-sort', ascending ? 'ascending' : 'descending');
                     const visText = document.getElementById('ultimate-visual-sort-text');
-                    if (visText) visText.textContent = 'Score ▼';
+                    if (visText) visText.textContent = '▼';
                     const dataText = document.getElementById('ultimate-data-sort-text');
-                    if (dataText) dataText.textContent = 'Score ▼';
+                    if (dataText) dataText.textContent = '▼';
                     const chessText = document.getElementById('ultimate-chess-sort-text');
-                    if (chessText) chessText.textContent = 'Score ▼';
+                    if (chessText) chessText.textContent = '▼';
                     const avgText = document.getElementById('ultimate-sort-text');
-                    if (avgText) avgText.textContent = 'Score ▼';
+                    if (avgText) avgText.textContent = '▼';
 
-                    textEl.textContent = ascending ? `${defaultText} ▲` : `${defaultText} ▼`;
+                    textEl.textContent = ascending ? '▲' : '▼';
 
                     const tableContainer = document.querySelector('.ultimate-modern-container');
                     if (!tableContainer) return;
@@ -289,10 +289,10 @@ function init() {
             }
         }
 
-        setupUltimateSort('ultimate-sort-btn', 'ultimate-sort-text', '.ultimate-score-cell', 'ULTIMATE AVG', '#F59E0B');
-        setupUltimateSort('ultimate-visual-sort-btn', 'ultimate-visual-sort-text', '.ultimate-visual-score-cell', 'VISUAL', '#D1D5DB');
-        setupUltimateSort('ultimate-data-sort-btn', 'ultimate-data-sort-text', '.ultimate-data-score-cell', 'DATA', '#D1D5DB');
-        setupUltimateSort('ultimate-chess-sort-btn', 'ultimate-chess-sort-text', '.ultimate-chess-score-cell', 'CHESS', '#D1D5DB');
+        setupUltimateSort('ultimate-sort-btn', 'ultimate-sort-text', '.ultimate-score-cell');
+        setupUltimateSort('ultimate-visual-sort-btn', 'ultimate-visual-sort-text', '.ultimate-visual-score-cell');
+        setupUltimateSort('ultimate-data-sort-btn', 'ultimate-data-sort-text', '.ultimate-data-score-cell');
+        setupUltimateSort('ultimate-chess-sort-btn', 'ultimate-chess-sort-text', '.ultimate-chess-score-cell');
         // --- Leaderboard / Pareto view mode ---
         const ultimateSection = document.querySelector('.ultimate-bench-section');
         const scoreModeButtons = Array.from(document.querySelectorAll('.score-mode-btn'));
