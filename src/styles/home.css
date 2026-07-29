@@ -1583,6 +1583,7 @@
 .home-column {
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
     min-width: 0;
     max-width: none;
     width: 100%;
