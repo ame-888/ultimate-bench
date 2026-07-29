@@ -47,6 +47,19 @@ test('attempted and gated zero score identically but origins validate distinctly
  assert.throws(()=>validateProgressionOrigins(ARENAS.chess,{name:'x',scores,origins:{mouse:'progression-gated'}}),/without a failed prerequisite/);
  assert.throws(()=>validateProgressionOrigins(ARENAS.chess,{name:'x',scores}),/resumes after a failed prerequisite/);
 });
+test('Gemini 3.6 Flash Chess results preserve attempted and progression-gated zeroes',()=>{
+ const record=benchmarks.chessModels.find(row=>row.name==='Gemini 3.6 Flash');assert.ok(record);
+ assert.deepEqual(record.scores,{mouse:65,spider:34,wolf:22,hawk:0,python:0});
+ assert.equal(record.origins?.hawk,undefined);assert.equal(record.origins?.python,'progression-gated');
+ assert.equal(Object.hasOwn(record.scores,'hydra'),false);assert.equal(Object.hasOwn(record.origins??{},'hydra'),false);
+ validateProgressionOrigins(ARENAS.chess,record);
+ const result=calculateArenaScore(ARENAS.chess,record.scores);
+ assert.equal(result.numerator,221);assert.equal(result.denominator,63);assert.equal(result.score,221/63);
+ assert.equal(result.coverage,'5/5 active levels');assert.equal(result.completeCoverage,true);assert.equal(result.rankEligible,true);
+ assert.equal(result.score.toFixed(1),'3.5');
+ const built=buildLeaderboard(benchmarks),chessRow=built.arenaRows.chess.find(row=>row.name===record.name),overall=built.rows.find(row=>row.name===record.name);
+ assert.ok(chessRow?.rank);assert.ok(overall);assert.equal(overall.scores.chess,221/63);
+});
 test('coverage and rank eligibility are independent from reserved capacity',()=>{
  const complete=calculateArenaScore(ARENAS.dataRetrieval,{worm:0,koala:'INVALID',crow:1,octopus:2});assert.equal(complete.rankEligible,true);assert.equal(complete.coverage,'4/4 active levels');assert.equal(complete.denominator,63);
 });
@@ -65,6 +78,29 @@ test('UI and methodology expose fixed scale and distinct zero/status labels',asy
  assert.match(home,/LOCKED/);assert.match(home,/progression-gate-label/);assert.match(home,/Not administered: prerequisite level not passed/);assert.match(home,/Active-level coverage/);
  for(const text of [method,chess,visual,readme])assert.match(text,/denominator (?:of )?63|denominator 63|denominator `63`/i);
  assert.match(method,/reserved zero/i);assert.match(chess,/Hydra returned from Active to Locked/);assert.doesNotMatch(chess,/Position ID\s*[#:=-]?\s*\d{1,3}/i);
+});
+
+test('public guidance preserves UNAVAILABLE weight, denominator, and provisional status',async()=>{
+ const fs=await import('node:fs/promises');const articles=await fs.readFile('src/data/articles.ts','utf8');
+ assert.match(articles,/UNAVAILABLE Active level contributes zero points without removing its weight/);
+ assert.match(articles,/permanent denominator of 63/);assert.match(articles,/coverage incomplete/);
+ assert.match(articles,/provisional result with no official arena rank/);assert.match(articles,/cannot contribute to Overall qualification/);
+ assert.doesNotMatch(articles,/excludes? an? Unavailable active level and its weight/i);
+ assert.doesNotMatch(articles,/UNAVAILABLE[^.]{0,120}(?:level|weight)[^.]{0,40}(?:excluded|removed)|(?:excludes?|removes?)[^.]{0,120}UNAVAILABLE/i);
+});
+
+test('Chess level navigation uses stable canonical keys that match protocol IDs',async()=>{
+ const fs=await import('node:fs/promises');const source=await fs.readFile('src/pages/methodology/chess-bench.astro','utf8');
+ assert.match(source,/href=\{`#level-\$\{level\.number\}-\$\{level\.key\}`\}/);
+ assert.doesNotMatch(source,/level\.name\.toLowerCase\(\)/);
+ for(const level of ARENAS.chess.levels){
+  const fragment=`level-${level.number}-${level.key}`;
+  assert.ok(source.includes('id={`level-${'+level.key+'.number}-${'+level.key+'.key}`}'));
+  assert.equal(fragment,`level-${level.number}-${level.key}`);
+ }
+ const renamed={number:7,key:'stable-key',name:'Renamed Level! (v2)'};
+ assert.equal(`level-${renamed.number}-${renamed.key}`,'level-7-stable-key');
+ assert.notEqual(`level-${renamed.number}-${renamed.key}`,`level-${renamed.number}-${renamed.name.toLowerCase()}`);
 });
 
 test('DATA methodology route documents canonical structure without exposing reserved results',async()=>{

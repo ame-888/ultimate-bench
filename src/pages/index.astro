@@ -32,12 +32,14 @@ function isNew(dateStr) {
 }
 
 function formatReleaseDate(dateStr) {
+    if (!dateStr) return 'Not recorded';
     return new Intl.DateTimeFormat('en-US', {
         day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC'
     }).format(new Date(`${dateStr}T00:00:00Z`));
 }
 
 function formatTimeAgo(dateStr, now = SIMULATED_NOW) {
+    if (!dateStr) return '';
     const release = new Date(`${dateStr}T00:00:00Z`);
     const today = new Date(now);
     const days = Math.max(0, Math.floor((today.getTime() - release.getTime()) / 86_400_000));

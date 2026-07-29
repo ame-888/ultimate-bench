@@ -375,6 +375,7 @@ export const benchmarks = {
     ],
     chessModels: [
         { name: 'Muse Spark 1.1', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 }, origins: { spider: 'progression-gated', wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated' } },
+        { name: 'Gemini 3.6 Flash', scores: { mouse: 65, spider: 34, wolf: 22, hawk: 0, python: 0 }, origins: { python: 'progression-gated' } },
         { name: 'Gemini 3.1 Flashlite GA', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 }, origins: { spider: 'progression-gated', wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated' } },
         { name: 'Grok 4.3 Fast', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 }, origins: { spider: 'progression-gated', wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated' } },
         { name: 'Gemini 3.1 Pro Preview', scores: { mouse: 75, spider: 91, wolf: 100, hawk: 0, python: 0 }, origins: { python: 'progression-gated' } },

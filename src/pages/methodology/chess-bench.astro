@@ -27,7 +27,7 @@ const levelLabel = (level: typeof levels[number]) => `${level.status} · Level $
   <nav class="section-navigation" aria-label="Chess Bench methodology sections">
     <a href="#construct">What it evaluates</a><a href="#administration">Administration</a><a href="#san">SAN</a><a href="#tools">Tools</a>
     <a href="#scoring">Scoring</a><a href="#challenges">Challenges</a><a href="#validity">Validity</a><a href="#progression">Progression</a>
-    {levels.map(level => <a href={`#level-${level.number}-${level.name.toLowerCase()}`} class={level.status !== 'Active' ? 'pending' : undefined}>Level {level.number} — {level.name}{level.status !== LEVEL_STATUSES.ACTIVE ? ` (${level.status})` : ''}</a>)}
+    {levels.map(level => <a href={`#level-${level.number}-${level.key}`} class={level.status !== 'Active' ? 'pending' : undefined}>Level {level.number} — {level.name}{level.status !== LEVEL_STATUSES.ACTIVE ? ` (${level.status})` : ''}</a>)}
     <a href="#weighting">Weighting</a><a href="#limitations">Limitations</a><a href="#auditability">Auditability</a>
   </nav>
 
