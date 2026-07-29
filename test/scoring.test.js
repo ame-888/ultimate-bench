@@ -66,3 +66,17 @@ test('UI and methodology expose fixed scale and distinct zero/status labels',asy
  for(const text of [method,chess,visual,readme])assert.match(text,/denominator (?:of )?63|denominator 63|denominator `63`/i);
  assert.match(method,/reserved zero/i);assert.match(chess,/Hydra returned from Active to Locked/);assert.doesNotMatch(chess,/Position ID\s*[#:=-]?\s*\d{1,3}/i);
 });
+
+test('DATA methodology route documents canonical structure without exposing reserved results',async()=>{
+ const fs=await import('node:fs/promises');
+ const [data,method,home,readme]=await Promise.all(['src/pages/methodology/data-bench.astro','src/pages/methodology.astro','src/pages/index.astro','README.md'].map(path=>fs.readFile(path,'utf8')));
+ assert.match(method,/href="\/methodology\/data-bench\/"/);assert.match(home,/href="\/methodology\/data-bench\/"/);assert.match(readme,/`\/methodology\/data-bench\/`/);
+ for(const [number,name] of [[1,'worm'],[2,'koala'],[3,'crow'],[4,'octopus'],[5,'raven'],[6,'athena']])assert.match(data,new RegExp(`id="level-${number}-${name}"`));
+ assert.match(data,/data-level-status="Planned"[^>]*aria-labelledby="athena-title"/);assert.match(data,/Athena is Planned and not properly designed/);
+ assert.match(data,/Permanent denominator/);assert.match(data,/canonicalDenominator\(arena\)/);assert.match(data,/const formula=active\.map/);
+ assert.match(data,/100 administrations/);assert.match(data,/10 conversations/);assert.match(data,/same ten questions as Worm/);
+ assert.match(data,/deliberately incorrect suggested number/);assert.match(data,/fixed misleading number following Crow/);
+ assert.match(data,/10 sections of text, each containing two questions/);assert.match(data,/multiply those two numbers together/);assert.match(data,/Only the product scores/);
+ assert.doesNotMatch(data,/Position ID\s*[#:=-]?\s*\d{1,3}/i);
+ for(const result of benchmarks.dataRetrieval)assert.equal(Object.hasOwn(result.scores,'athena'),false);
+});
