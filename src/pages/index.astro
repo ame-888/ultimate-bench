@@ -4,6 +4,7 @@ import { benchmarks } from '../data/benchmarks';
 import { ARENAS } from '../data/benchmarkSpec';
 import { buildLeaderboard } from '../data/leaderboard';
 import { validateBenchmarkRecords } from '../data/scoring';
+import { formatAggregateScore } from '../data/formatting';
 import { createParetoChartDomain, modelPricing, PRICING_CHECKED_ON, validatePricing } from '../data/modelPricing';
 import CreatureIcon from '../components/CreatureIcon.astro';
 import { getSimulatedDate, TIME_OFFSET } from '../scripts/TimeUtils';
@@ -416,7 +417,7 @@ function getRankDisplay(rank) {
                             <div class="leaderboard-meta" aria-label="Leaderboard overview">
                                 <div><strong>{canonicalModels.length}</strong><span>qualified models</span></div>
                                 <div><strong>3</strong><span>benchmark arenas</span></div>
-                                <div><strong>{sotaScore.toFixed(1)}%</strong><span>highest current Overall</span></div>
+                                <div><strong>{formatAggregateScore(sotaScore)}%</strong><span>highest current Overall</span></div>
                             </div>
                         </header>
 
@@ -459,10 +460,10 @@ function getRankDisplay(rank) {
                                     <text class="axis-title axis-title-y" transform={`translate(20 ${(chartHeight - chartPad.bottom + chartPad.top) / 2}) rotate(-90)`}>OVERALL SCORE · CURRENT DATASET</text>
                                     <polyline class="frontier-glow" points={frontierPoints}/><polyline class="frontier-line" points={frontierPoints}/>
                                     {pricedModels.map(item => (
-                                        <g class={`pareto-point ${paretoNames.has(item.name) ? 'is-frontier' : ''}`} data-model-name={item.name.toLowerCase()} data-provider={getModelProvider(item.name).name} transform={`translate(${chartX(item.blendedCost)} ${chartY(item.ultimateScore)})`} tabindex="0" role="img" aria-label={`${item.name}: ${item.ultimateScore.toFixed(1)} percent overall at $${item.blendedCost.toFixed(2)} per million tokens`}>
+                                        <g class={`pareto-point ${paretoNames.has(item.name) ? 'is-frontier' : ''}`} data-model-name={item.name.toLowerCase()} data-provider={getModelProvider(item.name).name} transform={`translate(${chartX(item.blendedCost)} ${chartY(item.ultimateScore)})`} tabindex="0" role="img" aria-label={`${item.name}: ${formatAggregateScore(item.ultimateScore)} percent overall at $${item.blendedCost.toFixed(2)} per million tokens`}>
                                             <circle r={paretoNames.has(item.name) ? 9 : 6}/>
                                             {paretoNames.has(item.name) && <text x="12" y="-11">{item.name}</text>}
-                                            <title>{item.name} · {item.ultimateScore.toFixed(1)}% · ${item.blendedCost.toFixed(2)}/1M tokens</title>
+                                            <title>{item.name} · {formatAggregateScore(item.ultimateScore)}% · ${item.blendedCost.toFixed(2)}/1M tokens</title>
                                         </g>
                                     ))}
                                 </svg>
@@ -500,10 +501,10 @@ function getRankDisplay(rank) {
                                             </td>
                                             {[['visual', item.visualScore], ['data', item.dataScore], ['chess', item.chessScore]].map(([type, score]) => (
                                                 <td class={`ultimate-metric ultimate-${type}-score-cell score-cell`} data-score={score}>
-                                                    <span class="score-value" style={`--score-fill: ${Math.max(0, Math.min(100, score))}%`}><strong>{score.toFixed(1)}</strong><small>%</small></span>
+                                                    <span class="score-value" style={`--score-fill: ${Math.max(0, Math.min(100, score))}%`}><strong>{formatAggregateScore(Number(score))}</strong><small>%</small></span>
                                                 </td>
                                             ))}
-                                            <td class="ultimate-score-cell score-cell" data-absolute-score={item.ultimateScore.toFixed(1)}><span class="score-value" style={`--score-fill: ${Math.max(0, Math.min(100, item.ultimateScore))}%`}><strong>{item.ultimateScore.toFixed(1)}</strong><small>%</small></span></td>
+                                            <td class="ultimate-score-cell score-cell" data-absolute-score={item.ultimateScore}><span class="score-value" style={`--score-fill: ${Math.max(0, Math.min(100, item.ultimateScore))}%`}><strong>{formatAggregateScore(item.ultimateScore)}</strong><small>%</small></span></td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -532,7 +533,7 @@ function getRankDisplay(rank) {
                         <div class="journey-dashboard">
                             <aside class="journey-stat-card">
                                 <span class="journey-stat-label">Current frontier</span>
-                                <strong>{sotaScore.toFixed(1)}<small>%</small></strong>
+                                <strong>{formatAggregateScore(sotaScore)}<small>%</small></strong>
                                 <div class="journey-model-name">{sotaModelName}</div>
                                 <div class="journey-mini-track"><span style={`width:${sotaScore}%`}></span></div>
                                 <div class="journey-stat-foot"><span>0%</span><span>100%</span></div>
@@ -613,7 +614,7 @@ function getRankDisplay(rank) {
                                                 <td class="rank" set:html={getRankDisplay(item.rank)}></td>
                                                 <th scope="row" class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}><span class="model-name" title={item.name}>{item.name}</span></th>
                                                 <td class="benchmark-cell badge-cell">{isNew(releaseDateByModel.get(item.name)) && <span class="new-badge">NEW</span>}</td>
-                                                <td class="benchmark-cell score-cell">{item.score.toFixed(1)}%</td>
+                                                <td class="benchmark-cell score-cell">{formatAggregateScore(item.score)}%</td>
                                             </tr>
                                         ))}</tbody>
                                     </table>
@@ -628,7 +629,7 @@ function getRankDisplay(rank) {
                         <div class="excluded-results-list">
                             {provisionalArenaRows.map(item => <article class="excluded-result-card">
                                 <div class="excluded-result-model"><span class="provisional-badge">PROVISIONAL</span><h3 title={item.name}>{item.name}</h3><span class="excluded-arena">Data Retrieval Bench</span></div>
-                                <div class="excluded-result-score"><span>Provisional score</span><strong>{item.score.toFixed(1)}%</strong></div>
+                                <div class="excluded-result-score"><span>Provisional score</span><strong>{formatAggregateScore(item.score)}%</strong></div>
                                 <div class="excluded-result-copy"><p>Not eligible for ranking because benchmark coverage is insufficient.</p><dl><div><dt>Active-level coverage</dt><dd>{item.canonical.coverage}</dd></div><div><dt>Operational result weight</dt><dd>{item.canonical.weightCoverage}</dd></div></dl></div>
                             </article>)}
                         </div>
