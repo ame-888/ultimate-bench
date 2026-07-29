@@ -266,8 +266,8 @@ function init() {
                         let scoreB = 0;
 
                         if (cellClass === '.ultimate-score-cell') {
-                             scoreA = cellA ? parseFloat(cellA.textContent) : 0;
-                             scoreB = cellB ? parseFloat(cellB.textContent) : 0;
+                             scoreA = cellA ? parseFloat(cellA.getAttribute('data-absolute-score')) : 0;
+                             scoreB = cellB ? parseFloat(cellB.getAttribute('data-absolute-score')) : 0;
                         } else {
                              scoreA = cellA ? parseFloat(cellA.getAttribute('data-score')) : 0;
                              scoreB = cellB ? parseFloat(cellB.getAttribute('data-score')) : 0;

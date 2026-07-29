@@ -304,6 +304,7 @@ export const benchmarks = {
         },
         {
             name: 'Gemini 3.6 Flash',
+            releaseDate: '2026-07-21',
             scores: {
                 'lvl1': 74,
                 'lvl2': 67,
@@ -344,6 +345,7 @@ export const benchmarks = {
         },
         {
             name: 'Grok 4.5 Fast',
+            releaseDate: '2026-07-22',
             scores: {
                 'lvl1': 26,
                 'lvl2': 9,
@@ -371,7 +373,8 @@ export const benchmarks = {
         { name: 'GPT-5.6 Sol (high)', scores: { worm: 51, koala: 46, crow: 36, octopus: 3 } },
         { name: 'Claude 5 Fable (high)', scores: { worm: 30, koala: 19, crow: 6, octopus: 0 } },
         { name: 'Claude 4.8 Opus (high)', scores: { worm: 14, koala: 0, crow: 0, octopus: 0 } },
-        { name: 'Claude 5 Opus (high)', scores: { worm: 25, koala: 1, crow: 0, octopus: 0 } }
+        { name: 'Claude 5 Opus (high)', scores: { worm: 25, koala: 1, crow: 0, octopus: 0 } },
+        { name: 'Grok 4.5 Fast', scores: { worm: 21, koala: 12, crow: 7, octopus: 0 } }
     ],
     chessModels: [
         { name: 'Muse Spark 1.1', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 }, origins: { spider: 'progression-gated', wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated' } },

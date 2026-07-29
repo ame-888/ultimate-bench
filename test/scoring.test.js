@@ -5,7 +5,7 @@ import { pathToFileURL } from 'node:url';
 const bundle = `/tmp/ultimate-bench-scoring-${process.pid}.mjs`;
 execFileSync('node_modules/.bin/esbuild', ['test/scoring-api.ts','--bundle','--platform=node','--format=esm',`--outfile=${bundle}`]);
 const api = await import(pathToFileURL(bundle));
-const {ARENAS,ARENA_LIST,LEVEL_STATUSES,RESULT_STATUSES,activeLevels,canonicalDenominator,operationalWeight,calculateArenaScore,calculateOverall,validateArenaDefinition,validateBenchmarkRecords,validateProgressionOrigins,buildLeaderboard,benchmarks}=api;
+const {ARENAS,ARENA_LIST,LEVEL_STATUSES,RESULT_STATUSES,activeLevels,canonicalDenominator,operationalWeight,calculateArenaScore,calculateOverall,validateArenaDefinition,validateBenchmarkRecords,validateProgressionOrigins,buildLeaderboard,benchmarks,formatAggregateScore,assignTiedRanks}=api;
 
 test('canonical six-position structures and statuses are exact',()=>{
  for(const arena of ARENA_LIST){assert.equal(arena.levels.length,6);assert.deepEqual(arena.levels.map(x=>x.weight),[1,2,4,8,16,32]);assert.equal(canonicalDenominator(arena),63);validateArenaDefinition(arena)}
@@ -56,9 +56,44 @@ test('Gemini 3.6 Flash Chess results preserve attempted and progression-gated ze
  const result=calculateArenaScore(ARENAS.chess,record.scores);
  assert.equal(result.numerator,221);assert.equal(result.denominator,63);assert.equal(result.score,221/63);
  assert.equal(result.coverage,'5/5 active levels');assert.equal(result.completeCoverage,true);assert.equal(result.rankEligible,true);
- assert.equal(result.score.toFixed(1),'3.5');
+ assert.equal(formatAggregateScore(result.score),'3.51');
  const built=buildLeaderboard(benchmarks),chessRow=built.arenaRows.chess.find(row=>row.name===record.name),overall=built.rows.find(row=>row.name===record.name);
  assert.ok(chessRow?.rank);assert.ok(overall);assert.equal(overall.scores.chess,221/63);
+});
+test('new release metadata is canonical and inherited by arena presentation',()=>{
+ const gemini=benchmarks.models.find(row=>row.name==='Gemini 3.6 Flash');
+ const grok=benchmarks.models.find(row=>row.name==='Grok 4.5 Fast');
+ assert.equal(gemini?.releaseDate,'2026-07-21');assert.equal(grok?.releaseDate,'2026-07-22');
+ assert.equal(benchmarks.dataRetrieval.find(row=>row.name==='Grok 4.5 Fast')?.releaseDate,undefined);
+ assert.equal(benchmarks.chessModels.some(row=>row.name==='Grok 4.5 Fast'),false);
+});
+test('Grok 4.5 Fast DATA results are complete, official, and do not qualify for Overall',()=>{
+ const record=benchmarks.dataRetrieval.find(row=>row.name==='Grok 4.5 Fast');assert.ok(record);
+ assert.deepEqual(record.scores,{worm:21,koala:12,crow:7,octopus:0});
+ assert.equal(Object.hasOwn(record.scores,'raven'),false);assert.equal(Object.hasOwn(record.scores,'athena'),false);
+ const result=calculateArenaScore(ARENAS.dataRetrieval,record.scores);
+ assert.equal(result.numerator,73);assert.equal(result.denominator,63);assert.equal(result.score,73/63);
+ assert.equal(formatAggregateScore(result.score),'1.16');assert.equal(result.coverage,'4/4 active levels');
+ assert.equal(result.completeCoverage,true);assert.equal(result.rankEligible,true);
+ const built=buildLeaderboard(benchmarks),row=built.arenaRows['data-retrieval'].find(item=>item.name===record.name);
+ assert.ok(row?.rank);assert.equal(built.rows.some(item=>item.name===record.name),false);
+});
+test('aggregate formatting is display-only and tied ranks retain full precision',()=>{
+ assert.equal(formatAggregateScore(73/63),'1.16');assert.equal(formatAggregateScore(221/63),'3.51');
+ assert.throws(()=>formatAggregateScore(Number.NaN),/finite/);
+ const distinct=assignTiedRanks([{name:'lower',score:1.141},{name:'higher',score:1.144}]);
+ assert.deepEqual(distinct.map(row=>[row.name,row.rank]),[['higher',1],['lower',2]]);
+ assert.equal(formatAggregateScore(distinct[0].score),formatAggregateScore(distinct[1].score));
+ const tied=assignTiedRanks([{name:'Zulu',score:1.149},{name:'Alpha',score:1.149},{name:'Other',score:1.1}]);
+ assert.deepEqual(tied.map(row=>[row.name,row.rank]),[['Alpha',1],['Zulu',1],['Other',3]]);
+});
+test('homepage formats aggregates to two decimals and keeps raw sort attributes',async()=>{
+ const fs=await import('node:fs/promises');
+ const [home,script]=await Promise.all(['src/pages/index.astro','src/scripts/home-page.js'].map(path=>fs.readFile(path,'utf8')));
+ assert.match(home,/formatAggregateScore\(Number\(score\)\)/);assert.match(home,/formatAggregateScore\(item\.ultimateScore\)/);
+ assert.match(home,/formatAggregateScore\(item\.score\)/);assert.match(home,/formatAggregateScore\(sotaScore\)/);
+ assert.match(home,/data-absolute-score=\{item\.ultimateScore\}/);assert.doesNotMatch(home,/data-absolute-score=\{[^}]*toFixed/);
+ assert.match(script,/getAttribute\('data-absolute-score'\)/);assert.doesNotMatch(script,/cellA \? parseFloat\(cellA\.textContent\)/);
 });
 test('coverage and rank eligibility are independent from reserved capacity',()=>{
  const complete=calculateArenaScore(ARENAS.dataRetrieval,{worm:0,koala:'INVALID',crow:1,octopus:2});assert.equal(complete.rankEligible,true);assert.equal(complete.coverage,'4/4 active levels');assert.equal(complete.denominator,63);
