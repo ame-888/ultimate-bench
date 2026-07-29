@@ -105,3 +105,28 @@ test('provisional presentation order uses coverage weight, included count, score
 test('current Data leader correction preserves scores and Overall population',()=>{const built=buildLeaderboard(benchmarks);const grok=built.arenaRows['data-retrieval'].find(r=>r.name==='Grok 4.20 Expert');const sol=built.arenaRows['data-retrieval'].find(r=>r.name==='GPT-5.6 Sol (high)');assert.equal(grok.score,24);assert.equal(grok.rank,null);assert.equal(grok.canonical.coverage,'1/4 active levels');assert.equal(grok.canonical.weightCoverage,'1/15 active weight');assert.equal(sol.score,311/15);assert.equal(sol.rank,1);assert.equal(built.arenaLeaders['data-retrieval'].name,'GPT-5.6 Sol (high)');assert.equal(built.rows.length,14);assert.equal(built.rows.some(r=>r.name==='Grok 4.20 Expert'),false)});
 test('client sorting preserves canonical null ranks in official and exploratory modes',async()=>{const script=await (await import('node:fs/promises')).readFile('src/scripts/home-page.js','utf8');assert.match(script,/rank: item\.canonicalRank/);assert.match(script,/provisional rows stay unranked/);assert.doesNotMatch(script,/item\.rank = currentRank/)});
 test('achievements consume canonical server-generated rank-eligible leaders',async()=>{const [page,script]=await Promise.all([(await import('node:fs/promises')).readFile('src/pages/index.astro','utf8'),(await import('node:fs/promises')).readFile('src/scripts/home-page.js','utf8')]);assert.match(page,/canonicalLeaderboard\.arenaLeaders\['data-retrieval'\]/);assert.match(script,/canonicalLeaders\?\.data/)});
+
+test('Chess methodology documents all six protocols without changing canonical activation',async()=>{
+  const fs=await import('node:fs/promises');
+  const page=await fs.readFile('src/pages/methodology/chess-bench.astro','utf8');
+  for(const [number,name] of [[1,'mouse'],[2,'spider'],[3,'wolf'],[4,'hawk'],[5,'python'],[6,'hydra']]){
+    assert.match(page,new RegExp(`id="level-${number}-${name}"`));
+  }
+  assert.match(page,/Hydra remains Planned/);
+  assert.match(page,/current canonical Chess denominator remains 31/);
+  assert.match(page,/Complete six-level denominator after Hydra activation/);
+  assert.match(page,/progression-gated numeric zeroes/);
+  assert.doesNotMatch(page,/Position ID\s*[#:=-]?\s*\d{1,3}/i);
+  assert.equal(ARENAS.chess.levels[5].status,'Planned');
+  assert.equal(activeLevels(ARENAS.chess).reduce((sum,level)=>sum+level.weight,0),31);
+});
+
+test('Visual and Chess methodology share the sibling page UI stylesheet',async()=>{
+  const fs=await import('node:fs/promises');
+  for(const path of ['src/pages/methodology/visual-bench.astro','src/pages/methodology/chess-bench.astro']){
+    const page=await fs.readFile(path,'utf8');
+    assert.match(page,/styles\/content-pages\.css/);
+    assert.match(page,/styles\/bench-methodology\.css/);
+    assert.match(page,/content-page bench-methodology/);
+  }
+});
