@@ -482,12 +482,18 @@ function init() {
             const toggle = card.querySelector('.arena-toggle');
             if (!toggle) return;
 
-            const collapsedRows = [...card.querySelectorAll('tbody tr[hidden]')];
+            const rowsAfterPreview = [...card.querySelectorAll('tbody tr')].slice(6);
+            const label = toggle.querySelector('[data-arena-toggle-label]');
+            const setExpanded = (expanded) => {
+                rowsAfterPreview.forEach(row => { row.hidden = !expanded; });
+                toggle.setAttribute('aria-expanded', String(expanded));
+                label.textContent = expanded ? 'SHOW LESS' : 'SHOW MORE';
+            };
+
+            // Synchronize the visible rows, accessible state, and label on startup.
+            setExpanded(false);
             toggle.addEventListener('click', () => {
-                const expanded = toggle.getAttribute('aria-expanded') === 'true';
-                collapsedRows.forEach(row => { row.hidden = !expanded; });
-                toggle.setAttribute('aria-expanded', String(!expanded));
-                toggle.querySelector('span').textContent = expanded ? 'SHOW MORE' : 'SHOW LESS';
+                setExpanded(toggle.getAttribute('aria-expanded') !== 'true');
             });
         });
 

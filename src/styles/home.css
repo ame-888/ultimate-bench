@@ -1576,8 +1576,8 @@
 .home-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: stretch;
-    gap: 1rem;
+    align-items: start;
+    gap: clamp(.75rem, 1.4vw, 1.25rem);
 }
 .home-column {
     display: flex;
@@ -1594,7 +1594,7 @@
     padding: .2rem .15rem .8rem;
 }
 .home-column-header h2 { min-width: 0; line-height: 1.25; }
-.home-column-header .expand-btn { flex: 0 0 auto; max-width: 8.5rem; line-height: 1.25; text-align: left; }
+.home-column-header .expand-btn { flex: 0 0 auto; max-width: none; line-height: 1.25; text-align: center; white-space: nowrap; }
 .semantic-summary-wrap {
     width: 100%;
     min-width: 0;
@@ -1606,9 +1606,10 @@
 .semantic-summary-table thead tr,
 .semantic-summary-table tbody tr {
     display: grid;
-    grid-template-columns: 2.6rem minmax(0, 1fr) 3.25rem 4.25rem;
+    grid-template-columns: 2.6rem minmax(0, 1fr) 2.75rem 4.25rem;
     min-height: 3.4rem;
 }
+.semantic-summary-table tbody tr[hidden] { display: none !important; }
 .semantic-summary-table thead tr { min-height: 2.2rem; }
 .semantic-summary-table th,
 .semantic-summary-table td { min-width: 0; padding: .65rem .35rem; }
@@ -1659,20 +1660,20 @@
 .arena-toggle span:last-child { font-size: 1rem; transition: transform .2s ease; }
 .arena-toggle[aria-expanded="true"] span:last-child { transform: rotate(180deg); }
 
-.excluded-results { margin-top: 1.25rem; padding: clamp(1.1rem, 2vw, 1.5rem); border: 1px solid #26344c; border-radius: 14px; background: #0d1728; }
-.excluded-results-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; margin-bottom: 1rem; }
+.excluded-results { margin-top: 1rem; padding: clamp(.85rem, 1.5vw, 1.15rem); border: 1px solid #26344c; border-radius: 14px; background: #0d1728; }
+.excluded-results-heading { display: flex; align-items: end; justify-content: space-between; gap: 1.5rem; margin-bottom: .75rem; }
 .excluded-results-heading h2 { margin: .25rem 0 0; color: #edf2f8; font-size: clamp(1.15rem, 2vw, 1.45rem); }
 .excluded-results-heading p { max-width: 32rem; margin: 0; color: #91a0b4; font-size: .78rem; line-height: 1.55; }
 .excluded-kicker { color: #fbbf24; font-size: .62rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
-.excluded-result-card { display: grid; grid-template-columns: minmax(11rem, 1fr) auto minmax(18rem, 1.55fr); align-items: center; gap: 1.5rem; padding: 1.1rem 1.25rem; border-radius: 10px; background: #111d30; }
+.excluded-result-card { display: grid; grid-template-columns: minmax(11rem, 1fr) auto minmax(18rem, 1.55fr); align-items: center; gap: 1rem; padding: .8rem 1rem; border-radius: 10px; background: #111d30; }
 .excluded-result-model { min-width: 0; }
-.excluded-result-model h3 { overflow: hidden; margin: .45rem 0 .25rem; color: #f8fafc; font-size: 1rem; text-overflow: ellipsis; white-space: nowrap; }
+.excluded-result-model h3 { overflow: hidden; margin: .3rem 0 .15rem; color: #f8fafc; font-size: 1rem; text-overflow: ellipsis; white-space: nowrap; }
 .provisional-badge { padding: .22rem .45rem; border-radius: 999px; font-size: .58rem; }
 .excluded-arena { color: #8493a8; font-size: .7rem; }
 .excluded-result-score { padding-inline: 1.25rem; border-inline: 1px solid rgba(148,163,184,.14); text-align: center; }
 .excluded-result-score span { display: block; color: #8493a8; font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; }
-.excluded-result-score strong { display: block; margin-top: .15rem; color: #fbbf24; font-family: var(--font-heading); font-size: 1.65rem; font-variant-numeric: tabular-nums; }
-.excluded-result-copy p { margin: 0 0 .65rem; color: #c4cedb; font-size: .78rem; line-height: 1.5; }
+.excluded-result-score strong { display: block; margin-top: .1rem; color: #fbbf24; font-family: var(--font-heading); font-size: 1.45rem; font-variant-numeric: tabular-nums; }
+.excluded-result-copy p { margin: 0 0 .4rem; color: #c4cedb; font-size: .76rem; line-height: 1.4; }
 .excluded-result-copy p strong { color: #fde68a; }
 .excluded-result-copy dl { display: flex; flex-wrap: wrap; gap: .45rem 1.25rem; margin: 0; }
 .excluded-result-copy dl div { display: flex; gap: .4rem; }
