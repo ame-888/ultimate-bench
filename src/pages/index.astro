@@ -490,7 +490,7 @@ function getRankDisplay(rank) {
                                             <th scope="row" class={`ultimate-model model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="model-info" data-provider={getModelProvider(item.name).name}>
                                                     <div class="model-name-line">
-                                                        <strong class="model-name" data-release-date={item.releaseDate}>{item.name}</strong>
+                                                        <strong class="model-name" title={item.name} data-release-date={item.releaseDate}>{item.name}</strong>
                                                         {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
                                                     </div>
                                                 </div>
@@ -628,7 +628,7 @@ function getRankDisplay(rank) {
                         <h2 id="excluded-results-title">Provisional result</h2>
                         <div class="excluded-results-list">
                             {provisionalArenaRows.map(item => <article class="excluded-result-card">
-                                <div class="excluded-result-model"><span class="provisional-badge">PROVISIONAL</span><h3 title={item.name}>{item.name}</h3><span class="excluded-arena">Data Retrieval Bench</span></div>
+                                <div class="excluded-result-model"><div class="model-name-line"><h3 class="model-name" title={item.name}>{item.name}</h3><span class="provisional-badge">PROVISIONAL</span></div><span class="excluded-arena">Data Retrieval Bench</span></div>
                                 <div class="excluded-result-score"><span>Provisional score</span><strong>{formatAggregateScore(item.score)}%</strong></div>
                                 <div class="excluded-result-copy"><p>Not eligible for ranking because benchmark coverage is insufficient.</p><dl><div><dt>Active-level coverage</dt><dd>{item.canonical.coverage}</dd></div><div><dt>Operational result weight</dt><dd>{item.canonical.weightCoverage}</dd></div></dl></div>
                             </article>)}
@@ -753,7 +753,7 @@ function getRankDisplay(rank) {
                                 const item = unifiedList[i];
 
                                 return (
-                                    <div class={`benchmark-row unified-row ${item.rank === null ? 'provisional-row' : ''}`} data-model-name={item.name} aria-label={`${item.name}, ${item.rank === null ? 'provisional, insufficient coverage for an official rank' : `official rank ${item.rank}`}`}>
+                                    <div class={`benchmark-row unified-row ${item.rank === null ? 'provisional-row' : ''}`} data-model-name={item.name} data-provider={getModelProvider(item.name).name} aria-label={`${item.name}, ${item.rank === null ? 'provisional, insufficient coverage for an official rank' : `official rank ${item.rank}`}`}>
                                         {/* Model Column */}
                                         <div class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
                                             <div class={`benchmark-content `}>
@@ -761,8 +761,7 @@ function getRankDisplay(rank) {
                                                 </div>
                                                 <div class="model-info">
                                                     <div class="model-name-line">
-                                                        <span class="provider-badge">{getModelProvider(item.name).name}</span>
-                                                        <div class="model-name" data-release-date={item.releaseDate}>{item.name}</div>
+                                                        <div class="model-name" title={item.name} data-release-date={item.releaseDate}>{item.name}</div>
                                                         {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
                                                     </div>
                                                     {item.rank === null && <small class="coverage-note" aria-label={`Insufficient coverage for an official rank: ${item.coverage}; ${item.weightCoverage}`}>{item.coverage} · {item.weightCoverage}</small>}
@@ -904,7 +903,7 @@ function getRankDisplay(rank) {
                                 {rowsChess.map(i => {
                                 const item = chessList[i];
                                 return (
-                                    <div class={`benchmark-row unified-row ${item.rank === null ? 'provisional-row' : ''}`} data-model-name={item.name} aria-label={`${item.name}, ${item.rank === null ? 'provisional, insufficient coverage for an official rank' : `official rank ${item.rank}`}`}>
+                                    <div class={`benchmark-row unified-row ${item.rank === null ? 'provisional-row' : ''}`} data-model-name={item.name} data-provider={getModelProvider(item.name).name} aria-label={`${item.name}, ${item.rank === null ? 'provisional, insufficient coverage for an official rank' : `official rank ${item.rank}`}`}>
                                         <div class={`benchmark-cell model-cell ${item ? getModelColorClass(item.name) : ''}`} style="flex: 2;">
                                             {item && (
                                                 <div class={`benchmark-content `}>
@@ -912,8 +911,7 @@ function getRankDisplay(rank) {
                                                     </div>
                                                     <div class="model-info">
                                                         <div class="model-name-line">
-                                                            <span class="provider-badge">{getModelProvider(item.name).name}</span>
-                                                            <div class="model-name" data-release-date={item.releaseDate}>{item.name}</div>
+                                                            <div class="model-name" title={item.name} data-release-date={item.releaseDate}>{item.name}</div>
                                                             {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
                                                         </div>
                                                         {item.rank === null && <small class="coverage-note" aria-label={`Insufficient coverage for an official rank: ${item.coverage}; ${item.weightCoverage}`}>{item.coverage} · {item.weightCoverage}</small>}
@@ -1061,7 +1059,7 @@ There are four Active levels. Raven is Planned with a documented proposed struct
                                 {rowsData.map(i => {
                                 const item = dataList[i];
                                 return (
-                                    <div class={`benchmark-row unified-row ${item.rank === null ? 'provisional-row' : ''}`} data-model-name={item.name} aria-label={`${item.name}, ${item.rank === null ? 'provisional, insufficient coverage for an official rank' : `official rank ${item.rank}`}`}>
+                                    <div class={`benchmark-row unified-row ${item.rank === null ? 'provisional-row' : ''}`} data-model-name={item.name} data-provider={getModelProvider(item.name).name} aria-label={`${item.name}, ${item.rank === null ? 'provisional, insufficient coverage for an official rank' : `official rank ${item.rank}`}`}>
                                         <div class={`benchmark-cell model-cell ${item ? getModelColorClass(item.name) : ''}`} style="flex: 2;">
                                             {item && (
                                                 <div class={`benchmark-content `}>
@@ -1069,8 +1067,7 @@ There are four Active levels. Raven is Planned with a documented proposed struct
                                                     </div>
                                                     <div class="model-info">
                                                         <div class="model-name-line">
-                                                            <span class="provider-badge">{getModelProvider(item.name).name}</span>
-                                                            <div class="model-name" data-release-date={item.releaseDate}>{item.name}</div>
+                                                            <div class="model-name" title={item.name} data-release-date={item.releaseDate}>{item.name}</div>
                                                             {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
                                                         </div>
                                                         {item.rank === null && <small class="coverage-note" aria-label={`Insufficient coverage for an official rank: ${item.coverage}; ${item.weightCoverage}`}>{item.coverage} · {item.weightCoverage}</small>}

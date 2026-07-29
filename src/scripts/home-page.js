@@ -173,7 +173,6 @@ function init() {
                 document.querySelector(`.expand-btn[data-target="${mode}"]`)?.setAttribute('aria-expanded', 'true');
                 modalCloseBtn?.focus();
                 document.body.style.overflow = 'hidden'; // Prevent background scrolling
-                adjustFontSizes();
             }
         }
 
@@ -779,25 +778,6 @@ function init() {
             return sorted.map(item => ({ ...item, rank: item.canonicalRank }));
         }
 
-        adjustFontSizes();
-        window.addEventListener('resize', adjustFontSizes);
-    }
-
-    function adjustFontSizes() {
-        const models = document.querySelectorAll('.model-name');
-        models.forEach(el => {
-            // Reset to original size to allow growth on resize
-            el.style.fontSize = '0.85rem';
-
-            let size = 0.85;
-            const minSize = 0.50;
-
-            // Reduce size while content overflows
-            while (el.scrollWidth > el.clientWidth && size > minSize) {
-                size -= 0.05;
-                el.style.fontSize = `${size}rem`;
-            }
-        });
     }
 
     document.addEventListener('DOMContentLoaded', init);
