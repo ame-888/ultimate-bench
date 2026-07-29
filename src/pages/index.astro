@@ -601,7 +601,7 @@ function getRankDisplay(rank) {
                             { id: 'chess', title: 'CHESS BENCH', rows: chessArenaRows.filter(row => row.rank !== null) }
                         ].map(arena => (
                             <article class="home-column" data-arena-card>
-                                <div class="home-column-header"><h2>{arena.title}</h2><button class="expand-btn" data-target={arena.id} aria-expanded="false" aria-controls={`${arena.id === 'data' ? 'data' : arena.id}-bench-full`}>View {arena.title.replace(' BENCH',' Bench')} details</button></div>
+                                <div class="home-column-header"><h2>{arena.title}</h2><button class="expand-btn" data-target={arena.id} aria-expanded="false" aria-controls={`${arena.id === 'data' ? 'data' : arena.id}-bench-full`}>VIEW DETAILS</button></div>
                                 <div class="benchmark-desktop-container semantic-summary-wrap">
                                     <table class="benchmark-container semantic-summary-table">
                                         <caption class="sr-only">Canonical {arena.title} standings</caption>
@@ -616,7 +616,7 @@ function getRankDisplay(rank) {
                                         ))}</tbody>
                                     </table>
                                 </div>
-                                {arena.rows.length > ARENA_PREVIEW_ROWS && <button class="arena-toggle" type="button" aria-expanded="false" aria-controls={`${arena.id}-arena-summary`}><span>SHOW MORE</span><span aria-hidden="true">⌄</span></button>}
+                                {arena.rows.length > ARENA_PREVIEW_ROWS && <button class="arena-toggle" type="button" aria-expanded="false" aria-controls={`${arena.id}-arena-summary`}><span data-arena-toggle-label>SHOW MORE</span><span aria-hidden="true">⌄</span></button>}
                             </article>
                         ))}
                     </div>
