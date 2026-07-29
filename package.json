@@ -4,8 +4,9 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/generate-sitemap.mjs",
-    "test": "node --test",
+    "build": "npm run methodology:pdf && astro build && node scripts/generate-sitemap.mjs",
+    "methodology:pdf": "tsx scripts/generate-methodology-pdf.ts",
+    "test": "node --test && tsx --test test/*.test.ts",
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check"
@@ -15,11 +16,16 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "astro": "^5.17.3",
+    "pdfkit": "^0.19.1",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@types/pdfkit": "^0.17.6",
+    "pdf-parse": "^2.4.5",
+    "tsx": "^4.23.1",
     "typescript": "^5.9.3"
   }
 }

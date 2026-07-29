@@ -1,0 +1,56 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { METHODOLOGY, PUBLICATION_SECTIONS, methodologyArenas } from '../../data/methodologyPublication';
+const canonicalUrl = new URL(METHODOLOGY.canonicalPath, Astro.site).href;
+---
+<Layout title={`${METHODOLOGY.webTitle} | Ultimate Bench`} description={METHODOLOGY.description}>
+  <Fragment slot="head">
+    <meta property="og:image" content={new URL('/social-preview.svg', Astro.site)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={METHODOLOGY.webTitle} />
+    <meta name="twitter:description" content={METHODOLOGY.description} />
+  </Fragment>
+  <main class="publication">
+    <header class="cover">
+      <p class="kicker">Ultimate Bench · Public specification</p>
+      <h1>Methodology and<br />Evaluation Protocol</h1>
+      <p class="abstract">A consolidated account of Visual Bench, DATA Bench, Chess Bench, scoring, coverage, qualification, and limitations.</p>
+      <dl><div><dt>Version</dt><dd>{METHODOLOGY.version}</dd></div><div><dt>Revised</dt><dd><time datetime={METHODOLOGY.revisionDate}>{METHODOLOGY.revisionDate}</time></dd></div></dl>
+      <div class="actions">
+        <a class="primary" href={METHODOLOGY.pdfPath} target="_blank">Open PDF <span class="sr">(opens in a new tab)</span></a>
+        <a href={METHODOLOGY.pdfPath} download>Download PDF</a>
+        <button id="share-publication" type="button">Share document</button>
+        <button id="copy-publication" type="button" data-url={canonicalUrl}>Copy link</button>
+      </div>
+      <p id="share-status" class="status" role="status" aria-live="polite"></p>
+    </header>
+
+    <div class="document-grid">
+      <nav class="toc" aria-label="Table of contents"><h2>Contents</h2><ol>{PUBLICATION_SECTIONS.map((section, index) => <li><a href={`#${section.id}`}><span>{index + 1}</span>{section.title}</a></li>)}</ol></nav>
+      <article class="paper">
+        {PUBLICATION_SECTIONS.map((section, index) => <section id={section.id}><h2><span>{index + 1}.</span> {section.title}</h2>{section.paragraphs.map(paragraph => <p>{paragraph}</p>)}
+          {section.id === 'weights' && <div class="table-wrap"><table><caption>Canonical arena structure</caption><thead><tr><th>Arena</th><th>Active</th><th>Operational</th><th>Reserved</th><th>Denominator</th></tr></thead><tbody>{methodologyArenas.map(arena => <tr><th scope="row">{arena.name}</th><td>{arena.activeCount}</td><td>{arena.operationalWeight}</td><td>{arena.reservedWeight}</td><td>{arena.denominator}</td></tr>)}</tbody></table></div>}
+          {section.id === 'result-states' && methodologyArenas.map((arena) => (
+            <div class="arena">
+              <h3>{arena.name}</h3><p>{arena.description}</p>
+              <div class="table-wrap"><table><thead><tr><th>Level</th><th>Key</th><th>Name</th><th>Weight</th><th>Status</th><th>Condition</th></tr></thead>
+                <tbody>{arena.levels.map((level) => (<tr><td>{level.number}</td><td><code>{level.key}</code></td><th scope="row">{level.name}</th><td>{level.weight}</td><td>{level.status}</td><td>{level.unlockCondition || '—'}</td></tr>))}</tbody>
+              </table></div>
+            </div>
+          ))}
+          {section.id === 'visual-bench' && <p><a href="/methodology/visual-bench/">Read the detailed Visual Bench methodology.</a></p>}
+          {section.id === 'data-bench' && <p><a href="/methodology/data-bench/">Read the detailed DATA Bench methodology.</a></p>}
+          {section.id === 'chess-bench' && <p><a href="/methodology/chess-bench/">Read the detailed Chess Bench methodology.</a></p>}
+        </section>)}
+      </article>
+    </div>
+  </main>
+  <script define:vars={{ canonicalUrl, title: METHODOLOGY.webTitle }}>
+    const copy = async () => { await navigator.clipboard.writeText(canonicalUrl); document.querySelector('#share-status').textContent = 'Link copied to clipboard.'; };
+    document.querySelector('#copy-publication')?.addEventListener('click', copy);
+    document.querySelector('#share-publication')?.addEventListener('click', async () => { if (navigator.share) { try { await navigator.share({ title, url: canonicalUrl }); document.querySelector('#share-status').textContent = 'Share sheet opened.'; } catch (error) { if (error?.name !== 'AbortError') await copy(); } } else await copy(); });
+  </script>
+</Layout>
+<style>
+.publication{--accent:#2dd4bf;max-width:82rem;margin:auto;padding:clamp(2.5rem,7vw,6rem) 1.25rem 7rem;color:#cbd5e1}.cover{max-width:64rem;padding:clamp(2rem,6vw,5rem);border:1px solid #334155;border-radius:1.5rem;background:linear-gradient(145deg,#172033,#0f172a)}.kicker{color:var(--accent);font-weight:800;letter-spacing:.14em;text-transform:uppercase}.cover h1{margin:.7rem 0;font-size:clamp(2.8rem,7vw,5.7rem);line-height:1;letter-spacing:-.055em;color:#f8fafc}.abstract{max-width:47rem;font-size:1.15rem;line-height:1.7;color:#aab8cb}.cover dl{display:flex;gap:2rem}.cover dl div{display:flex;gap:.5rem}.cover dt{color:#94a3b8}.cover dd{margin:0;color:white;font-weight:700}.actions{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:2rem}.actions a,.actions button{box-sizing:border-box;min-height:46px;padding:.8rem 1rem;border:1px solid #475569;border-radius:.65rem;background:transparent;color:#e2e8f0;font:700 .85rem var(--font-body);text-decoration:none;cursor:pointer}.actions .primary{border-color:#14b8a6;background:#0f766e;color:white}.actions :focus-visible,.toc a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}.status{min-height:1.3em;color:#99f6e4}.document-grid{display:grid;grid-template-columns:17rem minmax(0,1fr);gap:3rem;margin-top:3rem}.toc{position:sticky;top:5.5rem;align-self:start;max-height:calc(100vh - 7rem);overflow:auto}.toc h2{color:white}.toc ol{padding:0;list-style:none}.toc a{display:grid;grid-template-columns:2rem 1fr;gap:.3rem;padding:.35rem;color:#94a3b8;font-size:.78rem;text-decoration:none}.toc a:hover{color:#5eead4}.toc span{color:#5eead4}.paper{min-width:0}.paper section{padding:1rem 0 3rem;scroll-margin-top:5.5rem;border-bottom:1px solid #273449}.paper h2{margin:0 0 1rem;color:#f8fafc;font-size:clamp(1.6rem,3vw,2.3rem)}.paper h2 span{color:#5eead4}.paper h3{color:#e2e8f0}.paper p{max-width:52rem;line-height:1.8}.paper a{color:#67e8f9}.table-wrap{max-width:100%;overflow-x:auto;margin:1.5rem 0}table{width:100%;border-collapse:collapse;font-size:.85rem}caption{text-align:left;padding:.7rem 0;color:#f8fafc;font-weight:800}th,td{padding:.75rem;text-align:left;border:1px solid #334155}thead{background:#1e293b;color:#f8fafc}code{color:#99f6e4}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}@media(max-width:800px){.document-grid{grid-template-columns:1fr}.toc{position:static;max-height:none}.cover dl{flex-direction:column;gap:.4rem}.actions>*{flex:1 1 10rem;text-align:center}}@media print{.cover{background:white;color:#111;border:0}.cover h1,.paper h2,.toc h2{color:#111}.publication{color:#222;padding:0}.actions,.status{display:none}.document-grid{display:block}.toc{position:static;max-height:none;break-after:page}.paper section{break-inside:auto}.paper h2,.paper h3{break-after:avoid}.table-wrap,table{break-inside:avoid}th,td{border-color:#aaa}.site-footer{display:none}}
+</style>
