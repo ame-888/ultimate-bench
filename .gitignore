@@ -23,3 +23,7 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 dev.log
+
+# Confidential benchmark evaluation records and active stimulus material
+private/evaluations/
+private/stimuli/

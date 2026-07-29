@@ -43,6 +43,57 @@ test('cookie dialog exposes modal labels and focus management hooks',async()=>{c
 test('global canonical standings use native table semantics and sortable metadata',async()=>{const page=await (await import('node:fs/promises')).readFile('src/pages/index.astro','utf8');for(const token of ['<table','<caption','<thead','<tbody','<th scope="col"','<th scope="row"','<td'])assert.match(page,new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));const script=await (await import('node:fs/promises')).readFile('src/scripts/home-page.js','utf8');assert.match(script,/setAttribute\('aria-sort', ascending \? 'ascending' : 'descending'\)/)});
 test('tooltip controls have contextual names and stable relationships',async()=>{const page=await (await import('node:fs/promises')).readFile('src/pages/index.astro','utf8');assert.doesNotMatch(page,/aria-label="Show explanation"/);assert.match(page,/Show Mole Level 1 explanation/);assert.match(page,/Show Data Retrieval Crow Level 3 explanation/);assert.match(page,/Show Chess Python Level 5 explanation/);assert.match(page,/aria-controls="tooltip-explanation-/)});
 
+test('every Active Visual level has one complete, anchored public protocol',async()=>{
+  const page=await (await import('node:fs/promises')).readFile('src/pages/methodology/visual-bench.astro','utf8');
+  for(const level of activeLevels(ARENAS.visual)){
+    const anchor=`level-${level.number}-${level.name.toLowerCase()}`;
+    assert.equal((page.match(new RegExp(`id="${anchor}"`,'g'))||[]).length,1,`${level.name} must have one stable protocol anchor`);
+    const article=page.match(new RegExp(`<article id="${anchor}"[\\s\\S]*?</article>`))?.[0];
+    assert.ok(article,`${level.name} protocol article is missing`);
+    for(const marker of [`<h2 id="${anchor}-title">${level.name}</h2>`,'<h3>Task</h3>','<h3>Administration and scoring</h3>','<h3>Interpretation and limitations</h3>']) assert.match(article,new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
+    assert.match(page,new RegExp(`anchor: '${anchor}'`));
+  }
+  assert.equal((page.match(/data-visual-protocol=/g)||[]).length,5);
+  assert.match(page,/href={`#\${protocol\.anchor}`}/);
+  assert.match(page,/id="level-6-beholder"[\s\S]*data-level-status="Planned"/);
+  assert.doesNotMatch(page,/data-visual-protocol="6"/);
+});
+
+test('Visual methodology weights and denominator derive from canonical configuration',async()=>{
+  const page=await (await import('node:fs/promises')).readFile('src/pages/methodology/visual-bench.astro','utf8');
+  const levels=activeLevels(ARENAS.visual);
+  assert.deepEqual(levels.map(level=>level.weight),[1,2,4,8,16]);
+  assert.equal(levels.reduce((sum,level)=>sum+level.weight,0),31);
+  assert.match(page,/visualLevels\.map\(level =>/);
+  assert.match(page,/data-complete-weight={fullWeight}/);
+  assert.match(page,/16×Eagle\) \/ 31/);
+});
+
+test('Visual public copy states repeated-item and product-interface boundaries consistently',async()=>{
+  const fs=await import('node:fs/promises');
+  const methodology=await fs.readFile('src/pages/methodology/visual-bench.astro','utf8');
+  const home=await fs.readFile('src/pages/index.astro','utf8');
+  assert.match(methodology,/not 100 independent (?:test )?items/);
+  assert.match(methodology,/fresh, isolated conversation/);
+  assert.match(methodology,/accessible product configuration/);
+  assert.match(methodology,/active test contents remain confidential|remain confidential/);
+  assert.match(home,/not 100 independent items/);
+  assert.doesNotMatch(home,/randomly mixed|increasingly difficult scenarios|measure the visual capabilities of an AI model/i);
+});
+
+test('Visual methodology exposes no stimulus links and private records cannot enter the public source tree',async()=>{
+  const fs=await import('node:fs/promises');
+  const page=await fs.readFile('src/pages/methodology/visual-bench.astro','utf8');
+  assert.doesNotMatch(page,/<(?:img|source)\b|(?:src|href)=["'][^"']+\.(?:png|jpe?g|webp|gif|avif|json)/i);
+  const walk=async dir=>(await fs.readdir(dir,{withFileTypes:true})).flatMap(entry=>entry.isDirectory()?[]:[`${dir}/${entry.name}`]);
+  for(const root of ['src','public']){
+    const pending=[root];
+    while(pending.length){const dir=pending.pop();for(const entry of await fs.readdir(dir,{withFileTypes:true})){const path=`${dir}/${entry.name}`;if(entry.isDirectory())pending.push(path);else assert.doesNotMatch(path,/private[\\/](?:evaluations|stimuli)|visual[-_](?:stimulus|answer[-_]?key)/i)}}
+  }
+  const ignore=await fs.readFile('.gitignore','utf8');
+  assert.match(ignore,/private\/evaluations\//);assert.match(ignore,/private\/stimuli\//);
+});
+
 
 test('complete numeric coverage exposes full canonical metadata and eligibility',()=>{const r=calculateArenaScore(ARENAS.dataRetrieval,{worm:1,koala:2,crow:3,octopus:4});assert.deepEqual({fullDenominator:r.fullDenominator,included:r.included,active:r.active,weightedCoverage:r.weightedCoverage,completeCoverage:r.completeCoverage,rankEligible:r.rankEligible,coverage:r.coverage,weightCoverage:r.weightCoverage},{fullDenominator:15,included:4,active:4,weightedCoverage:1,completeCoverage:true,rankEligible:true,coverage:'4/4 active levels',weightCoverage:'15/15 active weight'})});
 test('zero and INVALID both complete coverage and retain full denominator',()=>{for(const value of [0,'INVALID']){const r=calculateArenaScore(ARENAS.dataRetrieval,{worm:value,koala:2,crow:3,octopus:4});assert.equal(r.denominator,15);assert.equal(r.completeCoverage,true);assert.equal(r.rankEligible,true)}});

@@ -638,11 +638,11 @@ function getRankDisplay(rank) {
                     <header class="detail-hero">
                         <span class="detail-kicker">Arena 01 · Perception</span>
                         <h2>Visual Bench</h2>
-                        <p>Five documented trials of spatial reasoning, focus, and visual stability, with a sixth level planned.</p>
+                        <p>Five Active fixed-condition protocols for repeatable character localization and midpoint reasoning, with a sixth level Planned.</p>
                     </header>
                     <div class="benchmark-description">
                         <p>Visual Bench is the first benchmark in the Ultimate Bench series.<br>
-                        Its goal is to measure the visual capabilities of an AI model, including:</p>
+                        It evaluates repeatable character recognition, localization, spatial binding, and midpoint reasoning by named chatbot product or interface configuration, including:</p>
                         <ul>
                             <li>recognizing characters</li>
                             <li>spatial understanding</li>
@@ -650,8 +650,7 @@ function getRankDisplay(rank) {
                             <li>stability across different kinds of noise</li>
                         </ul>
                         <p class="methodology-link"><a href="/methodology/visual-bench/">View full Visual Bench methodology</a></p>
-                        <p>The levels use increasingly difficult scenarios to test the AI models.<br>
-There are currently five levels in use. Level 6 remains under development and is excluded from current scoring.</p>
+                        <p>The five Active levels use increasingly complex fixed task conditions. Each level repeats ten fixed questions across ten fresh, isolated conversations; its percentage is the number correct among 100 response instances, not 100 independent items. Level 6 remains Planned and excluded from scoring.</p>
                     </div>
                     <div class="ranking-controls">
                         <label for="visual-ranking-method">Ranking Method:</label>
@@ -678,7 +677,7 @@ There are currently five levels in use. Level 6 remains under development and is
                                         <h3>MOLE</h3>
                                         <span class="tooltip-container">
                                             <button type="button" class="tooltip-icon" aria-label="Show Mole Level 1 explanation" aria-controls="tooltip-explanation-2">ⓘ</button>
-                                            <div class="tooltip-text" id="tooltip-explanation-2"><strong>MOLE (Level 1):</strong> Repeated Coordinate-Based Character Localization. The model answers ten coordinate queries about a fixed 10 × 10 character grid. The identical grid, coordinates, and questions are administered ten times, measuring repeatable correct performance in character recognition and absolute spatial grounding.</div>
+                                            <div class="tooltip-text" id="tooltip-explanation-2"><strong>MOLE (Level 1):</strong> Ten fixed coordinate questions about an intact 10 × 10 character grid, repeated in ten fresh, isolated conversations. The result counts correct responses among 100 repeated response instances.</div>
                                         </span>
                                     </div>
                                     <div class="creature-icon mole-icon">
@@ -690,7 +689,7 @@ There are currently five levels in use. Level 6 remains under development and is
                                         <h3>RHINO</h3>
                                         <span class="tooltip-container">
                                             <button type="button" class="tooltip-icon" aria-label="Show Rhino Level 2 explanation" aria-controls="tooltip-explanation-3">ⓘ</button>
-                                            <div class="tooltip-text" id="tooltip-explanation-3"><strong>RHINO (Level 2):</strong> Partial-View Character Localization. The Level 1 grid is transformed by removing the same lateral half of every column and concatenating the remaining strips. The model answers the same ten coordinate questions across ten identical administrations, measuring repeatable correct recognition and spatial grounding under systematic visual information loss.</div>
+                                            <div class="tooltip-text" id="tooltip-explanation-3"><strong>RHINO (Level 2):</strong> The Mole grid loses the same lateral half of every column while retaining its logical grid and questions. Ten fixed questions are repeated in ten fresh, isolated conversations.</div>
                                         </span>
                                     </div>
                                     <div class="creature-icon rhino-icon">
@@ -702,7 +701,7 @@ There are currently five levels in use. Level 6 remains under development and is
                                         <h3>CHIMPANZEE</h3>
                                         <span class="tooltip-container">
                                             <button type="button" class="tooltip-icon" aria-label="Show Chimpanzee Level 3 explanation" aria-controls="tooltip-explanation-4">ⓘ</button>
-                                            <div class="tooltip-text" id="tooltip-explanation-4">CHIMPANZEE (Level 3): Compound Visual Degradation. The complete Level 2 image is processed by an imperfect automatic background-removal tool, producing additional information loss and segmentation artifacts. The model answers the same ten coordinate questions across ten identical administrations, measuring repeatable correct character localization under compound visual degradation.</div>
+                                            <div class="tooltip-text" id="tooltip-explanation-4"><strong>CHIMPANZEE (Level 3):</strong> The Rhino image receives imperfect background removal, adding segmentation artifacts and information loss. The same ten questions are repeated in ten fresh, isolated conversations.</div>
                                         </span>
                                     </div>
                                     <div class="creature-icon chimp-icon">
@@ -714,7 +713,7 @@ There are currently five levels in use. Level 6 remains under development and is
                                         <h3>OWL</h3>
                                         <span class="tooltip-container">
                                             <button type="button" class="tooltip-icon" aria-label="Show Owl Level 4 explanation" aria-controls="tooltip-explanation-5">ⓘ</button>
-                                            <div class="tooltip-text" id="tooltip-explanation-5">OWL (Level 4): Anchor-Based Midpoint Localization. In a 17 × 11 character grid interrupted by a central 5 × 3 image, the model must locate two named characters and identify the character in the single horizontal or vertical cell exactly between them. The task measures repeatable correct relational localization across multiple dependent visual-reasoning stages.</div>
+                                            <div class="tooltip-text" id="tooltip-explanation-5"><strong>OWL (Level 4):</strong> In a separate 17 × 11 grid with a central 5 × 3 spanning image, the model locates two named anchors and identifies their unique horizontal or vertical midpoint character. Ten fixed questions are repeated in ten fresh, isolated conversations.</div>
                                         </span>
                                     </div>
                                     <div class="creature-icon owl-icon">
@@ -726,7 +725,7 @@ There are currently five levels in use. Level 6 remains under development and is
                                         <h3>EAGLE</h3>
                                         <span class="tooltip-container">
                                             <button type="button" class="tooltip-icon" aria-label="Show Eagle Level 5 explanation" aria-controls="tooltip-explanation-6">ⓘ</button>
-                                            <div class="tooltip-text" id="tooltip-explanation-6">EAGLE (Level 5): Relational Localization Under Heterogeneous Visual Corruption. In a large grid containing randomly mixed animated and live-action characters from multiple shows, imperfect cropping and spatially selective color inversion degrade the visual evidence. The model must locate two named anchors and identify the character at their horizontal, vertical, or diagonal midpoint across ten repeated administrations.</div>
+                                            <div class="tooltip-text" id="tooltip-explanation-6"><strong>EAGLE (Level 5):</strong> A larger, denser mixed-source grid combines animation, live action, irregular cropping, and selective color inversion. The model finds horizontal, vertical, or diagonal midpoint characters across ten fresh, isolated administrations.</div>
                                         </span>
                                     </div>
                                     <div class="creature-icon eagle-icon">
