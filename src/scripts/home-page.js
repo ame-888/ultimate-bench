@@ -387,7 +387,7 @@ function init() {
             '100% MARKER': {
                 score: '100%',
                 color: '#FBBF24',
-                desc: 'Decorative 100% endpoint. It is not a validated capability threshold or an AGI claim.'
+                desc: 'The journey’s luminous horizon: a final marker for imagining what the full scale might hold.'
             },
             'EVENT HORIZON': {
                 score: '80%',
@@ -397,7 +397,7 @@ function init() {
             'SUPERNOVA': {
                 score: '60%',
                 color: '#F97316',
-                desc: 'Decorative waypoint only; it does not assert a scientifically validated capability stage.'
+                desc: 'Capabilities radiate outward, bringing ambitious, multi-step challenges within reach.'
             },
             'STAR': {
                 score: '40%',
@@ -407,7 +407,7 @@ function init() {
             'NEBULA': {
                 score: '20%',
                 color: '#A855F7',
-                desc: 'Decorative starting waypoint only; it does not measure intelligence or AGI progress.'
+                desc: 'Signals gather into a promising foundation, opening the way to more capable systems.'
             },
             'INCEPTION': {
                 score: '0%',
