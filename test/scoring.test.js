@@ -80,3 +80,39 @@ test('DATA methodology route documents canonical structure without exposing rese
  assert.doesNotMatch(data,/Position ID\s*[#:=-]?\s*\d{1,3}/i);
  for(const result of benchmarks.dataRetrieval)assert.equal(Object.hasOwn(result.scores,'athena'),false);
 });
+
+test('methodology semantics derive from canonical statuses and metadata',async()=>{
+ const fs=await import('node:fs/promises');
+ const [general,visual,data,chess,spec]=await Promise.all(['src/pages/methodology.astro','src/pages/methodology/visual-bench.astro','src/pages/methodology/data-bench.astro','src/pages/methodology/chess-bench.astro','src/data/benchmarkSpec.ts'].map(path=>fs.readFile(path,'utf8')));
+ assert.match(general,/Active, Planned, and Locked levels/);
+ assert.match(visual,/Eagle contributes 16\/63 and Owl 8\/63 of the permanent complete six-level Visual ladder/);
+ assert.match(visual,/currently operational Visual weight of 31[\s\S]*16\/31 and 8\/31 respectively/);
+ assert.doesNotMatch(visual,/(?:16\/31|8\/31)[^.]*complete score/i);
+ assert.match(data,/Raven is <strong>Planned<\/strong>[\s\S]*no finalized operational protocol/);
+ assert.match(spec,/Raven'[\s\S]*LEVEL_STATUSES\.PLANNED[\s\S]*no finalized operational protocol exists/);
+ assert.match(chess,/import \{ ARENAS, LEVEL_STATUSES \}/);
+ assert.match(chess,/const arena = ARENAS\.chess/);
+ assert.doesNotMatch(chess,/name:\s*'Mouse'|name:\s*'Hydra'|status:\s*'Locked'/);
+ assert.match(chess,/` \(\$\{level\.status\}\)`/);
+ assert.doesNotMatch(chess,/\(Planned\)/);
+ assert.match(chess,/id="auditability"/);
+ assert.match(chess,/private Chess960 position identifier/);
+ assert.match(chess,/Object\.keys\(opponentSettings\)\.length !== levels\.length/);
+ assert.match(chess,/const \[mouse, spider, wolf, hawk, python, hydra\] = levels/);
+ for(const variable of ['mouse','spider','wolf','hawk','python','hydra'])assert.match(chess,new RegExp(`level-\\$\\{${variable}\\.number\\}`));
+ for(const arena of ARENA_LIST)for(const level of arena.levels.filter(x=>x.status!==LEVEL_STATUSES.ACTIVE))for(const record of benchmarks[arena.dataKey])assert.equal(Object.hasOwn(record.scores,level.key),false);
+});
+
+test('methodology source navigation targets sections and sitemap generation covers every route',async()=>{
+ const fs=await import('node:fs/promises');
+ for(const path of ['src/pages/methodology/visual-bench.astro','src/pages/methodology/data-bench.astro','src/pages/methodology/chess-bench.astro']){
+  const source=await fs.readFile(path,'utf8');
+  const staticLinks=[...source.matchAll(/href="#([a-z0-9-]+)"/g)].map(match=>match[1]);
+  for(const id of staticLinks)assert.match(source,new RegExp(`id="${id}"`),`${path} missing #${id}`);
+ }
+ const generator=await fs.readFile('scripts/generate-sitemap.mjs','utf8');
+ assert.match(generator,/findHtml\(outputDirectory\)/);
+ assert.equal(await fs.stat('public/sitemap-0.xml').then(()=>true,()=>false),false);
+ assert.equal(await fs.stat('public/sitemap-index.xml').then(()=>true,()=>false),false);
+ for(const route of ['methodology.astro','methodology/visual-bench.astro','methodology/data-bench.astro','methodology/chess-bench.astro'])assert.equal(await fs.stat(`src/pages/${route}`).then(()=>true,()=>false),true);
+});
