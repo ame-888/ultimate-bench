@@ -238,7 +238,7 @@ const chessArenaRows = canonicalLeaderboard.arenaRows.chess;
 
 // Homepage arena summaries intentionally show only officially ranked results.
 // Incomplete, computable results remain visible separately for transparency.
-const ARENA_PREVIEW_ROWS = 6;
+const ARENA_PREVIEW_ROWS = 10;
 const provisionalArenaRows = canonicalLeaderboard.arenaRows['data-retrieval'].filter(row => row.rank === null);
 
 const rowsChess = Array.from({ length: chessList.length }, (_, i) => i);
@@ -622,15 +622,12 @@ function getRankDisplay(rank) {
                     </div>
 
                     {provisionalArenaRows.length > 0 && <section class="excluded-results" aria-labelledby="excluded-results-title">
-                        <div class="excluded-results-heading">
-                            <div><span class="excluded-kicker">Transparency note</span><h2 id="excluded-results-title">Excluded from official ranking</h2></div>
-                            <p>Scores here are displayed for transparency, but do not qualify for an official position.</p>
-                        </div>
+                        <h2 id="excluded-results-title">Provisional result</h2>
                         <div class="excluded-results-list">
                             {provisionalArenaRows.map(item => <article class="excluded-result-card">
                                 <div class="excluded-result-model"><span class="provisional-badge">PROVISIONAL</span><h3 title={item.name}>{item.name}</h3><span class="excluded-arena">Data Retrieval Bench</span></div>
                                 <div class="excluded-result-score"><span>Provisional score</span><strong>{item.score.toFixed(1)}%</strong></div>
-                                <div class="excluded-result-copy"><p><strong>Not eligible for ranking.</strong> There is not enough benchmark coverage for a comparable official rank.</p><dl><div><dt>Level coverage</dt><dd>{item.canonical.coverage}</dd></div><div><dt>Weight coverage</dt><dd>{item.canonical.weightCoverage}</dd></div></dl></div>
+                                <div class="excluded-result-copy"><p>Not eligible for ranking because benchmark coverage is insufficient.</p><dl><div><dt>Level coverage</dt><dd>{item.canonical.coverage}</dd></div><div><dt>Weight coverage</dt><dd>{item.canonical.weightCoverage}</dd></div></dl></div>
                             </article>)}
                         </div>
                     </section>}

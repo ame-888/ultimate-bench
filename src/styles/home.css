@@ -1577,7 +1577,8 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: start;
-    gap: clamp(.75rem, 1.4vw, 1.25rem);
+    column-gap: clamp(.75rem, 1.4vw, 1rem);
+    row-gap: 1rem;
 }
 .home-column {
     display: flex;
@@ -1586,6 +1587,8 @@
     max-width: none;
     width: 100%;
     padding: 1rem;
+    margin: 0;
+    z-index: auto;
 }
 .home-column-header {
     min-height: 4.15rem;
@@ -1606,7 +1609,8 @@
 .semantic-summary-table thead tr,
 .semantic-summary-table tbody tr {
     display: grid;
-    grid-template-columns: 2.6rem minmax(0, 1fr) 2.75rem 4.25rem;
+    grid-template-columns: 2.45rem minmax(0, 1fr) 3.2rem 4.1rem;
+    column-gap: .3rem;
     min-height: 3.4rem;
 }
 .semantic-summary-table tbody tr[hidden] { display: none !important; }
@@ -1614,7 +1618,8 @@
 .semantic-summary-table th,
 .semantic-summary-table td { min-width: 0; padding: .65rem .35rem; }
 .semantic-summary-table thead th { color: #718198; font-size: .62rem; letter-spacing: .09em; }
-.semantic-summary-table .badge-heading { font-size: 0; }
+.semantic-summary-table .badge-heading { text-align: center; }
+.semantic-summary-table thead th:last-child { text-align: right; }
 .semantic-summary-table .rank { color: #8594a9; font-variant-numeric: tabular-nums; }
 .semantic-summary-table .model-cell { overflow: hidden; }
 .semantic-summary-table .model-name {
@@ -1629,7 +1634,17 @@
     white-space: nowrap;
 }
 .semantic-summary-table .badge-cell { display: flex; justify-content: center; padding-inline: .15rem; }
-.semantic-summary-table .new-badge { margin: 0; font-size: .52rem; }
+.semantic-summary-table .new-badge {
+    min-width: 0;
+    height: .9rem;
+    margin: 0;
+    padding-inline: .25rem;
+    border-color: rgba(251, 191, 36, .55);
+    background: #b77912;
+    color: #fff7d6;
+    box-shadow: none;
+    font-size: .5rem;
+}
 .semantic-summary-table .score-cell {
     justify-content: flex-end;
     padding-right: .2rem;
@@ -1641,10 +1656,10 @@
 }
 .home-column .unified-row:last-child { border-bottom: 0; }
 .arena-toggle {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: .55rem;
+    gap: .35rem;
     width: 100%;
     min-height: 2.65rem;
     margin-top: auto;
@@ -1660,19 +1675,16 @@
 .arena-toggle span:last-child { font-size: 1rem; transition: transform .2s ease; }
 .arena-toggle[aria-expanded="true"] span:last-child { transform: rotate(180deg); }
 
-.excluded-results { margin-top: 1rem; padding: clamp(.85rem, 1.5vw, 1.15rem); border: 1px solid #26344c; border-radius: 14px; background: #0d1728; }
-.excluded-results-heading { display: flex; align-items: end; justify-content: space-between; gap: 1.5rem; margin-bottom: .75rem; }
-.excluded-results-heading h2 { margin: .25rem 0 0; color: #edf2f8; font-size: clamp(1.15rem, 2vw, 1.45rem); }
-.excluded-results-heading p { max-width: 32rem; margin: 0; color: #91a0b4; font-size: .78rem; line-height: 1.55; }
-.excluded-kicker { color: #fbbf24; font-size: .62rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
-.excluded-result-card { display: grid; grid-template-columns: minmax(11rem, 1fr) auto minmax(18rem, 1.55fr); align-items: center; gap: 1rem; padding: .8rem 1rem; border-radius: 10px; background: #111d30; }
+.excluded-results { margin: 1rem 0 4.75rem; padding: .65rem .8rem; border: 1px solid #26344c; border-radius: 10px; background: rgba(13, 23, 40, .72); }
+.excluded-results > h2 { margin: 0 0 .4rem; color: #91a0b4; font-size: .66rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.excluded-result-card { display: grid; grid-template-columns: minmax(11rem, 1fr) auto minmax(18rem, 1.55fr); align-items: center; gap: .75rem; padding: .5rem .65rem; border-radius: 7px; background: rgba(17, 29, 48, .7); }
 .excluded-result-model { min-width: 0; }
-.excluded-result-model h3 { overflow: hidden; margin: .3rem 0 .15rem; color: #f8fafc; font-size: 1rem; text-overflow: ellipsis; white-space: nowrap; }
+.excluded-result-model h3 { display: inline; overflow: hidden; margin: 0 .45rem; color: #e7edf5; font-size: .88rem; text-overflow: ellipsis; white-space: nowrap; }
 .provisional-badge { padding: .22rem .45rem; border-radius: 999px; font-size: .58rem; }
 .excluded-arena { color: #8493a8; font-size: .7rem; }
 .excluded-result-score { padding-inline: 1.25rem; border-inline: 1px solid rgba(148,163,184,.14); text-align: center; }
 .excluded-result-score span { display: block; color: #8493a8; font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; }
-.excluded-result-score strong { display: block; margin-top: .1rem; color: #fbbf24; font-family: var(--font-heading); font-size: 1.45rem; font-variant-numeric: tabular-nums; }
+.excluded-result-score strong { display: block; margin-top: .1rem; color: #fbbf24; font-family: var(--font-heading); font-size: 1.1rem; font-variant-numeric: tabular-nums; }
 .excluded-result-copy p { margin: 0 0 .4rem; color: #c4cedb; font-size: .76rem; line-height: 1.4; }
 .excluded-result-copy p strong { color: #fde68a; }
 .excluded-result-copy dl { display: flex; flex-wrap: wrap; gap: .45rem 1.25rem; margin: 0; }
@@ -1686,8 +1698,6 @@
 }
 @media (max-width: 700px) {
     .semantic-summary-table .model-name { display: -webkit-box; white-space: normal; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
-    .excluded-results-heading { display: block; }
-    .excluded-results-heading p { margin-top: .65rem; }
     .excluded-result-card { grid-template-columns: 1fr auto; gap: 1rem; }
     .excluded-result-copy { grid-column: 1 / -1; padding-top: .9rem; border-top: 1px solid rgba(148,163,184,.12); }
     .excluded-result-score { padding-right: 0; border-right: 0; }
@@ -1697,7 +1707,7 @@
     .home-column-header { align-items: flex-start; }
     .home-column-header .expand-btn { max-width: 7.3rem; padding: .38rem .5rem; }
     .semantic-summary-table thead tr,
-    .semantic-summary-table tbody tr { grid-template-columns: 2.35rem minmax(0, 1fr) 2.6rem 3.8rem; }
+    .semantic-summary-table tbody tr { grid-template-columns: 2.2rem minmax(0, 1fr) 3rem 3.65rem; column-gap: .2rem; }
     .semantic-summary-table .model-name { font-size: .76rem; }
     .semantic-summary-table .score-cell { font-size: .84rem; }
     .excluded-result-card { padding: 1rem; }
