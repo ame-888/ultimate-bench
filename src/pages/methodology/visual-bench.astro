@@ -1,650 +1,177 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import '../../styles/content-pages.css';
+import { ARENAS, activeLevels } from '../../data/benchmarkSpec';
 
+const visualLevels = activeLevels(ARENAS.visual);
+const fullWeight = visualLevels.reduce((sum, level) => sum + level.weight, 0);
+const protocols = [
+    { number: 1, name: 'Mole', anchor: 'level-1-mole' },
+    { number: 2, name: 'Rhino', anchor: 'level-2-rhino' },
+    { number: 3, name: 'Chimpanzee', anchor: 'level-3-chimpanzee' },
+    { number: 4, name: 'Owl', anchor: 'level-4-owl' },
+    { number: 5, name: 'Eagle', anchor: 'level-5-eagle' },
+];
 ---
 
-<Layout title="Visual Bench Methodology | Ultimate Bench" description="Detailed protocols for Visual Bench Levels 1–5 character-localization evaluations.">
-    <main class="content-page visual-methodology">
-        <header class="page-heading">
-            <span class="page-kicker">Benchmark protocols</span>
-            <h1>Visual Bench Methodology</h1>
-            <p>Visual Bench Levels 1–5 have defined and documented protocols. Level 6 is planned but has not yet been operationally defined.</p>
-        </header>
+<Layout title="Visual Bench Methodology | Ultimate Bench" description="Administration, scoring, security, interpretation, and limitations for Visual Bench.">
+<main class="content-page visual-methodology" data-visual-methodology data-active-level-count={visualLevels.length} data-complete-weight={fullWeight}>
+    <header class="page-heading" id="overview">
+        <span class="page-kicker">Arena 01 · Methodology</span>
+        <h1>Visual Bench Methodology</h1>
+        <p>Visual Bench evaluates repeatable character recognition, visual localization, spatial binding, and midpoint reasoning across fixed visual task conditions of increasing complexity.</p>
+    </header>
 
-        <nav class="level-navigation" aria-label="Visual Bench levels">
-            <a href="#level-1"><span>Level 1</span><strong>Mole</strong></a>
-            <a href="#level-2-rhino"><span>Level 2</span><strong>Rhino</strong></a>
-            <a href="#level-3-chimpanzee"><span>Level 3</span><strong>Chimpanzee</strong></a>
-            <a href="#level-4-owl"><span>Level 4</span><strong>Owl</strong></a>
-            <a href="#level-5-eagle"><span>Level 5</span><strong>Eagle</strong></a>
-            <a href="#level-6-beholder" class="pending"><span>Level 6</span><strong>Beholder</strong><small>Planned — protocol not yet defined</small></a>
-        </nav>
+    <nav class="section-navigation" aria-label="Visual Bench methodology sections">
+        <a href="#construct">What it measures</a><a href="#administration">Administration</a><a href="#confidentiality">Confidentiality</a>
+        <a href="#scoring">Scoring</a><a href="#status-handling">Statuses</a><a href="#weighting">Weighting</a>
+        {protocols.map(protocol => <a href={`#${protocol.anchor}`}>Level {protocol.number} — {protocol.name}</a>)}
+        <a href="#level-6-beholder" class="pending">Level 6 — Beholder (Planned)</a>
+    </nav>
 
-        <aside class="level-comparison" aria-labelledby="documented-levels-title">
-            <h2 id="documented-levels-title">Documented-level comparison</h2>
-            <dl>
-                <div><dt>Level 1 — Mole</dt><dd>Intact 10 × 10 grid; direct numerical-coordinate retrieval.</dd></div>
-                <div><dt>Level 2 — Rhino</dt><dd>Same grid with one lateral half of every column removed; direct numerical-coordinate retrieval.</dd></div>
-                <div><dt>Level 3 — Chimpanzee</dt><dd>Level 2 image processed by an imperfect background-removal tool; direct numerical-coordinate retrieval.</dd></div>
-                <div id="level-4-owl"><dt>Level 4 — Owl</dt><dd>Separate 17 × 11 grid with a central spanning image; horizontal and vertical anchor-based midpoint localization.</dd></div>
-                <div><dt>Level 5 — Eagle</dt><dd>Separate very large mixed-source grid; characters from multiple shows; animation and live action; irregular automatic cropping; mixed spatial arrangement; localized color inversion; horizontal, vertical, and diagonal midpoint localization.</dd></div>
-                <div><dt>Level 6 — Beholder</dt><dd>Planned evaluation; protocol not yet defined; no published results; excluded from current scoring.</dd></div>
+    <article class="content-card shared-methodology">
+        <section id="construct" aria-labelledby="construct-title">
+            <p class="section-label">Scope</p><h2 id="construct-title">What Visual Bench measures</h2>
+            <p>The five Active levels use character images and fixed questions to test repeatable correctness under increasingly complex task conditions. Depending on the level, success can require recognizing depicted characters, knowing or recovering their names, locating them in a structured image, following coordinate conventions, locating named anchors, finding a midpoint, and binding each answer to the right question.</p>
+            <p>Occlusion, segmentation artifacts, irregular cropping, color inversion, visual density, and appropriate use of permitted interface tools can also affect performance. No level isolates a single pure cognitive faculty. Visual Bench is not a comprehensive measure of general visual intelligence, every form of visual-spatial ability, or the underlying foundation model in isolation.</p>
+        </section>
+
+        <section id="administration" aria-labelledby="administration-title">
+            <p class="section-label">Shared procedure</p><h2 id="administration-title">Public administration protocol</h2>
+            <div class="procedure-grid">
+                <div><strong>10 fixed questions</strong><span>presented together in one administration</span></div>
+                <div><strong>10 administrations</strong><span>each in a new, isolated conversation</span></div>
+                <div><strong>100 response instances</strong><span>binary scored; not 100 independent items</span></div>
+            </div>
+            <ol>
+                <li>The level’s fixed active image and ten fixed questions are presented together through a publicly accessible chatbot product or official interactive model interface.</li>
+                <li>Each repetition begins in a fresh, isolated conversation. Previous runs, answers, and accumulated conversation context are never supplied.</li>
+                <li>The exact named product, model/configuration, and interface configuration are recorded; the administration date is recorded where the results system supports it.</li>
+                <li>Web search is permitted whenever the evaluated interface makes it available. Code execution is also permitted when offered.</li>
+                <li>Google AI Studio configurations with and without code execution are named separately, and AI Studio temperature is set to <strong>1</strong>. Other products may not expose equivalent controls.</li>
+                <li>The documented answers and status rules produce one canonical level result.</li>
+            </ol>
+            <div class="callout"><strong>The evaluated object is the accessible product configuration.</strong><p>Evaluations use ChatGPT, the Gemini browser chatbot, Claude’s chatbot, the standalone Grok chatbot (not Grok within X/Twitter), and Google AI Studio. Results describe the named chatbot product, model configuration, or accessible interface configuration—not an abstract raw foundation model tested through identical APIs.</p></div>
+            <h3>Standardized and provider-controlled conditions</h3>
+            <p>The evaluator standardizes the fixed stimulus and questions, ten-at-once presentation, fresh-conversation rule, repetition count, scoring, and recorded interface label. This is not a strictly closed-book or unaided-perception test: available search and code tools are part of practical product performance.</p>
+            <p>Consumer interfaces may control sampling behavior, reasoning allocation, internal routing, image resizing, compression and preprocessing, tool invocation, caching, hidden system instructions, safety behavior, timeouts, and model snapshot selection. When a setting is not exposed, it cannot be made identical across providers and is treated as part of the tested product environment. Visual Bench prioritizes consistent evaluation of accessible products under documented interface conditions rather than claiming equal APIs, budgets, latency, hidden reasoning effort, or provider-side image processing.</p>
+        </section>
+
+        <section id="confidentiality" aria-labelledby="confidentiality-title">
+            <p class="section-label">Benchmark security</p><h2 id="confidentiality-title">Active-stimulus confidentiality</h2>
+            <p>The structure, administration procedure, scoring rules, configurations, and limitations of Visual Bench are documented publicly. While a benchmark version remains active, its images, complete character arrangements, exact questions, answer keys, item-level spatial layouts, and transformation details precise enough to reconstruct the stimuli remain confidential.</p>
+            <p>This separation reduces contamination, targeted prompt preparation, model-specific optimization and benchmaxxing, while preserving fixed active materials for future evaluations. Methodological transparency does not require public release of active test contents. No claim of independent stimulus audit is made.</p>
+        </section>
+
+        <section id="scoring" aria-labelledby="scoring-title">
+            <p class="section-label">Level results</p><h2 id="scoring-title">Scoring and repeated-response interpretation</h2>
+            <p>Every Active level contains ten unique questions repeated across ten isolated administrations. Each correct, identifiable answer earns one point; an incorrect, missing, or non-matchable answer earns zero. The 0–100 result is the sum of those 100 binary-scored response instances.</p>
+            <div class="callout numeric-example"><strong>What “84%” means</strong><p>84 correct responses out of 100 response instances generated from 10 fixed questions across 10 isolated administrations—not 84 of 100 independent test items.</p></div>
+            <p>Repetition measures repeatable correctness and generation-to-generation stability on those fixed questions. Consistently correct answers score highly, alternating correct and incorrect answers receive partial credit, and consistently incorrect answers score zero. The result does not estimate performance over every possible image, character, coordinate, anchor pair, grid, prompt, or visual task. Large differences can be informative on this benchmark; small differences are not automatically definitive evidence of universal superiority.</p>
+        </section>
+
+        <section id="answer-adjudication" aria-labelledby="answer-adjudication-title">
+            <p class="section-label">Manual review</p><h2 id="answer-adjudication-title">Answer adjudication</h2>
+            <p>Historical scoring uses semantic identifiability rather than exact string identity. A response must identify the intended character unambiguously and remain reliably associated with its question.</p>
+            <dl class="policy-list">
+                <div><dt>Accepted when unambiguous</dt><dd>Full names, surnames, established aliases, translated names or alternate romanizations; differences in capitalization or punctuation; minor spelling errors; and extra commentary that does not contradict the answer. Formatting alone does not invalidate an identifiable, clearly mapped answer.</dd></div>
+                <div><dt>Not accepted by default</dt><dd>An actor’s name instead of the character, or a merely descriptive answer, unless it unambiguously identifies the intended character under the established historical adjudication.</dd></div>
+                <div><dt>Incorrect</dt><dd>Unrelated or contradictory answers, multiple proposed identities without one clear selection, and answers too ambiguous to identify the intended character.</dd></div>
+                <div><dt>Potentially non-evaluable</dt><dd>Output that cannot be mapped reliably to the ten questions. This is handled under the INVALID rule rather than silently guessed.</dd></div>
             </dl>
-            <p>Mole, Rhino, and Chimpanzee use direct coordinate localization. Owl introduces relational midpoint localization in a larger irregular grid. Eagle extends that relation to diagonal orientations in a very large, mixed-source grid subjected to irregular cropping, mixed placement, and spatially heterogeneous color inversion. <strong>Level 5 uses one fixed image; it is not a temporal or tracking task.</strong></p>
-        </aside>
+        </section>
 
-        <article id="level-1" class="content-card protocol" aria-labelledby="level-1-title">
-            <header class="protocol-heading">
-                <p class="protocol-level">Visual Bench — Level 1</p>
-                <h2 id="level-1-title">Mole</h2>
-                <p class="protocol-subtitle">Repeated Coordinate-Based Character Localization</p>
-            </header>
+        <section id="status-handling" aria-labelledby="status-title">
+            <p class="section-label">Canonical semantics</p><h2 id="status-title">Status handling</h2>
+            <div class="table-wrap"><table><thead><tr><th>Result</th><th>Meaning</th><th>Composite treatment</th></tr></thead><tbody>
+                <tr><th scope="row">0</th><td>A completed, evaluable level with no correct response instances.</td><td>Zero points; the level’s full weight remains.</td></tr>
+                <tr><th scope="row">INVALID</th><td>Three consecutive administrations could not be evaluated because the requested answers were absent, refused, unrelated, severely malformed, or not reliably mappable. Incorrect but evaluable answers do not trigger INVALID.</td><td>Zero points; the level’s full weight remains. It is distinct from a completed zero.</td></tr>
+                <tr><th scope="row">UNAVAILABLE</th><td>The configuration could not be accessed for that Active level.</td><td>Excluded from numerator and denominator; coverage is incomplete.</td></tr>
+                <tr><th scope="row">NOT_TESTED</th><td>The configuration was not administered at that Active level.</td><td>Excluded from numerator and denominator; coverage is incomplete.</td></tr>
+                <tr><th scope="row">Planned</th><td>A future level without an active protocol.</td><td>Excluded from scoring, coverage, and rank eligibility.</td></tr>
+            </tbody></table></div>
+            <p>After a third consecutive non-evaluable administration, testing stops and the level is stored as INVALID. The published repository does not establish a separate rule for retaining partial points from earlier runs, so this page does not claim one; the canonical aggregate receives the stored INVALID status and treats it as zero.</p>
+        </section>
+    </article>
 
-            <section aria-labelledby="purpose"><h3 id="purpose">Purpose</h3>
-                <p>Level 1 evaluates whether a multimodal model can consistently identify and retrieve visual entities from fixed positions within a structured two-dimensional grid.</p>
-                <p>The task is designed to assess three related capabilities:</p>
-                <ul><li>recognition of depicted fictional characters;</li><li>grounding of numerical coordinates within a visual grid;</li><li>consistency of responses across repeated presentations of an identical prompt.</li></ul>
-            </section>
-
-            <section aria-labelledby="stimulus"><h3 id="stimulus">Visual stimulus</h3>
-                <p>The model is presented with a fixed 10 × 10 grid containing 100 character images. All depicted characters originate from the same television series or fictional property.</p><p>The grid remains unchanged throughout the Level 1 evaluation.</p>
-            </section>
-
-            <section aria-labelledby="coordinates"><h3 id="coordinates">Coordinate system</h3>
-                <p>Positions are defined using a one-based row–column coordinate system.</p>
-                <ul><li>The first coordinate identifies the row, counted from top to bottom.</li><li>The second coordinate identifies the column, counted from left to right.</li><li>The upper-left cell is position (1,1).</li><li>The lower-right cell is position (10,10).</li></ul>
-                <p>For example, position (3,7) refers to the cell in the third row and seventh column.</p>
-            </section>
-
-            <section aria-labelledby="prompt"><h3 id="prompt">Prompt structure</h3>
-                <p>Each prompt contains the grid and ten coordinate-based questions presented simultaneously.</p><p>Each question follows the general format:</p>
-                <blockquote>Which character is located at position (a,b)?</blockquote>
-                <p>The model is expected to provide one identifiable character name for each of the ten requested positions.</p>
-            </section>
-
-            <section aria-labelledby="administration"><h3 id="administration">Repeated-administration procedure</h3>
-                <p>The exact same evaluation prompt is administered ten times.</p><p>Across all ten administrations, the following elements remain unchanged:</p>
-                <ul><li>the grid image;</li><li>the placement of all characters;</li><li>the ten queried coordinates;</li><li>the wording and order of the questions;</li><li>the scoring criteria.</li></ul>
-                <p>The repeated use of an identical stimulus is intentional. It allows the benchmark to observe whether the model produces stable and correct answers when faced with the same visual information and instructions on multiple occasions.</p>
-                <p>The evaluation therefore contains:</p><ul><li>10 unique queried positions;</li><li>10 repeated administrations of each query;</li><li>100 scored response instances in total.</li></ul>
-                <p><strong>These response instances should not be interpreted as 100 independent test items.</strong> They represent ten repetitions of the same ten items.</p>
-            </section>
-
-            <section aria-labelledby="scoring"><h3 id="scoring">Scoring</h3>
-                <p>Each response instance is scored dichotomously:</p><ul><li>1 point is awarded when the model correctly identifies the character located at the requested coordinate.</li><li>0 points are awarded when the model provides an incorrect character, omits the answer, or produces an answer that cannot be reliably matched to the requested coordinate.</li></ul>
-                <p>Each administration produces a score between 0 and 10.</p><p>The final Level 1 score is the sum of all correct responses across the ten administrations:</p>
-                <figure class="score-formula">
-                    <math display="block" aria-label="S sub Mole equals the sum from r equals 1 to 10 of the sum from q equals 1 to 10 of x sub r q">
-                        <msub><mi>S</mi><mtext>Mole</mtext></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>r</mi><mo>=</mo><mn>1</mn></mrow><mn>10</mn></munderover><munderover><mo>∑</mo><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><mn>10</mn></munderover><msub><mi>x</mi><mrow><mi>r</mi><mi>q</mi></mrow></msub>
-                    </math>
-                    <figcaption>Final Level 1 score: correct response instances summed over ten questions in each of ten administrations.</figcaption>
-                </figure>
-                <p>where:</p><ul><li><var>r</var> represents one of the ten repeated administrations;</li><li><var>q</var> represents one of the ten coordinate questions;</li><li><var>x<sub>rq</sub></var> equals 1 for a correct response;</li><li><var>x<sub>rq</sub></var> equals 0 for an incorrect, missing, or non-evaluable response.</li></ul>
-                <p>The final score ranges from 0 to 100 and is displayed as a percentage.</p><p>A score of 100 indicates that the model correctly identified all ten requested characters in all ten administrations.</p>
-            </section>
-
-            <section aria-labelledby="invalid"><h3 id="invalid">Invalid-result rule</h3>
-                <p>A result is classified as <strong>INVALID</strong> when the model fails to produce a properly evaluable response on three consecutive administrations.</p><p>An administration may be considered non-evaluable when the model:</p>
-                <ul><li>fails to answer the requested questions;</li><li>produces output that cannot be reliably associated with the ten coordinates;</li><li>returns unrelated content;</li><li>refuses the task;</li><li>experiences a severe generation or formatting failure that prevents scoring.</li></ul>
-                <p>Incorrect but properly structured answers remain evaluable and receive zero points. They do not count toward the three-consecutive-failure rule.</p>
-                <p>Response validity is determined through manual review. When three consecutive administrations are classified as non-evaluable, testing is terminated and the Level 1 result is recorded as INVALID.</p>
-                <p>For leaderboard aggregation, INVALID is assigned a numerical value of zero. However, INVALID remains conceptually distinct from an ordinary score of zero:</p>
-                <dl class="validity-comparison"><div><dt>0 points</dt><dd>The model completed the evaluation but did not answer any item correctly.</dd></div><div><dt>INVALID</dt><dd>Repeated output failures prevented the evaluation from being completed reliably.</dd></div></dl>
-            </section>
-
-            <section aria-labelledby="interpretation"><h3 id="interpretation">Interpretation</h3>
-                <p>A higher Level 1 score indicates that the model more reliably combines character recognition with absolute coordinate grounding under repeated identical conditions.</p><p>Because the same items are administered repeatedly, the final score jointly reflects:</p>
-                <ul><li>answer correctness;</li><li>visual recognition stability;</li><li>coordinate-grounding stability;</li><li>response-format reliability;</li><li>susceptibility to stochastic variation between generations.</li></ul>
-                <p>The score does not independently isolate accuracy from consistency. For example, a model that gives the same incorrect answer in every administration is highly consistent but receives no points, while a model that alternates between correct and incorrect answers receives partial credit.</p>
-                <p>Accordingly, Level 1 should be interpreted as a measure of <strong>repeatable correct performance</strong>, rather than as a pure measure of either recognition accuracy or response consistency alone.</p>
-            </section>
-
-            <section aria-labelledby="limitations"><h3 id="limitations">Limitations and potential confounders</h3>
-                <p>Performance may be influenced by factors other than coordinate grounding, including:</p><ul><li>the model’s prior familiarity with the depicted characters;</li><li>visual similarity between characters;</li><li>character aliases, translated names, titles, or spelling variants;</li><li>image resolution, compression, cropping, and cell dimensions;</li><li>row–column transposition errors;</li><li>loss of answer order in the multi-question response;</li><li>subjective decisions during manual review;</li><li>stochastic changes in model output across repeated generations.</li></ul>
-                <p>The fixed grid and fixed coordinates improve comparability between administrations and models. However, they also limit the breadth of the visual sample. Results therefore describe performance on this specific Level 1 stimulus and should not be treated as a comprehensive measure of visual-spatial ability.</p>
-            </section>
-
-            <section aria-labelledby="record"><h3 id="record">Recommended result record</h3>
-                <p>For each model, the Level 1 evaluation record should preserve:</p><ul><li>benchmark and stimulus version;</li><li>exact model name and version;</li><li>date of testing;</li><li>model configuration and reasoning settings;</li><li>availability of tools or code execution;</li><li>score obtained in each of the ten administrations;</li><li>total score;</li><li>original model responses;</li><li>accepted character-name variants;</li><li>non-evaluable administrations and their reasons;</li><li>whether the final result was classified as INVALID.</li></ul>
-            </section>
+    <section class="protocols" aria-label="Active level protocols">
+        <article id="level-1-mole" class="content-card protocol" data-visual-protocol="1" data-level-status="Active" aria-labelledby="level-1-mole-title">
+            <header><p class="protocol-level">Active · Level 1 · weight 1</p><h2 id="level-1-mole-title">Mole</h2><p>Direct coordinate localization in an intact grid.</p></header>
+            <section><h3>Purpose and stimulus</h3><p>Mole provides the baseline fixed-image condition: an intact 10 × 10 character grid with numerical row and column labels. Active contents and layouts are confidential.</p></section>
+            <section><h3>Task</h3><p>For each of ten fixed coordinate queries, the model follows the grid convention, locates the requested cell, recognizes its character, names it, and preserves question-answer mapping.</p></section>
+            <section><h3>Administration and scoring</h3><p>The same image and ten questions are presented together in ten fresh, isolated conversations, with no previous responses supplied: 10 unique questions × 10 administrations = 100 binary-scored response instances. Correct identifiable answers earn one point; incorrect, missing, or non-matchable answers earn zero. Maximum: 100. The shared three-consecutive non-evaluable rule produces INVALID.</p></section>
+            <section><h3>Interpretation and limitations</h3><p>Mole measures repeatable coordinate-based character localization on one fixed stimulus. It combines character familiarity and naming with coordinate following, localization, and answer binding. Its fixed grid, ten repeated questions, possible aliases, and manual adjudication bound generalization.</p></section>
         </article>
 
-        <article id="level-2-rhino" class="content-card protocol" aria-labelledby="level-2-rhino-title">
-            <header class="protocol-heading">
-                <p class="protocol-level">Visual Bench — Level 2: Rhino</p>
-                <h2 id="level-2-rhino-title">Rhino</h2>
-                <p class="protocol-subtitle">Repeated Coordinate-Based Character Localization Under Systematic Lateral Cropping</p>
-            </header>
-
-            <section aria-labelledby="rhino-purpose"><h3 id="rhino-purpose">Purpose</h3>
-                <p>Level 2 evaluates whether a multimodal model can preserve correct and repeatable character localization when a substantial and systematically defined portion of the visual input has been removed.</p>
-                <p>The task retains the coordinate-query structure of Level 1 while introducing a controlled visual degradation. It primarily assesses:</p>
-                <ul><li>recognition of characters from partial visual evidence;</li><li>robustness to systematic loss of image information;</li><li>absolute coordinate grounding within an altered grid geometry;</li><li>consistency across repeated presentations of an identical degraded stimulus.</li></ul>
-            </section>
-
-            <section aria-labelledby="rhino-relationship"><h3 id="rhino-relationship">Relationship to Level 1</h3>
-                <p>Level 2 uses the same underlying character grid, coordinate system, prompt structure, repeated-administration procedure, scoring method, and invalid-result rule as Level 1.</p>
-                <p>The defining difference is that the original square grid is transformed before being presented to the model.</p>
-                <p>This makes Level 2 a controlled degradation condition relative to the intact Level 1 stimulus.</p>
-            </section>
-
-            <section aria-labelledby="rhino-transformation"><h3 id="rhino-transformation">Visual transformation</h3>
-                <p>The source stimulus is a 10 × 10 grid containing 100 character images.</p>
-                <p>Each of the ten vertical grid columns is divided longitudinally into two equal-width halves. The same lateral half is retained for every column, while the other half is removed.</p>
-                <p>The ten surviving vertical strips are then concatenated without restoring the deleted regions.</p>
-                <p>As a result:</p>
-                <ul><li>the logical 10-row × 10-column organization is preserved;</li><li>the original ordering of cells is preserved;</li><li>each cell contains approximately 50% of its original horizontal visual information;</li><li>the transformed grid retains its original height but has approximately half of its original width;</li><li>the final stimulus is rectangular rather than square.</li></ul>
-                <p>The transformation therefore reduces the quantity of available visual information while preserving the coordinate identities and relative ordering of all 100 cells.</p>
-                <p>The benchmark record should specify whether the retained region is the left or right lateral half of each original column.</p>
-            </section>
-
-            <section aria-labelledby="rhino-coordinates"><h3 id="rhino-coordinates">Coordinate system</h3>
-                <p>The transformed stimulus continues to use a one-based row–column coordinate system.</p>
-                <p>The first coordinate identifies the row, counted from top to bottom.<br />The second coordinate identifies the logical column, counted from left to right.<br />The upper-left cell is position (1,1).<br />The lower-right cell is position (10,10).</p>
-                <p>Although the visible cells are narrower than in Level 1, the logical grid remains 10 × 10. Coordinates therefore refer to the preserved logical cell structure rather than to equal square regions of the final image.</p>
-            </section>
-
-            <section aria-labelledby="rhino-prompt"><h3 id="rhino-prompt">Prompt structure</h3>
-                <p>Each administration contains the transformed grid and the same ten coordinate-based questions used in Level 1.</p>
-                <p>Each question follows the general format:</p>
-                <blockquote>Which character is located at position (a,b)?</blockquote>
-                <p>The model is expected to provide one identifiable character name for each requested position.</p>
-            </section>
-
-            <section aria-labelledby="rhino-administration"><h3 id="rhino-administration">Repeated-administration procedure</h3>
-                <p>The exact same transformed grid and the exact same set of ten questions are administered ten times.</p>
-                <p>Across all ten administrations, the following remain unchanged:</p>
-                <ul><li>the transformed grid image;</li><li>the retained lateral half of each column;</li><li>the placement and ordering of the character fragments;</li><li>the ten queried coordinates;</li><li>the wording and order of the questions;</li><li>the scoring criteria.</li></ul>
-                <p>The repetition is intentional. It measures whether the model can repeatedly produce correct answers from the same incomplete visual evidence.</p>
-                <p>The evaluation contains:</p>
-                <ul><li>10 unique queried positions;</li><li>10 repeated administrations of each query;</li><li>100 scored response instances.</li></ul>
-                <p>These 100 response instances are repeated measurements of ten unique items and should not be interpreted as 100 independent visual questions.</p>
-            </section>
-
-            <section aria-labelledby="rhino-scoring"><h3 id="rhino-scoring">Scoring</h3>
-                <p>Each response instance is scored dichotomously:</p>
-                <p>1 point is awarded when the model correctly identifies the character located at the requested coordinate.<br />0 points are awarded when the model provides an incorrect character, omits the answer, or produces an answer that cannot be reliably associated with the requested coordinate.</p>
-                <p>Each administration produces a score between 0 and 10.</p>
-                <p>The final Level 2 score is the total number of correct responses across all ten administrations:</p>
-                <figure class="score-formula">
-                    <math display="block" aria-label="S sub Rhino equals the sum from r equals 1 to 10 of the sum from q equals 1 to 10 of x sub r q">
-                        <msub><mi>S</mi><mtext>Rhino</mtext></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>r</mi><mo>=</mo><mn>1</mn></mrow><mn>10</mn></munderover><munderover><mo>∑</mo><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><mn>10</mn></munderover><msub><mi>x</mi><mrow><mi>r</mi><mi>q</mi></mrow></msub>
-                    </math>
-                    <figcaption>Final Level 2 score: correct response instances summed over ten questions in each of ten administrations.</figcaption>
-                </figure>
-                <p>where:</p>
-                <ul><li><var>r</var> represents one of the ten repeated administrations;</li><li><var>q</var> represents one of the ten coordinate questions;</li><li><var>x<sub>rq</sub> = 1</var> for a correct response;</li><li><var>x<sub>rq</sub> = 0</var> for an incorrect, missing, or non-evaluable response.</li></ul>
-                <p>The final score ranges from 0 to 100 and is displayed as a percentage.</p>
-                <p>A score of 100 indicates that the model correctly identified all ten partial character views in all ten administrations.</p>
-            </section>
-
-            <section aria-labelledby="rhino-invalid"><h3 id="rhino-invalid">Invalid-result rule</h3>
-                <p>A result is classified as <strong>INVALID</strong> when the model fails to produce a properly evaluable response on three consecutive administrations.</p>
-                <p>An administration may be considered non-evaluable when the model:</p>
-                <ul><li>fails to answer the requested questions;</li><li>produces output that cannot be reliably associated with the ten coordinates;</li><li>returns unrelated content;</li><li>refuses the task;</li><li>experiences a severe generation or formatting failure that prevents scoring.</li></ul>
-                <p>Incorrect but properly structured answers remain evaluable and receive zero points. They do not count toward the three-consecutive-failure rule.</p>
-                <p>Response validity is determined through manual review. When three consecutive administrations are classified as non-evaluable, testing is terminated and the Level 2 result is recorded as INVALID.</p>
-                <p>For leaderboard aggregation, INVALID is assigned a numerical value of zero while remaining conceptually distinct from a completed score of zero.</p>
-            </section>
-
-            <section aria-labelledby="rhino-interpretation"><h3 id="rhino-interpretation">Interpretation</h3>
-                <p>A higher Level 2 score indicates that the model more reliably combines partial-view character recognition with absolute coordinate grounding under repeated identical conditions.</p>
-                <p>The score reflects a combination of:</p>
-                <ul><li>the ability to recognize characters from incomplete lateral views;</li><li>robustness to the removal of approximately half of the horizontal visual evidence;</li><li>adaptation to narrower cell geometry and a changed overall aspect ratio;</li><li>preservation of row–column coordinate interpretation;</li><li>response stability across repeated generations.</li></ul>
-                <p>Level 2 should be interpreted as a measure of repeatable correct performance under systematic visual information loss.</p>
-                <p>It should not be interpreted as a pure measure of character recognition, spatial reasoning, perceptual completion, or general robustness to real-world occlusion.</p>
-            </section>
-
-            <section aria-labelledby="rhino-comparison"><h3 id="rhino-comparison">Comparison with Level 1</h3>
-                <p>Because Levels 1 and 2 preserve the same underlying grid, coordinates, questions, repetition count, and scoring method, their difference provides a controlled estimate of performance degradation caused by the Level 2 transformation.</p>
-                <p>Two supplementary comparison measures may be reported without replacing the official Level 2 score.</p>
-                <h4>Absolute performance loss</h4>
-                <figure class="score-formula">
-                    <math display="block" aria-label="D from Level 1 to Level 2 equals the Level 1 score minus the Level 2 score"><msub><mi>D</mi><mrow><mn>1</mn><mo>→</mo><mn>2</mn></mrow></msub><mo>=</mo><msub><mi>S</mi><mtext>L1</mtext></msub><mo>−</mo><msub><mi>S</mi><mtext>L2</mtext></msub></math>
-                    <figcaption>Absolute performance loss from Level 1 to Level 2.</figcaption>
-                </figure>
-                <p>This indicates how many percentage points the model loses after systematic lateral cropping.</p>
-                <h4>Performance retention</h4>
-                <figure class="score-formula">
-                    <math display="block" aria-label="R from Level 1 to Level 2 equals the Level 2 score divided by the Level 1 score, multiplied by 100"><msub><mi>R</mi><mrow><mn>1</mn><mo>→</mo><mn>2</mn></mrow></msub><mo>=</mo><mfrac><msub><mi>S</mi><mtext>L2</mtext></msub><msub><mi>S</mi><mtext>L1</mtext></msub></mfrac><mo>×</mo><mn>100</mn></math>
-                    <figcaption>Performance retained under the Level 2 degradation condition.</figcaption>
-                </figure>
-                <p>This indicates the proportion of the model’s Level 1 performance retained under the Level 2 degradation condition.</p>
-                <p>Performance retention should be reported only when the Level 1 score is greater than zero. It is a supplementary robustness measure and not a replacement for the official Level 2 score.</p>
-            </section>
-
-            <section aria-labelledby="rhino-limitations"><h3 id="rhino-limitations">Limitations and potential confounders</h3>
-                <p>Performance may be influenced by:</p>
-                <ul><li>whether the retained half contains the most distinctive features of particular characters;</li><li>asymmetric hairstyles, facial markings, clothing, accessories, or poses;</li><li>the choice between retaining the left or right side;</li><li>variation in how centrally characters are positioned inside their cells;</li><li>the model’s prior familiarity with the depicted characters;</li><li>narrower character fragments being visually merged with neighboring strips;</li><li>the changed aspect ratio of the complete grid;</li><li>row–column transposition or answer-order errors;</li><li>aliases, translated names, titles, abbreviations, or spelling variants;</li><li>subjective decisions during manual scoring;</li><li>stochastic variation across repeated generations.</li></ul>
-                <p>Because the same lateral half is removed from every column, the manipulation is systematic and reproducible. However, it may advantage characters whose most diagnostic features happen to appear on the retained side.</p>
-                <p>The test also cannot determine whether a correct response was produced through genuine completion of the missing visual structure or through recognition of one remaining distinctive feature.</p>
-            </section>
-
-            <section aria-labelledby="rhino-record"><h3 id="rhino-record">Recommended result record</h3>
-                <p>For each model, the Level 2 evaluation record should preserve:</p>
-                <ul><li>benchmark and stimulus version;</li><li>identity of the source Level 1 grid;</li><li>exact image-transformation procedure;</li><li>whether the left or right half was retained;</li><li>transformed image dimensions;</li><li>exact model name and version;</li><li>date of testing;</li><li>model configuration and reasoning settings;</li><li>availability of tools or code execution;</li><li>score obtained in each administration;</li><li>total Level 2 score;</li><li>corresponding Level 1 score;</li><li>absolute performance loss;</li><li>performance retention, where calculable;</li><li>original model responses;</li><li>accepted character-name variants;</li><li>non-evaluable administrations and their reasons;</li><li>whether the final result was classified as INVALID.</li></ul>
-            </section>
-        </article>
-        <article id="level-3-chimpanzee" class="content-card protocol" aria-labelledby="level-3-chimpanzee-title">
-            <header class="protocol-heading">
-                <p class="protocol-level">Visual Bench — Level 3: Chimpanzee</p>
-                <h2 id="level-3-chimpanzee-title">Chimpanzee</h2>
-                <p class="protocol-subtitle">Repeated Coordinate-Based Character Localization Under Compound Cropping and Automated Segmentation Degradation</p>
-            </header>
-
-            <section aria-labelledby="chimp-purpose"><h3 id="chimp-purpose">Purpose</h3>
-                <p>Level 3 evaluates whether a multimodal model can preserve correct and repeatable character localization after the visual stimulus has undergone two successive forms of information degradation:</p>
-                <ul><li>systematic lateral cropping, as defined in Level 2; and</li><li>imperfect automatic background removal applied to the complete transformed image.</li></ul>
-                <p>The task retains the coordinate-query structure used in Levels 1 and 2 while further reducing and distorting the visual evidence available to the model.</p>
-                <p>Level 3 primarily assesses:</p>
-                <ul><li>recognition of characters from incomplete and artifact-degraded visual evidence;</li><li>robustness to additional information loss produced by imperfect foreground segmentation;</li><li>preservation of absolute coordinate grounding after compound image transformation;</li><li>consistency across repeated presentations of an identical degraded stimulus.</li></ul>
-            </section>
-
-            <section aria-labelledby="chimp-relationship"><h3 id="chimp-relationship">Relationship to Levels 1 and 2</h3>
-                <p>Level 3 uses the same underlying character arrangement, coordinate system, ten queried positions, question wording, question order, repetition count, scoring method, and invalid-result rule as Levels 1 and 2.</p>
-                <p>The stimulus is derived directly from the completed Level 2 image.</p>
-                <p>The Level 2 transformation first removes the same lateral half of every original grid column and concatenates the ten surviving vertical strips.</p>
-                <p>An automatic background-removal tool is then applied once to the complete Level 2 composite image.</p>
-                <p>Level 3 is therefore a compound degradation condition:</p>
-                <ul><li>Level 1 presents the intact grid;</li><li>Level 2 introduces systematic lateral information loss;</li><li>Level 3 retains the Level 2 cropping and adds imperfect automated segmentation.</li></ul>
-                <p>This design permits direct comparison of model performance across progressively degraded versions of the same underlying visual task.</p>
-            </section>
-
-            <section aria-labelledby="chimp-source"><h3 id="chimp-source">Source stimulus</h3>
-                <p>The source for Level 3 is the final transformed image used in Level 2.</p>
-                <p>That Level 2 stimulus retains the logical organization of:</p>
-                <ul><li>10 rows;</li><li>10 columns;</li><li>100 character positions.</li></ul>
-                <p>Although the image is narrower than the original Level 1 grid, the character ordering and coordinate identities remain unchanged.</p>
-            </section>
-
-            <section aria-labelledby="chimp-transformation"><h3 id="chimp-transformation">Automated background-removal transformation</h3>
-                <p>The complete Level 2 image is processed by an automatic background-removal tool.</p>
-                <p>The tool is intentionally imperfect. Its output may remove not only background information but also portions of the depicted characters or other visually informative image regions.</p>
-                <p>Depending on the segmentation errors produced by the tool, the transformed image may contain:</p>
-                <ul><li>missing foreground pixels;</li><li>erosion of character boundaries;</li><li>incomplete faces, clothing, hair, or accessories;</li><li>fragmented silhouettes;</li><li>irregular transparent or blank regions;</li><li>loss of color or texture information;</li><li>residual background fragments;</li><li>edge halos or other segmentation artifacts;</li><li>unintended merging or separation of nearby visual regions.</li></ul>
-                <p>The exact artifact pattern is determined by the output of the selected automatic background-removal process.</p>
-                <p>The same completed Level 3 image is used for every model and every repeated administration within the same benchmark version.</p>
-                <p>No attempt should be made to manually correct the segmentation output after generation unless such corrections are explicitly defined as part of a new stimulus version.</p>
-            </section>
-
-            <section aria-labelledby="chimp-compound"><h3 id="chimp-compound">Compound nature of the degradation</h3>
-                <p>Level 3 does not isolate the effect of background removal on an otherwise intact image.</p>
-                <p>The automatic segmentation process is applied after the Level 2 lateral-cropping transformation. Consequently, Level 3 performance reflects the combined effects of:</p>
-                <ul><li>information already removed through systematic lateral cropping;</li><li>additional foreground and contextual information removed by the segmentation system;</li><li>visual artifacts introduced by the segmentation process;</li><li>the altered rectangular geometry inherited from Level 2.</li></ul>
-                <p>Level 3 should therefore be described as a compound degradation condition rather than as a pure test of background-removal robustness.</p>
-            </section>
-
-            <section aria-labelledby="chimp-structure"><h3 id="chimp-structure">Preservation of logical structure</h3>
-                <p>Despite the additional image degradation, the logical 10 × 10 organization remains unchanged.</p>
-                <p>The first coordinate identifies the row, counted from top to bottom.<br />The second coordinate identifies the logical column, counted from left to right.<br />The upper-left position remains (1,1).<br />The lower-right position remains (10,10).</p>
-                <p>Coordinates refer to the preserved logical position of each character, even when the visible character fragment has been substantially damaged by the transformation.</p>
-            </section>
-
-            <section aria-labelledby="chimp-prompt"><h3 id="chimp-prompt">Prompt structure</h3>
-                <p>Each administration contains the Level 3 image and the same ten coordinate-based questions used in Levels 1 and 2.</p>
-                <p>Each question follows the general format:</p>
-                <blockquote>Which character is located at position (a,b)?</blockquote>
-                <p>The model is expected to provide one identifiable character name for each of the ten requested positions.</p>
-                <p>The required model behavior does not change between Levels 1, 2, and 3. Only the visual stimulus is transformed.</p>
-            </section>
-
-            <section aria-labelledby="chimp-administration"><h3 id="chimp-administration">Repeated-administration procedure</h3>
-                <p>The exact same Level 3 image and the exact same ten questions are administered ten times.</p>
-                <p>Across all ten administrations, the following remain unchanged:</p>
-                <ul><li>the degraded image;</li><li>the segmentation artifacts;</li><li>the placement and ordering of the surviving visual fragments;</li><li>the ten queried coordinates;</li><li>the wording and order of the questions;</li><li>the scoring criteria.</li></ul>
-                <p>The repetition is intentional. It measures whether the model can repeatedly produce correct answers from the same heavily degraded visual evidence.</p>
-                <p>The evaluation contains:</p>
-                <ul><li>10 unique queried positions;</li><li>10 repeated administrations of each query;</li><li>100 scored response instances.</li></ul>
-                <p>These 100 response instances are repeated measurements of ten unique items. They must not be described as 100 independent visual questions.</p>
-            </section>
-
-            <section aria-labelledby="chimp-scoring"><h3 id="chimp-scoring">Scoring</h3>
-                <p>Each response instance is scored dichotomously:</p>
-                <ul><li>1 point is awarded when the model correctly identifies the character located at the requested coordinate.</li><li>0 points are awarded when the model provides an incorrect character, omits the answer, or produces an answer that cannot be reliably associated with the requested coordinate.</li></ul>
-                <p>Each administration produces a score between 0 and 10.</p>
-                <p>The final Level 3 score is the total number of correct responses across all ten administrations:</p>
-                <figure class="score-formula">
-                    <math display="block" aria-label="S sub Chimpanzee equals the sum from r equals 1 to 10 of the sum from q equals 1 to 10 of x sub r q"><msub><mi>S</mi><mtext>Chimpanzee</mtext></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>r</mi><mo>=</mo><mn>1</mn></mrow><mn>10</mn></munderover><munderover><mo>∑</mo><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><mn>10</mn></munderover><msub><mi>x</mi><mrow><mi>r</mi><mi>q</mi></mrow></msub></math>
-                    <figcaption>Final Level 3 score: correct response instances summed over ten questions in each of ten administrations.</figcaption>
-                </figure>
-                <p>where:</p>
-                <ul><li><var>r</var> represents one of the ten repeated administrations;</li><li><var>q</var> represents one of the ten coordinate questions;</li><li><var>x<sub>rq</sub> = 1</var> for a correct response;</li><li><var>x<sub>rq</sub> = 0</var> for an incorrect, missing, or non-evaluable response.</li></ul>
-                <p>The final score ranges from 0 to 100 and is displayed as a percentage.</p>
-                <p>A score of 100 indicates that the model correctly identified all ten requested characters in all ten administrations despite the compound visual degradation.</p>
-            </section>
-
-            <section aria-labelledby="chimp-invalid"><h3 id="chimp-invalid">Invalid-result rule</h3>
-                <p>A result is classified as <strong>INVALID</strong> when the model fails to produce a properly evaluable response on three consecutive administrations.</p>
-                <p>An administration may be considered non-evaluable when the model:</p>
-                <ul><li>fails to answer the requested questions;</li><li>produces output that cannot be reliably associated with the ten coordinates;</li><li>returns unrelated content;</li><li>refuses the task;</li><li>experiences a severe generation or formatting failure that prevents scoring.</li></ul>
-                <p>Incorrect but properly structured answers remain evaluable and receive zero points. They do not count toward the three-consecutive-failure rule.</p>
-                <p>Response validity is determined through manual review.</p>
-                <p>When three consecutive administrations are classified as non-evaluable, testing is terminated and the Level 3 result is recorded as INVALID.</p>
-                <p>For leaderboard aggregation, INVALID is assigned a numerical value of zero while remaining conceptually distinct from a completed score of zero:</p>
-                <dl class="validity-comparison"><div><dt>0 points</dt><dd>The model completed the evaluation but produced no correct answers.</dd></div><div><dt>INVALID</dt><dd>Repeated response failures prevented reliable completion of the evaluation.</dd></div></dl>
-            </section>
-
-            <section aria-labelledby="chimp-interpretation"><h3 id="chimp-interpretation">Interpretation</h3>
-                <p>A higher Level 3 score indicates that the model more reliably combines character recognition and absolute coordinate grounding when the available visual evidence has been degraded by both systematic cropping and imperfect automated segmentation.</p>
-                <p>The score reflects a combination of:</p>
-                <ul><li>recognition from incomplete character fragments;</li><li>robustness to foreground-information loss;</li><li>robustness to segmentation artifacts;</li><li>adaptation to the altered geometry inherited from Level 2;</li><li>preservation of row–column coordinate interpretation;</li><li>response stability across repeated generations.</li></ul>
-                <p>Level 3 should be interpreted as a measure of: <strong>repeatable correct character localization under compound visual information loss and segmentation artifacts.</strong></p>
-                <p>It should not be interpreted as a pure measure of:</p>
-                <ul><li>background-removal robustness;</li><li>object completion;</li><li>character recognition alone;</li><li>spatial reasoning alone;</li><li>general resistance to all forms of image corruption;</li><li>performance under natural real-world occlusion.</li></ul>
-            </section>
-
-            <section aria-labelledby="chimp-difficulty"><h3 id="chimp-difficulty">Why the task is harder than Level 2</h3>
-                <p>Level 2 removes a predetermined and geometrically regular portion of the image.</p>
-                <p>Level 3 introduces an additional transformation whose information loss may be spatially irregular and semantically uneven.</p>
-                <p>The automatic background-removal system may preserve some character features while incorrectly removing others. Consequently, different characters may retain different amounts and types of identifying information.</p>
-                <p>This can make Level 3 more difficult because the model must interpret:</p>
-                <ul><li>already cropped character fragments;</li><li>incomplete or damaged foreground features;</li><li>irregular boundaries;</li><li>missing contextual information;</li><li>potentially misleading segmentation remnants.</li></ul>
-                <p>However, the protocol should not claim that every queried character is necessarily more degraded than in Level 2. The effect of automatic segmentation may differ between cells and characters.</p>
-            </section>
-
-            <section aria-labelledby="chimp-level-2-comparison"><h3 id="chimp-level-2-comparison">Comparison with Level 2</h3>
-                <p>Because Levels 2 and 3 use the same underlying transformed grid, logical coordinates, questions, repetition count, and scoring method, the score difference provides a controlled estimate of the additional performance loss associated with the background-removal transformation.</p>
-                <h4>Additional absolute performance loss</h4>
-                <figure class="score-formula"><math display="block" aria-label="Level 2 score minus Level 3 score"><msub><mi>S</mi><mtext>L2</mtext></msub><mo>−</mo><msub><mi>S</mi><mtext>L3</mtext></msub></math><figcaption>Additional absolute performance loss from Level 2 to Level 3.</figcaption></figure>
-                <p>This indicates the number of percentage points lost between Level 2 and Level 3.</p>
-                <h4>Level 3 retention relative to Level 2</h4>
-                <figure class="score-formula"><math display="block" aria-label="Level 3 score divided by Level 2 score, multiplied by 100"><mfrac><msub><mi>S</mi><mtext>L3</mtext></msub><msub><mi>S</mi><mtext>L2</mtext></msub></mfrac><mo>×</mo><mn>100</mn></math><figcaption>Proportion of Level 2 performance retained after the additional segmentation degradation.</figcaption></figure>
-                <p>This indicates the proportion of Level 2 performance retained after the additional segmentation degradation.</p>
-                <p>Retention should be reported only when the Level 2 score is greater than zero and is not INVALID.</p>
-                <p>These are supplementary analyses. They do not replace the official Level 3 score and must not alter the current leaderboard-ranking logic.</p>
-            </section>
-
-            <section aria-labelledby="chimp-level-1-comparison"><h3 id="chimp-level-1-comparison">Comparison with Level 1</h3>
-                <p>An additional descriptive comparison may be made between the intact Level 1 stimulus and the compound Level 3 condition.</p>
-                <h4>Total absolute performance loss</h4>
-                <figure class="score-formula"><math display="block" aria-label="Level 1 score minus Level 3 score"><msub><mi>S</mi><mtext>L1</mtext></msub><mo>−</mo><msub><mi>S</mi><mtext>L3</mtext></msub></math><figcaption>Total absolute performance loss from Level 1 to Level 3.</figcaption></figure>
-                <p>This describes the total score reduction between the intact grid and the final compound-degradation condition.</p>
-                <p>Because two different transformations separate Levels 1 and 3, this difference must not be attributed exclusively to the automatic background-removal process.</p>
-            </section>
-
-            <section aria-labelledby="chimp-limitations"><h3 id="chimp-limitations">Limitations and potential confounders</h3>
-                <p>Performance may be influenced by:</p>
-                <ul><li>the specific background-removal tool used;</li><li>the version and configuration of that tool;</li><li>whether processing occurred locally or through an external service;</li><li>the image format supplied to the tool;</li><li>the resolution of the input and output images;</li><li>resizing or compression performed before or after segmentation;</li><li>transparency handling in the final image;</li><li>the color displayed behind transparent regions;</li><li>whether the retained character half contains distinctive features;</li><li>character-specific differences in segmentation quality;</li><li>similarities between surviving character fragments;</li><li>loss of contextual clues that previously supported recognition;</li><li>residual artifacts that accidentally provide useful identifying information;</li><li>the model’s prior familiarity with the depicted characters;</li><li>aliases, translated names, titles, abbreviations, or spelling variants;</li><li>row–column transposition and answer-order errors;</li><li>subjective decisions during manual scoring;</li><li>stochastic variation across repeated generations.</li></ul>
-                <p>Because the background-removal tool is applied to the complete Level 2 image rather than independently to each character cell, segmentation behavior may also be influenced by neighboring regions and by the composite structure of the grid.</p>
-            </section>
-
-            <section aria-labelledby="chimp-scope"><h3 id="chimp-scope">Scope of the conclusions</h3>
-                <p>Level 3 demonstrates how models perform on one fixed image after one particular compound-transformation procedure.</p>
-                <p>It does not by itself establish that a model is generally robust to:</p>
-                <ul><li>all background-removal algorithms;</li><li>all segmentation errors;</li><li>all forms of missing visual information;</li><li>natural occlusion;</li><li>arbitrary image corruption;</li><li>unfamiliar character sets.</li></ul>
-                <p>The findings should be limited to the documented stimulus, transformation process, model configuration, and benchmark version.</p>
-            </section>
-
-            <section aria-labelledby="chimp-reproducibility"><h3 id="chimp-reproducibility">Reproducibility requirements</h3>
-                <p>The Level 3 stimulus record should preserve:</p>
-                <ul><li>the exact Level 1 source image;</li><li>the exact Level 2 transformed image;</li><li>the final Level 3 image;</li><li>the name of the background-removal tool;</li><li>the tool version, where available;</li><li>the exact processing date;</li><li>relevant settings or options;</li><li>whether the tool was used locally or through a web service;</li><li>input and output file formats;</li><li>input and output dimensions;</li><li>transparency and background-color handling;</li><li>cryptographic hashes for all stimulus files;</li><li>confirmation that no manual corrections were applied;</li><li>a new version identifier whenever the transformation is regenerated.</li></ul>
-                <p>If the exact background-removal tool or settings were not previously recorded, do not invent them. Clearly mark those historical details as unavailable and ensure they are recorded for future benchmark versions.</p>
-            </section>
-
-            <section aria-labelledby="chimp-record"><h3 id="chimp-record">Recommended result record</h3>
-                <p>For each model, the Level 3 evaluation record should preserve:</p>
-                <ul><li>benchmark and stimulus version;</li><li>identity of the corresponding Level 1 and Level 2 stimuli;</li><li>exact model name and version;</li><li>date of testing;</li><li>model configuration and reasoning settings;</li><li>availability of tools or code execution;</li><li>score obtained in each of the ten administrations;</li><li>total Level 3 score;</li><li>corresponding Level 1 and Level 2 scores;</li><li>additional absolute loss from Level 2 to Level 3;</li><li>Level 3 retention relative to Level 2, where calculable;</li><li>total absolute loss from Level 1 to Level 3;</li><li>original model responses;</li><li>accepted character-name variants;</li><li>non-evaluable administrations and their reasons;</li><li>whether the final result was classified as INVALID.</li></ul>
-            </section>
+        <article id="level-2-rhino" class="content-card protocol" data-visual-protocol="2" data-level-status="Active" aria-labelledby="level-2-rhino-title">
+            <header><p class="protocol-level">Active · Level 2 · weight 2</p><h2 id="level-2-rhino-title">Rhino</h2><p>Coordinate localization after systematic lateral information loss.</p></header>
+            <section><h3>Purpose and stimulus</h3><p>Rhino transforms the Mole image by removing the same lateral half of every column and concatenating the retained strips. It changes lateral visual information while preserving the underlying logical grid, coordinate convention, and ten questions. Active contents and layouts are confidential.</p></section>
+            <section><h3>Task</h3><p>The model answers the same ten coordinate queries, now recognizing and locating characters from systematically partial visual evidence.</p></section>
+            <section><h3>Administration and scoring</h3><p>The fixed Rhino image and questions are presented together in ten fresh, isolated conversations with no cross-run context, yielding 100 response instances from ten unique questions. Binary scoring and the shared INVALID rule are identical to Mole; maximum: 100.</p></section>
+            <section><h3>Interpretation and limitations</h3><p>The Mole–Rhino comparison holds the logical grid and questions fixed while changing lateral visual information, but it does not isolate a pure faculty: crop effects vary by character and may interact with familiarity, naming, localization, and binding. One fixed transformed image and repeated questions limit generalization.</p></section>
         </article>
 
-        <article id="level-5-eagle" class="content-card protocol" aria-labelledby="level-5-eagle-title">
-            <header class="protocol-heading">
-                <p class="protocol-level">Visual Bench — Level 5: Eagle</p>
-                <h2 id="level-5-eagle-title">Eagle</h2>
-                <p class="protocol-subtitle">Anchor-Based Midpoint Localization Under Heterogeneous Visual Corruption</p>
-            </header>
-
-            <section aria-labelledby="eagle-purpose"><h3 id="eagle-purpose">Purpose</h3>
-                <p>Level 5 evaluates whether a multimodal model can perform relational character localization within a large and visually heterogeneous array after the stimulus has undergone multiple irregular transformations.</p>
-                <p>The task requires the model to locate two named characters and identify the character occupying the unique midpoint cell between them.</p>
-                <p>Unlike Level 4, Level 5:</p>
-                <ul><li>uses a substantially larger visual field;</li><li>includes characters from multiple unrelated fictional sources;</li><li>mixes animated and live-action imagery;</li><li>rearranges character cells so that they are not grouped by source;</li><li>introduces imperfect and irregular cropping;</li><li>applies color inversion to many, but not all, local regions;</li><li>includes diagonal as well as horizontal and vertical midpoint relationships.</li></ul>
-                <p>Level 5 is designed as a compound stress test rather than an isolated test of one visual capability.</p>
-                <p>It primarily assesses:</p>
-                <ul><li>large-field visual search;</li><li>cross-domain character recognition;</li><li>identity-to-location binding under heterogeneous visual presentation;</li><li>robustness to irregular cropping and partial visual information;</li><li>robustness to localized color-polarity inversion;</li><li>relational reasoning across horizontal, vertical, and diagonal orientations;</li><li>identification of a discrete midpoint between two named anchors;</li><li>repeatability under a fixed but highly corrupted visual condition.</li></ul>
-            </section>
-
-            <section aria-labelledby="eagle-relationship"><h3 id="eagle-relationship">Relationship to Level 4</h3>
-                <p>Level 5 preserves the central relational structure introduced in Level 4.</p>
-                <p>For each question, the model must:</p>
-                <ol><li>recognize character X;</li><li>locate character X within the grid;</li><li>recognize character Y;</li><li>locate character Y within the grid;</li><li>determine the spatial relationship between the two anchors;</li><li>identify the unique midpoint cell;</li><li>recognize the character occupying that midpoint;</li><li>return the midpoint character as the answer.</li></ol>
-                <p>However, Level 5 increases difficulty through both stimulus scale and visual corruption. The differences include:</p>
-                <ul><li>a larger number of character cells;</li><li>characters drawn from multiple shows and media types;</li><li>randomized placement rather than grouping by source;</li><li>low-quality or irregular cell cropping;</li><li>spatially selective color inversion;</li><li>diagonal midpoint relationships.</li></ul>
-                <p>Level 5 is therefore not a controlled degradation of the Level 4 image. It is a separate, more complex stimulus and task condition.</p>
-            </section>
-
-            <section aria-labelledby="eagle-stimulus"><h3 id="eagle-stimulus">Visual stimulus</h3>
-                <p>The Level 5 stimulus is a very large grid containing many character images. The characters originate from multiple fictional productions rather than one shared series or property. The stimulus includes both animated and live-action characters.</p>
-                <p>The exact number of rows, columns, and populated cells must be recorded in the benchmark stimulus metadata. Do not describe the grid only as “gigantic” or as containing “dozens and dozens” of characters in the formal documentation. Once the dimensions are known, publish the exact values.</p>
-                <p>If the historical grid dimensions were not recorded, mark them as unavailable and ensure that future stimulus versions include them.</p>
-            </section>
-
-            <section aria-labelledby="eagle-heterogeneity"><h3 id="eagle-heterogeneity">Source heterogeneity</h3>
-                <p>Characters are selected from multiple unrelated shows or fictional properties. They are not grouped according to show, franchise, visual style, animation status, live-action status, or character type. Instead, their positions are mixed throughout the grid.</p>
-                <p>This increases heterogeneity in photographic style, illustration style, lighting, facial proportions, costume design, background content, image sharpness, color distribution, and source resolution.</p>
-                <p>The benchmark should not assume that cross-show mixing is inherently harder for every model. Its effect should be treated as an empirical property of the stimulus.</p>
-            </section>
-
-            <section aria-labelledby="eagle-cropping"><h3 id="eagle-cropping">Irregular cropping transformation</h3>
-                <p>Before final assembly, the character cells are processed using an automatic cropping tool. The cropping is intentionally imperfect.</p>
-                <p>As a result, individual cells may contain:</p>
-                <ul><li>incomplete faces;</li><li>missing hair, clothing, or accessories;</li><li>uneven framing;</li><li>excessive background;</li><li>portions of neighboring content;</li><li>inconsistent subject scale;</li><li>off-center subjects;</li><li>differently sized visible character regions;</li><li>variable amounts of identifying information.</li></ul>
-                <p>The imperfect cropping is not applied as a uniform geometric mask. It may affect different characters in different ways. Consequently, Level 5 includes heterogeneous item difficulty arising from unequal preservation of character features.</p>
-                <p>The exact cropping tool, version, settings, and workflow should be preserved where available. If those details were not historically recorded, do not invent them.</p>
-            </section>
-
-            <section aria-labelledby="eagle-arrangement"><h3 id="eagle-arrangement">Randomized spatial arrangement</h3>
-                <p>After cropping, the character cells are placed in a mixed spatial arrangement. Characters from the same show or medium are not intentionally kept together. This reduces the usefulness of local source-based grouping as a search strategy.</p>
-                <p>The stimulus record should preserve the exact final position of every character. If the arrangement was generated randomly, the randomization method, random seed, constraints applied during placement, and whether any positions were manually changed afterward should be recorded where available.</p>
-                <p>If the arrangement was manually mixed rather than algorithmically randomized, describe it as manually rearranged or pseudorandom rather than claiming formal random sampling.</p>
-            </section>
-
-            <section aria-labelledby="eagle-inversion"><h3 id="eagle-inversion">Spatially heterogeneous color inversion</h3>
-                <p>After the grid is assembled, color inversion is applied to many local portions of the image.</p>
-                <p>The inversion is spatially heterogeneous:</p>
-                <ul><li>some regions retain their original color polarity;</li><li>some regions are inverted;</li><li>inverted and non-inverted regions coexist in the same final image;</li><li>inversion boundaries may cross or divide character cells, depending on the editing procedure.</li></ul>
-                <p>A color inversion generally transforms bright values into dark values and dark values into bright values while reversing the corresponding color channels. However, Level 5 should be documented operationally rather than as a pure photometric experiment, because multiple transformations are present simultaneously.</p>
-                <p>The inversion pattern is fixed within a benchmark version. The exact final image, including every inversion region, must remain identical across tested models and repeated administrations.</p>
-                <h4>Inversion-map documentation</h4>
-                <p>For reproducibility, the stimulus record should preserve an inversion map or equivalent documentation identifying:</p>
-                <ul><li>which image regions were inverted;</li><li>the coordinates or pixel boundaries of those regions;</li><li>whether regions were selected manually or automatically;</li><li>whether inversion regions align with grid-cell boundaries;</li><li>whether any character is partially inverted;</li><li>whether any character is divided across multiple polarity conditions.</li></ul>
-                <p>If no historical inversion map exists, preserve the final image and record this limitation. Future versions should retain both the pre-inversion image and the final post-inversion image.</p>
-            </section>
-
-            <section aria-labelledby="eagle-compound"><h3 id="eagle-compound">Compound nature of the Level 5 condition</h3>
-                <p>Level 5 does not isolate the effect of one corruption. Performance reflects the combined influence of:</p>
-                <ul><li>visual-field size;</li><li>number of candidate characters;</li><li>source heterogeneity;</li><li>animation and live-action differences;</li><li>irregular cropping;</li><li>inconsistent character scale and framing;</li><li>randomized or mixed placement;</li><li>local color inversion;</li><li>potential partial inversion of character images;</li><li>horizontal, vertical, and diagonal relational reasoning.</li></ul>
-                <p>The score therefore represents performance under the complete Level 5 condition. It must not be interpreted as a pure measure of color-inversion robustness, character recognition, visual search, diagonal reasoning, cropping robustness, or general visual intelligence.</p>
-            </section>
-
-            <section aria-labelledby="eagle-query"><h3 id="eagle-query">Query structure</h3>
-                <p>Each question follows the general format:</p><blockquote>Which character is between character X and character Y?</blockquote>
-                <p>Character X and character Y serve as visual anchors. For every valid question:</p>
-                <ul><li>both anchors occupy identifiable grid cells;</li><li>the anchors share a horizontal, vertical, or diagonal line;</li><li>exactly one grid cell lies between the anchors;</li><li>the midpoint cell is unique;</li><li>the required answer is the character occupying that midpoint cell.</li></ul>
-            </section>
-
-            <section aria-labelledby="eagle-orientations"><h3 id="eagle-orientations">Valid orientations</h3>
-                <p>Level 5 includes four undirected orientation classes: horizontal, vertical, descending diagonal, and ascending diagonal. Because the order of X and Y does not change the midpoint, each orientation may be traversed in either direction.</p>
-                <h4>Horizontal relation</h4>
-                <p>The anchors share the same row and differ by two columns. If their positions are <var>(r,c<sub>1</sub>)</var> and <var>(r,c<sub>2</sub>)</var>, the midpoint is:</p>
-                <figure class="score-formula"><math display="block" aria-label="the midpoint is row r and column c one plus c two divided by two"><mrow><mo>(</mo><mi>r</mi><mo>,</mo><mfrac><mrow><msub><mi>c</mi><mn>1</mn></msub><mo>+</mo><msub><mi>c</mi><mn>2</mn></msub></mrow><mn>2</mn></mfrac><mo>)</mo></mrow></math><figcaption>Horizontal midpoint: the shared row and the average of the anchor columns.</figcaption></figure>
-                <h4>Vertical relation</h4>
-                <p>The anchors share the same column and differ by two rows. If their positions are <var>(r<sub>1</sub>,c)</var> and <var>(r<sub>2</sub>,c)</var>, the midpoint is:</p>
-                <figure class="score-formula"><math display="block" aria-label="the midpoint is row r one plus r two divided by two and column c"><mrow><mo>(</mo><mfrac><mrow><msub><mi>r</mi><mn>1</mn></msub><mo>+</mo><msub><mi>r</mi><mn>2</mn></msub></mrow><mn>2</mn></mfrac><mo>,</mo><mi>c</mi><mo>)</mo></mrow></math><figcaption>Vertical midpoint: the average of the anchor rows and the shared column.</figcaption></figure>
-                <h4>Diagonal relation</h4>
-                <p>For a diagonal question, the anchor rows differ by two positions, the anchor columns also differ by two positions, and the midpoint differs by one row and one column from each anchor.</p>
-                <p>If their positions are <var>(r<sub>1</sub>,c<sub>1</sub>)</var> and <var>(r<sub>2</sub>,c<sub>2</sub>)</var>, the midpoint is:</p>
-                <figure class="score-formula"><math display="block" aria-label="the midpoint is row r one plus r two divided by two and column c one plus c two divided by two"><mrow><mo>(</mo><mfrac><mrow><msub><mi>r</mi><mn>1</mn></msub><mo>+</mo><msub><mi>r</mi><mn>2</mn></msub></mrow><mn>2</mn></mfrac><mo>,</mo><mfrac><mrow><msub><mi>c</mi><mn>1</mn></msub><mo>+</mo><msub><mi>c</mi><mn>2</mn></msub></mrow><mn>2</mn></mfrac><mo>)</mo></mrow></math><figcaption>Diagonal midpoint: the average of both the anchor rows and the anchor columns.</figcaption></figure>
-                <p>The diagonal may slope in either direction.</p>
-            </section>
-
-            <section aria-labelledby="eagle-reasoning"><h3 id="eagle-reasoning">Operational reasoning sequence</h3>
-                <p>A correct response requires several dependent operations.</p>
-                <ol class="stage-list"><li><strong>Stage 1: First-anchor recognition.</strong> The model must recognize character X despite any cropping, inversion, visual-style difference, or local corruption.</li><li><strong>Stage 2: First-anchor localization.</strong> The model must identify X’s position within a large visual array.</li><li><strong>Stage 3: Second-anchor recognition.</strong> The model must independently recognize character Y.</li><li><strong>Stage 4: Second-anchor localization.</strong> The model must identify Y’s position.</li><li><strong>Stage 5: Orientation determination.</strong> The model must determine whether the anchors form a horizontal, vertical, ascending-diagonal, or descending-diagonal relation.</li><li><strong>Stage 6: Midpoint derivation.</strong> The model must identify the unique intervening cell.</li><li><strong>Stage 7: Target recognition.</strong> The model must recognize the midpoint character, which may itself be cropped, inverted, partially inverted, or visually degraded.</li><li><strong>Stage 8: Response binding.</strong> The model must return the target for the correct question while preserving the order of all ten answers.</li></ol>
-                <p>An error in any stage may produce an incorrect final response.</p>
-            </section>
-
-            <section aria-labelledby="eagle-prompt"><h3 id="eagle-prompt">Prompt structure</h3>
-                <p>Each administration contains the fixed Level 5 image and ten relational questions in one prompt. Each question names two anchor characters and asks for the character located at their midpoint. The model is expected to provide one identifiable character name for each question.</p>
-            </section>
-
-            <section aria-labelledby="eagle-administration"><h3 id="eagle-administration">Repeated-administration procedure</h3>
-                <p>The exact same Level 5 image and the exact same ten questions are administered ten times. Across all ten administrations, the following remain unchanged:</p>
-                <ul><li>the final corrupted grid;</li><li>every character position;</li><li>every crop;</li><li>every color-inversion region;</li><li>the two anchors used in each question;</li><li>the orientation of each anchor pair;</li><li>the midpoint target;</li><li>question wording and order;</li><li>scoring criteria.</li></ul>
-                <p>The repetition is intentional. It evaluates whether the model can repeatedly complete the same complex relational-localization task under a fixed highly corrupted visual condition.</p>
-                <p>The evaluation contains 10 unique relational questions, 10 repeated administrations of each question, and 100 scored response instances. These are repeated measurements of ten unique items. They must not be described as 100 independent questions.</p>
-            </section>
-
-            <section aria-labelledby="eagle-scoring"><h3 id="eagle-scoring">Scoring</h3>
-                <p>Each response instance is scored dichotomously:</p>
-                <ul><li>1 point is awarded when the model correctly identifies the character in the unique midpoint cell.</li><li>0 points are awarded when the answer is incorrect, omitted, or cannot be reliably associated with the relevant question.</li></ul>
-                <p>Each administration produces a score between 0 and 10. The final Level 5 score is:</p>
-                <figure class="score-formula"><math display="block" aria-label="the Level 5 score is the sum from r equals 1 to 10 of the sum from q equals 1 to 10 of x sub r q"><munderover><mo>∑</mo><mrow><mi>r</mi><mo>=</mo><mn>1</mn></mrow><mn>10</mn></munderover><munderover><mo>∑</mo><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><mn>10</mn></munderover><msub><mi>x</mi><mrow><mi>r</mi><mi>q</mi></mrow></msub></math><figcaption>Final Level 5 score: correct midpoint responses summed over ten questions in each of ten administrations.</figcaption></figure>
-                <p>where:</p><ul><li><var>r</var> represents one of the ten repeated administrations;</li><li><var>q</var> represents one of the ten relational questions;</li><li><var>x<sub>rq</sub> = 1</var> for a correct response;</li><li><var>x<sub>rq</sub> = 0</var> for an incorrect, missing, or non-evaluable response.</li></ul>
-                <p>The final score ranges from 0 to 100 and is displayed as a percentage. A score of 100 indicates that the model correctly identified all ten midpoint characters across all ten administrations.</p>
-            </section>
-
-            <section aria-labelledby="eagle-invalid"><h3 id="eagle-invalid">Invalid-result rule</h3>
-                <p>A result is classified as <strong>INVALID</strong> when the model fails to produce a properly evaluable response on three consecutive administrations.</p>
-                <p>An administration may be considered non-evaluable when the model:</p>
-                <ul><li>fails to answer the requested questions;</li><li>produces output that cannot be associated reliably with the ten relational queries;</li><li>returns unrelated content;</li><li>refuses the task;</li><li>experiences a severe generation or formatting failure that prevents scoring.</li></ul>
-                <p>Incorrect but properly structured responses remain evaluable and receive zero points. They do not count toward the three-consecutive-failure rule. Response validity is determined through manual review.</p>
-                <p>When three consecutive administrations are classified as non-evaluable, testing is terminated and the result is recorded as INVALID. For leaderboard aggregation, INVALID is assigned a numerical value of zero while remaining conceptually distinct from an ordinary completed score of zero.</p>
-            </section>
-
-            <section aria-labelledby="eagle-interpretation"><h3 id="eagle-interpretation">Primary interpretation</h3>
-                <p>A higher Level 5 score indicates that the model can more reliably perform anchor-based midpoint localization within a large and visually heterogeneous stimulus affected by multiple simultaneous image transformations.</p>
-                <p>The best concise interpretation is: <strong>repeatable correct relational localization under heterogeneous visual corruption.</strong></p>
-                <p>Performance reflects a combination of:</p>
-                <ul><li>recognition across multiple shows and visual domains;</li><li>search over a large candidate set;</li><li>robustness to inconsistent cropping;</li><li>robustness to color-polarity changes;</li><li>identity-to-location binding;</li><li>horizontal, vertical, and diagonal relational reasoning;</li><li>midpoint identification;</li><li>target recognition;</li><li>multi-question response management;</li><li>stability across repeated generations.</li></ul>
-                <h4>Large-field visual search</h4>
-                <p>The larger visual field increases the number of potential candidate characters and the distance across which anchor relationships may need to be evaluated. This may increase search demands, the likelihood of confusing visually similar characters, difficulty maintaining anchor locations, difficulty preserving question-specific bindings, and susceptibility to omission.</p>
-                <p>However, the benchmark does not independently isolate visual-search capacity from recognition and relational reasoning.</p>
-                <h4>Cross-domain recognition</h4>
-                <p>Because the grid includes both live-action and animated characters from multiple shows, the model must operate across different image domains within one stimulus. A high score may indicate broad recognition robustness across heterogeneous visual representations.</p>
-                <p>It does not demonstrate equal performance across all source categories unless results are separately analyzed by live action versus animation, show or franchise, image style, inversion status, and cropping severity.</p>
-                <h4>Color-inversion robustness</h4>
-                <p>Some queried anchors and targets may occur in fully non-inverted regions, fully inverted regions, partially inverted regions, or regions near inversion boundaries. The benchmark should record these conditions for each item where possible.</p>
-                <p>Without item-level categorization, the aggregate score cannot determine how much color inversion independently affected performance.</p>
-                <h4>Diagonal reasoning</h4>
-                <p>Diagonal items add a relational orientation absent from Level 4. Successful diagonal performance requires the model to track changes in both row and column simultaneously.</p>
-                <p>However, the aggregate Level 5 score combines diagonal items with horizontal and vertical items. Diagonal reasoning should therefore be reported separately if the benchmark intends to make claims specifically about diagonal performance.</p>
-            </section>
-
-            <section aria-labelledby="eagle-not-isolate"><h3 id="eagle-not-isolate">What Level 5 does not isolate</h3>
-                <p>Level 5 is intentionally complex. Its score cannot determine whether an error was caused by:</p>
-                <ul><li>anchor-recognition failure;</li><li>target-recognition failure;</li><li>large-field search failure;</li><li>cropping;</li><li>color inversion;</li><li>partial inversion;</li><li>source unfamiliarity;</li><li>confusion between animation and live action;</li><li>anchor-localization error;</li><li>orientation error;</li><li>midpoint error;</li><li>answer-order failure;</li><li>generation instability.</li></ul>
-                <p>Accordingly, Level 5 should be described as a compound stress test.</p>
-            </section>
-
-            <section aria-labelledby="eagle-comparison"><h3 id="eagle-comparison">Comparison with Level 4</h3>
-                <p>Levels 4 and 5 share the anchor-based midpoint task. However, they use different stimuli and differ across multiple dimensions.</p>
-                <p>Level 5 introduces:</p><ul><li>a larger visual array;</li><li>more candidate characters;</li><li>multiple source properties;</li><li>mixed animation and live action;</li><li>irregular cropping;</li><li>randomized or mixed placement;</li><li>heterogeneous color inversion;</li><li>diagonal relationships.</li></ul>
-                <p>The score difference between Levels 4 and 5 cannot be attributed exclusively to diagonal reasoning or any one visual transformation. Level 5 should therefore be interpreted independently rather than as a controlled retention test relative to Level 4.</p>
-            </section>
-
-            <section aria-labelledby="eagle-difficulty"><h3 id="eagle-difficulty">Potential sources of difficulty</h3>
-                <p>Level 5 may be especially difficult because the model must:</p>
-                <ul><li>search a large and visually chaotic image;</li><li>recognize anchors from unrelated shows;</li><li>handle live-action and animated imagery simultaneously;</li><li>identify characters from incomplete crops;</li><li>recognize characters under reversed color polarity;</li><li>interpret characters divided by inversion boundaries;</li><li>retain two anchor positions;</li><li>determine one of several orientations;</li><li>derive a midpoint;</li><li>recognize a potentially corrupted target;</li><li>repeat this process for ten questions;</li><li>preserve answer order;</li><li>do so consistently across repeated generations.</li></ul>
-            </section>
-
-            <section aria-labelledby="eagle-confounders"><h3 id="eagle-confounders">Potential confounders and sources of bias</h3>
-                <p>Performance may be influenced by:</p>
-                <ul><li>unequal familiarity with different shows;</li><li>unequal internet or training-data representation of characters;</li><li>differences between famous and obscure characters;</li><li>differences between live-action and animated characters;</li><li>variable source-image quality;</li><li>unequal crop severity;</li><li>unequal inversion severity;</li><li>whether an image is fully or partially inverted;</li><li>differences in character scale;</li><li>background remnants;</li><li>visually similar characters;</li><li>duplicate characters;</li><li>aliases, titles, translations, or spelling variants;</li><li>uneven orientation distribution;</li><li>uneven spatial distribution of questions;</li><li>distance from image edges;</li><li>inversion-boundary placement;</li><li>manual scoring decisions;</li><li>stochastic variation across repeated generations.</li></ul>
-                <h4>Anchor uniqueness</h4>
-                <p>Each named anchor should correspond to one unique intended cell. If the same character appears more than once, the question may be ambiguous unless additional disambiguating information is supplied.</p>
-                <p>The protocol should record whether duplicate characters exist, whether duplicate anchors are prohibited, how ambiguity is assessed, and whether ambiguous questions are excluded. Do not invent these details for historical evaluations if they were not documented.</p>
-                <h4>Orientation balance</h4>
-                <p>The benchmark record should state how many of the ten unique questions use horizontal relations, vertical relations, ascending diagonals, and descending diagonals. Do not imply an equal distribution unless the actual query set is balanced.</p>
-                <h4>Corruption-condition balance</h4>
-                <p>For each anchor and target, future metadata should classify crop severity, original or inverted polarity, full or partial inversion, proximity to an inversion boundary, animation or live action, and source show or property. This would permit supplementary analysis of which conditions are most strongly associated with errors.</p>
-            </section>
-
-            <section aria-labelledby="eagle-human"><h3 id="eagle-human">Human-solvability claim</h3>
-                <p>The statement that a human can solve the Level 5 task is a useful design intuition but should not be presented as established evidence without human testing.</p>
-                <p>To support a formal human-solvability or fairness claim, conduct a small human baseline study using participants who receive:</p>
-                <ul><li>the same final image;</li><li>the same ten questions;</li><li>the same character-name information available to the model;</li><li>a defined time limit or explicitly unlimited time;</li><li>the same accepted-answer rules.</li></ul>
-                <p>Report the number of participants, participant familiarity with the depicted shows, mean and median accuracy, completion time, between-participant variation, item-level agreement, and whether participants were allowed to search externally.</p>
-                <p>Until such data exist, describe the task as intended to remain human-solvable, not as empirically proven to be fair.</p>
-            </section>
-
-            <section aria-labelledby="eagle-errors"><h3 id="eagle-errors">Recommended supplementary error analysis</h3>
-                <p>Where evidence permits, errors may be categorized as:</p>
-                <ul><li>first-anchor recognition error;</li><li>second-anchor recognition error;</li><li>anchor-localization error;</li><li>orientation error;</li><li>diagonal-relation error;</li><li>midpoint-selection error;</li><li>target-recognition error;</li><li>crop-associated error;</li><li>inversion-associated error;</li><li>source-familiarity error;</li><li>answer-order error;</li><li>non-evaluable response.</li></ul>
-                <p>These categories should remain descriptive unless a standardized annotation protocol is established. Do not infer an internal failure mechanism confidently from the final answer alone.</p>
-            </section>
-
-            <section aria-labelledby="eagle-reproducibility"><h3 id="eagle-reproducibility">Reproducibility requirements</h3>
-                <p>The Level 5 stimulus record should preserve:</p>
-                <ul><li>exact final grid image;</li><li>pre-cropping source images, where legally and practically possible;</li><li>post-cropping pre-arrangement images;</li><li>final pre-inversion grid;</li><li>final post-inversion grid;</li><li>exact grid dimensions;</li><li>number of populated cells;</li><li>identity and source property of each character;</li><li>animation or live-action classification;</li><li>final position of every character;</li><li>crop tool and settings;</li><li>randomization or arrangement procedure;</li><li>random seed, if used;</li><li>inversion-region map;</li><li>image dimensions and file format;</li><li>transparency and compression details;</li><li>cryptographic hashes of all retained stimulus files;</li><li>exact ten anchor pairs;</li><li>orientation of every query;</li><li>midpoint target for every query;</li><li>proof that every midpoint is unique;</li><li>exact prompt wording and question order;</li><li>accepted character-name variants;</li><li>benchmark and stimulus version.</li></ul>
-                <p>If historical production details are unavailable, mark them explicitly as unavailable and preserve all details prospectively.</p>
-            </section>
-
-            <section aria-labelledby="eagle-record"><h3 id="eagle-record">Recommended model-result record</h3>
-                <p>For each model, preserve:</p>
-                <ul><li>benchmark and stimulus version;</li><li>exact model name and version;</li><li>evaluation date;</li><li>model configuration and reasoning settings;</li><li>tool or code-execution availability;</li><li>score in each of the ten administrations;</li><li>item-level correctness;</li><li>total Level 5 score;</li><li>original model responses;</li><li>accepted character-name variants;</li><li>query orientation;</li><li>anchor and target corruption conditions, where documented;</li><li>manually assigned error annotations, where defensible;</li><li>non-evaluable administrations and reasons;</li><li>final INVALID status, where applicable.</li></ul>
-            </section>
+        <article id="level-3-chimpanzee" class="content-card protocol" data-visual-protocol="3" data-level-status="Active" aria-labelledby="level-3-chimpanzee-title">
+            <header><p class="protocol-level">Active · Level 3 · weight 4</p><h2 id="level-3-chimpanzee-title">Chimpanzee</h2><p>Coordinate localization under compound visual degradation.</p></header>
+            <section><h3>Purpose and stimulus</h3><p>Chimpanzee applies an imperfect automatic background-removal process to the complete Rhino image after its lateral reduction. The result combines Rhino’s information loss with segmentation artifacts and further lost or altered visual evidence. The logical grid and ten coordinate questions remain fixed; active contents and transformation specifics are confidential.</p></section>
+            <section><h3>Task</h3><p>The model answers the same coordinate queries while coping with the compound transformed image and maintaining character, location, and answer bindings.</p></section>
+            <section><h3>Administration and scoring</h3><p>The fixed image and ten questions are presented together across ten fresh, isolated conversations without earlier responses, producing 100 binary-scored response instances. The shared scoring and INVALID rules apply; maximum: 100.</p></section>
+            <section><h3>Interpretation and limitations</h3><p>Chimpanzee measures repeatable localization under the full compound condition; it does not isolate segmentation robustness. The transformation does not necessarily make every queried cell uniformly harder. Character-specific artifact severity, familiarity, aliases, one fixed image, and repeated questions limit interpretation. Increasing complexity is a design property, not a claim of strictly monotonic empirical difficulty.</p></section>
         </article>
 
-        <article id="level-6-beholder" class="content-card protocol planned-protocol" aria-labelledby="level-6-beholder-title">
-            <header class="protocol-heading">
-                <h2 id="level-6-beholder-title">Visual Bench — Level 6: Beholder</h2>
-                <p class="protocol-subtitle">Planned Evaluation</p>
-            </header>
-
-            <section aria-labelledby="beholder-status"><h3 id="beholder-status">Current status</h3>
-                <p>Level 6 has not yet been operationally defined.</p>
-                <p>No final stimulus, task procedure, scoring protocol, capability construct, or administration method has been established. Accordingly, no methodological claims are currently made for this level.</p>
-                <p>The level will remain inactive until its design has been:</p>
-                <ul><li>explicitly specified;</li><li>reviewed for ambiguity;</li><li>assigned a reproducible scoring procedure;</li><li>tested for human interpretability;</li><li>documented before model evaluation begins.</li></ul>
-                <p>Any future Level 6 implementation should be released as a new version of the Visual Bench protocol.</p>
-            </section>
+        <article id="level-4-owl" class="content-card protocol" data-visual-protocol="4" data-level-status="Active" aria-labelledby="level-4-owl-title">
+            <header><p class="protocol-level">Active · Level 4 · weight 8</p><h2 id="level-4-owl-title">Owl</h2><p>Anchor-based horizontal and vertical midpoint localization.</p></header>
+            <section><h3>Purpose and stimulus</h3><p>Owl uses a separate 17 × 11 character grid containing a central image that spans a 5 × 3 area. The active image, exact arrangement, questions, anchor pairs, and answers are confidential.</p></section>
+            <section><h3>Task</h3><p>Each question has the conceptual form “What character is between [Character X] and [Character Y]?” The two named anchors define a unique horizontal or vertical midpoint occupied by one identifiable target. Owl does not use diagonal midpoint relationships; those first appear in Eagle.</p><ol><li>Identify the first named anchor.</li><li>Identify the second named anchor.</li><li>Determine their spatial relationship.</li><li>Locate the unique character exactly between them.</li><li>Name that midpoint character.</li><li>Associate the answer with the correct question.</li></ol></section>
+            <section><h3>Administration and scoring</h3><p>The same Owl image and ten fixed questions are presented together ten times. Every administration starts in a fresh, isolated conversation; prior responses are not supplied. Thus 10 unique questions × 10 administrations = 100 binary-scored response instances. A correct identifiable midpoint character earns one point; an incorrect, missing, or non-matchable answer earns zero. Maximum: 100. The shared three-consecutive non-evaluable rule produces INVALID.</p></section>
+            <section><h3>Interpretation and limitations</h3><p>Owl is not merely character recognition: it combines two-anchor search, alignment reasoning, unique-midpoint selection, target recognition, and binding across ten simultaneous questions. It remains dependent on character familiarity and naming, so it is not a pure measure of abstract spatial reasoning. Boundaries include one fixed stimulus, ten repeated questions rather than independently sampled items, alias ambiguity, possible effects from the central spanning image, and compound recognition/search/reasoning/binding demands.</p></section>
         </article>
-    </main>
+
+        <article id="level-5-eagle" class="content-card protocol" data-visual-protocol="5" data-level-status="Active" aria-labelledby="level-5-eagle-title">
+            <header><p class="protocol-level">Active · Level 5 · weight 16</p><h2 id="level-5-eagle-title">Eagle</h2><p>A compound relational-localization stress test.</p></header>
+            <section><h3>Purpose and stimulus</h3><p>Eagle combines a larger, denser visual field; mixed characters from unrelated fictional sources; animation and live action; irregular cropping; and selective local color inversion. Its active dimensions, production details, arrangement, questions, and answers remain confidential where disclosure could aid reconstruction.</p></section>
+            <section><h3>Task</h3><p>As in Owl, the model locates two named anchors, determines their relationship, identifies and names the unique midpoint character, and preserves answer binding. Eagle includes horizontal, vertical, and diagonal midpoint relationships. It therefore combines recognition, search, localization, midpoint reasoning, and response management under heterogeneous corruption.</p></section>
+            <section><h3>Administration and scoring</h3><p>The same active Eagle image and ten fixed questions are presented together in ten fresh, isolated conversations without prior responses, creating 100 response instances from ten unique questions. The shared binary scoring and INVALID rules apply; maximum: 100.</p></section>
+            <section><h3>Interpretation and limitations</h3><p>Eagle measures repeatable correctness under the complete compound condition. It changes several conditions simultaneously and is not a controlled extension of Owl; an Owl–Eagle difference cannot isolate diagonal reasoning, cropping, inversion, density, search, or source familiarity. One fixed image, repeated questions, uneven character familiarity or corruption severity, naming ambiguity, and manual adjudication bound interpretation.</p></section>
+        </article>
+    </section>
+
+    <article class="content-card closing-methodology">
+        <section id="weighting" aria-labelledby="weighting-title">
+            <p class="section-label">Official index</p><h2 id="weighting-title">Arena weighting and aggregate score</h2>
+            <div class="table-wrap"><table data-visual-weights><thead><tr><th>Active level</th><th>Weight</th><th>Share of complete score</th></tr></thead><tbody>
+                {visualLevels.map(level => <tr data-level={level.number} data-weight={level.weight}><th scope="row">{level.number} — {level.name}</th><td>{level.weight}</td><td>{level.weight}/{fullWeight}</td></tr>)}
+                <tr class="total"><th scope="row">Complete denominator</th><td>{fullWeight}</td><td>100%</td></tr>
+            </tbody></table></div>
+            <p><code>Visual score = (Mole + 2×Rhino + 4×Chimpanzee + 8×Owl + 16×Eagle) / 31</code></p>
+            <p>Later levels contain more complex task conditions, and the official index intentionally gives success under those conditions greater importance. Eagle contributes 16/31 and Owl 8/31 of a complete score. Equal weighting would also be an editorial choice, not an objectively neutral law. Powers of two are transparent, deterministic, monotonic, and easy to reproduce, but these are <strong>editorial importance weights</strong>, not empirically estimated psychometric difficulty parameters.</p>
+        </section>
+
+        <section id="coverage-ranking" aria-labelledby="coverage-title">
+            <p class="section-label">Leaderboard</p><h2 id="coverage-title">Coverage, provisional results, and ranking</h2>
+            <p>Complete Visual coverage means all five Active level results are included. Numeric zero and INVALID both retain coverage and weight. UNAVAILABLE and NOT_TESTED are excluded, reduce the denominator, and make any computable score provisional and ineligible for an official arena rank. Missing Active result fields are data errors rather than statuses.</p>
+            <p>Official Visual ranks include only complete-coverage results. Overall qualification requires rank-eligible results in all three arenas. Equal unrounded canonical scores receive the same competition rank and the next rank is skipped. Canonical calculations retain full precision; leaderboard composite displays round to one decimal place. Per-level integer percentages are already exact response counts out of 100.</p>
+        </section>
+
+        <section id="interpretation-limitations" aria-labelledby="limitations-title">
+            <p class="section-label">Boundaries</p><h2 id="limitations-title">Interpretation and limitations</h2>
+            <p>Visual Bench supports comparisons of repeatable correctness on its documented fixed conditions for the named accessible product configurations. It can reveal large performance differences, instability across repetitions, and sensitivity across related or compound conditions.</p>
+            <p>It does not establish psychometric validity, general visual intelligence, universal product superiority, causal explanations for errors, or performance over the full population of possible visual tasks. Fixed confidential stimuli reduce contamination but do not eliminate it. Character familiarity, naming conventions, manual adjudication, provider changes, permitted tools, and uncontrolled interface behavior can influence results.</p>
+        </section>
+
+        <section id="versioning-audit" aria-labelledby="audit-title">
+            <p class="section-label">Auditability</p><h2 id="audit-title">Versioning and internal audit records</h2>
+            <p>Public results preserve the named configuration, level result/status, and release or test date where the current data supports it. Internal evaluation records should additionally preserve the benchmark and stimulus version, private stimulus identifier, interface, configurable temperature, web and code-execution policies, ten run totals, adjudication notes, and final status—without publishing item-level material that could reconstruct the test.</p>
+            <p>A repository-maintained schema defines that private record format. Actual records belong in the ignored <code>private/evaluations/</code> directory, outside <code>src/</code> and <code>public/</code>, so they are not bundled into client code or static output. No historical fields have been fabricated.</p>
+        </section>
+
+        <section id="level-6-beholder" aria-labelledby="beholder-title" data-level-status="Planned">
+            <p class="section-label">Planned · excluded</p><h2 id="beholder-title">Level 6 — Beholder</h2>
+            <p>Beholder has no active stimulus, task, or scoring protocol. It contributes nothing to the current Visual score, does not affect coverage or rank eligibility, and must not display a model score. Its future protocol must be documented before activation; no methodology is inferred here.</p>
+        </section>
+    </article>
+</main>
 </Layout>
 
 <style>
-    .visual-methodology { --page-accent: #5eead4; --page-accent-rgb: 94, 234, 212; max-width: 72rem; }
-    .level-navigation { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin-bottom: 2rem; }
-    .level-navigation > * { min-width: 0; padding: 1rem; border: 1px solid rgba(148,163,184,.16); border-radius: .85rem; background: rgba(30,41,59,.5); }
-    .level-navigation a { color: #ccfbf1; text-decoration: none; }
-    .level-navigation a:hover { border-color: var(--page-accent); }
-    .level-navigation a:focus-visible { outline: 3px solid var(--page-accent); outline-offset: 3px; }
-    .level-navigation span, .level-navigation strong, .level-navigation small { display: block; }
-    .level-navigation span, .level-navigation small { color: #8291a5; }
-    .level-navigation strong { color: #e2e8f0; font-size: .9rem; }
-    .level-navigation small { margin-top: .25rem; font-size: .72rem; line-height: 1.35; }
-    .level-navigation a { border-color: rgba(94,234,212,.45); }
-    .level-navigation a span { color: #99f6e4; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; }
-    .level-comparison { max-width: 52rem; margin: 0 0 2rem; padding: 1rem 1.25rem; border-left: 3px solid var(--page-accent); background: rgba(15,23,42,.42); }
-    .level-comparison h2 { margin: 0 0 .75rem; color: #f8fafc; font-size: 1.1rem; }
-    .level-comparison dl { display: flex; flex-wrap: wrap; gap: .5rem 2rem; margin: 0; }
-    .level-comparison dl div { display: flex; gap: .5rem; }
-    .level-comparison dt { color: #f8fafc; font-weight: 800; }
-    .level-comparison dd { margin: 0; color: #cbd5e1; }
-    .level-comparison p { margin: .75rem 0 0; color: #a8b5c7; font-size: .9rem; }
-    .protocol { scroll-margin-top: 2rem; }
-    .protocol + .protocol { margin-top: 2rem; }
-    .protocol-heading { padding-bottom: 1.5rem; border-bottom: 1px solid rgba(148,163,184,.16); }
-    .protocol-heading .protocol-level { margin: 0; color: var(--page-accent); font-size: .75rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
-    .protocol-heading h2 { margin: .35rem 0; font-size: clamp(2.25rem, 6vw, 4rem); }
-    .protocol-subtitle { margin: 0 !important; color: #cbd5e1; font-size: clamp(1rem, 2.5vw, 1.25rem); font-weight: 600; }
-    .protocol section { max-width: 52rem; }
-    .protocol section h3 { margin: 2.6rem 0 .8rem; color: #f8fafc; font-size: clamp(1.3rem, 3vw, 1.7rem); letter-spacing: -.025em; }
-    blockquote { margin: 1rem 0 1.5rem; padding: .9rem 1.2rem; border-left: 3px solid var(--page-accent); color: #f1f5f9; background: rgba(15,23,42,.5); }
-    .score-formula { max-width: 34rem; margin: 1.5rem 0; padding: 1.25rem; overflow-x: auto; border: 1px solid rgba(94,234,212,.22); border-radius: 1rem; text-align: center; background: rgba(15,23,42,.55); }
-    .score-formula math { color: #f8fafc; font-size: clamp(1.25rem, 4vw, 1.8rem); }
-    .score-formula figcaption { margin-top: .8rem; color: #94a3b8; font-size: .75rem; line-height: 1.5; }
-    .reasoning-chain { max-width: 52rem; margin: 1.5rem 0; }
-    .reasoning-chain p { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; color: #f8fafc; }
-    .reasoning-chain figcaption { color: #94a3b8; font-size: .75rem; }
-    .supplementary-formulas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
-    .supplementary-formulas .score-formula { min-width: 0; margin: .75rem 0; }
-    .validity-comparison { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin: 1rem 0 1.5rem; }
-    .validity-comparison div { padding: 1rem; border: 1px solid rgba(148,163,184,.16); border-radius: .75rem; background: rgba(15,23,42,.4); }
-    .validity-comparison dt { color: #f8fafc; font-weight: 800; }
-    .validity-comparison dd { margin: .35rem 0 0; color: #a8b5c7; font-size: .9rem; line-height: 1.6; }
-    @media (max-width: 700px) { .level-navigation { grid-template-columns: 1fr 1fr; } .supplementary-formulas { grid-template-columns: 1fr; } }
-    @media (max-width: 440px) { .level-navigation, .validity-comparison { grid-template-columns: 1fr; } }
+.visual-methodology{--page-accent:#5eead4;--page-accent-rgb:94,234,212;max-width:74rem}.section-navigation{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.6rem;margin:0 0 2rem}.section-navigation a{padding:.75rem;border:1px solid rgba(94,234,212,.3);border-radius:.7rem;color:#ccfbf1;background:rgba(30,41,59,.55);font-size:.78rem;font-weight:700;text-decoration:none}.section-navigation a:hover{border-color:#5eead4}.section-navigation a:focus-visible{outline:3px solid #5eead4;outline-offset:2px}.section-navigation .pending{color:#c4b5fd;border-color:rgba(196,181,253,.35)}.content-card+.content-card,.protocol+.protocol{margin-top:1.5rem}.content-card section{scroll-margin-top:1.5rem}.content-card section+section{margin-top:3rem;padding-top:2.5rem;border-top:1px solid rgba(148,163,184,.14)}.section-label,.protocol-level{margin:0 0 .2rem!important;color:#5eead4;font-size:.7rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase}.content-card h2{margin:.2rem 0 1rem;font-size:clamp(1.55rem,4vw,2.3rem)}.content-card h3{margin:1.8rem 0 .55rem;color:#f8fafc;font-size:1.15rem}.procedure-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin:1.2rem 0 1.5rem}.procedure-grid div,.callout,.policy-list div{padding:1rem;border:1px solid rgba(94,234,212,.2);border-radius:.8rem;background:rgba(15,23,42,.48)}.procedure-grid strong,.procedure-grid span{display:block}.procedure-grid span{margin-top:.25rem;color:#94a3b8;font-size:.8rem;line-height:1.5}.callout{margin:1.25rem 0;border-left:3px solid #5eead4}.callout p{margin:.4rem 0 0}.policy-list{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}.policy-list dt{color:#f8fafc;font-weight:800}.policy-list dd{margin:.35rem 0 0;color:#aab8ca;line-height:1.6}.table-wrap{max-width:100%;overflow-x:auto;border:1px solid rgba(148,163,184,.18);border-radius:.8rem}table{width:100%;border-collapse:collapse;min-width:38rem}th,td{padding:.8rem 1rem;border-bottom:1px solid rgba(148,163,184,.14);text-align:left;vertical-align:top}thead th{color:#f8fafc;background:rgba(15,23,42,.65)}tbody th{color:#e2e8f0}.total th,.total td{font-weight:900;color:#f8fafc}.protocol{scroll-margin-top:1.5rem}.protocol header{padding-bottom:1.2rem;border-bottom:1px solid rgba(148,163,184,.14)}.protocol header h2{font-size:clamp(2.2rem,6vw,3.8rem)}.protocol header>p:last-child{margin:0;color:#aab8ca;font-weight:600}.protocol section+section{margin-top:1.8rem;padding-top:1.5rem}.protocol section h3{margin:0 0 .55rem}.protocols{margin:1.5rem 0}.closing-methodology code{display:block;padding:1rem;overflow-x:auto;border-radius:.65rem;color:#f8fafc;background:#0b1220;white-space:nowrap}@media(max-width:760px){.section-navigation{grid-template-columns:repeat(2,minmax(0,1fr))}.procedure-grid,.policy-list{grid-template-columns:1fr}}@media(max-width:430px){.section-navigation{grid-template-columns:1fr}.content-card{padding:1.25rem}th,td{padding:.7rem}.protocol header h2{font-size:2.25rem}}
 </style>

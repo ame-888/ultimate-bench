@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Private Visual Bench evaluation record",
+  "description": "Internal record format. Completed records belong under private/evaluations/ and must never be copied into src/ or public/.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["benchmarkVersion", "stimulusVersion", "privateStimulusId", "interface", "configuration", "administrationDate", "temperature", "webPolicy", "codeExecutionPolicy", "runTotals", "finalResult", "status", "adjudicationNotes"],
+  "properties": {
+    "benchmarkVersion": { "type": "string", "minLength": 1 },
+    "stimulusVersion": { "type": "string", "minLength": 1 },
+    "privateStimulusId": { "type": "string", "minLength": 1 },
+    "interface": { "enum": ["ChatGPT", "Gemini browser chatbot", "Claude chatbot", "Standalone Grok chatbot", "Google AI Studio"] },
+    "configuration": { "type": "string", "minLength": 1 },
+    "administrationDate": { "type": "string", "format": "date" },
+    "temperature": { "type": ["number", "null"], "description": "Use null when the interface does not expose this control." },
+    "webPolicy": { "enum": ["available-and-permitted", "not-exposed"] },
+    "codeExecutionPolicy": { "enum": ["available-and-permitted", "available-but-disabled-labelled-configuration", "not-exposed"] },
+    "runTotals": { "type": "array", "minItems": 10, "maxItems": 10, "items": { "type": ["integer", "null"], "minimum": 0, "maximum": 10 } },
+    "finalResult": { "oneOf": [{ "type": "integer", "minimum": 0, "maximum": 100 }, { "enum": ["INVALID", "UNAVAILABLE", "NOT_TESTED"] }] },
+    "status": { "enum": ["complete", "invalid", "unavailable", "not-tested"] },
+    "adjudicationNotes": { "type": "string" }
+  }
+}

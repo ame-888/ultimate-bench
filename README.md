@@ -12,13 +12,13 @@ Ultimate Bench uses **Progressive Level Weighting** in every arena. Active Level
 
 A numeric zero is valid and retains its weight. `INVALID` contributes zero and retains its weight. `UNAVAILABLE` is excluded with its weight and reduces displayed coverage. `NOT_TESTED` means not attempted, is excluded, and counts as incomplete coverage. Missing active results and unknown statuses are validation errors. Planned and Locked levels are excluded; a Locked level additionally requires a complete protocol and explicit unlock condition. No current level is Locked and no current record uses `NOT_TESTED`.
 
-Global qualification requires computable scores in all three arenas, canonical status values for every active result, and no more than one `UNAVAILABLE` or `NOT_TESTED` active level in any arena. Equal full-precision scores share rank; alphabetical ordering between ties is presentation only.
+Official arena rank eligibility requires complete Active-level coverage; therefore any `UNAVAILABLE` or `NOT_TESTED` result makes that arena score provisional. Overall qualification requires rank-eligible results in all three arenas. Equal full-precision scores share competition rank; alphabetical ordering between ties is presentation only.
 
 Canonical definitions are in [`src/data/benchmarkSpec.ts`](src/data/benchmarkSpec.ts), calculations and validation in [`src/data/scoring.ts`](src/data/scoring.ts), and derived leaderboards in [`src/data/leaderboard.ts`](src/data/leaderboard.ts). Published level results remain in [`src/data/benchmarks.ts`](src/data/benchmarks.ts). The scoring migration audit is [`reports/scoring-migration.md`](reports/scoring-migration.md).
 
 ## Public and protected benchmark information
 
-Public protocols may describe the evaluated construct, already-public prompt templates, administration count, transformation categories, scoring, validity rules, model configuration, limitations, and reproducibility expectations. Exact held-out stimuli, queried items or coordinates, answer keys, unreleased cases, and details that directly enable memorization or gaming remain protected. Visual Bench Levels 1–5 have public detailed protocols; Level 6 is Planned and not operationally defined.
+Public protocols describe the evaluated construct, administration count, transformation categories, scoring, validity rules, product/interface configuration, limitations, and audit expectations. Active images, exact questions, character layouts, answer keys, and reconstructable transformation details remain confidential to reduce contamination and benchmark-specific optimization. Visual Bench Levels 1–5 have public operational protocols; Level 6 is Planned and not operationally defined.
 
 ## Routes
 
@@ -26,7 +26,7 @@ Public protocols may describe the evaluated construct, already-public prompt tem
 | --- | --- |
 | `/` | Canonical leaderboard, arena results, status legend, and cost comparison |
 | `/methodology/` | Canonical scoring, statuses, qualification, transparency, and limitations |
-| `/methodology/visual-bench/` | Detailed Visual Bench Levels 1–5 and Planned Level 6 |
+| `/methodology/visual-bench/` | Visual Bench administration, security, scoring, Active Levels 1–5, and Planned Level 6 |
 | `/analysis/` | Canonical findings and clearly labeled exploratory statistics |
 | `/about/`, `/contact/` | Project and contact information |
 | `/privacy/`, `/terms/` | Implementation-specific policy and rights terms |
