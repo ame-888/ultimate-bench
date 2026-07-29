@@ -8,35 +8,49 @@ const [home, css, script] = await Promise.all([
   readFile('src/scripts/home-page.js', 'utf8'),
 ]);
 
-test('all three detailed arenas share an explicit model hierarchy', () => {
-  assert.equal((home.match(/class="provider-badge"/g) ?? []).length, 3);
+test('provider badges are absent while provider metadata and filters remain wired', () => {
+  assert.doesNotMatch(home, /provider-badge/);
+  assert.doesNotMatch(css, /provider-badge/);
+  assert.doesNotMatch(css, /ultimate-model\s+\.model-info::before/);
+  assert.doesNotMatch(css, /content:\s*attr\(data-provider\)/);
+  assert.match(home, /function getModelProvider\(name\)/);
+  assert.match(home, /data-provider=\{getModelProvider\(item\.name\)\.name\}/);
+  assert.match(home, /data-provider-filter=\{provider\.name\}/);
+  assert.match(script, /dataset\.provider/);
+  assert.match(script, /provider-filter-btn/);
+});
+
+test('all leaderboard names use the shared single-line truncation treatment', () => {
+  assert.match(css, /\.model-name\s*\{[^}]*overflow:\s*hidden[^}]*text-overflow:\s*ellipsis[^}]*white-space:\s*nowrap/s);
+  assert.doesNotMatch(css, /\.model-name\s*\{[^}]*overflow-wrap:\s*anywhere/s);
+  assert.match(css, /\.model-name-line\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) auto auto/s);
+  assert.doesNotMatch(css, /\.model-name-line\s*\{[^}]*flex-wrap:\s*wrap/s);
+  assert.doesNotMatch(css, /\.semantic-summary-table \.model-name\s*\{[^}]*white-space:\s*normal/s);
+  assert.doesNotMatch(script, /adjustFontSizes|scrollWidth > el\.clientWidth/);
+});
+
+test('full model names stay in the DOM and title attributes', () => {
+  assert.match(home, /class="model-name" title=\{item\.name\}[^>]*>\{item\.name\}<\/div>/);
+  assert.match(home, /class="model-name" title=\{item\.name\}>\{item\.name\}<\/span>/);
+  assert.match(home, /<strong class="model-name" title=\{item\.name\}[^>]*>\{item\.name\}<\/strong>/);
+  assert.match(home, /<h3 class="model-name" title=\{item\.name\}>\{item\.name\}<\/h3>/);
+});
+
+test('NEW and PROVISIONAL stay separate while coverage retains its second line', () => {
+  assert.match(home, /<span class="new-badge">NEW<\/span>/);
+  assert.match(home, /<span class="provisional-badge">PROVISIONAL<\/span>/);
   assert.equal((home.match(/class="coverage-note" aria-label=/g) ?? []).length, 3);
-  assert.equal((home.match(/role="region" aria-label="(?:Visual|Chess|DATA) Bench level results" tabindex="0"/g) ?? []).length, 3);
-  assert.equal((home.match(/class="model-info" data-provider=/g) ?? []).length, 1, 'only the unrelated Global table keeps its pseudo-element provider');
-  assert.match(home, /Grok 4\.20 Expert|item\.name/);
-});
-
-test('coverage is concise visually and preserves the complete accessible reason', () => {
-  const summaries = home.match(/<small class="coverage-note"[^>]*>\{item\.coverage\} · \{item\.weightCoverage\}<\/small>/g) ?? [];
-  assert.equal(summaries.length, 3);
-  assert.equal((home.match(/aria-label=\{`Insufficient coverage for an official rank:/g) ?? []).length, 3);
-  assert.doesNotMatch(home, /rank !== null && <small class="coverage-note"/);
-});
-
-test('arena header and rows use one synchronized, readable grid', () => {
-  assert.match(css, /--arena-columns:\s*minmax\(20rem, 3fr\) repeat\(6, minmax\(5\.5rem, 1fr\)\)/);
-  assert.match(css, /\.unified-header-row, \.unified-row\s*\{[\s\S]*?grid-template-columns:\s*var\(--arena-columns\)/);
-  assert.match(css, /\.benchmark-content\s*\{[\s\S]*?grid-template-columns:\s*2rem minmax\(0, 1fr\)/);
-  assert.match(css, /\.benchmark-scroll-container\s*\{[\s\S]*?overflow-x:\s*auto/);
-  assert.doesNotMatch(css, /\.unified-header-row, \.unified-row\s*\{[\s\S]{0,160}minmax\(25px/);
-});
-
-test('provider and provisional content remain visible without layout hacks', () => {
-  assert.match(css, /\.provider-badge/);
-  assert.match(css, /\.model-name-line\s*\{[\s\S]*?flex-wrap:\s*wrap/);
+  assert.equal((home.match(/<\/div>\s*\{item\.rank === null && <small class="coverage-note"/g) ?? []).length, 3);
   assert.match(css, /\.coverage-note\s*\{[^}]*display:block/);
-  assert.doesNotMatch(css, /\.benchmark-content[^}]*position:\s*absolute/);
-  assert.doesNotMatch(css, /\.coverage-note[^}]*margin-(?:left|right|top|bottom):\s*-/);
+  assert.match(css, /\.model-name-line > \.new-badge,[\s\S]*?white-space:\s*nowrap/);
+});
+
+test('detailed tables retain aligned columns and contained keyboard scrolling', () => {
+  assert.match(css, /--arena-columns:\s*minmax\(20rem, 3fr\) repeat\(6, minmax\(5\.5rem, 1fr\)\)/);
+  assert.match(css, /\.unified-header-row, \.unified-row\s*\{[^}]*grid-template-columns:\s*var\(--arena-columns\)/s);
+  assert.match(css, /\.benchmark-scroll-container\s*\{[^}]*max-width:\s*100%[^}]*overscroll-behavior-inline:\s*contain/s);
+  assert.match(css, /@media \(max-width: 1100px\)\s*\{\s*\.benchmark-scroll-container \{ overflow-x: auto; \}/);
+  assert.equal((home.match(/role="region" aria-label="(?:Visual|Chess|DATA) Bench level results" tabindex="0"/g) ?? []).length, 3);
 });
 
 test('existing score precision, sorting, and show-more controls remain wired', () => {
