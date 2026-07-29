@@ -374,19 +374,19 @@ export const benchmarks = {
         { name: 'Claude 5 Opus (high)', scores: { worm: 25, koala: 1, crow: 0, octopus: 0 } }
     ],
     chessModels: [
-        { name: 'Muse Spark 1.1', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0, hydra: 0 }, origins: { spider: 'progression-gated', wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated', hydra: 'progression-gated' } },
-        { name: 'Gemini 3.1 Flashlite GA', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0, hydra: 0 }, origins: { spider: 'progression-gated', wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated', hydra: 'progression-gated' } },
-        { name: 'Grok 4.3 Fast', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0, hydra: 0 }, origins: { spider: 'progression-gated', wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated', hydra: 'progression-gated' } },
-        { name: 'Gemini 3.1 Pro Preview', scores: { mouse: 75, spider: 91, wolf: 100, hawk: 0, python: 0, hydra: 0 }, origins: { python: 'progression-gated', hydra: 'progression-gated' } },
-        { name: 'GPT-5.5 Instant (0505)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0, hydra: 0 }, origins: { spider: 'progression-gated', wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated', hydra: 'progression-gated' } },
-        { name: 'GPT-5.5 Instant (0529)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0, hydra: 0 }, origins: { spider: 'progression-gated', wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated', hydra: 'progression-gated' } },
-        { name: 'Gemini 3.5 Flash', scores: { mouse: 40, spider: 43, wolf: 17, hawk: 0, python: 0, hydra: 0 }, origins: { python: 'progression-gated', hydra: 'progression-gated' } },
-        { name: 'Claude 4.6 Sonnet (max thinking)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0, hydra: 0 }, origins: { spider: 'progression-gated', wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated', hydra: 'progression-gated' } },
-        { name: 'Claude 4.6 Sonnet (adaptive thinking)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0, hydra: 0 }, origins: { spider: 'progression-gated', wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated', hydra: 'progression-gated' } },
-        { name: 'Muse Spark (thinking)', scores: { mouse: 3, spider: 0, wolf: 0, hawk: 0, python: 0, hydra: 0 }, origins: { wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated', hydra: 'progression-gated' } },
-        { name: 'Gemini 3.0 Flash Preview', scores: { mouse: 24, spider: 0, wolf: 0, hawk: 0, python: 0, hydra: 0 }, origins: { wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated', hydra: 'progression-gated' } },
-        { name: 'GPT-5.5', scores: { mouse: 39, spider: 48, wolf: 22, hawk: 0, python: 0, hydra: 0 }, origins: { python: 'progression-gated', hydra: 'progression-gated' } },
-        { name: 'GPT-5.6 Sol (high)', scores: { mouse: 97, spider: 68, wolf: 59, hawk: 0, python: 0, hydra: 0 }, origins: { python: 'progression-gated', hydra: 'progression-gated' } },
-        { name: 'Claude 5 Fable (high)', scores: { mouse: 38, spider: 20, wolf: 15, hawk: 0, python: 0, hydra: 0 }, origins: { python: 'progression-gated', hydra: 'progression-gated' } }
+        { name: 'Muse Spark 1.1', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 }, origins: { spider: 'progression-gated', wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated' } },
+        { name: 'Gemini 3.1 Flashlite GA', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 }, origins: { spider: 'progression-gated', wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated' } },
+        { name: 'Grok 4.3 Fast', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 }, origins: { spider: 'progression-gated', wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated' } },
+        { name: 'Gemini 3.1 Pro Preview', scores: { mouse: 75, spider: 91, wolf: 100, hawk: 0, python: 0 }, origins: { python: 'progression-gated' } },
+        { name: 'GPT-5.5 Instant (0505)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 }, origins: { spider: 'progression-gated', wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated' } },
+        { name: 'GPT-5.5 Instant (0529)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 }, origins: { spider: 'progression-gated', wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated' } },
+        { name: 'Gemini 3.5 Flash', scores: { mouse: 40, spider: 43, wolf: 17, hawk: 0, python: 0 }, origins: { python: 'progression-gated' } },
+        { name: 'Claude 4.6 Sonnet (max thinking)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 }, origins: { spider: 'progression-gated', wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated' } },
+        { name: 'Claude 4.6 Sonnet (adaptive thinking)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 }, origins: { spider: 'progression-gated', wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated' } },
+        { name: 'Muse Spark (thinking)', scores: { mouse: 3, spider: 0, wolf: 0, hawk: 0, python: 0 }, origins: { wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated' } },
+        { name: 'Gemini 3.0 Flash Preview', scores: { mouse: 24, spider: 0, wolf: 0, hawk: 0, python: 0 }, origins: { wolf: 'progression-gated', hawk: 'progression-gated', python: 'progression-gated' } },
+        { name: 'GPT-5.5', scores: { mouse: 39, spider: 48, wolf: 22, hawk: 0, python: 0 }, origins: { python: 'progression-gated' } },
+        { name: 'GPT-5.6 Sol (high)', scores: { mouse: 97, spider: 68, wolf: 59, hawk: 0, python: 0 }, origins: { python: 'progression-gated' } },
+        { name: 'Claude 5 Fable (high)', scores: { mouse: 38, spider: 20, wolf: 15, hawk: 0, python: 0 }, origins: { python: 'progression-gated' } }
     ]
 };

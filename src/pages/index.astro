@@ -208,7 +208,6 @@ const chessDataMap = new Map();
         wolf: m.scores?.wolf,
         hawk: m.scores?.hawk,
         python: m.scores?.python,
-        hydra: m.scores?.hydra,
         origins: m.origins ?? {}
     });
 });
@@ -219,7 +218,6 @@ const chessRawList = Array.from(chessDataMap.values()).map(m => {
     const wolfScore = typeof m.wolf === 'number' ? m.wolf : 0;
     const hawkScore = typeof m.hawk === 'number' ? m.hawk : 0;
     const pythonScore = typeof m.python === 'number' ? m.python : 0;
-    const hydraScore = typeof m.hydra === 'number' ? m.hydra : 0;
     return m;
 });
 
@@ -629,7 +627,7 @@ function getRankDisplay(rank) {
                             {provisionalArenaRows.map(item => <article class="excluded-result-card">
                                 <div class="excluded-result-model"><span class="provisional-badge">PROVISIONAL</span><h3 title={item.name}>{item.name}</h3><span class="excluded-arena">Data Retrieval Bench</span></div>
                                 <div class="excluded-result-score"><span>Provisional score</span><strong>{item.score.toFixed(1)}%</strong></div>
-                                <div class="excluded-result-copy"><p>Not eligible for ranking because benchmark coverage is insufficient.</p><dl><div><dt>Level coverage</dt><dd>{item.canonical.coverage}</dd></div><div><dt>Weight coverage</dt><dd>{item.canonical.weightCoverage}</dd></div></dl></div>
+                                <div class="excluded-result-copy"><p>Not eligible for ranking because benchmark coverage is insufficient.</p><dl><div><dt>Active-level coverage</dt><dd>{item.canonical.coverage}</dd></div><div><dt>Operational result weight</dt><dd>{item.canonical.weightCoverage}</dd></div></dl></div>
                             </article>)}
                         </div>
                     </section>}
@@ -651,7 +649,7 @@ function getRankDisplay(rank) {
                             <li>stability across different kinds of noise</li>
                         </ul>
                         <p class="methodology-link"><a href="/methodology/visual-bench/">View full Visual Bench methodology</a></p>
-                        <p>The five Active levels use increasingly complex fixed task conditions. Each level repeats ten fixed questions across ten fresh, isolated conversations; its percentage is the number correct among 100 response instances, not 100 independent items. Level 6 remains Planned and excluded from scoring.</p>
+                        <p>The five Active levels use increasingly complex fixed task conditions. Each level repeats ten fixed questions across ten fresh, isolated conversations; its percentage is the number correct among 100 response instances, not 100 independent items. Level 6 remains Planned; its weight is reserved without a model result.</p>
                     </div>
                     <div class="ranking-controls">
                         <label for="visual-ranking-method">Ranking Method:</label>
@@ -789,7 +787,7 @@ function getRankDisplay(rank) {
                     <header class="detail-hero">
                         <span class="detail-kicker">Arena 03 · Strategy</span>
                         <h2>Chess Bench</h2>
-                        <p>Six Active levels for practical chatbot chess performance; Hydra is included at weight 32 under the progression rule.</p>
+                        <p>Five Active levels; Hydra is Locked and its weight 32 is reserved in the permanent denominator.</p>
                     </header>
                     <div class="benchmark-description">
                         <p>Chess Bench is the third benchmark in the Ultimate Bench series.<br>
@@ -889,7 +887,7 @@ function getRankDisplay(rank) {
                                             <h3>HYDRA</h3>
                                             <span class="tooltip-container">
                                                 <button type="button" class="tooltip-icon" aria-label="Show Chess Hydra Level 6 explanation" aria-controls="tooltip-explanation-14">ⓘ</button>
-                                                <div class="tooltip-text" id="tooltip-explanation-14"><strong>HYDRA (Level 6):</strong> Active simultaneous Chess960 evaluation at weight 32. Administration requires a positive Python result.</div>
+                                                <div class="tooltip-text" id="tooltip-explanation-14"><strong>HYDRA (Level 6):</strong> LOCKED. Its weight 32 is reserved; no model result exists. It may become Active by a deliberate version decision after a model scores above 0 on Python.</div>
                                             </span>
                                         </div>
                                         <div class="creature-icon hydra-icon">
@@ -921,6 +919,7 @@ function getRankDisplay(rank) {
 
                                         {/* Challenge Columns */}
                                         {(['mouse','spider','wolf','hawk','python','hydra'] as const).map(level => {
+                                            if (level === 'hydra') return <div class="benchmark-cell score-cell hydra-score" style="flex: 1;"><span class="status-badge locked" title="Locked reserved capacity: weight 32 earns zero points in the fixed 63-point normalization; this is not a model result.">LOCKED</span></div>;
                                             const value = item[level];
                                             const gated = item.origins?.[level] === 'progression-gated';
                                             return <div class={`benchmark-cell score-cell ${level}-score`} style="flex: 1;">
@@ -1091,7 +1090,8 @@ There are four Active levels. Raven and Athena are Planned future levels with pr
                 </div>
             </section>
         </div>
-        <aside class="disclaimer benchmark-status-legend" aria-labelledby="benchmark-status-title"><h2 id="benchmark-status-title">Benchmark status legend</h2><p><strong>Active:</strong> operational and scored. <strong>Planned:</strong> protocol not yet defined and excluded. <strong>Invalid:</strong> attempted evaluation failed its validity rule; aggregated as zero with weight retained. <strong>Unavailable:</strong> active evaluation could not run; result and weight excluded. <strong>Not tested:</strong> not attempted and incomplete coverage. A numeric 0% is a valid result and retains its weight.</p><p><strong>Claude 5 Fable (high):</strong> recorded active-level results are included in all three arenas; no unavailable or not-tested value affects its current qualification.</p></aside>
+        <aside class="disclaimer"><strong>Fixed six-level normalization (29 July 2026).</strong> Full ladder denominator: 63 in every arena. Operational weight is Visual 31/63, Data Retrieval 15/63, and Chess 31/63. Planned and Locked capacity is reserved, so activation never expands the denominator. Current attainable maxima are 49.21%, 23.81%, and 49.21% respectively.</aside>
+        <aside class="disclaimer benchmark-status-legend" aria-labelledby="benchmark-status-title"><h2 id="benchmark-status-title">Benchmark status legend</h2><p><strong>Active:</strong> operational and scored. <strong>Planned:</strong> protocol not yet defined; its reserved weight earns zero without a model result. <strong>Locked:</strong> protocol exists but is not operational; its reserved weight earns zero without a model result. <strong>Invalid:</strong> attempted evaluation failed its validity rule; aggregated as zero with weight retained. <strong>Unavailable:</strong> active evaluation could not run; earns zero while denominator 63 remains fixed. <strong>Not tested:</strong> not attempted; earns zero while denominator 63 remains fixed and coverage is incomplete. A numeric 0% is a valid result and retains its weight.</p><p><strong>Claude 5 Fable (high):</strong> recorded active-level results are included in all three arenas; no unavailable or not-tested value affects its current qualification.</p></aside>
     </main>
 </Layout>
 
