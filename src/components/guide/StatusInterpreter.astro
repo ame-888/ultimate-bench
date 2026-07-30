@@ -1,0 +1,15 @@
+---
+import { statusRows } from '../../data/guide';
+---
+<section id="statuses" class="guide-section" aria-labelledby="statuses-title">
+ <p class="step">04 · Status and coverage interpreter</p><h2 id="statuses-title">Zero points can describe different events.</h2>
+ <p>Points, coverage, and rank eligibility are separate. Use the words attached to the result—not color—to understand what happened.</p>
+ <label for="status-select">Explain a result state</label><select id="status-select">{statusRows.map(row=><option value={row.key}>{row.label}</option>)}</select>
+ <p id="status-summary" class="notice" role="status">{statusRows[0].meaning} {statusRows[0].points}; coverage: {statusRows[0].coverage}; ranking: {statusRows[0].rank}.</p>
+ <div class="table-scroll" tabindex="0" aria-label="Result status table; scroll horizontally if needed"><table><caption>Canonical consequences of result and qualification states</caption><thead><tr><th scope="col">State</th><th scope="col">What it means</th><th scope="col">Points</th><th scope="col">Coverage</th><th scope="col">Official rank</th></tr></thead><tbody>{statusRows.map(row=><tr data-status-row={row.key}><th scope="row"><span class="status-badge">{row.label}</span></th><td>{row.meaning}</td><td>{row.points}</td><td>{row.coverage}</td><td>{row.rank}</td></tr>)}</tbody></table></div>
+ <p class="links"><a href="/#global-leaderboard">See leaderboard results</a><a href="/methodology#status-rules-title">Authoritative status rules</a><a href="/analysis#failure">Inspect failure anatomy</a></p>
+</section>
+<script is:inline define:vars={{rows: statusRows}}>
+ const statusSelect = document.querySelector('#status-select'); const summary = document.querySelector('#status-summary');
+ statusSelect?.addEventListener('change', event => { /* @ts-ignore Astro injects rows. */ const row = rows.find(item => item.key === event.target.value); if (row && summary) summary.textContent = `${row.meaning} ${row.points}; coverage: ${row.coverage}; ranking: ${row.rank}.`; });
+</script>

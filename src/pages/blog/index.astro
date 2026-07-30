@@ -3,21 +3,21 @@ import Layout from '../../layouts/Layout.astro';
 import { articles } from '../../data/articles';
 ---
 
-<Layout title="AI Benchmark Guides | Ultimate Bench" description="Practical, independent guides for reading AI benchmarks, comparing model costs, and building evaluations for real-world decisions.">
+<Layout title="AI Benchmark Articles | Ultimate Bench" description="Editorial field notes about reading AI benchmarks, comparing model costs, and building evaluations for real-world decisions.">
     <main class="blog-page">
         <header>
             <p class="eyebrow">From the workbench</p>
-            <h1>Guides to better<br /><span>model decisions.</span></h1>
-            <p class="intro">Practical notes on what AI benchmark numbers mean, what they leave out, and how to test models against work that matters to you.</p>
+            <h1>Articles from the<br /><span>workbench.</span></h1>
+            <p class="intro">Longer editorial notes on benchmark literacy and private evaluation. New here? Start with the <a href="/guide">practical Ultimate Bench Guide</a>.</p>
         </header>
         <section class="article-grid" aria-labelledby="latest-title">
-            <h2 id="latest-title">Latest guides</h2>
+            <h2 id="latest-title">Latest articles</h2>
             {articles.map((article, index) => (
                 <article class:list={{ featured: index === 0 }}>
                     <div class="article-meta"><time datetime={article.date}>{new Date(`${article.date}T00:00:00Z`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}</time><span>{article.readingTime}</span></div>
                     <h3><a href={`/blog/${article.slug}`}>{article.title}</a></h3>
                     <p>{article.description}</p>
-                    <a class="read-link" href={`/blog/${article.slug}`} aria-label={`Read ${article.title}`}>Read guide <span aria-hidden="true">→</span></a>
+                    <a class="read-link" href={`/blog/${article.slug}`} aria-label={`Read ${article.title}`}>Read article <span aria-hidden="true">→</span></a>
                 </article>
             ))}
         </section>

@@ -1,0 +1,26 @@
+---
+const goals = [
+ ['broad','Find the strongest broadly tested model','Start with qualified Overall, then inspect its arena profile and coverage.','/guide#compare','Overall can hide specialization.'],
+ ['capability','Choose for one capability','Use the relevant arena score and level results, then examine failure anatomy.','/guide#scores','Do not extrapolate to a task the arena does not test.'],
+ ['compare','Compare two configurations','Check qualification, configuration details, arena shape, and practical constraints.','/guide#compare','A small displayed gap is not proof of a decisive difference.'],
+ ['unexpected','Understand a score or rank','Check the denominator, coverage, statuses, and then the relevant Analysis chapter.','/guide#statuses','INVALID, zero, and missing coverage mean different things.'],
+ ['price','Balance capability and price','Keep canonical capability separate from the explicit pricing view and estimate your workload.','/guide#price','List token price is not total operating cost.'],
+ ['private','Test models on my work','Create a controlled private evaluation with representative cases and fixed scoring.','/guide#evaluate','Remove confidential data and preserve every failure.'],
+];
+---
+<section id="goals" class="guide-section goal-section" aria-labelledby="goals-title">
+ <p class="step">01 · Start here</p><h2 id="goals-title">What are you trying to do?</h2>
+ <p>Choose a goal for a direct route. Every path still leaves the complete Guide visible.</p>
+ <div class="goal-layout">
+  <label for="guide-goal">My goal</label>
+  <select id="guide-goal">{goals.map(([id,title]) => <option value={id}>{title}</option>)}</select>
+  <div id="goal-guidance" class="goal-guidance" aria-live="polite">
+   {goals.map(([id,title,inspect,href,warning], index) => <article data-goal={id} hidden={index !== 0}><h3>{title}</h3><p><strong>Inspect:</strong> {inspect}</p><p><strong>Watch for:</strong> {warning}</p><a href={href}>Go to the relevant step <span aria-hidden="true">→</span></a></article>)}
+  </div>
+ </div>
+</section>
+<script>
+ const select = document.querySelector<HTMLSelectElement>('#guide-goal');
+ const panels = [...document.querySelectorAll<HTMLElement>('[data-goal]')];
+ select?.addEventListener('change', () => panels.forEach(panel => panel.hidden = panel.dataset.goal !== select.value));
+</script>
