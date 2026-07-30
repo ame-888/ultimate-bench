@@ -45,6 +45,15 @@ test('NEW and PROVISIONAL stay separate while coverage retains its second line',
   assert.match(css, /\.model-name-line > \.new-badge,[\s\S]*?white-space:\s*nowrap/);
 });
 
+test('summary rows give optional NEW badges space only when present', () => {
+  assert.match(home, /<span class="model-name" title=\{item\.name\}>\{item\.name\}<\/span>\{isNew\(releaseDateByModel\.get\(item\.name\)\) && <span class="new-badge">NEW<\/span>}<\/th>/);
+  assert.doesNotMatch(home, /class="benchmark-cell badge-cell"/);
+  assert.match(css, /\.semantic-summary-table thead tr,[\s\S]*?grid-template-columns:\s*2\.45rem minmax\(0, 1fr\) 4\.1rem/);
+  assert.match(css, /\.semantic-summary-table \.model-cell\s*\{[^}]*display:\s*flex[^}]*gap:\s*\.35rem[^}]*overflow:\s*hidden/s);
+  assert.match(css, /\.semantic-summary-table \.model-name\s*\{[^}]*flex:\s*1 1 auto/s);
+  assert.match(css, /\.semantic-summary-table \.new-badge\s*\{[^}]*flex:\s*none/s);
+});
+
 test('detailed tables retain aligned columns and contained keyboard scrolling', () => {
   assert.match(css, /--arena-columns:\s*minmax\(20rem, 3fr\) repeat\(6, minmax\(5\.5rem, 1fr\)\)/);
   assert.match(css, /\.unified-header-row, \.unified-row\s*\{[^}]*grid-template-columns:\s*var\(--arena-columns\)/s);

@@ -1654,7 +1654,7 @@
 .semantic-summary-table thead tr,
 .semantic-summary-table tbody tr {
     display: grid;
-    grid-template-columns: 2.45rem minmax(0, 1fr) 3.2rem 4.1rem;
+    grid-template-columns: 2.45rem minmax(0, 1fr) 4.1rem;
     column-gap: .3rem;
     min-height: 3.4rem;
 }
@@ -1663,12 +1663,17 @@
 .semantic-summary-table th,
 .semantic-summary-table td { min-width: 0; padding: .65rem .35rem; }
 .semantic-summary-table thead th { color: #718198; font-size: .62rem; letter-spacing: .09em; }
-.semantic-summary-table .badge-heading { text-align: center; }
 .semantic-summary-table thead th:last-child { text-align: right; }
 .semantic-summary-table .rank { color: #8594a9; font-variant-numeric: tabular-nums; }
-.semantic-summary-table .model-cell { overflow: hidden; }
+.semantic-summary-table .model-cell {
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    overflow: hidden;
+}
 .semantic-summary-table .model-name {
     display: block;
+    flex: 1 1 auto;
     min-width: 0;
     overflow: hidden;
     color: #e7edf5;
@@ -1678,8 +1683,8 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.semantic-summary-table .badge-cell { display: flex; justify-content: center; padding-inline: .15rem; }
 .semantic-summary-table .new-badge {
+    flex: none;
     min-width: 0;
     height: .9rem;
     margin: 0;
