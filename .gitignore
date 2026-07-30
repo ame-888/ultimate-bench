@@ -27,3 +27,7 @@ dev.log
 # Confidential benchmark evaluation records and active stimulus material
 private/evaluations/
 private/stimuli/
+
+# Methodology PDFs are deterministic build artifacts, never source files
+/public/methodology/ultimate-bench-methodology.pdf
+/public/methodology/ultimate-bench-methodology-v*.pdf

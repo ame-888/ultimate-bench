@@ -1,0 +1,14 @@
+---
+import { METHODOLOGY } from '../data/methodology';
+---
+<aside class="methodology-notice" aria-label="Complete methodology publication">
+  <strong>Part of the complete Ultimate Bench methodology</strong>
+  <span><a href={METHODOLOGY.canonicalPath}>Read full methodology</a><a href={METHODOLOGY.pdfPath}>Open PDF (version {METHODOLOGY.version})</a></span>
+</aside>
+<style>
+  .methodology-notice { display:flex; justify-content:space-between; align-items:center; gap:1rem; margin:0 0 1.5rem; padding:.9rem 1rem; border:1px solid rgba(96,165,250,.3); border-radius:.75rem; background:rgba(37,99,168,.1); color:#e2e8f0; font-size:.84rem; }
+  .methodology-notice span { display:flex; flex-wrap:wrap; gap:.9rem; }
+  a { color:#93c5fd; font-weight:700; text-underline-offset:.2em; min-height:2.25rem; display:inline-flex; align-items:center; }
+  a:focus-visible { outline:3px solid #5eead4; outline-offset:3px; }
+  @media(max-width:600px){.methodology-notice{align-items:flex-start;flex-direction:column}.methodology-notice span{gap:.4rem 1rem}}
+</style>

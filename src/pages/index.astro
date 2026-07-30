@@ -306,6 +306,7 @@ function getRankDisplay(rank) {
 <Layout title="AI Model Leaderboard | Ultimate Bench" description="Compare AI models across Ultimate Bench's experimental visual, data, and chess benchmark evaluations.">
     <main>
         <h1 class="sr-only">Ultimate Bench experimental AI model leaderboard</h1>
+        <aside class="methodology-callout" aria-label="Ultimate Bench methodology"><div><strong>How Ultimate Bench works</strong><span>Understand scoring, coverage, qualification, and limitations.</span></div><div><a href="/methodology/full/">Read methodology</a><a href="/methodology/ultimate-bench-methodology.pdf" download>Download PDF</a></div></aside>
         <div class="leaderboard-grid">
             <!-- Benchmarks Section -->
             <section class="leaderboard-section full-width">
@@ -1101,7 +1102,9 @@ There are four Active levels. Raven is Planned with a documented proposed struct
 
 
 <style>
+
     @import '../styles/home.css';
+    .methodology-callout{max-width:86rem;margin:1rem auto;padding:1rem 1.25rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;border:1px solid rgba(96,165,250,.28);border-radius:.8rem;background:rgba(30,41,59,.72);color:#cbd5e1}.methodology-callout>div{display:flex;flex-wrap:wrap;gap:.6rem 1rem;align-items:center}.methodology-callout strong{color:#fff}.methodology-callout span{font-size:.85rem}.methodology-callout a{min-height:2.6rem;display:inline-flex;align-items:center;padding:0 .8rem;border:1px solid #475569;border-radius:.5rem;color:#bfdbfe;font-size:.8rem;font-weight:800;text-decoration:none}.methodology-callout a:focus-visible{outline:3px solid #5eead4;outline-offset:3px}@media(max-width:650px){.methodology-callout{align-items:stretch;flex-direction:column}.methodology-callout>div:last-child{display:grid;grid-template-columns:1fr 1fr}.methodology-callout a{justify-content:center}}
 </style>
 
 <script
