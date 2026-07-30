@@ -83,6 +83,16 @@ test('Gemini 3.1 Pro Preview with code execution has complete DATA results',()=>
  const built=buildLeaderboard(benchmarks),row=built.arenaRows['data-retrieval'].find(item=>item.name===name);
  assert.ok(row?.rank);assert.equal(built.rows.some(item=>item.name===name),false);
 });
+test('Gemini 3.6 Flash with code execution has complete DATA results',()=>{
+ const name='Gemini 3.6 Flash (with code execution)';
+ const record=benchmarks.dataRetrieval.find(row=>row.name===name);assert.ok(record);
+ assert.deepEqual(record.scores,{worm:24,koala:'INVALID',crow:'INVALID',octopus:'INVALID'});
+ const result=calculateArenaScore(ARENAS.dataRetrieval,record.scores);
+ assert.equal(result.numerator,24);assert.equal(result.score,24/63);
+ assert.equal(result.coverage,'4/4 active levels');assert.equal(result.rankEligible,true);
+ const built=buildLeaderboard(benchmarks),row=built.arenaRows['data-retrieval'].find(item=>item.name===name);
+ assert.ok(row?.rank);assert.equal(built.rows.some(item=>item.name===name),false);
+});
 test('aggregate formatting is display-only and tied ranks retain full precision',()=>{
  assert.equal(formatAggregateScore(73/63),'1.16');assert.equal(formatAggregateScore(221/63),'3.51');
  assert.throws(()=>formatAggregateScore(Number.NaN),/finite/);
