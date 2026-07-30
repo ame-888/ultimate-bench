@@ -1,6 +1,6 @@
 # Fixed six-level normalization migration report
 
-Generated from preserved Active-level results. “Previous” reproduces the former arena-specific weighted implementation; new values use the permanent six-level denominator 63. Planned and Locked weights are reserved without model-level results. Hydra returned from Active to Locked on 29 July 2026 because no model had passed Python, and prior Hydra zeroes and origins were removed. Visual, Data Retrieval, Chess, and Overall values changed; former active-only-denominator scores are not directly comparable. Values show four decimals for auditability; the website displays one decimal.
+Generated from preserved Active-level results. “Previous” reproduces the former arena-specific weighted implementation; new values use the permanent six-level denominator 63. Planned and Locked weights are reserved without model-level results. Hydra returned from Active to Locked on 29 July 2026 because no model had passed Python, and prior Hydra zeroes and results were removed. Visual, Data Retrieval, Chess, and Overall values changed; former active-only-denominator scores are not directly comparable. Values show four decimals for auditability; the website displays one decimal.
 
 ## Visual Bench
 

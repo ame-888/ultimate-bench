@@ -2,10 +2,9 @@ import { activeLevels, ARENA_LIST, RESULT_STATUSES, type ArenaDefinition, type A
 import { calculateArenaScore, normalizeResult, type BenchmarkCollections, type BenchmarkRecord } from './scoring';
 import type { LeaderboardRow } from './leaderboard';
 
-export type ResultCategory = 'positive'|'zero'|'invalid'|'unavailable'|'not-tested'|'progression-gated';
-export const resultCategory = (value: unknown, origin?: string): ResultCategory => {
+export type ResultCategory = 'positive'|'zero'|'invalid'|'unavailable'|'not-tested';
+export const resultCategory = (value: unknown): ResultCategory => {
   const result=normalizeResult(value);
-  if(origin==='progression-gated') return 'progression-gated';
   if(typeof result==='number') return result>0?'positive':'zero';
   return result===RESULT_STATUSES.INVALID?'invalid':result===RESULT_STATUSES.UNAVAILABLE?'unavailable':'not-tested';
 };
@@ -26,8 +25,8 @@ export function percentiles(values:number[]):number[]{
   if(!values.length)return []; if(values.length===1)return [0.5]; const ranks=averageRanks(values);return ranks.map(rank=>(rank-1)/(values.length-1));
 }
 export function failureAnatomy(arena:ArenaDefinition,records:BenchmarkRecord[]){return activeLevels(arena).map(level=>{
-  const counts:Record<ResultCategory,number>={'positive':0,'zero':0,'invalid':0,'unavailable':0,'not-tested':0,'progression-gated':0};const numeric:number[]=[];
-  records.forEach(record=>{const value=record.scores[level.key];counts[resultCategory(value,record.origins?.[level.key])]++;if(typeof value==='number')numeric.push(value)});
+  const counts:Record<ResultCategory,number>={'positive':0,'zero':0,'invalid':0,'unavailable':0,'not-tested':0};const numeric:number[]=[];
+  records.forEach(record=>{const value=record.scores[level.key];counts[resultCategory(value)]++;if(typeof value==='number')numeric.push(value)});
   return {level,represented:records.length,counts,median:median(numeric),numericCount:numeric.length};
 })}
 const median=(v:number[])=>{if(!v.length)return null;const s=[...v].sort((a,b)=>a-b),m=Math.floor(s.length/2);return s.length%2?s[m]:(s[m-1]+s[m])/2};
