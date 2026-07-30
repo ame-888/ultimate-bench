@@ -608,12 +608,11 @@ function getRankDisplay(rank) {
                                 <div class="benchmark-desktop-container semantic-summary-wrap">
                                     <table class="benchmark-container semantic-summary-table">
                                         <caption class="sr-only">Canonical {arena.title} standings</caption>
-                                        <thead><tr><th scope="col">Rank</th><th scope="col">Model</th><th scope="col" class="badge-heading">Status</th><th scope="col">Score</th></tr></thead>
+                                        <thead><tr><th scope="col">Rank</th><th scope="col">Model</th><th scope="col">Score</th></tr></thead>
                                         <tbody id={`${arena.id}-arena-summary`}>{arena.rows.map((item, index) => (
                                             <tr class="benchmark-row unified-row" data-model-name={item.name} hidden={index >= ARENA_PREVIEW_ROWS}>
                                                 <td class="rank" set:html={getRankDisplay(item.rank)}></td>
-                                                <th scope="row" class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}><span class="model-name" title={item.name}>{item.name}</span></th>
-                                                <td class="benchmark-cell badge-cell">{isNew(releaseDateByModel.get(item.name)) && <span class="new-badge">NEW</span>}</td>
+                                                <th scope="row" class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}><span class="model-name" title={item.name}>{item.name}</span>{isNew(releaseDateByModel.get(item.name)) && <span class="new-badge">NEW</span>}</th>
                                                 <td class="benchmark-cell score-cell">{formatAggregateScore(item.score)}%</td>
                                             </tr>
                                         ))}</tbody>
