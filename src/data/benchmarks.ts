@@ -69,6 +69,7 @@ export const benchmarks = {
         },
         {
             name: 'Gemini 3.5 Flash (with code execution)',
+            comparison: { group: 'gemini-3-5-flash-code', condition: 'Code execution available' },
             scores: {
                 'lvl1': 84,
                 'lvl2': 92,
@@ -101,6 +102,7 @@ export const benchmarks = {
         },
         {
             name: 'Gemini 3.5 Flash',
+            comparison: { group: 'gemini-3-5-flash-code', condition: 'Code execution unavailable', baseline: true },
             releaseDate: '2026-05-22',
             scores: {
                 'lvl1': 79,
@@ -112,6 +114,7 @@ export const benchmarks = {
         },
         {
             name: 'Gemini 3.1 Pro Preview',
+            comparison: { group: 'gemini-3-1-pro-code', condition: 'Code execution unavailable', baseline: true },
             scores: {
                 'lvl1': 75,
                 'lvl2': 64,
@@ -123,6 +126,7 @@ export const benchmarks = {
         },
         {
             name: 'Gemini 3.1 Pro Preview (with code execution)',
+            comparison: { group: 'gemini-3-1-pro-code', condition: 'Code execution available' },
             scores: {
                 'lvl1': 84,
                 'lvl2': 73,
@@ -134,6 +138,7 @@ export const benchmarks = {
         },
         {
             name: 'Gemini 3.1 Flashlite GA',
+            comparison: { group: 'gemini-3-1-flashlite-code', condition: 'Code execution unavailable', baseline: true },
             releaseDate: '2026-05-09',
             scores: {
                 'lvl1': 38,
@@ -145,6 +150,7 @@ export const benchmarks = {
         },
         {
             name: 'Gemini 3.1 Flashlite GA (with code execution)',
+            comparison: { group: 'gemini-3-1-flashlite-code', condition: 'Code execution available' },
             scores: {
                 'lvl1': 40,
                 'lvl2': 33,
@@ -155,6 +161,7 @@ export const benchmarks = {
         },
         {
             name: 'Gemini 3.0 Flash Preview (with code execution)',
+            comparison: { group: 'gemini-3-0-flash-code', condition: 'Code execution available' },
             scores: {
                 'lvl1': 85,
                 'lvl2': 61,
@@ -196,6 +203,7 @@ export const benchmarks = {
         },
         {
             name: 'Gemini 3.0 Flash Preview',
+            comparison: { group: 'gemini-3-0-flash-code', condition: 'Code execution unavailable', baseline: true },
             releaseDate: '2025-12-23',
             scores: {
                 'lvl1': 81,
