@@ -24,6 +24,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@types/pdfkit": "^0.17.6",
+    "pdfjs-dist": "^4.10.38",
     "tsx": "^4.23.1",
     "typescript": "^5.9.3"
   }
