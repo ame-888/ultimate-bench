@@ -1,108 +1,82 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { benchmarks } from '../data/benchmarks';
-import { ARENA_LIST } from '../data/benchmarkSpec';
+import { ARENA_LIST, activeLevels, canonicalDenominator, operationalWeight } from '../data/benchmarkSpec';
 import { buildLeaderboard } from '../data/leaderboard';
+import { archetypes, failureAnatomy, flatAverage, latestDatasetDate, matchedComparisons, pareto, profilePercentiles, spearman, averageRanks } from '../data/analysis';
+import { METHODOLOGY } from '../data/methodology';
 
-const editionDate = 'July 27, 2026';
-const isScore = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
-const mean = (values: number[]) => values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
-const scoreMean = (scores: Record<string, unknown>) => mean(Object.values(scores).filter(isScore));
-const format = (value: number, digits = 1) => `${value.toFixed(digits)}%`;
-const unique = <T extends { name: string }>(rows: T[]) => [...new Map(rows.map((row) => [row.name, row])).values()];
-
-const canonical = buildLeaderboard(benchmarks);
-const domains = ARENA_LIST.map(arena => ({ name: arena.shortName, arena, rows: canonical.arenaRows[arena.id] }));
-const profiles = canonical.rows.map(row => {
-    const scores = ARENA_LIST.map(arena => row.scores[arena.id]);
-    const best = Math.max(...scores); const worst = Math.min(...scores);
-    return { name: row.name, scores, average: row.score, spread: best - worst, bestDomain: ARENA_LIST[scores.indexOf(best)].name };
+const canonical=buildLeaderboard(benchmarks), qualified=canonical.rows;
+const fmt=(v:number|null,d=2)=>v===null?'—':v.toFixed(d);
+const status=(v:unknown)=>typeof v==='number'?`${v.toFixed(0)}%`:String(v).replace('_',' ');
+const pairs=ARENA_LIST.flatMap((a,i)=>ARENA_LIST.slice(i+1).map(b=>{
+ const x=qualified.map(r=>r.scores[a.id]),y=qualified.map(r=>r.scores[b.id]),rx=averageRanks(x),ry=averageRanks(y);
+ const residuals=qualified.map((r,j)=>({name:r.name,difference:ry[j]-rx[j]})).sort((u,v)=>Math.abs(v.difference)-Math.abs(u.difference)).slice(0,3);
+ return {a,b,rho:spearman(x,y),n:x.length,residuals};
+}));
+const matrix=ARENA_LIST.map(a=>ARENA_LIST.map(b=>a.id===b.id?1:spearman(qualified.map(r=>r.scores[a.id]),qualified.map(r=>r.scores[b.id]))));
+const failures=ARENA_LIST.map(arena=>({arena,levels:failureAnatomy(arena,benchmarks[arena.dataKey]).map(level=>({...level,positivePercent:level.represented?level.counts.positive/level.represented*100:0}))}));
+const comparisons=matchedComparisons(benchmarks).map(pair=>({...pair,levels:pair.levels.map(x=>({...x,deltaLabel:x.delta===null?'status change':`${x.delta>=0?'+':''}${x.delta.toFixed(0)} points`}))}));
+const toolNames=new Set(comparisons.flatMap(p=>[p.baseline,p.comparison]));
+const profiles=archetypes(qualified,toolNames);
+const frontier=pareto(qualified);
+const percentileProfiles=profilePercentiles(qualified);
+const latest=latestDatasetDate(benchmarks);
+const edition=new Intl.DateTimeFormat('en',{dateStyle:'long',timeZone:'UTC'}).format(new Date(`${METHODOLOGY.revisionDate}T00:00:00Z`));
+const sensitivity=qualified.map(row=>{
+ const flat=ARENA_LIST.map(a=>flatAverage(benchmarks[a.dataKey].find(r=>r.name===row.name)!,a,false)??0);
+ const invalidZero=ARENA_LIST.map(a=>flatAverage(benchmarks[a.dataKey].find(r=>r.name===row.name)!,a,true)??0);
+ return {name:row.name,canonical:row.score,flat:flat.reduce((a,b)=>a+b,0)/flat.length,invalidZero:invalidZero.reduce((a,b)=>a+b,0)/invalidZero.length,relative:percentileProfiles.find(p=>p.name===row.name)!.values};
 });
-const mostBalanced = [...profiles].sort((a,b) => a.spread-b.spread)[0];
-const mostSpecialized = [...profiles].sort((a,b) => b.spread-a.spread)[0];
-const domainLeaders = ARENA_LIST.map(arena => canonical.arenaLeaders[arena.id]).filter((row): row is NonNullable<typeof row> => row !== null);
-
-const visualKeys = ['lvl1', 'lvl2', 'lvl3', 'lvl4', 'lvl5'];
-const visualCurve = visualKeys.map((key, index) => {
-    const values = benchmarks.models.map((row) => row.scores[key as keyof typeof row.scores]).filter(isScore);
-    return { label: `L${index + 1}`, score: mean(values) };
-});
-const drops = visualCurve.slice(1).map((level, index) => ({ from: visualCurve[index].label, to: level.label, drop: visualCurve[index].score - level.score }));
-const cliff = [...drops].sort((a, b) => b.drop - a.drop)[0];
-
-const executionPairs = [
-    ['Gemini 3.6 Flash', 'Gemini 3.6 Flash (with code execution)'],
-    ['Gemini 3.1 Pro Preview', 'Gemini 3.1 Pro Preview (with code execution)'],
-    ['Gemini 3.1 Flashlite GA', 'Gemini 3.1 Flashlite GA (with code execution)'],
-].flatMap(([baseName, toolName]) => {
-    const base = benchmarks.models.find((row) => row.name === baseName);
-    const tool = benchmarks.models.find((row) => row.name === toolName);
-    if (!base || !tool) return [];
-    const keys = visualKeys.filter((key) => isScore(base.scores[key as keyof typeof base.scores]) && isScore(tool.scores[key as keyof typeof tool.scores]));
-    const baseAverage = mean(keys.map((key) => Number(base.scores[key as keyof typeof base.scores])));
-    const toolAverage = mean(keys.map((key) => Number(tool.scores[key as keyof typeof tool.scores])));
-    return [{ name: baseName.replace('Gemini ', ''), baseAverage, toolAverage, lift: toolAverage - baseAverage }];
-});
+const ranks=(key:'canonical'|'flat'|'invalidZero')=>new Map([...sensitivity].sort((a,b)=>b[key]-a[key]).map((r,i)=>[r.name,i+1]));
+const canonicalRanks=ranks('canonical'),flatRanks=ranks('flat'),invalidRanks=ranks('invalidZero');
 ---
+<Layout title="Analysis | Ultimate Bench" description="Transfer, failure, configuration, trade-off, and scoring-sensitivity analysis derived from Ultimate Bench data.">
+<main class="analysis-page">
+ <header class="hero"><p class="eyebrow">Analysis edition · {edition}</p><h1>Patterns beyond rank.</h1><p>This build-time analytical notebook examines <strong>transfer, failure states, matched configurations, trade-offs, and scoring sensitivity</strong>. Official scores remain canonical; every alternative view is explicitly exploratory.</p></header>
+ <section class="summary" aria-label="Dataset summary">
+  {ARENA_LIST.map(arena=><div><b>{benchmarks[arena.dataKey].length}</b><span>{arena.shortName} configurations</span><small>{activeLevels(arena).length} active levels</small></div>)}
+  <div><b>{qualified.length}</b><span>globally qualified</span><small>complete in all arenas</small></div><div><b>{latest??'Not recorded'}</b><span>latest recorded release</span><small>edition source: methodology revision</small></div>
+ </section>
+ <nav class="contents" aria-label="Analysis sections"><a href="#transfer">Transfer</a><a href="#failure">Failure anatomy</a><a href="#configuration">Configuration effects</a><a href="#tradeoffs">Trade-offs</a><a href="#robustness">Robustness</a></nav>
 
-<Layout title="Analysis | Ultimate Bench" description="Patterns, trade-offs, and surprising findings from Ultimate Bench results.">
-  <main class="analysis-page">
-    <header class="hero">
-      <p class="eyebrow">Analysis notebook · {editionDate}</p>
-      <h1>Past the leaderboard.</h1>
-      <p>Home tells you who scored highest. Here we look for the useful part: <strong>where models break, what tools change, and which strengths transfer.</strong></p>
-    </header>
+ <section id="transfer" class="chapter"><header><p class="kicker">01 · Capability transfer</p><h2>Do arena rankings travel together?</h2><p>Spearman’s ρ compares tied mid-ranks among the {qualified.length} configurations with complete, rank-eligible canonical results in all three arenas. Association does not establish a shared underlying capability or causation.</p></header>
+  <div class="matrix-wrap"><table class="matrix"><caption>Canonical arena rank-correlation matrix</caption><thead><tr><th scope="col">Arena</th>{ARENA_LIST.map(a=><th scope="col">{a.shortName}</th>)}</tr></thead><tbody>{ARENA_LIST.map((a,i)=><tr><th scope="row">{a.shortName}</th>{matrix[i].map((v,j)=><td class:list={{diagonal:i===j}}><strong>{fmt(v)}</strong><span>{i===j?'same measure':`n=${qualified.length}`}</span></td>)}</tr>)}</tbody></table></div>
+  <div class="pair-grid">{pairs.map(pair=><article><h3>{pair.a.shortName} ↔ {pair.b.shortName}</h3><p class="metric">ρ {fmt(pair.rho)} <small>n={pair.n}</small></p><p>Largest absolute tied-rank gaps (direction is {pair.a.shortName} rank → {pair.b.shortName} rank):</p><ol>{pair.residuals.map(r=><li><strong>{r.name}</strong><span>{r.difference>0?'underperforms':'overperforms'} by {Math.abs(r.difference).toFixed(1)} rank positions</span></li>)}</ol></article>)}</div>
+  <p class="caution">These are descriptive rank residuals, not model-error estimates. With a small cohort, one configuration can materially shift ρ.</p>
+ </section>
 
-    <nav class="lens-picker" aria-label="Filter analysis cards">
-      <span>Choose a lens</span>
-      <button class="active" data-lens="all">All findings</button><button data-lens="reliability">Reliability</button><button data-lens="difficulty">Difficulty</button><button data-lens="tools">Tools</button>
-    </nav>
+ <section id="failure" class="chapter"><header><p class="kicker">02 · Failure anatomy</p><h2>Where does meaningful performance survive?</h2><p>Choose an arena. Every Active level reports all published configurations; median includes numeric values, including attempted and gated zeroes, and omits non-numeric statuses.</p></header>
+  <div class="tabs" role="tablist" aria-label="Failure arena">{failures.map((x,i)=><button role="tab" aria-selected={i===0?'true':'false'} aria-controls={`failure-${x.arena.id}`} id={`tab-${x.arena.id}`} data-tab={x.arena.id}>{x.arena.shortName}</button>)}</div>
+  {failures.map((item,i)=><div class="failure-panel" id={`failure-${item.arena.id}`} role="tabpanel" aria-labelledby={`tab-${item.arena.id}`} hidden={i!==0}>
+   <div class="survival">{item.levels.map(level=><article><header><b>L{level.level.number} · {level.level.name}</b><span>{level.counts.positive}/{level.represented} positive · {level.positivePercent.toFixed(0)}%</span></header><div class="track" aria-label={`${level.positivePercent.toFixed(0)} percent positive`}><i style={`width:${level.positivePercent}%`}></i></div><dl><div><dt>Positive</dt><dd>{level.counts.positive}</dd></div><div><dt>Zero</dt><dd>{level.counts.zero}</dd></div><div><dt>Invalid</dt><dd>{level.counts.invalid}</dd></div><div><dt>Unavailable</dt><dd>{level.counts.unavailable}</dd></div><div><dt>Not tested</dt><dd>{level.counts['not-tested']}</dd></div><div><dt>Gated zero</dt><dd>{level.counts['progression-gated']}</dd></div><div><dt>Numeric median</dt><dd>{fmt(level.median,1)}%</dd></div></dl></article>)}</div>
+  </div>)}
+  <details><summary>Status policy used throughout exploratory analysis</summary><p><strong>Positive</strong> and <strong>numeric zero</strong> are evaluable. <strong>Progression-gated zero</strong> remains numeric zero arithmetically but is separately counted by origin. <strong>INVALID</strong> is an attempted invalid output; <strong>UNAVAILABLE</strong> and <strong>NOT_TESTED</strong> are missing coverage. Exploratory numeric medians and omitted-status means exclude all three non-numeric statuses. Only the named sensitivity treatment maps INVALID to zero. Canonical calculations continue to use the shared scoring module.</p></details>
+ </section>
 
-    <section class="findings" aria-label="Key findings">
-      <article class="finding feature" data-topic="reliability" data-tilt>
-        <p class="number">01 / TRANSFER</p><h2>A high score in one arena does not travel automatically.</h2>
-        <div class="callouts"><div><span>Most balanced</span><strong>{mostBalanced.name}</strong><small>{mostBalanced.spread.toFixed(1)} point range</small></div><div><span>Most specialized</span><strong>{mostSpecialized.name}</strong><small>{mostSpecialized.spread.toFixed(1)} point range · strongest in {mostSpecialized.bestDomain}</small></div></div>
-        <p class="note">Range is the gap between a qualified configuration’s best and worst canonical arena score. Lower means more consistent—not necessarily better.</p>
-      </article>
+ <section id="configuration" class="chapter"><header><p class="kicker">03 · Configuration effects</p><h2>Matched systems, observed differences.</h2><p>{comparisons.length} comparisons are discovered from explicit <code>comparison.group</code>, baseline, and condition metadata—not name parsing. These are paired observations, not causal estimates, and currently represent only one provider family and one arena.</p></header>
+  <div class="comparison-list">{comparisons.length ? comparisons.map(pair => <details><summary><span><b>{pair.baseline}</b> → <b>{pair.comparison}</b></span><strong class:list={{negative:pair.canonicalDelta<0}}>{pair.canonicalDelta>=0?'+':''}{fmt(pair.canonicalDelta)} canonical points</strong></summary><p>Changed condition: <strong>{pair.condition}</strong>. Canonical weighted score uses the official denominator.</p><div class="level-grid">{pair.levels.map(x => <div><b>L{x.level.number} {x.level.name}</b><span>{status(x.before)} → {status(x.after)}</span><strong>{x.deltaLabel}</strong>{x.statusRegression && <em>numeric → non-numeric regression</em>}</div>)}</div></details>) : <p class="empty">No valid metadata-defined pairs are currently published.</p>}</div>
+ </section>
 
-      <article class="finding" data-topic="difficulty" data-tilt>
-        <p class="number">02 / THE CLIFF</p><h2>The biggest visual drop is {cliff.from} → {cliff.to}.</h2><strong class="mega">−{cliff.drop.toFixed(1)}<i>pts</i></strong>
-        <div class="curve">{visualCurve.map((level) => <div><i style={`--h:${Math.max(level.score, 1)}%`}></i><b>{level.label}</b><small>{format(level.score)}</small></div>)}</div>
-        <p class="note">This exploratory flat mean includes numeric results at each Visual level and omits statuses. It is distinct from the canonical progressively weighted score.</p>
-      </article>
+ <section id="tradeoffs" class="chapter"><header><p class="kicker">04 · Archetypes &amp; trade-offs</p><h2>Strength has a shape.</h2><p>A configuration is Pareto-optimal when no other globally qualified configuration is at least as strong in every canonical arena and strictly stronger in one. Dominated does not mean useless; it means this three-score view contains an unambiguously stronger profile.</p></header>
+  <div class="legend"><span><i class="frontier"></i>Pareto frontier</span><span><i></i>Dominated</span></div>
+  <div class="profile-table"><table><thead><tr><th>Configuration</th>{ARENA_LIST.map(a=><th>{a.shortName}<small>percentile</small></th>)}<th>Deterministic labels</th></tr></thead><tbody>{profiles.map(row=><tr class:list={{pareto:frontier.find(x=>x.name===row.name)?.paretoOptimal}}><th scope="row">{row.name}</th>{ARENA_LIST.map(a=><td><meter min="0" max="1" value={row.percentiles[a.id]}>{(row.percentiles[a.id]*100).toFixed(0)}%</meter><span>{(row.percentiles[a.id]*100).toFixed(0)}th</span></td>)}<td>{row.labels.map(label=><span class="tag">{label}</span>)}</td></tr>)}</tbody></table></div>
+  <details><summary>How labels are assigned</summary><ul><li><strong>Broad high-performing:</strong> at or above the 66⅔rd percentile in every arena.</li><li><strong>Arena specialist:</strong> at or above the 80th percentile in one arena with a profile spread of at least 50 percentile points.</li><li><strong>Consistently weak:</strong> at or below the 33rd percentile in every arena.</li><li><strong>Tool-sensitive:</strong> participates in an explicit matched tool comparison; this describes evidence availability, not direction.</li><li><strong>Pareto-optimal / dominated:</strong> determined from full-precision canonical arena scores. Ties receive tied mid-ranks for percentiles; percentile = (mid-rank − 1)/(n − 1), with 50% for a one-row cohort.</li></ul><p>“Early-level collapse” is not assigned as a model archetype because progression rules differ by arena and the current public data do not provide a defensible cross-arena threshold. Failure panels expose the underlying level shape instead.</p></details>
+ </section>
 
-      <article class="finding" data-topic="tools" data-tilt>
-        <p class="number">03 / TOOL EFFECT</p><h2>Code helps, but the size of the help is not stable.</h2>
-        <div class="pair-list">{executionPairs.map((pair) => <div><span>{pair.name}</span><i style={`--w:${Math.max(pair.lift * 4, 2)}%`}></i><b>{pair.lift >= 0 ? '+' : ''}{pair.lift.toFixed(1)} pts</b></div>)}</div>
-        <p class="note">Matched visual runs only. This compares complete systems; it does not isolate a change in model intelligence.</p>
-      </article>
-
-      <article class="finding feature" data-topic="reliability" data-tilt>
-        <p class="number">04 / SHAPE OF PERFORMANCE</p><h2>Compare profiles, not just totals.</h2>
-        <div class="profile-table"><div class="profile-head"><span>Configuration</span>{domains.map((d) => <span>{d.name}</span>)}<span>Range</span></div>{profiles.map((row) => <div class="profile-row"><strong>{row.name}</strong>{row.scores.map((score) => <span><i style={`--w:${score}%`}></i><b>{format(score, 0)}</b></span>)}<em>{row.spread.toFixed(1)}</em></div>)}</div>
-        <p class="note">Only globally qualified configurations appear. Bars use canonical progressively weighted arena scores; the displayed average is canonical Overall.</p>
-      </article>
-
-      <article class="finding leaders" data-topic="reliability" data-tilt>
-        <p class="number">05 / NO SINGLE CROWN</p><h2>Canonical arena leaders reflect different task-specific strengths.</h2>
-        {domainLeaders.map((leader, index) => <div><span>{domains[index].name}</span><strong>{leader.name}</strong><b>{format(leader.score)}</b></div>)}
-        <p class="note">That disagreement is the point: an arena leader is highest only on that current Ultimate Bench arena, not generally the most intelligent model.</p>
-      </article>
-    </section>
-
-    <footer class="method-note"><span>All findings are calculated from the published dataset at build time.</span><a href="/methodology">Audit the methodology →</a></footer>
-  </main>
+ <section id="robustness" class="chapter"><header><p class="kicker">05 · Robustness &amp; sensitivity</p><h2>How much does the scoring lens matter?</h2><p><strong>Official:</strong> canonical progressively weighted scores below use denominator {canonicalDenominator(ARENA_LIST[0])}. <strong>Exploratory:</strong> flat averages and arena-relative percentiles do not replace leaderboard scores.</p></header>
+  <div class="sensitivity-controls"><label for="sensitivity-view">Exploratory comparison</label><select id="sensitivity-view"><option value="flat">Flat level mean; omit non-numeric</option><option value="invalid">Flat level mean; INVALID = zero</option></select><p id="sensitivity-explanation" aria-live="polite">Flat means give every Active level equal weight and omit INVALID, UNAVAILABLE, and NOT_TESTED.</p></div>
+  <div class="sensitivity-table"><table><thead><tr><th>Configuration</th><th>Official canonical Overall</th><th>Official rank</th><th class="explore-title">Exploratory flat mean</th><th>Exploratory rank</th><th>Rank shift</th></tr></thead><tbody>{sensitivity.map(row=><tr data-flat={row.flat.toFixed(3)} data-invalid={row.invalidZero.toFixed(3)} data-flat-rank={flatRanks.get(row.name)} data-invalid-rank={invalidRanks.get(row.name)}><th>{row.name}</th><td>{fmt(row.canonical)}%</td><td>{canonicalRanks.get(row.name)}</td><td class="explore-value">{fmt(row.flat)}%</td><td class="explore-rank">{flatRanks.get(row.name)}</td><td class="rank-shift">{(flatRanks.get(row.name)??0)-(canonicalRanks.get(row.name)??0)}</td></tr>)}</tbody></table></div>
+  <div class="denominators">{ARENA_LIST.map(a=><p><strong>{a.shortName}</strong><span>Canonical denominator {canonicalDenominator(a)} · active operational weight {operationalWeight(a)} · current maximum {(operationalWeight(a)/canonicalDenominator(a)*100).toFixed(1)}%</span></p>)}</div>
+  <p class="caution">Flat means answer a different question: performance across currently Active levels rather than earned capacity across the intended six-level ladder. INVALID-as-zero matches its canonical arithmetic contribution but not its status meaning. Percentiles support relative profiles; they discard absolute distance.</p>
+ </section>
+ <section class="limitations"><p class="kicker">Methodological limits</p><h2>Descriptive, current, and unevenly covered.</h2><p>The globally qualified cohort is small, arena tasks are not interchangeable, and matched comparisons are neither randomized nor independent across model families. Release dates describe configurations, not necessarily evaluation dates. Protected cases limit external reproduction. Correlations, outliers, and archetypes can change as coverage changes.</p><a href="/methodology#scoring">Read the full scoring methodology →</a></section>
+</main>
 </Layout>
-
 <script>
-  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-lens]');
-  const cards = document.querySelectorAll<HTMLElement>('[data-topic]');
-  buttons.forEach((button) => button.addEventListener('click', () => {
-    buttons.forEach((item) => item.classList.toggle('active', item === button));
-    cards.forEach((card) => card.classList.toggle('filtered-out', button.dataset.lens !== 'all' && card.dataset.topic !== button.dataset.lens));
-  }));
+ const tabs=[...document.querySelectorAll('[data-tab]')];tabs.forEach(tab=>tab.addEventListener('click',()=>{tabs.forEach(t=>t.setAttribute('aria-selected',String(t===tab)));document.querySelectorAll('.failure-panel').forEach(p=>p.hidden=p.id!==`failure-${tab.dataset.tab}`)}));
+ const select=document.querySelector('#sensitivity-view'),explanation=document.querySelector('#sensitivity-explanation'),title=document.querySelector('.explore-title');select?.addEventListener('change',()=>{const invalid=select.value==='invalid';if(explanation)explanation.textContent=invalid?'Flat means give every Active level equal weight, map INVALID to zero, and omit UNAVAILABLE and NOT_TESTED.':'Flat means give every Active level equal weight and omit INVALID, UNAVAILABLE, and NOT_TESTED.';if(title)title.textContent=invalid?'Exploratory flat mean; INVALID = 0':'Exploratory flat mean';document.querySelectorAll('[data-flat]').forEach(row=>{const value=invalid?row.dataset.invalid:row.dataset.flat,rank=invalid?row.dataset.invalidRank:row.dataset.flatRank,official=Number(row.children[2]?.textContent);const valueCell=row.querySelector('.explore-value'),rankCell=row.querySelector('.explore-rank'),shift=row.querySelector('.rank-shift');if(valueCell)valueCell.textContent=`${Number(value).toFixed(2)}%`;if(rankCell)rankCell.textContent=rank??'—';if(shift)shift.textContent=String(Number(rank)-official)})});
 </script>
-
 <style>
-.analysis-page{--cyan:#22d3ee;--line:#2a394d;max-width:76rem;margin:auto;padding:clamp(4rem,8vw,7rem) 1.25rem 7rem;color:#9fb0c5}.hero{max-width:58rem}.eyebrow,.number{color:var(--cyan);font-size:.68rem;font-weight:800;letter-spacing:.17em;text-transform:uppercase}.hero h1{margin:.5rem 0;color:#f8fafc;font-size:clamp(3.4rem,9vw,7.4rem);line-height:.95;letter-spacing:-.075em}.hero>p:last-child{max-width:47rem;font-size:1.12rem;line-height:1.8}.hero strong{color:#e2e8f0}.lens-picker{position:sticky;top:4.7rem;z-index:10;display:flex;align-items:center;gap:.5rem;margin:3.5rem 0 1.2rem;padding:.65rem;border:1px solid var(--line);border-radius:1rem;background:rgba(12,20,33,.9);backdrop-filter:blur(14px)}.lens-picker span{margin:0 auto 0 .45rem;color:#64748b;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em}.lens-picker button{border:1px solid transparent;border-radius:2rem;padding:.6rem .85rem;color:#93a4b8;background:transparent;cursor:pointer;font:600 .72rem Inter}.lens-picker button:hover,.lens-picker button.active{border-color:#31627a;color:#cffafe;background:#123044}.findings{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.finding{position:relative;min-width:0;padding:clamp(1.3rem,3vw,2rem);overflow:hidden;border:1px solid var(--line);border-radius:1.25rem;background:linear-gradient(145deg,#131f30,#0e1725);transition:opacity .25s,transform .25s,border-color .25s}.finding:hover{border-color:#3b5873}.finding.filtered-out{display:none}.finding.feature{grid-column:1/-1}.finding h2{max-width:45rem;margin:.7rem 0 1.7rem;color:#edf6ff;font-size:clamp(1.45rem,3vw,2.25rem);line-height:1.15;letter-spacing:-.04em}.callouts{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.callouts div{padding:1.2rem;border-left:2px solid var(--cyan);background:#0d1826}.callouts span,.callouts small{display:block;color:#73859a;font-size:.68rem}.callouts strong{display:block;margin:.55rem 0;color:#f8fafc}.note{margin:1.6rem 0 0;color:#708298;font-size:.72rem;line-height:1.65}.mega{display:block;color:#fff;font-size:clamp(3.5rem,7vw,6rem);letter-spacing:-.08em}.mega i{margin-left:.5rem;color:#60738a;font-size:.8rem;font-style:normal;letter-spacing:0}.curve{height:9rem;display:flex;gap:.45rem;align-items:end;margin-top:1.5rem}.curve>div{display:grid;grid-template-rows:1fr auto auto;width:20%;height:100%;text-align:center}.curve i{align-self:end;height:var(--h);min-height:2px;border-radius:.25rem .25rem 0 0;background:linear-gradient(var(--cyan),#2563eb)}.curve b{padding-top:.4rem;color:#dce9f6;font-size:.7rem}.curve small{color:#60738a;font-size:.6rem}.pair-list>div{display:grid;grid-template-columns:1fr 1fr auto;gap:.8rem;align-items:center;padding:1rem 0;border-bottom:1px solid var(--line);font-size:.75rem}.pair-list i{height:5px;width:var(--w);max-width:100%;background:#a3e635}.pair-list b{color:#d9f99d}.profile-table{overflow-x:auto}.profile-head,.profile-row{display:grid;grid-template-columns:minmax(15rem,1.5fr) repeat(3,minmax(7rem,1fr)) 4rem;gap:.8rem;align-items:center;min-width:720px}.profile-head{padding:.7rem;color:#61738a;font-size:.62rem;text-transform:uppercase}.profile-row{padding:.85rem .7rem;border-top:1px solid var(--line)}.profile-row>strong{overflow:hidden;color:#dbe7f4;font-size:.73rem;text-overflow:ellipsis;white-space:nowrap}.profile-row span{position:relative;height:1.2rem;background:#172538}.profile-row i{display:block;width:var(--w);height:100%;background:#1d5672}.profile-row b{position:absolute;right:.25rem;top:.15rem;color:#e5f7ff;font-size:.62rem}.profile-row em{color:#8295aa;font-size:.7rem;font-style:normal}.leaders>div{display:grid;grid-template-columns:5rem 1fr auto;gap:.8rem;padding:1rem 0;border-top:1px solid var(--line);font-size:.75rem}.leaders span{color:#6f8197}.leaders strong{color:#e2e8f0}.leaders b{color:var(--cyan)}.method-note{display:flex;justify-content:space-between;gap:1rem;margin-top:1rem;padding:1.3rem;color:#6f8197;font-size:.72rem}.method-note a{color:#a5f3fc;text-decoration:none}@media(max-width:720px){.findings{grid-template-columns:1fr}.finding.feature{grid-column:auto}.lens-picker{overflow-x:auto}.lens-picker span{display:none}.lens-picker button{white-space:nowrap}.callouts{grid-template-columns:1fr}.method-note{flex-direction:column}}
+.analysis-page{--cyan:#22d3ee;--line:#29394c;max-width:78rem;margin:auto;padding:clamp(4rem,8vw,7rem) 1.25rem 7rem;color:#a9b8ca}.hero{max-width:64rem}.eyebrow,.kicker{color:var(--cyan);font-size:.7rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase}.hero h1{margin:.5rem 0;color:#f8fafc;font-size:clamp(3.3rem,9vw,7rem);line-height:.96;letter-spacing:-.07em}.hero>p:last-child{max-width:52rem;font-size:1.1rem;line-height:1.8}.hero strong,h2,h3,strong{color:#edf6ff}.summary{display:grid;grid-template-columns:repeat(5,1fr);margin:3rem 0 1rem;border:1px solid var(--line);border-radius:1rem;overflow:hidden}.summary div{padding:1.2rem;border-right:1px solid var(--line)}.summary div:last-child{border:0}.summary b,.summary span,.summary small{display:block}.summary b{font-size:1.3rem}.summary span{margin:.35rem 0;font-size:.72rem}.summary small{color:#6f8197;font-size:.62rem}.contents{position:sticky;top:4.5rem;z-index:5;display:flex;gap:.3rem;padding:.55rem;margin-bottom:4rem;border:1px solid var(--line);border-radius:.8rem;background:#0e1826ee;overflow:auto}.contents a{padding:.55rem .75rem;color:#9fb0c5;font-size:.72rem;font-weight:700;text-decoration:none;white-space:nowrap}.contents a:focus-visible,button:focus-visible,select:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid #67e8f9;outline-offset:3px}.chapter{padding:5rem 0;border-top:1px solid var(--line);scroll-margin-top:8rem}.chapter>header{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:end;margin-bottom:2rem}.chapter h2,.limitations h2{margin:.4rem 0;color:#f8fafc;font-size:clamp(2rem,5vw,3.5rem);line-height:1.05;letter-spacing:-.05em}.chapter header>p:last-child{line-height:1.7}.matrix-wrap,.profile-table,.sensitivity-table{overflow-x:auto}.matrix,.profile-table table,.sensitivity-table table{width:100%;border-collapse:collapse}.matrix caption{text-align:left;padding:.8rem 0;color:#dbeafe;font-weight:700}.matrix th,.matrix td{padding:1rem;border:1px solid var(--line);text-align:center}.matrix th{text-align:left;color:#dbeafe}.matrix td strong,.matrix td span{display:block}.matrix td strong{font-size:1.45rem}.matrix td span{color:#64748b;font-size:.62rem}.matrix .diagonal{background:#152536}.pair-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1rem}.pair-grid article,.comparison-list details,.survival article{padding:1.25rem;border:1px solid var(--line);border-radius:1rem;background:#101b2a}.pair-grid h3{margin:0;font-size:1rem}.metric{font-size:2rem;color:#67e8f9}.metric small{font-size:.7rem}.pair-grid ol{padding-left:1.2rem}.pair-grid li{padding:.45rem}.pair-grid li span{display:block;color:#72859c;font-size:.68rem}.caution{padding:1rem;border-left:2px solid #fbbf24;background:#171c27;font-size:.78rem;line-height:1.7}.tabs{display:flex;gap:.5rem;margin-bottom:1rem}.tabs button{padding:.7rem 1rem;border:1px solid var(--line);border-radius:2rem;color:#9fb0c5;background:#101b2a;cursor:pointer}.tabs button[aria-selected=true]{color:#06202a;background:var(--cyan)}.survival{display:grid;gap:.8rem}.survival article header{display:flex;justify-content:space-between;gap:1rem}.track{height:.55rem;margin:1rem 0;background:#253449;border-radius:1rem;overflow:hidden}.track i{display:block;height:100%;background:#34d399}.survival dl{display:grid;grid-template-columns:repeat(7,1fr);margin:0}.survival dl div{padding:.6rem;border-left:1px solid var(--line)}dt{color:#71839a;font-size:.6rem}dd{margin:.3rem 0 0;color:#e2e8f0;font-weight:800}details{margin-top:1rem}summary{cursor:pointer;color:#dbeafe;font-weight:700}.comparison-list details[open]{border-color:#3f617c}.comparison-list summary{display:flex;justify-content:space-between;gap:1rem}.comparison-list summary::marker{color:var(--cyan)}.negative{color:#fca5a5}.level-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem}.level-grid div{padding:.75rem;background:#172538}.level-grid span,.level-grid strong,.level-grid em{display:block;margin-top:.35rem;font-size:.67rem}.level-grid em{color:#fca5a5}.legend{display:flex;gap:1rem;margin-bottom:.7rem;font-size:.7rem}.legend i{display:inline-block;width:.7rem;height:.7rem;margin-right:.4rem;background:#334155}.legend .frontier{background:var(--cyan)}.profile-table th,.profile-table td,.sensitivity-table th,.sensitivity-table td{padding:.8rem;border-bottom:1px solid var(--line);font-size:.72rem;text-align:left}.profile-table thead th,.sensitivity-table thead th{color:#8295aa}.profile-table th small{display:block}.profile-table tbody th,.sensitivity-table tbody th{min-width:14rem;color:#e2e8f0}.profile-table tr.pareto{background:#0f2931}.profile-table meter{width:6rem;accent-color:var(--cyan)}.profile-table td>span:not(.tag){display:block}.tag{display:inline-block;margin:.15rem;padding:.25rem .4rem;border:1px solid #40546c;border-radius:1rem;font-size:.6rem}.sensitivity-controls{display:flex;flex-wrap:wrap;align-items:center;gap:.8rem;margin-bottom:1rem}.sensitivity-controls select{padding:.65rem;border:1px solid #4b6078;border-radius:.5rem;color:#e2e8f0;background:#101b2a}.sensitivity-controls p{flex-basis:100%;margin:0;color:#7f91a7;font-size:.7rem}.denominators{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1rem}.denominators p{padding:1rem;border:1px solid var(--line);border-radius:.7rem}.denominators strong,.denominators span{display:block}.denominators span{margin-top:.4rem;font-size:.7rem}.limitations{padding:3rem;border:1px solid var(--line);border-radius:1.2rem;background:#101b2a}.limitations p{max-width:60rem;line-height:1.8}.limitations a{color:#67e8f9}code{color:#a5f3fc}@media(max-width:800px){.summary{grid-template-columns:1fr 1fr}.summary div{border-bottom:1px solid var(--line)}.chapter>header{grid-template-columns:1fr;gap:.5rem}.pair-grid,.denominators{grid-template-columns:1fr}.survival dl{grid-template-columns:repeat(4,1fr)}.level-grid{grid-template-columns:1fr 1fr}.comparison-list summary{flex-direction:column}.contents{top:4rem}}@media(max-width:480px){.summary{grid-template-columns:1fr}.summary div{border-right:0}.survival article header{flex-direction:column}.survival dl{grid-template-columns:1fr 1fr}.level-grid{grid-template-columns:1fr}.limitations{padding:1.5rem}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 </style>

@@ -82,7 +82,8 @@ export function exploratorySort<T>(rows: T[], comparator: (a: T, b: T) => number
 export function validateArenaDefinition(arena: ArenaDefinition): void { if(arena.levels.length!==6) throw new Error(`${arena.name} must define exactly six levels.`); for (const [index,item] of arena.levels.entries()) { if(item.number!==index+1) throw new Error(`${arena.name} has an invalid level position.`); if (!Object.values(LEVEL_STATUSES).includes(item.status)) throw new Error(`Unknown level status: ${item.status}`); if (item.weight !== progressiveWeight(index+1)) throw new Error(`${arena.name} Level ${item.number} has an invalid weight.`); if (item.status === LEVEL_STATUSES.LOCKED && !item.unlockCondition) throw new Error(`${arena.name} ${item.name} is Locked without an unlock condition.`); } if(canonicalDenominator(arena)!==63) throw new Error(`${arena.name} canonical denominator drifted from 63.`); }
 export const RESULT_ORIGINS = { PROGRESSION_GATED: 'progression-gated' } as const;
 export type ResultOrigin = typeof RESULT_ORIGINS[keyof typeof RESULT_ORIGINS];
-export interface BenchmarkRecord {name: string; scores: Record<string, unknown>; origins?: Record<string, ResultOrigin>; releaseDate?: string}
+export interface ComparisonMetadata { group: string; condition: string; baseline?: boolean }
+export interface BenchmarkRecord {name: string; scores: Record<string, unknown>; origins?: Record<string, ResultOrigin>; releaseDate?: string; comparison?: ComparisonMetadata}
 
 /** Only a positive numeric result passes the canonical progression gate. */
 export function passesProgressionGate(result: unknown): boolean {
