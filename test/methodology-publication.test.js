@@ -49,8 +49,10 @@ test('PDF text, contents links, bookmarks, and external link are publication-saf
   assert.match(allText, /Hydra - LOCKED|Hydra - Locked/i);
   assert.match(allText, /Hydra may become Active after at least one evaluated model obtains a numeric score above 0 on Python\./);
   assert.match(allText, /Permanent denominator: 63/);
+  assert.match(allText, /Every model.configuration is administered on every Active level independently of earlier results/i);
+  assert.doesNotMatch(allText, /progression-gated|failed prerequisite|attempts Level|only after/i);
   assert.match(allText, /Version 1\.0\.0/);
-  assert.match(allText, /Revised 2026-07-29/);
+  assert.match(allText, /Revised 2026-07-30/);
 
   const outline = await pdf.getOutline();
   assert.equal(outline?.length, 25);
@@ -73,7 +75,7 @@ test('generated PDFs are not tracked source files', () => {
 });
 test('publication is discoverable and shares canonical metadata', async () => {
   const [full, hub, home, footer, sitemap] = await Promise.all([read('dist/methodology/full/index.html'),read('dist/methodology/index.html'),read('dist/index.html'),read('src/components/Footer.astro'),read('dist/sitemap-0.xml')]);
-  for (const phrase of ['Visual Bench protocol','DATA Bench protocol','Chess Bench protocol','Active-level coverage','Rank eligibility','Version 1.0.0','2026-07-29']) assert.match(full, new RegExp(phrase, 'i'));
+  for (const phrase of ['Visual Bench protocol','DATA Bench protocol','Chess Bench protocol','Active-level coverage','Rank eligibility','Version 1.0.0','2026-07-30']) assert.match(full, new RegExp(phrase, 'i'));
   assert.match(full,/navigator\.share/); assert.match(full,/ultimate-bench-methodology\.pdf/); assert.match(full,/ultimate-bench-methodology-v1\.0\.0\.pdf/); assert.match(hub,/Download complete methodology/); assert.match(home,/How Ultimate Bench works/); assert.match(footer,/Methodology PDF/); assert.match(sitemap,/\/methodology\/full\//);
 });
 test('arena pages link to shared publication and canonical statuses remain protected', async () => {

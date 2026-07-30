@@ -18,7 +18,7 @@ test('comparison helper exactly reflects canonical globally-qualified leaderboar
 });
 
 test('status interpreter includes every required state and preserves distinct zero semantics', () => {
-  for (const label of ['Positive numeric result','Numeric zero','Progression-gated zero','INVALID','UNAVAILABLE','NOT_TESTED','PROVISIONAL','Complete coverage','Globally qualified']) assert.ok(statusRows.some(row => row.label === label), label);
+  for (const label of ['Positive numeric result','Numeric zero','INVALID','UNAVAILABLE','NOT_TESTED','PROVISIONAL','Complete coverage','Globally qualified']) assert.ok(statusRows.some(row => row.label === label), label);
   assert.notEqual(statusRows.find(row => row.label === 'Numeric zero').meaning, statusRows.find(row => row.label === 'INVALID').meaning);
 });
 

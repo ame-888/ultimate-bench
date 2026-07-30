@@ -167,7 +167,7 @@ const dataDataMap = new Map();
 (benchmarks.dataRetrieval || []).forEach(m => {
     dataDataMap.set(m.name, {
         name: m.name,
-        releaseDate: m.releaseDate ?? releaseDateByModel.get(m.name),
+        releaseDate: ('releaseDate' in m ? m.releaseDate : undefined) ?? releaseDateByModel.get(m.name),
         worm: m.scores?.worm,
         koala: m.scores?.koala,
         crow: m.scores?.crow,
@@ -205,13 +205,12 @@ const chessDataMap = new Map();
 (benchmarks.chessModels || []).forEach(m => {
     chessDataMap.set(m.name, {
         name: m.name,
-        releaseDate: m.releaseDate ?? releaseDateByModel.get(m.name),
+        releaseDate: ('releaseDate' in m ? m.releaseDate : undefined) ?? releaseDateByModel.get(m.name),
         mouse: m.scores?.mouse,
         spider: m.scores?.spider,
         wolf: m.scores?.wolf,
         hawk: m.scores?.hawk,
-        python: m.scores?.python,
-        origins: m.origins ?? {}
+        python: m.scores?.python
     });
 });
 
@@ -925,10 +924,9 @@ function getRankDisplay(rank) {
                                         {(['mouse','spider','wolf','hawk','python','hydra'] as const).map(level => {
                                             if (level === 'hydra') return <div class="benchmark-cell score-cell hydra-score" style="flex: 1;"><span class="status-badge locked" title="Locked reserved capacity: weight 32 earns zero points in the fixed 63-point normalization; this is not a model result.">LOCKED</span></div>;
                                             const value = item[level];
-                                            const gated = item.origins?.[level] === 'progression-gated';
                                             return <div class={`benchmark-cell score-cell ${level}-score`} style="flex: 1;">
-                                                <span class={`${value === 0 || value === 'INVALID' ? 'zero-score-glow' : ''} ${value === bestChessAiScores[level] && value > 0 ? 'best-score-glow' : ''}`} title={gated ? 'Not administered: prerequisite level not passed. Automatically assigned 0%.' : undefined}>
-                                                    {typeof value === 'string' ? value : `${value}%`}{gated && <small class="progression-gate-label">progression gate</small>}
+                                                <span class={`${value === 0 || value === 'INVALID' ? 'zero-score-glow' : ''} ${value === bestChessAiScores[level] && value > 0 ? 'best-score-glow' : ''}`}>
+                                                    {typeof value === 'string' ? value : `${value}%`}
                                                 </span>
                                             </div>;
                                         })}

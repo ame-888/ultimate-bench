@@ -10,7 +10,7 @@ Ultimate Bench uses **fixed six-level normalization**. Every arena defines exact
 - **Data Retrieval:** Worm, Koala, Crow, Octopus Active; Raven and Athena Planned. Operational weight 15/63; current maximum 23.81%.
 - **Chess:** Mouse, Spider, Wolf, Hawk, Python Active; Hydra Locked. Operational weight 31/63; current maximum 49.21%. Hydra may become Active, by deliberate benchmark-version decision, after an evaluated model obtains a numeric score above 0 on Python.
 
-Numeric results and `INVALID` provide Active-level coverage; `INVALID` earns zero. `UNAVAILABLE` and `NOT_TESTED` preserve their textual status, earn zero without shrinking denominator 63, and make coverage incomplete and the score provisional. Planned and Locked levels reserve capacity without model score or origin fields and do not affect Active-level coverage. Attempted zero is numeric `0`; progression-gated zero is numeric `0` with explicit origin metadata; reserved zero is derived globally and displayed as `PLANNED` or `LOCKED`, never `0%`.
+Every model/configuration is administered on every Active level independently of earlier results. A numeric `0` means the level was administered validly and scored zero; neither `0` nor `INVALID` stops testing or prevents administration of later Active levels. Numeric results and `INVALID` provide Active-level coverage; `INVALID` earns zero. `UNAVAILABLE` and `NOT_TESTED` earn zero without shrinking denominator 63, make coverage incomplete, and make the score provisional. Planned and Locked levels reserve capacity without model results and do not affect Active-level coverage.
 
 Official arena rank requires complete Active-level coverage. Overall qualification requires eligibility in all three arenas. Corresponding weights now have equal potential influence across arenas; no arena multiplier is used.
 
@@ -30,7 +30,7 @@ Public protocols describe the evaluated construct, administration count, transfo
 | `/methodology/` | Canonical scoring, statuses, qualification, transparency, and limitations |
 | `/methodology/visual-bench/` | Visual Bench administration, security, scoring, Active Levels 1–5, and Planned Level 6 |
 | `/methodology/data-bench/` | DATA Bench administration, exact-answer adjudication, Active Levels 1–4, and Planned Levels 5–6 |
-| `/methodology/chess-bench/` | Chess Bench match rules, progression, scoring, and five Active protocols and the Locked Hydra protocol |
+| `/methodology/chess-bench/` | Chess Bench match rules, independent administration, scoring, and five Active protocols and the Locked Hydra protocol |
 | `/analysis/` | Canonical findings and clearly labeled exploratory statistics |
 | `/about/`, `/contact/` | Project and contact information |
 | `/privacy/`, `/terms/` | Implementation-specific policy and rights terms |
@@ -56,3 +56,7 @@ The build validates benchmark records before rendering and then generates sitema
 Original software code is licensed under the [MIT License](LICENSE), permitting inspection, forks, modification, and redistribution under its terms. The MIT License does not cover branding, editorial content, benchmark prompts or protocols, protected test materials, benchmark datasets or result records, or non-code assets; see [RIGHTS-NOTICE.md](RIGHTS-NOTICE.md). Public results may be referenced or quoted with attribution, but there is no general open-data license.
 
 The content-rights notice, Terms, Privacy Policy, consent language, hosting configuration, retention practices, and regulatory obligations require final owner and professional legal review.
+
+## Chess policy migration (30 July 2026)
+
+Earlier versions of Chess Bench used progression-gated zeroes for later levels after a failed prerequisite. Those levels were subsequently administered directly, all produced observed 0% results, and progression gates were abolished. The numeric scores did not change, but the zeroes are now direct observations rather than inferred results. This is historical context only; the former rule is not operational.

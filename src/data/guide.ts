@@ -14,7 +14,6 @@ export const guideCapacity = ARENA_LIST.map(arena => {
 export const statusRows = [
   { key: 'positive', label: 'Positive numeric result', meaning: 'The level was attempted and earned a score above zero.', points: 'Weighted numeric points', coverage: 'Yes', rank: 'Eligible if all Active levels are covered' },
   { key: 'zero', label: 'Numeric zero', meaning: 'The level was attempted validly but earned no points.', points: '0; weight retained', coverage: 'Yes', rank: 'Still eligible' },
-  { key: 'gated', label: 'Progression-gated zero', meaning: 'A later Chess level was not administered after a prerequisite failed; origin metadata distinguishes it from an attempted zero.', points: '0; weight retained', coverage: 'Yes', rank: 'Still eligible' },
   { key: RESULT_STATUSES.INVALID.toLowerCase(), label: RESULT_STATUSES.INVALID, meaning: 'An attempt failed validity requirements. This is not the same event as a valid numeric zero.', points: '0; weight retained', coverage: 'Yes', rank: 'Still eligible' },
   { key: RESULT_STATUSES.UNAVAILABLE.toLowerCase(), label: RESULT_STATUSES.UNAVAILABLE, meaning: 'The evaluation could not be run.', points: '0; denominator unchanged', coverage: 'No', rank: 'Provisional; no official rank' },
   { key: RESULT_STATUSES.NOT_TESTED.toLowerCase(), label: RESULT_STATUSES.NOT_TESTED, meaning: 'The Active level was not attempted.', points: '0; denominator unchanged', coverage: 'No', rank: 'Provisional; no official rank' },

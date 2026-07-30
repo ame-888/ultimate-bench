@@ -5,7 +5,7 @@ import { pathToFileURL } from 'node:url';
 const bundle = `/tmp/ultimate-bench-scoring-${process.pid}.mjs`;
 execFileSync('node_modules/.bin/esbuild', ['test/scoring-api.ts','--bundle','--platform=node','--format=esm',`--outfile=${bundle}`]);
 const api = await import(pathToFileURL(bundle));
-const {ARENAS,ARENA_LIST,LEVEL_STATUSES,RESULT_STATUSES,activeLevels,canonicalDenominator,operationalWeight,calculateArenaScore,calculateOverall,validateArenaDefinition,validateBenchmarkRecords,validateProgressionOrigins,buildLeaderboard,benchmarks,formatAggregateScore,assignTiedRanks}=api;
+const {ARENAS,ARENA_LIST,LEVEL_STATUSES,RESULT_STATUSES,activeLevels,canonicalDenominator,operationalWeight,calculateArenaScore,calculateOverall,validateArenaDefinition,validateBenchmarkRecords,buildLeaderboard,benchmarks,formatAggregateScore,assignTiedRanks}=api;
 
 test('canonical six-position structures and statuses are exact',()=>{
  for(const arena of ARENA_LIST){assert.equal(arena.levels.length,6);assert.deepEqual(arena.levels.map(x=>x.weight),[1,2,4,8,16,32]);assert.equal(canonicalDenominator(arena),63);validateArenaDefinition(arena)}
@@ -33,32 +33,27 @@ test('current perfect Active results reserve future capacity',()=>{
  assert.equal(calculateArenaScore(ARENAS.chess,{mouse:100,spider:100,wolf:100,hawk:100,python:100}).score,3100/63);
  const future=structuredClone(ARENAS.visual);future.levels[5].status='Active';assert.equal(canonicalDenominator(future),63);
 });
-test('missing Active and non-Active model fields are rejected',()=>{
+test('Active fields remain required, non-Active fields and origins are rejected',()=>{
  assert.throws(()=>calculateArenaScore(ARENAS.visual,{lvl1:1}),/missing/);
- const copy=structuredClone(benchmarks);copy.models[0].scores.lvl6=0;assert.throws(()=>validateBenchmarkRecords(copy),/Planned/);
- const copy2=structuredClone(benchmarks);copy2.chessModels[0].scores.hydra=0;assert.throws(()=>validateBenchmarkRecords(copy2),/Locked/);
- const copy3=structuredClone(benchmarks);copy3.chessModels[0].origins.hydra='progression-gated';assert.throws(()=>validateBenchmarkRecords(copy3),/non-Active/);
+ const planned=structuredClone(benchmarks);planned.models[0].scores.lvl6=0;assert.throws(()=>validateBenchmarkRecords(planned),/Planned/);
+ const locked=structuredClone(benchmarks);locked.chessModels[0].scores.hydra=0;assert.throws(()=>validateBenchmarkRecords(locked),/Locked/);
+ const metadata=structuredClone(benchmarks);metadata.chessModels[0].origins={python:'legacy'};assert.throws(()=>validateBenchmarkRecords(metadata),/unsupported metadata field/);
 });
-test('attempted and gated zero score identically but origins validate distinctly',()=>{
- const scores={mouse:10,spider:0,wolf:0,hawk:0,python:0};
- const gated={name:'x',scores,origins:{wolf:'progression-gated',hawk:'progression-gated',python:'progression-gated'}};
- validateProgressionOrigins(ARENAS.chess,gated);assert.equal(calculateArenaScore(ARENAS.chess,scores).score,10/63);
- assert.throws(()=>validateProgressionOrigins(ARENAS.chess,{name:'x',scores:{...scores,wolf:1},origins:gated.origins}),/numeric zero/);
- assert.throws(()=>validateProgressionOrigins(ARENAS.chess,{name:'x',scores,origins:{mouse:'progression-gated'}}),/without a failed prerequisite/);
- assert.throws(()=>validateProgressionOrigins(ARENAS.chess,{name:'x',scores}),/resumes after a failed prerequisite/);
+test('Chess Active levels are independent after numeric zero and INVALID',()=>{
+ const zeros={name:'zero sequence',scores:{mouse:0,spider:0,wolf:0,hawk:0,python:0}};
+ const mixed={name:'mixed sequence',scores:{mouse:'INVALID',spider:12,wolf:0,hawk:'INVALID',python:4}};
+ for(const record of [zeros,mixed])assert.equal(validateBenchmarkRecords({models:[],dataRetrieval:[],chessModels:[record]}),true);
+ assert.equal(calculateArenaScore(ARENAS.chess,zeros.scores).score,0);
+ assert.equal(calculateArenaScore(ARENAS.chess,mixed.scores).included,5);
 });
-test('Gemini 3.6 Flash Chess results preserve attempted and progression-gated zeroes',()=>{
+test('former Chess gated values are direct observed numeric zeroes',()=>{
  const record=benchmarks.chessModels.find(row=>row.name==='Gemini 3.6 Flash');assert.ok(record);
  assert.deepEqual(record.scores,{mouse:65,spider:34,wolf:22,hawk:0,python:0});
- assert.equal(record.origins?.hawk,undefined);assert.equal(record.origins?.python,'progression-gated');
- assert.equal(Object.hasOwn(record.scores,'hydra'),false);assert.equal(Object.hasOwn(record.origins??{},'hydra'),false);
- validateProgressionOrigins(ARENAS.chess,record);
+ assert.equal(Object.hasOwn(record,'origins'),false);assert.equal(Object.hasOwn(record.scores,'hydra'),false);
  const result=calculateArenaScore(ARENAS.chess,record.scores);
- assert.equal(result.numerator,221);assert.equal(result.denominator,63);assert.equal(result.score,221/63);
- assert.equal(result.coverage,'5/5 active levels');assert.equal(result.completeCoverage,true);assert.equal(result.rankEligible,true);
+ assert.equal(result.numerator,221);assert.equal(result.score,221/63);assert.equal(result.coverage,'5/5 active levels');assert.equal(result.rankEligible,true);
  assert.equal(formatAggregateScore(result.score),'3.51');
- const built=buildLeaderboard(benchmarks),chessRow=built.arenaRows.chess.find(row=>row.name===record.name),overall=built.rows.find(row=>row.name===record.name);
- assert.ok(chessRow?.rank);assert.ok(overall);assert.equal(overall.scores.chess,221/63);
+ const built=buildLeaderboard(benchmarks),overall=built.rows.find(row=>row.name===record.name);assert.ok(overall);assert.equal(overall.scores.chess,221/63);
 });
 test('new release metadata is canonical and inherited by arena presentation',()=>{
  const gemini=benchmarks.models.find(row=>row.name==='Gemini 3.6 Flash');
@@ -98,8 +93,8 @@ test('homepage formats aggregates to two decimals and keeps raw sort attributes'
 test('coverage and rank eligibility are independent from reserved capacity',()=>{
  const complete=calculateArenaScore(ARENAS.dataRetrieval,{worm:0,koala:'INVALID',crow:1,octopus:2});assert.equal(complete.rankEligible,true);assert.equal(complete.coverage,'4/4 active levels');assert.equal(complete.denominator,63);
 });
-test('published migration removes Hydra and preserves Active Chess fields/origins',()=>{
- for(const r of benchmarks.chessModels){assert.equal(Object.hasOwn(r.scores,'hydra'),false);assert.equal(Object.hasOwn(r.origins??{},'hydra'),false);for(const k of ['mouse','spider','wolf','hawk','python'])assert.equal(Object.hasOwn(r.scores,k),true)}
+test('published migration preserves Active fields and excludes all non-Active fields',()=>{
+ for(const r of benchmarks.chessModels){assert.equal(Object.hasOwn(r.scores,'hydra'),false);assert.equal(Object.hasOwn(r,'origins'),false);for(const k of ['mouse','spider','wolf','hawk','python'])assert.equal(Object.hasOwn(r.scores,k),true)}
  for(const r of benchmarks.models)assert.equal(Object.hasOwn(r.scores,'lvl6'),false);
  for(const r of benchmarks.dataRetrieval)for(const k of ['raven','athena'])assert.equal(Object.hasOwn(r.scores,k),false);
  assert.equal(validateBenchmarkRecords(benchmarks),true);
@@ -110,9 +105,9 @@ test('Overall is equal mean and canonical leaderboard derives recalculated value
 });
 test('UI and methodology expose fixed scale and distinct zero/status labels',async()=>{
  const fs=await import('node:fs/promises');const [home,method,chess,visual,readme]=await Promise.all(['src/pages/index.astro','src/pages/methodology.astro','src/pages/methodology/chess-bench.astro','src/pages/methodology/visual-bench.astro','README.md'].map(x=>fs.readFile(x,'utf8')));
- assert.match(home,/LOCKED/);assert.match(home,/progression-gate-label/);assert.match(home,/Not administered: prerequisite level not passed/);assert.match(home,/Active-level coverage/);
+ assert.match(home,/LOCKED/);assert.doesNotMatch(home,/progression-gate-label|prerequisite level not passed/);assert.match(home,/Active-level coverage/);
  for(const text of [method,chess,visual,readme])assert.match(text,/denominator (?:of )?63|denominator 63|denominator `63`/i);
- assert.match(method,/reserved zero/i);assert.match(chess,/Hydra returned from Active to Locked/);assert.doesNotMatch(chess,/Position ID\s*[#:=-]?\s*\d{1,3}/i);
+ assert.match(method,/reserved zero/i);assert.match(method,/Every model\/configuration is administered on every Active level/);assert.match(chess,/Hydra returned from Active to Locked/);assert.doesNotMatch(chess,/Position ID\s*[#:=-]?\s*\d{1,3}/i);
 });
 
 test('public guidance preserves UNAVAILABLE weight, denominator, and provisional status',async()=>{
@@ -186,4 +181,10 @@ test('methodology source navigation targets sections and sitemap generation cove
  assert.equal(await fs.stat('public/sitemap-0.xml').then(()=>true,()=>false),false);
  assert.equal(await fs.stat('public/sitemap-index.xml').then(()=>true,()=>false),false);
  for(const route of ['methodology.astro','methodology/visual-bench.astro','methodology/data-bench.astro','methodology/chess-bench.astro'])assert.equal(await fs.stat(`src/pages/${route}`).then(()=>true,()=>false),true);
+});
+
+test('current user-facing sources contain no obsolete gate language',async()=>{
+ const fs=await import('node:fs/promises');
+ const files=['src/pages/index.astro','src/pages/analysis.astro','src/pages/methodology.astro','src/pages/methodology/visual-bench.astro','src/pages/methodology/data-bench.astro','src/pages/methodology/chess-bench.astro','src/data/guide.ts','src/data/methodology.ts'];
+ for(const file of files){const text=await fs.readFile(file,'utf8');assert.doesNotMatch(text,/progression-gated|failed prerequisite|passesProgressionGate|PROGRESSION_GATED|attempts Level|only after/i,file)}
 });

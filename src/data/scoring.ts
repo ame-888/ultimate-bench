@@ -80,36 +80,8 @@ export function assignTiedRanks<T extends Record<string, unknown>>(rows: T[], sc
 
 export function exploratorySort<T>(rows: T[], comparator: (a: T, b: T) => number): T[] { return [...rows].sort(comparator); }
 export function validateArenaDefinition(arena: ArenaDefinition): void { if(arena.levels.length!==6) throw new Error(`${arena.name} must define exactly six levels.`); for (const [index,item] of arena.levels.entries()) { if(item.number!==index+1) throw new Error(`${arena.name} has an invalid level position.`); if (!Object.values(LEVEL_STATUSES).includes(item.status)) throw new Error(`Unknown level status: ${item.status}`); if (item.weight !== progressiveWeight(index+1)) throw new Error(`${arena.name} Level ${item.number} has an invalid weight.`); if (item.status === LEVEL_STATUSES.LOCKED && !item.unlockCondition) throw new Error(`${arena.name} ${item.name} is Locked without an unlock condition.`); } if(canonicalDenominator(arena)!==63) throw new Error(`${arena.name} canonical denominator drifted from 63.`); }
-export const RESULT_ORIGINS = { PROGRESSION_GATED: 'progression-gated' } as const;
-export type ResultOrigin = typeof RESULT_ORIGINS[keyof typeof RESULT_ORIGINS];
 export interface ComparisonMetadata { group: string; condition: string; baseline?: boolean }
-export interface BenchmarkRecord {name: string; scores: Record<string, unknown>; origins?: Record<string, ResultOrigin>; releaseDate?: string; comparison?: ComparisonMetadata}
-
-/** Only a positive numeric result passes the canonical progression gate. */
-export function passesProgressionGate(result: unknown): boolean {
-  return typeof result === 'number' && Number.isFinite(result) && result > 0;
-}
-
-/** Validates origin metadata without changing the arithmetic score value. */
-export function validateProgressionOrigins(arena: ArenaDefinition, record: BenchmarkRecord): void {
-  const active = activeLevels(arena);
-  const origins = record.origins ?? {};
-  let progressionFailed = false;
-  for (const [index, level] of active.entries()) {
-    const result = normalizeResult(record.scores[level.key]);
-    const origin = origins[level.key];
-    if (origin !== undefined && origin !== RESULT_ORIGINS.PROGRESSION_GATED) throw new Error(`${arena.name} ${record.name} has an unknown result origin for ${level.name}.`);
-    if (origin === RESULT_ORIGINS.PROGRESSION_GATED) {
-      if (index === 0) throw new Error(`${arena.name} ${record.name} ${level.name} is gated without a failed prerequisite.`);
-      if (result !== 0) throw new Error(`${arena.name} ${record.name} gated ${level.name} result must be numeric zero.`);
-      if (!progressionFailed) throw new Error(`${arena.name} ${record.name} ${level.name} is gated without a failed prerequisite.`);
-    } else if (progressionFailed && result !== RESULT_STATUSES.UNAVAILABLE && result !== RESULT_STATUSES.NOT_TESTED) {
-      throw new Error(`${arena.name} ${record.name} ${level.name} resumes after a failed prerequisite without a supported exception.`);
-    }
-    if (index < active.length - 1 && !passesProgressionGate(result) && result !== RESULT_STATUSES.UNAVAILABLE && result !== RESULT_STATUSES.NOT_TESTED) progressionFailed = true;
-  }
-  for (const key of Object.keys(origins)) if (!active.some(level => level.key === key)) throw new Error(`${arena.name} ${record.name} has origin metadata for non-Active result ${key}.`);
-}
+export interface BenchmarkRecord {name: string; scores: Record<string, unknown>; releaseDate?: string; comparison?: ComparisonMetadata}
 
 export type BenchmarkCollections = Record<string, BenchmarkRecord[]>;
-export function validateBenchmarkRecords(benchmarks: BenchmarkCollections): true { for (const arena of ARENA_LIST) { validateArenaDefinition(arena); const firstIndexByName = new Map<string, number>(); for (const [index, record] of (benchmarks[arena.dataKey] || []).entries()) { const firstIndex = firstIndexByName.get(record.name); if (firstIndex !== undefined) throw new Error(`${arena.name} contains duplicate model "${record.name}" at record indexes ${firstIndex} and ${index}.`); firstIndexByName.set(record.name, index); calculateArenaScore(arena, record.scores); if (arena.id === 'chess') validateProgressionOrigins(arena, record); for (const item of arena.levels.filter(entry => entry.status !== LEVEL_STATUSES.ACTIVE)) if (Object.hasOwn(record.scores, item.key)) throw new Error(`${arena.name} ${item.name} is ${item.status} but ${record.name} has a published result.`); } } return true; }
+export function validateBenchmarkRecords(benchmarks: BenchmarkCollections): true { for (const arena of ARENA_LIST) { validateArenaDefinition(arena); const firstIndexByName = new Map<string, number>(); for (const [index, record] of (benchmarks[arena.dataKey] || []).entries()) { const firstIndex = firstIndexByName.get(record.name); if (firstIndex !== undefined) throw new Error(`${arena.name} contains duplicate model "${record.name}" at record indexes ${firstIndex} and ${index}.`); firstIndexByName.set(record.name, index); if (Object.hasOwn(record, 'origins')) throw new Error(`${arena.name} ${record.name} contains unsupported metadata field “origins”.`); calculateArenaScore(arena, record.scores); for (const item of arena.levels.filter(entry => entry.status !== LEVEL_STATUSES.ACTIVE)) if (Object.hasOwn(record.scores, item.key)) throw new Error(`${arena.name} ${item.name} is ${item.status} but ${record.name} has a published result.`); } } return true; }
