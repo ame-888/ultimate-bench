@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import '../styles/content-pages.css';
 import { ARENA_LIST, activeLevels, plannedLevels, canonicalDenominator, operationalWeight } from '../data/benchmarkSpec';
+import { METHODOLOGY } from '../data/methodology';
 
 const pillars = [
     {
@@ -35,6 +36,11 @@ const process = [
             <p class="eyebrow"><span aria-hidden="true"></span> Behind the benchmark</p>
             <h1>Rigorous by design.<br /><em>Transparent where public.</em></h1>
             <p class="hero-copy">A clear view of the public protocols, scoring rules, safeguards, and protected test material behind the current experimental comparison.</p>
+        <section class="publication-download" aria-label="Complete methodology publication">
+            <div><strong>Complete methodology · PDF · v{METHODOLOGY.version}</strong><span>Updated {METHODOLOGY.revisionDate}</span></div>
+            <div><a class="download" href={METHODOLOGY.pdfPath} download>Download complete methodology</a><a href={METHODOLOGY.canonicalPath}>Read complete methodology online</a></div>
+        </section>
+
             <nav class="jump-links" aria-label="On this page">
                 <a href="#protocols">Protocols</a>
                 <a href="#principles">Principles</a>
@@ -43,6 +49,7 @@ const process = [
                 <a href="#limitations">Limitations</a>
             </nav>
         </header>
+
 
         <section id="protocols" class="protocol-card" aria-labelledby="protocols-title">
             <div>
@@ -140,6 +147,7 @@ const process = [
 </Layout>
 
 <style>
+    .publication-download { display:flex;justify-content:space-between;align-items:center;gap:1rem;margin:-2.5rem 0 2rem;padding:1.2rem;border:1px solid rgba(94,234,212,.35);border-radius:1rem;background:rgba(15,118,110,.13) }.publication-download>div{display:flex;flex-wrap:wrap;gap:.7rem;align-items:center}.publication-download span{color:#94a3b8;font-size:.8rem}.publication-download a{display:inline-flex;align-items:center;min-height:2.75rem;padding:0 1rem;border:1px solid #64748b;border-radius:.6rem;color:#e2e8f0;font-size:.8rem;font-weight:800;text-decoration:none}.publication-download .download{border-color:#2dd4bf;background:#0f766e;color:#fff}.publication-download a:focus-visible{outline:3px solid #5eead4;outline-offset:3px}@media(max-width:700px){.publication-download{margin-top:-2rem;align-items:stretch;flex-direction:column}.publication-download>div:last-child{display:grid}.publication-download a{justify-content:center}}
     .methodology-page { --mint: #5eead4; --blue: #60a5fa; max-width: 72rem; margin: 0 auto; padding: clamp(4.5rem, 9vw, 8rem) 1.25rem 7rem; color: #cbd5e1; }
     .methodology-hero { position: relative; max-width: 58rem; margin-bottom: clamp(4rem, 9vw, 7.5rem); }
     .methodology-hero::after { content: ''; position: absolute; z-index: -1; width: 32rem; height: 24rem; top: -9rem; right: -23rem; border-radius: 50%; background: rgba(45, 212, 191, .1); filter: blur(80px); }

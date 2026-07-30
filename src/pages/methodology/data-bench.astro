@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import MethodologyNotice from '../../components/MethodologyNotice.astro';
 import '../../styles/content-pages.css';
 import '../../styles/bench-methodology.css';
 import { ARENAS, LEVEL_STATUSES, activeLevels, canonicalDenominator, operationalWeight } from '../../data/benchmarkSpec';
@@ -10,6 +11,7 @@ const protocols=arena.levels.map(level=>({...level,anchor:`level-${level.number}
 ---
 <Layout title="DATA Bench Methodology | Ultimate Bench" description="Administration, exact-answer adjudication, level protocols, scoring, security, interpretation, and limitations for DATA Bench.">
 <main class="content-page bench-methodology data-methodology" data-data-methodology data-active-level-count={active.length} data-operational-weight={activeWeight} data-complete-weight={denominator}>
+  <MethodologyNotice />
 <header class="page-heading" id="overview"><span class="page-kicker">Arena 02 · Methodology</span><h1>DATA Bench Methodology</h1><p>How named chatbot products and interface configurations are evaluated on difficult, exact numerical information from obscure media-related sources.</p></header>
 <nav class="section-navigation" aria-label="DATA Bench methodology sections">
 <a href="#construct">What it measures</a><a href="#administration">Administration</a><a href="#adjudication">Exact answers</a><a href="#mapping">Answer mapping</a><a href="#confidentiality">Confidentiality</a><a href="#statuses">Statuses</a>
