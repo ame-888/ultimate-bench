@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import MethodologyNotice from '../../components/MethodologyNotice.astro';
+import MethodologyFingerprint from '../../components/MethodologyFingerprint.astro';
 import '../../styles/content-pages.css';
 import '../../styles/bench-methodology.css';
 import { ARENAS, activeLevels, canonicalDenominator, operationalWeight } from '../../data/benchmarkSpec';
@@ -17,7 +18,7 @@ const protocols = [
 ];
 ---
 
-<Layout title="Visual Bench Methodology | Ultimate Bench" description="Administration, scoring, security, interpretation, and limitations for Visual Bench.">
+<Layout robots="noindex, nosnippet" title="Visual Bench Methodology | Ultimate Bench" description="Administration, scoring, security, interpretation, and limitations for Visual Bench.">
 <main class="content-page bench-methodology visual-methodology" data-visual-methodology data-active-level-count={visualLevels.length} data-complete-weight={fullWeight}>
     <MethodologyNotice />
     <header class="page-heading" id="overview">
@@ -102,15 +103,15 @@ const protocols = [
     <section class="protocols" aria-label="Active level protocols">
         <article id="level-1-mole" class="content-card protocol" data-visual-protocol="1" data-level-status="Active" aria-labelledby="level-1-mole-title">
             <header><p class="protocol-level">Active · Level 1 · weight 1</p><h2 id="level-1-mole-title">Mole</h2><p>Direct coordinate localization in an intact grid.</p></header>
-            <section><h3>Purpose and stimulus</h3><p>Mole provides the baseline fixed-image condition: an intact 10 × 10 character grid with numerical row and column labels. Active contents and layouts are confidential.</p></section>
-            <section><h3>Task</h3><p>For each of ten fixed coordinate queries, the model follows the grid convention, locates the requested cell, recognizes its character, names it, and preserves question-answer mapping.</p></section>
+            <section><h3>Purpose and stimulus</h3><p>Mole provides the baseline fixed-image condition: an intact labeled character grid with a stable coordinate framework. Active contents and layouts are confidential.</p></section>
+            <section><h3>Task</h3><p>The model resolves a fixed set of coordinate-based localization questions while preserving answer-to-question mapping. Exact coordinates and arrangements remain protected.</p></section>
             <section><h3>Administration and scoring</h3><p>The same image and ten questions are presented together in ten fresh, isolated conversations, with no previous responses supplied: 10 unique questions × 10 administrations = 100 binary-scored response instances. Correct identifiable answers earn one point; incorrect, missing, or non-matchable answers earn zero. Maximum: 100. The shared three-consecutive non-evaluable rule produces INVALID.</p></section>
             <section><h3>Interpretation and limitations</h3><p>Mole measures repeatable coordinate-based character localization on one fixed stimulus. It combines character familiarity and naming with coordinate following, localization, and answer binding. Its fixed grid, ten repeated questions, possible aliases, and manual adjudication bound generalization.</p></section>
         </article>
 
         <article id="level-2-rhino" class="content-card protocol" data-visual-protocol="2" data-level-status="Active" aria-labelledby="level-2-rhino-title">
             <header><p class="protocol-level">Active · Level 2 · weight 2</p><h2 id="level-2-rhino-title">Rhino</h2><p>Coordinate localization after systematic lateral information loss.</p></header>
-            <section><h3>Purpose and stimulus</h3><p>Rhino transforms the Mole image by removing the same lateral half of every column and concatenating the retained strips. It changes lateral visual information while preserving the underlying logical grid, coordinate convention, and ten questions. Active contents and layouts are confidential.</p></section>
+            <section><h3>Purpose and stimulus</h3><p>Rhino introduces systematic lateral information loss while preserving the underlying coordinate framework and question set. Active contents and layouts are confidential.</p></section>
             <section><h3>Task</h3><p>The model answers the same ten coordinate queries, now recognizing and locating characters from systematically partial visual evidence.</p></section>
             <section><h3>Administration and scoring</h3><p>The fixed Rhino image and questions are presented together in ten fresh, isolated conversations with no cross-run context, yielding 100 response instances from ten unique questions. Binary scoring and the shared INVALID rule are identical to Mole; maximum: 100.</p></section>
             <section><h3>Interpretation and limitations</h3><p>The Mole–Rhino comparison holds the logical grid and questions fixed while changing lateral visual information, but it does not isolate a pure faculty: crop effects vary by character and may interact with familiarity, naming, localization, and binding. One fixed transformed image and repeated questions limit generalization.</p></section>
@@ -126,16 +127,16 @@ const protocols = [
 
         <article id="level-4-owl" class="content-card protocol" data-visual-protocol="4" data-level-status="Active" aria-labelledby="level-4-owl-title">
             <header><p class="protocol-level">Active · Level 4 · weight 8</p><h2 id="level-4-owl-title">Owl</h2><p>Anchor-based horizontal and vertical midpoint localization.</p></header>
-            <section><h3>Purpose and stimulus</h3><p>Owl uses a separate 17 × 11 character grid containing a central image that spans a 5 × 3 area. The active image, exact arrangement, questions, anchor pairs, and answers are confidential.</p></section>
-            <section><h3>Task</h3><p>Each question has the conceptual form “What character is between [Character X] and [Character Y]?” The two named anchors define a unique horizontal or vertical midpoint occupied by one identifiable target. Owl does not use diagonal midpoint relationships; those first appear in Eagle.</p><ol><li>Identify the first named anchor.</li><li>Identify the second named anchor.</li><li>Determine their spatial relationship.</li><li>Locate the unique character exactly between them.</li><li>Name that midpoint character.</li><li>Associate the answer with the correct question.</li></ol></section>
+            <section><h3>Purpose and stimulus</h3><p>Owl uses a separate structured character field designed for relational localization. The active image, exact arrangement, questions, anchor pairs, and answers are confidential.</p></section>
+            <section><h3>Task</h3><p>Questions assess recognition of named visual anchors, their spatial relationship, and the uniquely determined midpoint target, with correct answer binding. Owl uses orthogonal relationships; Eagle broadens the relationship set. Exact wording, anchors, and layouts remain protected.</p></section>
             <section><h3>Administration and scoring</h3><p>The same Owl image and ten fixed questions are presented together ten times. Every administration starts in a fresh, isolated conversation; prior responses are not supplied. Thus 10 unique questions × 10 administrations = 100 binary-scored response instances. A correct identifiable midpoint character earns one point; an incorrect, missing, or non-matchable answer earns zero. Maximum: 100. The shared three-consecutive non-evaluable rule produces INVALID.</p></section>
             <section><h3>Interpretation and limitations</h3><p>Owl is not merely character recognition: it combines two-anchor search, alignment reasoning, unique-midpoint selection, target recognition, and binding across ten simultaneous questions. It remains dependent on character familiarity and naming, so it is not a pure measure of abstract spatial reasoning. Boundaries include one fixed stimulus, ten repeated questions rather than independently sampled items, alias ambiguity, possible effects from the central spanning image, and compound recognition/search/reasoning/binding demands.</p></section>
         </article>
 
         <article id="level-5-eagle" class="content-card protocol" data-visual-protocol="5" data-level-status="Active" aria-labelledby="level-5-eagle-title">
             <header><p class="protocol-level">Active · Level 5 · weight 16</p><h2 id="level-5-eagle-title">Eagle</h2><p>A compound relational-localization stress test.</p></header>
-            <section><h3>Purpose and stimulus</h3><p>Eagle combines a larger, denser visual field; mixed characters from unrelated fictional sources; animation and live action; irregular cropping; and selective local color inversion. Its active dimensions, production details, arrangement, questions, and answers remain confidential where disclosure could aid reconstruction.</p></section>
-            <section><h3>Task</h3><p>As in Owl, the model locates two named anchors, determines their relationship, identifies and names the unique midpoint character, and preserves answer binding. Eagle includes horizontal, vertical, and diagonal midpoint relationships. It therefore combines recognition, search, localization, midpoint reasoning, and response management under heterogeneous corruption.</p></section>
+            <section><h3>Purpose and stimulus</h3><p>Eagle combines a denser visual field, heterogeneous source imagery, irregular information loss, and localized appearance changes. Its active dimensions, production details, arrangement, questions, and answers remain confidential where disclosure could aid reconstruction.</p></section>
+            <section><h3>Task</h3><p>As in Owl, the model performs relational localization and preserves answer binding. Eagle expands the spatial relationships and compounds recognition, search, midpoint reasoning, and response management under heterogeneous visual degradation.</p></section>
             <section><h3>Administration and scoring</h3><p>The same active Eagle image and ten fixed questions are presented together in ten fresh, isolated conversations without prior responses, creating 100 response instances from ten unique questions. The shared binary scoring and INVALID rules apply; maximum: 100.</p></section>
             <section><h3>Interpretation and limitations</h3><p>Eagle measures repeatable correctness under the complete compound condition. It changes several conditions simultaneously and is not a controlled extension of Owl; an Owl–Eagle difference cannot isolate diagonal reasoning, cropping, inversion, density, search, or source familiarity. One fixed image, repeated questions, uneven character familiarity or corruption severity, naming ambiguity, and manual adjudication bound interpretation.</p></section>
         </article>
@@ -175,5 +176,6 @@ const protocols = [
             <p>Beholder has no active stimulus, task, or scoring protocol. It contributes nothing to the current Visual score, does not affect coverage or rank eligibility, and must not display a model score. Its future protocol must be documented before activation; no methodology is inferred here.</p>
         </section>
     </article>
+  <MethodologyFingerprint value="UB-VIS-20260730-K9M2" />
 </main>
 </Layout>

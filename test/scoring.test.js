@@ -141,8 +141,8 @@ test('DATA methodology route documents canonical structure without exposing rese
  assert.match(data,/data-level-status="Planned"[^>]*aria-labelledby="athena-title"/);assert.match(data,/Athena is Planned and not properly designed/);
  assert.match(data,/Permanent denominator/);assert.match(data,/canonicalDenominator\(arena\)/);assert.match(data,/const formula=active\.map/);
  assert.match(data,/100 administrations/);assert.match(data,/10 conversations/);assert.match(data,/same ten questions as Worm/);
- assert.match(data,/deliberately incorrect suggested number/);assert.match(data,/fixed misleading number following Crow/);
- assert.match(data,/10 sections of text, each containing two questions/);assert.match(data,/multiply those two numbers together/);assert.match(data,/Only the product scores/);
+ assert.match(data,/numerical context that may be misleading/);assert.doesNotMatch(data,/deliberately incorrect suggested number|models commonly mistake/);
+ assert.match(data,/Raven is intended to combine difficult retrieval, answer binding, and arithmetic synthesis/);assert.doesNotMatch(data,/10 sections of text|multiply those two numbers together|Only the product scores/);
  assert.doesNotMatch(data,/Position ID\s*[#:=-]?\s*\d{1,3}/i);
  for(const result of benchmarks.dataRetrieval)assert.equal(Object.hasOwn(result.scores,'athena'),false);
 });

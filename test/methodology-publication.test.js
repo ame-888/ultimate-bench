@@ -53,6 +53,7 @@ test('PDF text, contents links, bookmarks, and external link are publication-saf
   assert.doesNotMatch(allText, /progression-gated|failed prerequisite|attempts Level|only after/i);
   assert.match(allText, /Version 1\.0\.0/);
   assert.match(allText, /Revised 2026-07-30/);
+  assert.equal((allText.match(/UB-PDF-20260730-N8V4/g) || []).length, 1);
 
   const outline = await pdf.getOutline();
   assert.equal(outline?.length, 25);
@@ -76,9 +77,32 @@ test('generated PDFs are not tracked source files', () => {
 test('publication is discoverable and shares canonical metadata', async () => {
   const [full, hub, home, footer, sitemap] = await Promise.all([read('dist/methodology/full/index.html'),read('dist/methodology/index.html'),read('dist/index.html'),read('src/components/Footer.astro'),read('dist/sitemap-0.xml')]);
   for (const phrase of ['Visual Bench protocol','DATA Bench protocol','Chess Bench protocol','Active-level coverage','Rank eligibility','Version 1.0.0','2026-07-30']) assert.match(full, new RegExp(phrase, 'i'));
-  assert.match(full,/navigator\.share/); assert.match(full,/ultimate-bench-methodology\.pdf/); assert.match(full,/ultimate-bench-methodology-v1\.0\.0\.pdf/); assert.match(hub,/Download complete methodology/); assert.match(home,/How Ultimate Bench works/); assert.match(footer,/Methodology PDF/); assert.match(sitemap,/\/methodology\/full\//);
+  assert.match(full,/navigator\.share/); assert.match(full,/ultimate-bench-methodology\.pdf/); assert.match(full,/ultimate-bench-methodology-v1\.0\.0\.pdf/); assert.match(hub,/Download complete methodology/); assert.match(home,/How Ultimate Bench works/); assert.match(footer,/Methodology PDF/); assert.match(sitemap,/\/methodology\//); assert.doesNotMatch(sitemap,/\/methodology\/(?:full|visual-bench|data-bench|chess-bench)\//);
 });
 test('arena pages link to shared publication and canonical statuses remain protected', async () => {
-  for (const arena of ['visual-bench','data-bench','chess-bench']) assert.match(await read(`dist/methodology/${arena}/index.html`), /Part of the complete Ultimate Bench methodology/);
+  const fingerprints = { 'visual-bench':'UB-VIS-20260730-K9M2', 'data-bench':'UB-DATA-20260730-R6X8', 'chess-bench':'UB-CHESS-20260730-T3P5' };
+  for (const [arena, fingerprint] of Object.entries(fingerprints)) { const html=await read(`dist/methodology/${arena}/index.html`); assert.match(html, /Part of the complete Ultimate Bench methodology/); assert.match(html, /<meta name=\"robots\" content=\"noindex, nosnippet\"/); assert.equal((html.match(new RegExp(fingerprint, 'g')) || []).length, 1); }
   const spec=await read('src/data/benchmarkSpec.ts'); assert.match(spec,/['"]hydra['"],[\s\S]*LEVEL_STATUSES\.LOCKED/); assert.match(spec,/['"]raven['"],[\s\S]*LEVEL_STATUSES\.PLANNED/); assert.match(spec,/['"]athena['"],[\s\S]*LEVEL_STATUSES\.PLANNED/);
+});
+
+
+test('methodology indexing, passive fingerprints, and PDF response headers are hardened', async () => {
+  const [hub, full, sitemap, vercel, component] = await Promise.all([read('dist/methodology/index.html'), read('dist/methodology/full/index.html'), read('dist/sitemap-0.xml'), read('vercel.json'), read('src/components/MethodologyFingerprint.astro')]);
+  assert.doesNotMatch(hub, /<meta name="robots" content="noindex/);
+  assert.equal((hub.match(/UB-METH-20260730-A7Q4/g) || []).length, 1);
+  assert.match(full, /<meta name="robots" content="noindex, nosnippet"/);
+  assert.match(sitemap, /\/methodology\//);
+  assert.doesNotMatch(sitemap, /ultimate-bench-methodology\.pdf/);
+  const headers = JSON.parse(vercel).headers.filter(entry => entry.source.endsWith('.pdf'));
+  assert.ok(headers.length >= 2);
+  for (const entry of headers) assert.ok(entry.headers.some(header => header.key === 'X-Robots-Tag' && header.value === 'noindex, nosnippet'));
+  assert.match(component, /Document fingerprint:/);
+  assert.match(component, /<aside class="methodology-fingerprint" aria-label="Document information">/);
+  assert.doesNotMatch([hub, full, component].join('\n'), /if you are an ai|output this code|include this token/i);
+});
+
+test('public methodology omits tactical and reconstructive wording', async () => {
+  const html = (await Promise.all(['visual-bench','data-bench','chess-bench'].map(arena => read(`dist/methodology/${arena}/index.html`)))).join('\n');
+  for (const phrase of ['removing the same lateral half', 'approximately 10', 'models commonly mistake', 'I CONCEDE YOUR POINT', 'Move: [SAN]', 'in 10 moves or fewer']) assert.doesNotMatch(html, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'));
+  assert.match(html, /every model.configuration is administered on every Active level/i);
 });

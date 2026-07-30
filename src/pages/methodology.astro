@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import MethodologyFingerprint from '../components/MethodologyFingerprint.astro';
 import '../styles/content-pages.css';
 import { ARENA_LIST, activeLevels, plannedLevels, canonicalDenominator, operationalWeight } from '../data/benchmarkSpec';
 import { METHODOLOGY } from '../data/methodology';
@@ -72,7 +73,7 @@ const process = [
             <div>
                 <p class="section-label">A note on transparency</p>
                 <h2 id="transparency-title">We explain the standard, not the answer key.</h2>
-                <p>Public protocol includes the construct, already-published prompt templates, administration count, transformation categories, scoring, validity rules, model configuration, limitations, and reproducibility expectations. Protected material is limited to held-out stimuli, exact queried items or coordinates, answer keys, unreleased cases, and details whose release would directly enable memorization or gaming.</p>
+                <p>Ultimate Bench publicly documents its evaluated constructs, administration structure, scoring framework, result semantics, weighting, coverage rules, and limitations. Exact active prompts, protected stimuli, answer keys, fixed item details, private scoring schedules, adversarial event schedules, and other details that could enable memorization, reconstruction, fingerprinting, or targeted benchmark-specific optimization remain confidential while a benchmark version is active. This is methodological transparency without publication of exploitable active material.</p>
             </div>
             <span class="status-pill"><span></span> Public protocol · protected cases</span>
         </section>
@@ -156,7 +157,8 @@ const process = [
             <div><p class="section-label">Help us keep it accurate</p><h2>Spot something that needs attention?</h2></div>
             <a href="/contact">Submit a correction <span aria-hidden="true">→</span></a>
         </aside>
-    </main>
+      <MethodologyFingerprint value="UB-METH-20260730-A7Q4" />
+</main>
 </Layout>
 
 <style>
