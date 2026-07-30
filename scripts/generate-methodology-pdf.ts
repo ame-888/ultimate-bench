@@ -192,6 +192,14 @@ METHODOLOGY_SECTIONS.forEach((section, index) => {
   }
 });
 
+ensure(72);
+const fingerprintY = doc.y + 10;
+doc.roundedRect(pageLeft, fingerprintY, pageWidth, 42, 5).fillAndStroke('#f7fafc', rule);
+doc.font('Helvetica').fontSize(9).fillColor(muted)
+  .text('Document fingerprint:', pageLeft + 14, fingerprintY + 15, { continued: true })
+  .font('Courier-Bold').fillColor(ink).text(' UB-PDF-20260730-N8V4');
+doc.y = fingerprintY + 52;
+
 const range = doc.bufferedPageRange();
 
 doc.end();

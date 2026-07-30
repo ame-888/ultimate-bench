@@ -15,11 +15,13 @@ async function findHtml(directory) {
   return paths;
 }
 
+const excludedRoutes = new Set(['/methodology/full/', '/methodology/visual-bench/', '/methodology/data-bench/', '/methodology/chess-bench/']);
+
 const urls = (await findHtml(outputDirectory)).map((path) => {
   const page = relative(outputDirectory, path).split(sep).join('/');
   const route = page === 'index.html' ? '/' : `/${page.replace(/\/index\.html$/, '').replace(/\.html$/, '')}/`;
   return new URL(route, origin).href;
-}).sort();
+}).filter(url => !excludedRoutes.has(new URL(url).pathname)).sort();
 
 const urlset = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((url) => `  <url><loc>${url}</loc></url>`).join('\n')}\n</urlset>\n`;
 const index = `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <sitemap><loc>${origin}/sitemap-0.xml</loc></sitemap>\n</sitemapindex>\n`;
