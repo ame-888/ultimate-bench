@@ -16,10 +16,10 @@ const published = new Date(`${article.date}T00:00:00Z`).toLocaleDateString('en-U
         <meta property="article:published_time" content={`${article.date}T00:00:00Z`} />
     </Fragment>
     <main class="article-page">
-        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/blog">Guides</a><span aria-hidden="true">/</span><span>{article.title}</span></nav>
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/guide">Guide</a><span aria-hidden="true">/</span><a href="/blog">Articles</a><span aria-hidden="true">/</span><span>{article.title}</span></nav>
         <article>
             <header>
-                <p class="eyebrow">Benchmark field guide</p>
+                <p class="eyebrow">Benchmark field note</p>
                 <h1>{article.title}</h1>
                 <p class="dek">{article.description}</p>
                 <div class="byline"><span>By Ultimate Bench editors</span><time datetime={article.date}>{published}</time><span>{article.readingTime}</span></div>
