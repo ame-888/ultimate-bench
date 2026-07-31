@@ -361,6 +361,17 @@ export const benchmarks = {
                 'lvl4': 0,
                 'lvl5': 0
             }
+        },
+        {
+            name: 'Claude 3 Opus',
+            releaseDate: '2024-03-04',
+            scores: {
+                'lvl1': 0,
+                'lvl2': 0,
+                'lvl3': 0,
+                'lvl4': 0,
+                'lvl5': 0
+            }
         }
     ],
     dataRetrieval: [
@@ -384,7 +395,8 @@ export const benchmarks = {
         { name: 'Claude 5 Fable (high)', scores: { worm: 30, koala: 19, crow: 6, octopus: 0 } },
         { name: 'Claude 4.8 Opus (high)', scores: { worm: 14, koala: 0, crow: 0, octopus: 0 } },
         { name: 'Claude 5 Opus (high)', scores: { worm: 25, koala: 1, crow: 0, octopus: 0 } },
-        { name: 'Grok 4.5 Fast', scores: { worm: 21, koala: 12, crow: 7, octopus: 0 } }
+        { name: 'Grok 4.5 Fast', scores: { worm: 21, koala: 12, crow: 7, octopus: 0 } },
+        { name: 'Claude 3 Opus', releaseDate: '2024-03-04', scores: { worm: 0, koala: 0, crow: 0, octopus: 0 } }
     ],
     chessModels: [
         { name: 'Muse Spark 1.1', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
@@ -401,6 +413,7 @@ export const benchmarks = {
         { name: 'Gemini 3.0 Flash Preview', scores: { mouse: 24, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'GPT-5.5', scores: { mouse: 39, spider: 48, wolf: 22, hawk: 0, python: 0 } },
         { name: 'GPT-5.6 Sol (high)', scores: { mouse: 97, spider: 68, wolf: 59, hawk: 0, python: 0 } },
-        { name: 'Claude 5 Fable (high)', scores: { mouse: 38, spider: 20, wolf: 15, hawk: 0, python: 0 } }
+        { name: 'Claude 5 Fable (high)', scores: { mouse: 38, spider: 20, wolf: 15, hawk: 0, python: 0 } },
+        { name: 'Claude 3 Opus', releaseDate: '2024-03-04', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } }
     ]
 };
