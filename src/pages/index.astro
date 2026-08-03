@@ -6,6 +6,7 @@ import { buildLeaderboard } from '../data/leaderboard';
 import { validateBenchmarkRecords } from '../data/scoring';
 import { formatAggregateScore } from '../data/formatting';
 import { createParetoChartDomain, modelPricing, PRICING_CHECKED_ON, validatePricing } from '../data/modelPricing';
+import { buildCapabilitySeries, type CapabilitySeries, type ProgressDate } from '../data/progression';
 import CreatureIcon from '../components/CreatureIcon.astro';
 import { getSimulatedDate, TIME_OFFSET } from '../scripts/TimeUtils';
 
@@ -293,6 +294,36 @@ const chartX = (cost) => chartPad.left + chartDomain.x(cost) * (chartWidth - cha
 const chartY = (score) => chartPad.top + ((scoreDomainMax - score) / scoreDomainMax) * (chartHeight - chartPad.top - chartPad.bottom);
 const frontierPoints = [...paretoModels].sort((a, b) => a.blendedCost - b.blendedCost).map(item => `${chartX(item.blendedCost)},${chartY(item.ultimateScore)}`).join(' ');
 
+const capabilitySeries = buildCapabilitySeries(canonicalLeaderboard.arenaRows, canonicalLeaderboard.rows, (name, arena) => {
+    const arenaRow = arena ? canonicalLeaderboard.arenaRows[arena].find(row => row.name === name) : undefined;
+    return arenaRow?.releaseDate ?? releaseDateByModel.get(name);
+});
+const progressDefinitions: Array<{ key: keyof CapabilitySeries; label: string; className: string; pattern: string; shape: string }> = [
+    { key: 'visual', label: 'Visual Bench', className: 'visual', pattern: '', shape: 'circle' },
+    { key: 'data-retrieval', label: 'Data Retrieval Bench', className: 'data', pattern: '10 6', shape: 'square' },
+    { key: 'chess', label: 'Chess Bench', className: 'chess', pattern: '3 6', shape: 'diamond' },
+    { key: 'ultimate', label: 'Ultimate Score', className: 'ultimate', pattern: '14 5 3 5', shape: 'triangle' },
+];
+const allProgressDates = progressDefinitions.flatMap(series => capabilitySeries[series.key].dates.map(day => day.timestamp));
+const progressMinDate = Math.min(...allProgressDates), progressMaxDate = Math.max(...allProgressDates);
+const progressWidth = 1200, progressHeight = 610;
+const progressPad = { left: 78, right: 38, top: 42, bottom: 72 };
+const progressX = (timestamp: number) => progressPad.left + (progressMaxDate === progressMinDate ? .5 : (timestamp - progressMinDate) / (progressMaxDate - progressMinDate)) * (progressWidth - progressPad.left - progressPad.right);
+const progressY = (score: number) => progressPad.top + (100 - score) / 100 * (progressHeight - progressPad.top - progressPad.bottom);
+const progressPath = (dates: ProgressDate[]) => dates.map((day, index) => index === 0
+    ? `M ${progressX(day.timestamp)} ${progressY(day.frontierScore)}`
+    : `H ${progressX(day.timestamp)} V ${progressY(day.frontierScore)}`).join(' ');
+const progressTicks = [0, 20, 40, 60, 80, 100];
+const progressDateTicks = Array.from(new Set([progressMinDate, progressMinDate + (progressMaxDate - progressMinDate) / 2, progressMaxDate]));
+const progressExcluded = new Set(progressDefinitions.flatMap(series => capabilitySeries[series.key].excluded));
+const pointShape = (shape: string, x: number, y: number, record: boolean) => {
+    const size = record ? 7 : 3.5;
+    if (shape === 'square') return `<rect x="${x-size}" y="${y-size}" width="${size*2}" height="${size*2}" rx="1"/>`;
+    if (shape === 'diamond') return `<path d="M ${x} ${y-size-1} L ${x+size+1} ${y} L ${x} ${y+size+1} L ${x-size-1} ${y} Z"/>`;
+    if (shape === 'triangle') return `<path d="M ${x} ${y-size-1} L ${x+size+1} ${y+size} L ${x-size-1} ${y+size} Z"/>`;
+    return `<circle cx="${x}" cy="${y}" r="${size}"/>`;
+};
+
 function getRankDisplay(rank) {
 
     if (rank === null) return '—';
@@ -425,6 +456,7 @@ function getRankDisplay(rank) {
                             <div class="score-mode" role="group" aria-label="Leaderboard scoring mode">
                                 <button type="button" class="score-mode-btn is-active" data-score-mode="absolute" aria-pressed="true">Absolute</button>
                                 <button type="button" class="score-mode-btn" data-score-mode="pareto">Pareto chart</button>
+                                <button type="button" class="score-mode-btn" data-score-mode="progress">Capability progress</button>
                             </div>
                             <label class="model-search">
                                 <span class="sr-only">Search models</span>
@@ -471,6 +503,48 @@ function getRankDisplay(rank) {
                             {pricedModels.length === 0 && <p class="pareto-empty" role="status">No qualified models have valid verified pricing for this cost comparison.</p>}
                             {omittedPricingCount > 0 && <p class="pareto-omission" role="note">{omittedPricingCount} qualified {omittedPricingCount === 1 ? 'model is' : 'models are'} omitted from this cost comparison because verified pricing is unavailable or invalid.</p>}
                             <p class="pareto-footnote"><span>↳</span> Cost blends 75% input and 25% output token pricing. Prices checked {PRICING_CHECKED_ON}; both axes preserve the raw benchmark data—no invented efficiency score.</p>
+                        </section>
+
+                        <section class="progress-panel" hidden aria-labelledby="progress-title">
+                            <header class="progress-header">
+                                <div><span class="pareto-kicker">Progress · release by release</span><h3 id="progress-title">Capability Progress</h3></div>
+                                <p>Tracks the highest officially qualified score achieved by models released up to each date.</p>
+                            </header>
+                            <div class="progress-toggles" role="group" aria-label="Capability progress series">
+                                {progressDefinitions.map(series => (
+                                    <button type="button" class={`progress-toggle ${series.className}`} data-progress-series={series.key} aria-pressed="true">
+                                        <span class={`legend-shape ${series.shape}`} aria-hidden="true"></span>{series.label}
+                                    </button>
+                                ))}
+                            </div>
+                            <div class="progress-chart-wrap" tabindex="0" role="region" aria-label="Scrollable capability progress chart">
+                                <svg class="progress-chart" viewBox={`0 0 ${progressWidth} ${progressHeight}`} role="img" aria-labelledby="progress-svg-title progress-svg-desc">
+                                    <title id="progress-svg-title">Ultimate Bench capability frontier over time</title>
+                                    <desc id="progress-svg-desc">Step lines show the highest eligible canonical Visual, Data Retrieval, Chess, and Ultimate score available by model release date. Shapes and line patterns distinguish the series.</desc>
+                                    <rect class="chart-plot-bg" x={progressPad.left} y={progressPad.top} width={progressWidth-progressPad.left-progressPad.right} height={progressHeight-progressPad.top-progressPad.bottom} rx="14"/>
+                                    {progressTicks.map(tick => <g class="chart-grid"><line x1={progressPad.left} y1={progressY(tick)} x2={progressWidth-progressPad.right} y2={progressY(tick)}/><text x={progressPad.left-16} y={progressY(tick)+5}>{tick}%</text></g>)}
+                                    {progressDateTicks.map(timestamp => <g class="chart-grid chart-grid-x"><line x1={progressX(timestamp)} y1={progressPad.top} x2={progressX(timestamp)} y2={progressHeight-progressPad.bottom}/><text x={progressX(timestamp)} y={progressHeight-progressPad.bottom+32}>{new Intl.DateTimeFormat('en-US',{month:'short',year:'numeric',timeZone:'UTC'}).format(new Date(timestamp))}</text></g>)}
+                                    <text class="axis-title" x={(progressWidth+progressPad.left-progressPad.right)/2} y={progressHeight-15}>MODEL RELEASE DATE</text>
+                                    <text class="axis-title axis-title-y" transform={`translate(20 ${(progressHeight-progressPad.bottom+progressPad.top)/2}) rotate(-90)`}>CANONICAL SCORE</text>
+                                    {progressDefinitions.map(series => (
+                                        <g class={`progress-series series-${series.key}`} data-series={series.key}>
+                                            <path class={`progress-line ${series.className}`} d={progressPath(capabilitySeries[series.key].dates)} stroke-dasharray={series.pattern || undefined}/>
+                                            {capabilitySeries[series.key].dates.flatMap(day => day.observations.map(point => (
+                                                <g class={`progress-point ${series.className} ${point.isRecord ? 'is-record' : ''}`} tabindex="0" role="img" aria-label={`${point.name}, ${series.label}, ${formatAggregateScore(point.score)} percent, released ${formatReleaseDate(point.releaseDate)}. ${point.isRecord ? 'Established a new record.' : 'Did not establish a new record.'}`} set:html={`${pointShape(series.shape,progressX(point.timestamp),progressY(point.score),point.isRecord)}<title>${point.name} · ${formatReleaseDate(point.releaseDate)} · ${series.label} · ${formatAggregateScore(point.score)}% · ${point.isRecord ? 'New record' : 'Not a record'}</title>`}></g>
+                                            )))}
+                                        </g>
+                                    ))}
+                                </svg>
+                            </div>
+                            <div class="progress-summary" aria-label="Latest capability records">
+                                {progressDefinitions.map(series => {
+                                    const latest = capabilitySeries[series.key].dates.at(-1);
+                                    const establishingDay = [...capabilitySeries[series.key].dates].reverse().find(day => day.recordModels.length);
+                                    return latest && <p><span class={`legend-shape ${series.shape}`} aria-hidden="true"></span><strong>{series.label}</strong><b>{formatAggregateScore(latest.frontierScore)}%</b><small>{establishingDay?.recordModels.join(' & ')}</small></p>;
+                                })}
+                            </div>
+                            <p class="pareto-footnote"><span>↳</span> Lines show the best eligible score available by release date, not the score of every successive model.</p>
+                            {progressExcluded.size > 0 && <p class="pareto-omission" role="note">{progressExcluded.size} eligible {progressExcluded.size === 1 ? 'record is' : 'records are'} omitted because no valid release date is recorded.</p>}
                         </section>
 
                         <div class="ultimate-container" role="region" aria-label="Global Ultimate Bench standings" tabindex="0">

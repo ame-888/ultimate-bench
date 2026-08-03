@@ -298,17 +298,25 @@ function init() {
 
         function setScoreMode(mode) {
             const paretoMode = mode === 'pareto';
+            const progressMode = mode === 'progress';
             ultimateSection?.classList.toggle('is-pareto-mode', paretoMode);
+            ultimateSection?.classList.toggle('is-progress-mode', progressMode);
             scoreModeButtons.forEach(button => {
                 const active = button.dataset.scoreMode === mode;
                 button.classList.toggle('is-active', active);
                 button.setAttribute('aria-pressed', String(active));
             });
-            document.querySelector('.absolute-note')?.toggleAttribute('hidden', paretoMode);
+            document.querySelector('.absolute-note')?.toggleAttribute('hidden', paretoMode || progressMode);
             document.querySelector('.pareto-panel')?.toggleAttribute('hidden', !paretoMode);
+            document.querySelector('.progress-panel')?.toggleAttribute('hidden', !progressMode);
         }
 
         scoreModeButtons.forEach(button => button.addEventListener('click', () => setScoreMode(button.dataset.scoreMode)));
+        document.querySelectorAll('.progress-toggle').forEach(button => button.addEventListener('click', () => {
+            const isVisible = button.getAttribute('aria-pressed') === 'true';
+            button.setAttribute('aria-pressed', String(!isVisible));
+            document.querySelector(`.progress-series[data-series="${button.dataset.progressSeries}"]`)?.classList.toggle('is-hidden', isVisible);
+        }));
 
         // --- Fast, composable model filters ---
         const modelFilterInput = document.getElementById('ultimate-model-filter');
