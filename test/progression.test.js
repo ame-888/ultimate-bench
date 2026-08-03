@@ -39,3 +39,28 @@ test('canonical selectors exclude provisional arenas and use actual globally-qua
   const arenaMaxAverage = ['visual','data-retrieval','chess'].reduce((sum, key) => sum + series[key].dates.at(-1).frontierScore, 0) / 3;
   assert.notEqual(series.ultimate.dates.at(-1).frontierScore, arenaMaxAverage);
 });
+
+test('small-multiple domains are shared, rounded, headed, and support full scale', async () => {
+  const { capabilityTimeWindow, capabilityYDomain } = await import(pathToFileURL(bundle));
+  const leaderboard = buildLeaderboard(benchmarks);
+  const dates = new Map(benchmarks.models.map(row => [row.name,row.releaseDate]));
+  const series = buildCapabilitySeries(leaderboard.arenaRows, leaderboard.rows, name => dates.get(name));
+  const window = capabilityTimeWindow(series, 'recent');
+  const zoomed = capabilityYDomain(series, window, 'zoomed');
+  const high = Math.max(...Object.values(series).flatMap(item => item.dates.filter(day => day.timestamp <= window.max).map(day => day.frontierScore)));
+  assert.equal(zoomed[0], 0); assert.ok(zoomed[1] >= high); assert.equal(zoomed[1] % 5, 0); assert.ok(zoomed[1] >= Math.min(100, high * 1.1));
+  assert.deepEqual(capabilityYDomain(series, window, 'full'), [0,100]);
+});
+
+test('time windows and point visibility are deterministic', async () => {
+  const { capabilityTimeWindow, progressionInWindow, visibleObservations } = await import(pathToFileURL(bundle));
+  const progression = buildProgression([{name:'old',releaseDate:'2023-01-01',score:2},{name:'record',releaseDate:'2025-06-01',score:10},{name:'ordinary',releaseDate:'2025-12-01',score:7},{name:'latest',releaseDate:'2026-01-01',score:11}]);
+  const series = {visual:progression,'data-retrieval':progression,chess:progression,ultimate:progression};
+  const recent = capabilityTimeWindow(series,'recent');
+  assert.equal(new Date(recent.max).toISOString().slice(0,10),'2026-01-01');
+  assert.equal(new Date(recent.min).toISOString().slice(0,10),'2025-01-01');
+  assert.deepEqual(progressionInWindow(progression,recent).map(day=>day.date),['2023-01-01','2025-06-01','2025-12-01','2026-01-01']);
+  assert.deepEqual(visibleObservations(progression,recent,false).map(point=>point.name),['record','latest']);
+  assert.deepEqual(visibleObservations(progression,recent,true).map(point=>point.name),['record','ordinary','latest']);
+  const full=capabilityTimeWindow(series,'full'); assert.equal(full.min,Date.parse('2023-01-01T00:00:00Z'));
+});
