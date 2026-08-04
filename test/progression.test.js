@@ -40,16 +40,16 @@ test('canonical selectors exclude provisional arenas and use actual globally-qua
   assert.notEqual(series.ultimate.dates.at(-1).frontierScore, arenaMaxAverage);
 });
 
-test('small-multiple domains are shared, rounded, headed, and support full scale', async () => {
-  const { capabilityTimeWindow, capabilityYDomain } = await import(pathToFileURL(bundle));
+test('selected metric domain is rounded, headed, and supports full scale', async () => {
+  const { capabilityTimeWindow, progressionYDomain } = await import(pathToFileURL(bundle));
   const leaderboard = buildLeaderboard(benchmarks);
   const dates = new Map(benchmarks.models.map(row => [row.name,row.releaseDate]));
   const series = buildCapabilitySeries(leaderboard.arenaRows, leaderboard.rows, name => dates.get(name));
   const window = capabilityTimeWindow(series, 'recent');
-  const zoomed = capabilityYDomain(series, window, 'zoomed');
-  const high = Math.max(...Object.values(series).flatMap(item => item.dates.filter(day => day.timestamp <= window.max).map(day => day.frontierScore)));
+  const zoomed = progressionYDomain(series.ultimate, window, 'zoomed');
+  const high = Math.max(...series.ultimate.dates.filter(day => day.timestamp >= window.min).flatMap(day => day.observations).map(point=>point.score));
   assert.equal(zoomed[0], 0); assert.ok(zoomed[1] >= high); assert.equal(zoomed[1] % 5, 0); assert.ok(zoomed[1] >= Math.min(100, high * 1.1));
-  assert.deepEqual(capabilityYDomain(series, window, 'full'), [0,100]);
+  assert.deepEqual(progressionYDomain(series.ultimate, window, 'full'), [0,100]);
 });
 
 test('time windows and point visibility are deterministic', async () => {
@@ -58,9 +58,21 @@ test('time windows and point visibility are deterministic', async () => {
   const series = {visual:progression,'data-retrieval':progression,chess:progression,ultimate:progression};
   const recent = capabilityTimeWindow(series,'recent');
   assert.equal(new Date(recent.max).toISOString().slice(0,10),'2026-01-01');
-  assert.equal(new Date(recent.min).toISOString().slice(0,10),'2025-01-01');
+  assert.equal(new Date(recent.min).toISOString().slice(0,10),'2024-07-01');
   assert.deepEqual(progressionInWindow(progression,recent).map(day=>day.date),['2023-01-01','2025-06-01','2025-12-01','2026-01-01']);
   assert.deepEqual(visibleObservations(progression,recent,false).map(point=>point.name),['record','latest']);
   assert.deepEqual(visibleObservations(progression,recent,true).map(point=>point.name),['record','ordinary','latest']);
   const full=capabilityTimeWindow(series,'full'); assert.equal(full.min,Date.parse('2023-01-01T00:00:00Z'));
+});
+
+test('release resolver prefers record dates, permits exact metadata, and rejects fuzzy names', async()=>{
+  const {resolveReleaseDate}=await import(pathToFileURL(bundle)); const metadata=new Map([['Exact Model','2025-02-02']]);
+  assert.equal(resolveReleaseDate('Exact Model','2025-01-01',metadata),'2025-01-01');
+  assert.equal(resolveReleaseDate('Exact Model',undefined,metadata),'2025-02-02');
+  assert.equal(resolveReleaseDate('Exact Model Preview',undefined,metadata),undefined);
+});
+
+test('frontier SVG geometry is an open horizontal-vertical step path',async()=>{
+  const {frontierStepPath}=await import(pathToFileURL(bundle)); const path=frontierStepPath([{x:1,y:9},{x:4,y:6},{x:8,y:6}]);
+  assert.equal(path,'M 1 9 H 4 V 6 H 8 V 6'); assert.equal(/[Zz]/.test(path),false);
 });

@@ -6,7 +6,8 @@ import { buildLeaderboard } from '../data/leaderboard';
 import { validateBenchmarkRecords } from '../data/scoring';
 import { formatAggregateScore } from '../data/formatting';
 import { createParetoChartDomain, modelPricing, PRICING_CHECKED_ON, validatePricing } from '../data/modelPricing';
-import { buildCapabilitySeries, capabilityTimeWindow, capabilityYDomain, type CapabilitySeries } from '../data/progression';
+import { buildCapabilitySeries, resolveReleaseDate } from '../data/progression';
+import CapabilityTimeline from '../components/CapabilityTimeline.astro';
 import CreatureIcon from '../components/CreatureIcon.astro';
 import { getSimulatedDate, TIME_OFFSET } from '../scripts/TimeUtils';
 
@@ -122,7 +123,8 @@ function computeRanks(items, scoreKeys) {
 // --- Unify Benchmark Data for Visual Mode ---
 const unifiedDataMap = new Map();
 const releaseDateByModel = new Map(
-    benchmarks.models.map(model => [model.name, model.releaseDate])
+    [benchmarks.models, benchmarks.dataRetrieval, benchmarks.chessModels]
+      .flat().filter(model => model.releaseDate).map(model => [model.name, model.releaseDate])
 );
 
 benchmarks.models.forEach(m => {
@@ -296,15 +298,9 @@ const frontierPoints = [...paretoModels].sort((a, b) => a.blendedCost - b.blende
 
 const capabilitySeries = buildCapabilitySeries(canonicalLeaderboard.arenaRows, canonicalLeaderboard.rows, (name, arena) => {
     const arenaRow = arena ? canonicalLeaderboard.arenaRows[arena].find(row => row.name === name) : undefined;
-    return arenaRow?.releaseDate ?? releaseDateByModel.get(name);
+    return resolveReleaseDate(name, arenaRow?.releaseDate, releaseDateByModel);
 });
-const progressDefinitions: Array<{ key: keyof CapabilitySeries; label: string }> = [
-    { key: 'visual', label: 'Visual Bench' }, { key: 'data-retrieval', label: 'Data Retrieval Bench' },
-    { key: 'chess', label: 'Chess Bench' }, { key: 'ultimate', label: 'Ultimate Score' },
-];
-const progressExcluded = new Set(progressDefinitions.flatMap(series => capabilitySeries[series.key].excluded));
-const initialProgressWindow = capabilityTimeWindow(capabilitySeries, 'recent');
-const initialProgressDomain = capabilityYDomain(capabilitySeries, initialProgressWindow, 'zoomed');
+
 
 function getRankDisplay(rank) {
 
@@ -487,22 +483,7 @@ function getRankDisplay(rank) {
                             <p class="pareto-footnote"><span>↳</span> Cost blends 75% input and 25% output token pricing. Prices checked {PRICING_CHECKED_ON}; both axes preserve the raw benchmark data—no invented efficiency score.</p>
                         </section>
 
-                        <section class="progress-panel" hidden aria-labelledby="progress-title" aria-describedby="progress-description">
-                            <header class="progress-header"><div><span class="pareto-kicker">Progress · release by release</span><h3 id="progress-title">Capability Progress</h3></div>
-                                <p id="progress-description">Four synchronized timelines show the highest eligible canonical score achieved by a model released on or before each date.</p></header>
-                            <div class="progress-controls" aria-label="Capability progress display controls">
-                                <fieldset><legend>Time range</legend><button type="button" data-progress-range="recent" aria-pressed="true">Recent</button><button type="button" data-progress-range="full" aria-pressed="false">Full history</button></fieldset>
-                                <fieldset><legend>Vertical scale</legend><button type="button" data-progress-scale="zoomed" aria-pressed="true">Zoomed</button><button type="button" data-progress-scale="full" aria-pressed="false">Full 0–100%</button></fieldset>
-                                <button type="button" class="progress-all" data-progress-all aria-pressed="false">Show all models</button>
-                            </div>
-                            <p class="progress-scale-note" role="note">Zoomed scale. Select 0–100% to view scores against the full benchmark range. All panels share the same axes.</p>
-                            <div class="progress-grid" data-progress-grid data-initial-max={initialProgressDomain[1]}></div>
-                            <div class="progress-detail" data-progress-detail aria-live="polite"><strong>Record details</strong><span>Focus, tap, or hover a point to inspect it. Current records are always listed in each panel.</span></div>
-                            <div class="progress-summary sr-only" data-progress-summary aria-label="Latest capability records"></div>
-                            <script type="application/json" id="capability-progress-data" set:html={JSON.stringify({series: capabilitySeries, definitions: progressDefinitions}).replace(/</g, '\u003c')}></script>
-                            <p class="pareto-footnote"><span>↳</span> A line rises only when an eligible model establishes a record; ordinary results never lower it.</p>
-                            {progressExcluded.size > 0 && <p class="pareto-omission" role="note">{progressExcluded.size} eligible {progressExcluded.size === 1 ? 'record is' : 'records are'} omitted because no valid release date is recorded.</p>}
-                        </section>
+                        <CapabilityTimeline series={capabilitySeries} />
 
                         <div class="ultimate-container" role="region" aria-label="Global Ultimate Bench standings" tabindex="0">
                             <table class="ultimate-modern-container semantic-leaderboard-table">
