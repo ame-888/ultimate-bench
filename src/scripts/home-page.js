@@ -312,61 +312,6 @@ function init() {
         }
 
         scoreModeButtons.forEach(button => button.addEventListener('click', () => setScoreMode(button.dataset.scoreMode)));
-        // Capability Progress: a deliberately small renderer; qualification stays in the canonical data layer.
-        const progressDataNode = document.getElementById('capability-progress-data');
-        if (progressDataNode) {
-            const progressData = JSON.parse(progressDataNode.textContent);
-            const grid = document.querySelector('[data-progress-grid]');
-            const detail = document.querySelector('[data-progress-detail]');
-            const summary = document.querySelector('[data-progress-summary]');
-            const state = { range: 'recent', scale: 'zoomed', all: false };
-            const allDays = Object.values(progressData.series).flatMap(series => series.dates);
-            const latest = Math.max(...allDays.map(day => day.timestamp));
-            const earliest = Math.min(...allDays.map(day => day.timestamp));
-            const recentStart = new Date(latest); recentStart.setUTCMonth(recentStart.getUTCMonth() - 12);
-            const fmtDate = value => new Intl.DateTimeFormat('en-US',{year:'numeric',month:'long',day:'numeric',timeZone:'UTC'}).format(new Date(value));
-            const fmtShort = value => new Intl.DateTimeFormat('en-US',{month:'short',year:'numeric',timeZone:'UTC'}).format(new Date(value));
-            const fmtScore = value => `${Number(value.toFixed(2))}%`;
-            const describe = (point, definition, previous) => {
-                const improvement = point.isRecord ? point.score - (previous?.frontierScore ?? 0) : 0;
-                const relation = point.isRecord ? 'exceeded' : point.score === point.frontierScore ? 'tied with' : 'was below';
-                const day = progressData.series[definition.key].dates.find(item => item.date === point.releaseDate);
-                detail.innerHTML = `<strong>${point.name} · ${definition.label}</strong><span>${fmtDate(point.timestamp)} · ${fmtScore(point.score)}. ${point.isRecord ? `${previous ? `Previous frontier ${fmtScore(previous.frontierScore)}; ` : 'First frontier; '}improvement ${improvement.toFixed(2)} percentage points.${day.recordModels.length > 1 ? ` Same-date tie with ${day.recordModels.filter(name => name !== point.name).join(', ')}.` : ''}` : `This result ${relation} the frontier available on that date (${fmtScore(point.frontierScore)}).`}</span>`;
-            };
-            const renderProgress = () => {
-                const min = state.range === 'recent' ? recentStart.getTime() : earliest, max = latest;
-                const visibleFrontiers = Object.values(progressData.series).flatMap(series => series.dates.filter(day => day.timestamp <= max && (day.timestamp >= min || series.dates.findLast(item => item.timestamp < min)?.date === day.date)));
-                const high = Math.max(0,...visibleFrontiers.map(day => day.frontierScore));
-                const yMax = state.scale === 'full' ? 100 : Math.min(100,Math.max(5,Math.ceil(high*1.12/5)*5));
-                grid.replaceChildren(); summary.replaceChildren();
-                progressData.definitions.forEach(definition => {
-                    const series = progressData.series[definition.key];
-                    const inRange = series.dates.filter(day => day.timestamp >= min && day.timestamp <= max);
-                    const anchor = series.dates.findLast(day => day.timestamp < min);
-                    const lineDays = anchor ? [anchor,...inRange] : inRange;
-                    const last = series.dates.findLast(day => day.timestamp <= max);
-                    const recordDay = series.dates.findLast(day => day.recordModels.length && day.timestamp <= max);
-                    const panel = document.createElement('article'); panel.className = `progress-card${definition.key === 'ultimate' ? ' is-ultimate' : ''}`;
-                    panel.innerHTML = `<header><h4>${definition.label}</h4>${last ? `<b>${fmtScore(last.frontierScore)}</b><p>${recordDay.recordModels.join(' & ')} · <time datetime="${recordDay.date}">${fmtDate(recordDay.timestamp)}</time></p>` : ''}</header>`;
-                    if (!lineDays.length) panel.insertAdjacentHTML('beforeend','<p class="progress-empty">No valid observations in this range.</p>');
-                    else {
-                        const W=560,H=250,p={l:48,r:18,t:18,b:38}; const x=t=>p.l+(Math.max(min,Math.min(max,t))-min)/Math.max(1,max-min)*(W-p.l-p.r); const y=v=>p.t+(yMax-v)/yMax*(H-p.t-p.b);
-                        const path=lineDays.map((day,i)=>i ? `H ${x(day.timestamp)} V ${y(day.frontierScore)}` : `M ${x(Math.max(min,day.timestamp))} ${y(day.frontierScore)}`).join(' ');
-                        const ticks=[0,yMax/2,yMax];
-                        panel.insertAdjacentHTML('beforeend',`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${definition.label} running frontier from ${fmtDate(min)} to ${fmtDate(max)}"><g class="progress-gridlines">${ticks.map(t=>`<line x1="${p.l}" x2="${W-p.r}" y1="${y(t)}" y2="${y(t)}"/><text x="${p.l-8}" y="${y(t)+4}">${fmtScore(t)}</text>`).join('')}</g><path class="progress-step" d="${path}"/><g class="progress-points"></g><g class="progress-dates"><text x="${p.l}" y="${H-10}">${fmtShort(min)}</text><text x="${W-p.r}" y="${H-10}">${fmtShort(max)}</text></g></svg>`);
-                        const points = series.dates.filter(day=>day.timestamp>=min&&day.timestamp<=max).flatMap(day=>day.observations.filter(point=>state.all||point.isRecord));
-                        const group=panel.querySelector('.progress-points'); points.forEach(point=>{ const node=document.createElementNS('http://www.w3.org/2000/svg','circle'); node.setAttribute('cx',x(point.timestamp));node.setAttribute('cy',y(point.score));node.setAttribute('r',point.isRecord?'4.5':'2.5');node.setAttribute('class',point.isRecord?'is-record':'is-ordinary');node.setAttribute('tabindex','0');node.setAttribute('role','button');node.setAttribute('aria-label',`${point.name}, ${fmtDate(point.timestamp)}, ${fmtScore(point.score)}${point.isRecord?', new record':''}`); const previous=series.dates.findLast(day=>day.timestamp<point.timestamp&&day.recordModels.length); ['mouseenter','focus','click','touchstart'].forEach(event=>node.addEventListener(event,()=>describe(point,definition,previous),{passive:true})); group.append(node); });
-                    }
-                    grid.append(panel);
-                    if (recordDay) summary.insertAdjacentHTML('beforeend',`<p>${definition.label}: ${fmtScore(recordDay.frontierScore)}, ${recordDay.recordModels.join(' and ')}, ${fmtDate(recordDay.timestamp)}.</p>`);
-                });
-                document.querySelector('.progress-scale-note').textContent = state.scale === 'zoomed' ? `Zoomed scale: 0–${yMax}%. Select 0–100% to view scores against the full benchmark range. All panels share the same axes.` : 'Full benchmark scale: 0–100%. All panels share the same axes.';
-            };
-            document.querySelectorAll('[data-progress-range],[data-progress-scale]').forEach(button=>button.addEventListener('click',()=>{ const group=button.dataset.progressRange?'range':'scale'; state[group]=button.dataset.progressRange||button.dataset.progressScale; document.querySelectorAll(`[data-progress-${group}]`).forEach(item=>item.setAttribute('aria-pressed',String(item===button))); renderProgress(); }));
-            document.querySelector('[data-progress-all]')?.addEventListener('click',event=>{ state.all=!state.all; event.currentTarget.setAttribute('aria-pressed',String(state.all)); renderProgress(); });
-            renderProgress();
-        }
-
         // --- Fast, composable model filters ---
         const modelFilterInput = document.getElementById('ultimate-model-filter');
         const providerFilterButtons = Array.from(document.querySelectorAll('.provider-filter-btn'));

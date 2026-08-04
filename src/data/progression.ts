@@ -24,8 +24,9 @@ export type ProgressScale = 'zoomed' | 'full';
 export interface ProgressWindow { min: number; max: number }
 
 /** A shared, real-time window. Recent is anchored to the data, never today's date. */
-export function capabilityTimeWindow(series: CapabilitySeries, range: ProgressRange, recentMonths = 12): ProgressWindow | null {
-  const timestamps = Object.values(series).flatMap(item => item.dates.map(day => day.timestamp)).filter(Number.isFinite);
+export function capabilityTimeWindow(series: CapabilitySeries | Progression, range: ProgressRange, recentMonths = 18): ProgressWindow | null {
+  const progressions = 'dates' in series ? [series] : Object.values(series);
+  const timestamps = progressions.flatMap(item => item.dates.map(day => day.timestamp)).filter(Number.isFinite);
   if (!timestamps.length) return null;
   const max = Math.max(...timestamps);
   if (range === 'full') return { min: Math.min(...timestamps), max };
@@ -47,6 +48,34 @@ export function capabilityYDomain(series: CapabilitySeries, window: ProgressWind
   const highest = Math.max(0, ...Object.values(series).flatMap(item => progressionInWindow(item, window).map(day => day.frontierScore)));
   const headed = highest * 1.12;
   return [0, Math.min(100, Math.max(5, Math.ceil(headed / 5) * 5))];
+}
+
+/** Domain for the single selected metric. */
+export function progressionYDomain(progression: Progression, window: ProgressWindow | null, scale: ProgressScale): [number, number] {
+  if (scale === 'full') return [0, 100];
+  const highest = Math.max(0, ...visibleObservations(progression, window, true).map(point => point.score));
+  return [0, Math.min(100, Math.max(5, Math.ceil((highest * 1.12) / 5) * 5))];
+}
+
+export function frontierStepPath(points: Array<{x:number;y:number}>): string {
+  return points.map((point, index) => index ? `H ${point.x} V ${point.y}` : `M ${point.x} ${point.y}`).join(' ');
+}
+
+export function resolveReleaseDate(name: string, recordDate: string | undefined, metadata: ReadonlyMap<string,string>, aliases: ReadonlyMap<string,string> = new Map()): string | undefined {
+  const valid = (date: string | undefined) => typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date) && Number.isFinite(Date.parse(`${date}T00:00:00Z`));
+  if (valid(recordDate)) return recordDate;
+  const exact = metadata.get(name);
+  if (valid(exact)) return exact;
+  const canonicalName = aliases.get(name);
+  const aliased = canonicalName ? metadata.get(canonicalName) : undefined;
+  return valid(aliased) ? aliased : undefined;
+}
+
+export function classifyProvider(name: string): string {
+  const value=name.toLowerCase();
+  if(value.includes('gemini')) return 'Google'; if(value.includes('gpt')||value.includes('o3')||value.includes('o4')) return 'OpenAI';
+  if(value.includes('claude')) return 'Anthropic'; if(value.includes('grok')) return 'xAI'; if(value.includes('llama')||value.includes('muse')) return 'Meta';
+  if(value.includes('deepseek')) return 'DeepSeek'; return 'Other';
 }
 
 export function visibleObservations(progression: Progression, window: ProgressWindow | null, showAll: boolean): ProgressPoint[] {
