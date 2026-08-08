@@ -300,16 +300,6 @@ export const benchmarks = {
             }
         },
         {
-            name: 'GPT-5.6 Sol (high) - AUGUST',
-            scores: {
-                'lvl1': 57,
-                'lvl2': 49,
-                'lvl3': 33,
-                'lvl4': 16,
-                'lvl5': 0
-            }
-        },
-        {
             name: 'Claude 5 Fable (high)',
             releaseDate: '2026-07-18',
             scores: {
@@ -402,6 +392,7 @@ export const benchmarks = {
         { name: 'Gemini 3.0 Flash Preview', scores: { worm: 15, koala: 19, crow: 2, octopus: 0 } },
         { name: 'GPT-5.5', scores: { worm: 29, koala: 30, crow: 18, octopus: 0 } },
         { name: 'GPT-5.6 Sol (high) - JULY', scores: { worm: 51, koala: 46, crow: 36, octopus: 3 } },
+        { name: 'GPT-5.6 Sol (high) - AUGUST', scores: { worm: 57, koala: 49, crow: 33, octopus: 16 } },
         { name: 'Claude 5 Fable (high)', scores: { worm: 30, koala: 19, crow: 6, octopus: 0 } },
         { name: 'Claude 4.8 Opus (high)', scores: { worm: 14, koala: 0, crow: 0, octopus: 0 } },
         { name: 'Claude 5 Opus (high)', scores: { worm: 25, koala: 1, crow: 0, octopus: 0 } },
