@@ -289,13 +289,23 @@ export const benchmarks = {
             }
         },
         {
-            name: 'GPT-5.6 Sol (high)',
+            name: 'GPT-5.6 Sol (high) - JULY',
             releaseDate: '2026-07-12',
             scores: {
                 'lvl1': 86,
                 'lvl2': 71,
                 'lvl3': 65,
                 'lvl4': 25,
+                'lvl5': 0
+            }
+        },
+        {
+            name: 'GPT-5.6 Sol (high) - AUGUST',
+            scores: {
+                'lvl1': 57,
+                'lvl2': 49,
+                'lvl3': 33,
+                'lvl4': 16,
                 'lvl5': 0
             }
         },
@@ -391,7 +401,7 @@ export const benchmarks = {
         { name: 'Gemini 3.1 Flashlite GA', scores: { worm: 16, koala: 14, crow: 8, octopus: 0 } },
         { name: 'Gemini 3.0 Flash Preview', scores: { worm: 15, koala: 19, crow: 2, octopus: 0 } },
         { name: 'GPT-5.5', scores: { worm: 29, koala: 30, crow: 18, octopus: 0 } },
-        { name: 'GPT-5.6 Sol (high)', scores: { worm: 51, koala: 46, crow: 36, octopus: 3 } },
+        { name: 'GPT-5.6 Sol (high) - JULY', scores: { worm: 51, koala: 46, crow: 36, octopus: 3 } },
         { name: 'Claude 5 Fable (high)', scores: { worm: 30, koala: 19, crow: 6, octopus: 0 } },
         { name: 'Claude 4.8 Opus (high)', scores: { worm: 14, koala: 0, crow: 0, octopus: 0 } },
         { name: 'Claude 5 Opus (high)', scores: { worm: 25, koala: 1, crow: 0, octopus: 0 } },
@@ -412,7 +422,7 @@ export const benchmarks = {
         { name: 'Muse Spark (thinking)', scores: { mouse: 3, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Gemini 3.0 Flash Preview', scores: { mouse: 24, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'GPT-5.5', scores: { mouse: 39, spider: 48, wolf: 22, hawk: 0, python: 0 } },
-        { name: 'GPT-5.6 Sol (high)', scores: { mouse: 97, spider: 68, wolf: 59, hawk: 0, python: 0 } },
+        { name: 'GPT-5.6 Sol (high) - JULY', scores: { mouse: 97, spider: 68, wolf: 59, hawk: 0, python: 0 } },
         { name: 'Claude 5 Fable (high)', scores: { mouse: 38, spider: 20, wolf: 15, hawk: 0, python: 0 } },
         { name: 'Claude 3 Opus', releaseDate: '2024-03-04', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Claude 4.8 Opus (high)', scores: { mouse: 56, spider: 94, wolf: 25, hawk: 0, python: 0 } }

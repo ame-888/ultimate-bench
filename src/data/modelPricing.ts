@@ -7,7 +7,7 @@
 export const PRICING_CHECKED_ON = '2026-07-27';
 
 export const modelPricing = {
-    'GPT-5.6 Sol (high)': { input: 2.50, output: 15.00, source: 'https://openai.com/api/pricing/' },
+    'GPT-5.6 Sol (high) - JULY': { input: 2.50, output: 15.00, source: 'https://openai.com/api/pricing/' },
     'GPT-5.5': { input: 2.00, output: 14.00, source: 'https://openai.com/api/pricing/' },
     'GPT-5.5 Instant (0529)': { input: 0.25, output: 2.00, source: 'https://openai.com/api/pricing/' },
     'GPT-5.5 Instant (0505)': { input: 0.25, output: 2.00, source: 'https://openai.com/api/pricing/' },
