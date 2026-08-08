@@ -121,7 +121,7 @@ test('published migration preserves Active fields and excludes all non-Active fi
 });
 test('Overall is equal mean and canonical leaderboard derives recalculated values',()=>{
  assert.equal(calculateOverall([31/63,15/63,31/63]),77/189);
- const built=buildLeaderboard(benchmarks),row=built.rows.find(x=>x.name==='GPT-5.6 Sol (high)');assert.equal(row.scores.visual,688/63);assert.equal(row.scores['data-retrieval'],311/63);assert.equal(row.scores.chess,469/63);assert.ok(Math.abs(row.score-(688+311+469)/63/3)<1e-12);
+ const built=buildLeaderboard(benchmarks),row=built.rows.find(x=>x.name==='GPT-5.6 Sol (high) - JULY');assert.equal(row.scores.visual,688/63);assert.equal(row.scores['data-retrieval'],311/63);assert.equal(row.scores.chess,469/63);assert.ok(Math.abs(row.score-(688+311+469)/63/3)<1e-12);
 });
 test('UI and methodology expose fixed scale and distinct zero/status labels',async()=>{
  const fs=await import('node:fs/promises');const [home,method,chess,visual,readme]=await Promise.all(['src/pages/index.astro','src/pages/methodology.astro','src/pages/methodology/chess-bench.astro','src/pages/methodology/visual-bench.astro','README.md'].map(x=>fs.readFile(x,'utf8')));

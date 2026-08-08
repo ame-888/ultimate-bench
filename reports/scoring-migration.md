@@ -32,7 +32,7 @@ Generated from preserved Active-level results. “Previous” reproduces the for
 | Grok 4.3 Fast | 0.2927 | 0.2222 |
 | GPT-5.5 | 11.2439 | 8.1111 |
 | GPT-5.5 Instant (0624) | 5.2561 | 3.9683 |
-| GPT-5.6 Sol (high) | 16.3415 | 10.9206 |
+| GPT-5.6 Sol (high) - JULY | 16.3415 | 10.9206 |
 | Claude 5 Fable (high) | 8.5366 | 6.5079 |
 | Gemini 3.6 Flash | 10.1098 | 7.4921 |
 | Gemini 3.6 Flash (with code execution) | 12.2317 | 9.2857 |
@@ -58,7 +58,7 @@ Generated from preserved Active-level results. “Previous” reproduces the for
 | Gemini 3.1 Flashlite GA | 4.1026 | 1.2063 |
 | Gemini 3.0 Flash Preview | 3.1795 | 0.9683 |
 | GPT-5.5 | 8.7179 | 2.5556 |
-| GPT-5.6 Sol (high) | 17.4872 | 4.9365 |
+| GPT-5.6 Sol (high) - JULY | 17.4872 | 4.9365 |
 | Claude 5 Fable (high) | 4.8718 | 1.4603 |
 | Claude 4.8 Opus (high) | 0.7179 | 0.2222 |
 | Claude 5 Opus (high) | 1.3846 | 0.4286 |
@@ -79,14 +79,14 @@ Generated from preserved Active-level results. “Previous” reproduces the for
 | Muse Spark (thinking) | 0.0674 | 0.0476 |
 | Gemini 3.0 Flash Preview | 0.5393 | 0.3810 |
 | GPT-5.5 | 5.2584 | 3.5397 |
-| GPT-5.6 Sol (high) | 11.2022 | 7.4444 |
+| GPT-5.6 Sol (high) - JULY | 11.2022 | 7.4444 |
 | Claude 5 Fable (high) | 3.2697 | 2.1905 |
 
 ## Overall and rank migration
 
 | Model | Previous Overall | Previous rank | New Overall | New rank | Rank changed |
 | --- | ---: | ---: | ---: | ---: | --- |
-| GPT-5.6 Sol (high) | 15.0103 | 1 | 7.7672 | 1 | No |
+| GPT-5.6 Sol (high) - JULY | 15.0103 | 1 | 7.7672 | 1 | No |
 | Gemini 3.1 Pro Preview | 10.0145 | 2 | 6.3175 | 2 | No |
 | GPT-5.5 | 8.4068 | 3 | 4.7354 | 3 | No |
 | Gemini 3.5 Flash | 6.1562 | 4 | 4.1958 | 4 | No |
