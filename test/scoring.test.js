@@ -73,16 +73,17 @@ test('Grok 4.5 Fast DATA results are complete, official, and do not qualify for 
  const built=buildLeaderboard(benchmarks),row=built.arenaRows['data-retrieval'].find(item=>item.name===record.name);
  assert.ok(row?.rank);assert.equal(built.rows.some(item=>item.name===record.name),false);
 });
-test('GPT-5.6 Sol August results belong only to DATA and do not qualify for Overall',()=>{
+test('GPT-5.6 Sol August Visual and DATA results do not qualify for Overall without Chess',()=>{
  const name='GPT-5.6 Sol (high) - AUGUST';
- assert.equal(benchmarks.models.some(row=>row.name===name),false);
+ const visualRecords=benchmarks.models.filter(row=>row.name===name);assert.equal(visualRecords.length,1);
+ assert.deepEqual(visualRecords[0].scores,{lvl1:92,lvl2:84,lvl3:85,lvl4:50,lvl5:0});
  assert.equal(benchmarks.chessModels.some(row=>row.name===name),false);
  const record=benchmarks.dataRetrieval.find(row=>row.name===name);assert.ok(record);
  assert.deepEqual(record.scores,{worm:57,koala:49,crow:33,octopus:16});
  assert.equal(Object.hasOwn(record.scores,'raven'),false);assert.equal(Object.hasOwn(record.scores,'athena'),false);
  const built=buildLeaderboard(benchmarks);
  assert.ok(built.arenaRows['data-retrieval'].some(row=>row.name===name));
- assert.equal(built.arenaRows.visual.some(row=>row.name===name),false);
+ assert.ok(built.arenaRows.visual.some(row=>row.name===name));
  assert.equal(built.arenaRows.chess.some(row=>row.name===name),false);
  assert.equal(built.rows.some(row=>row.name===name),false);
 });

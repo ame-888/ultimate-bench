@@ -300,6 +300,16 @@ export const benchmarks = {
             }
         },
         {
+            name: 'GPT-5.6 Sol (high) - AUGUST',
+            scores: {
+                'lvl1': 92,
+                'lvl2': 84,
+                'lvl3': 85,
+                'lvl4': 50,
+                'lvl5': 0
+            }
+        },
+        {
             name: 'Claude 5 Fable (high)',
             releaseDate: '2026-07-18',
             scores: {
