@@ -18,7 +18,7 @@ if (Object.keys(opponentSettings).length !== levels.length) throw new Error('Eve
 const [mouse, spider, wolf, hawk, python, hydra] = levels;
 const levelLabel = (level: typeof levels[number]) => `${level.status} · Level ${level.number} · ${level.status === LEVEL_STATUSES.ACTIVE ? 'weight' : 'reserved weight'} ${level.weight}`;
 ---
-<Layout robots="noindex, nosnippet" title="Chess Bench Methodology | Ultimate Bench" description="Manual administration, match rules, scoring, level protocols, independent administration, and limitations for Chess Bench.">
+<Layout title="Chess Bench Methodology | Ultimate Bench" description="Manual administration, match rules, scoring, level protocols, independent administration, and limitations for Chess Bench.">
 <main class="content-page bench-methodology chess-methodology" data-chess-methodology>
   <MethodologyNotice />
   <header class="page-heading" id="overview">

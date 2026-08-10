@@ -1,0 +1,29 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { benchmarks } from '../data/benchmarks';
+import { ARENAS, activeLevels, canonicalDenominator, operationalWeight, type ArenaId } from '../data/benchmarkSpec';
+import { buildLeaderboard } from '../data/leaderboard';
+import { formatAggregateScore } from '../data/formatting';
+
+interface Props { arenaId: ArenaId; title: string; description: string; definition: string; evaluates: string; doesNot: string; methodologyPath: string; }
+const { arenaId, title, description, definition, evaluates, doesNot, methodologyPath } = Astro.props;
+const arena = Object.values(ARENAS).find(item => item.id === arenaId)!;
+const rows = buildLeaderboard(benchmarks as any).arenaRows[arenaId];
+const ranked = rows.filter(row => row.rank !== null).slice(0, 8);
+const active = activeLevels(arena);
+const denominator = canonicalDenominator(arena);
+const operational = operationalWeight(arena);
+---
+<Layout title={title} description={description}>
+  <main class="overview-page">
+    <header class="hero"><p class="eyebrow">Benchmark overview</p><h1>{arena.name}</h1><p>{definition}</p><div class="actions"><a class="primary" href="/#global-leaderboard">Interactive leaderboard</a><a href={methodologyPath}>Detailed methodology</a><a href="/analysis">Analysis</a></div></header>
+    <section aria-labelledby="scope"><h2 id="scope">What this arena measures</h2><div class="two"><article><h3>Evaluates</h3><p>{evaluates}</p></article><article><h3>Does not establish</h3><p>{doesNot}</p></article></div></section>
+    <section aria-labelledby="structure"><h2 id="structure">Published six-level structure</h2><p>Each position has a Progressive Level Weighting value of 1, 2, 4, 8, 16, or 32. The arena score is <code>Σ(result × level weight) / 63</code>. The permanent denominator is {denominator}; the current operational weight is {operational}/63 and the remaining weight is reserved.</p><div class="table-wrap"><table><thead><tr><th>Level</th><th>Name</th><th>Status</th><th>Weight</th></tr></thead><tbody>{arena.levels.map(level=><tr><td>{level.number}</td><th scope="row">{level.name}</th><td>{level.status}</td><td>{level.weight}</td></tr>)}</tbody></table></div><aside><strong>Published design, not a construction notice.</strong> Planned and Locked describe intentionally reserved benchmark levels. They are part of the benchmark design and do not indicate unfinished website content.</aside></section>
+    <section aria-labelledby="results"><h2 id="results">Current ranked configurations</h2><p>Official arena rank requires results for all {active.length} Active levels. Numeric results and INVALID count toward coverage; UNAVAILABLE and NOT_TESTED make a result provisional. A provisional score can remain visible, but cannot receive an official rank.</p><div class="table-wrap"><table><thead><tr><th>Rank</th><th>Named configuration</th><th>Arena score</th><th>Active coverage</th></tr></thead><tbody>{ranked.map(row=><tr><td>{row.rank}</td><th scope="row">{row.name}</th><td>{formatAggregateScore(row.score)}%</td><td>{row.canonical.coverage}</td></tr>)}</tbody></table></div></section>
+    <section aria-labelledby="states"><h2 id="states">How result states work</h2><div class="states"><p><strong>Numeric zero</strong> is an administered, valid result that earned zero.</p><p><strong>INVALID</strong> is an attempted but non-evaluable result; it contributes zero while counting as covered.</p><p><strong>UNAVAILABLE</strong> means the configuration could not be accessed; it contributes zero and makes coverage incomplete.</p><p><strong>NOT_TESTED</strong> means administration did not occur; it contributes zero and makes coverage incomplete.</p></div></section>
+    <section aria-labelledby="limits"><h2 id="limits">Limitations and interpretation</h2><p>These experimental scores are snapshots of named accessible configurations under documented conditions. They do not measure universal intelligence, safety, suitability, cost, or every real-world workflow. Provider-controlled interfaces and updates can affect results, protected active material limits independent reproduction, and small score differences should be interpreted cautiously.</p><p class="links"><a href={methodologyPath}>Read the arena protocol</a><a href="/guide">Use the practical guide</a><a href="/blog/how-to-read-ai-benchmark">How to read a benchmark</a><a href="/glossary">Open the glossary</a></p></section>
+  </main>
+</Layout>
+<style>
+.overview-page{max-width:72rem;margin:auto;padding:clamp(4rem,8vw,7rem) 1.25rem 7rem;color:#b9c5d4}.hero{max-width:58rem;margin-bottom:5rem}.eyebrow{color:#67e8f9;font-size:.72rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase}h1{margin:.5rem 0 1.5rem;color:#f8fafc;font-size:clamp(3.2rem,8vw,6.5rem);line-height:1;letter-spacing:-.06em}.hero>p:last-of-type{font-size:1.18rem;line-height:1.8}.actions,.links{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.8rem}.actions a,.links a{padding:.72rem 1rem;border:1px solid #38506a;border-radius:.6rem;color:#bae6fd;font-weight:700;text-decoration:none}.actions .primary{background:#0e7490;color:white}section{margin-top:4.5rem}h2{color:#f1f5f9;font-size:clamp(1.8rem,4vw,2.7rem)}h3{color:#e2e8f0}p{line-height:1.8}.two,.states{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.two article,.states p,aside{margin:0;padding:1.3rem;border:1px solid #29384d;border-radius:.8rem;background:#101b2b}.table-wrap{overflow-x:auto;margin:1.5rem 0}table{width:100%;border-collapse:collapse;background:#0d1726}th,td{padding:.9rem;text-align:left;border-bottom:1px solid #26354a}thead{color:#93c5fd}code{color:#a7f3d0}aside{border-color:#81651d;color:#fde68a}@media(max-width:650px){.two,.states{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>

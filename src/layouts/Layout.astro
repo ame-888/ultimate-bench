@@ -9,6 +9,7 @@ const {
     robots
 } = Astro.props;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const websiteJsonLd = { '@context': 'https://schema.org', '@type': 'WebSite', name: 'Ultimate Bench', url: new URL('/', Astro.site).href, description: 'Independent experimental AI model benchmarking across visual, data retrieval, and chess evaluations.' };
 ---
 <!doctype html>
 <html lang="en">
@@ -26,6 +27,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:url" content={canonicalUrl} />
+        <script type="application/ld+json" set:html={JSON.stringify(websiteJsonLd)} />
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;900&display=swap" rel="stylesheet">
