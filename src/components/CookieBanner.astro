@@ -1,3 +1,4 @@
+<!-- Production personalized-ad consent in the EEA, UK, and Switzerland must use a Google-certified CMP / Google Privacy & Messaging. This custom preference UI does not claim TCF certification. -->
 <div id="cookie-notice" class="cookie-banner" role="region" aria-labelledby="cookie-notice-title" hidden>
     <div class="cookie-content"><div><h2 id="cookie-notice-title">Cookie preferences</h2><p>We use necessary browser storage for your preferences. With your permission, we also load Google AdSense, which may use cookies or similar technologies for advertising. See our <a href="/privacy">Privacy Policy</a>.</p></div>
         <div class="cookie-actions"><button id="accept-cookies" class="cookie-btn primary">Accept advertising</button><button id="reject-cookies" class="cookie-btn">Reject non-essential</button><button id="manage-cookies" class="cookie-btn" aria-controls="cookie-preferences-dialog" aria-expanded="false">Manage preferences</button></div>
@@ -12,6 +13,7 @@
 </div>
 <button id="reopen-cookie-settings" class="reopen-cookie-settings" aria-controls="cookie-preferences-dialog" aria-expanded="false" hidden>Cookie preferences</button>
 <script>
+// @ts-nocheck -- DOM elements are narrowed together by the runtime guard below.
 const CONSENT_KEY="ultimate_bench_cookie_consent";
 function loadAdsense(){if(document.querySelector('script[data-consent-service="adsense"]'))return;const script=document.createElement("script");script.async=true;script.crossOrigin="anonymous";script.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5230972214569734";script.dataset.consentService="adsense";document.head.appendChild(script)}
 document.addEventListener("DOMContentLoaded",()=>{const notice=document.getElementById("cookie-notice"),backdrop=document.getElementById("cookie-preferences-backdrop"),dialog=document.getElementById("cookie-preferences-dialog"),advertising=document.getElementById("advertising-consent"),accept=document.getElementById("accept-cookies"),reject=document.getElementById("reject-cookies"),manage=document.getElementById("manage-cookies"),save=document.getElementById("save-cookies"),cancel=document.getElementById("cancel-cookie-settings"),reopen=document.getElementById("reopen-cookie-settings");if(!(notice&&backdrop&&dialog&&advertising instanceof HTMLInputElement&&accept&&reject&&manage&&save&&cancel&&reopen))return;

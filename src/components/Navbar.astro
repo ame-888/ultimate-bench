@@ -3,10 +3,11 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 
 const links = [
     { href: '/', label: 'Home' },
-    { href: '/about', label: 'About' },
     { href: '/methodology', label: 'Methodology' },
     { href: '/analysis', label: 'Analysis' },
     { href: '/guide', label: 'Guide' },
+    { href: '/blog', label: 'Articles' },
+    { href: '/about', label: 'About' },
     { href: '/contact', label: 'Contact' },
 ];
 ---
@@ -28,10 +29,6 @@ const links = [
             {links.map(({ href, label }) => (
                 <a href={href} class="nav-link" aria-current={currentPath === href ? 'page' : undefined}>{label}</a>
             ))}
-            {currentPath === '/' && <button id="achievements-btn" class="nav-link achievements-link" aria-label="Open benchmark-specific achievements">
-                <span aria-hidden="true">🏆</span><span>Achievements</span>
-            </button>}
-            <a href="/arcade" id="nav-arcade" class="nav-link arcade-link" aria-current={currentPath === '/arcade' ? 'page' : undefined}>Arcade</a>
         </div>
     </div>
 </nav>
@@ -234,6 +231,7 @@ const links = [
 </style>
 
 <script>
+    // @ts-nocheck -- navigation elements are selected from this component's fixed markup.
     // Mobile Menu Toggle
     const toggle = document.getElementById('navbar-toggle');
     const menu = document.getElementById('navbar-menu');

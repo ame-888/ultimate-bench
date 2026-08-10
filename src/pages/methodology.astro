@@ -39,7 +39,7 @@ const process = [
             <p class="hero-copy">A clear view of the public protocols, scoring rules, safeguards, and protected test material behind the current experimental comparison.</p>
         <section class="publication-download" aria-label="Complete methodology publication">
             <div><strong>Complete methodology · PDF · v{METHODOLOGY.version}</strong><span>Updated {METHODOLOGY.revisionDate}</span></div>
-            <div><a class="download" href={METHODOLOGY.pdfPath} download>Download complete methodology</a><a href={METHODOLOGY.canonicalPath}>Read complete methodology online</a></div>
+            <div><a class="download" href={METHODOLOGY.pdfPath} download>Download complete methodology</a><a href={METHODOLOGY.publicationPath}>Read complete methodology online</a></div>
         </section>
 
             <nav class="jump-links" aria-label="On this page">
@@ -137,6 +137,7 @@ const process = [
             </div>
             <p>These descriptive analyses have no significance test or confidence interval. Small globally qualified cohorts, uneven arena coverage, related configurations, provider-controlled settings, and protected test cases limit inference and independent reproduction. “Early-level collapse” is shown at level and status granularity rather than assigned as a cross-arena archetype because the data do not support a defensible cross-arena threshold.</p>
         </section>
+        <p><a href="/glossary">Open the public benchmark glossary</a> · <a href="/revisions">Review methodology and dataset revisions</a></p>
         <aside class="correction-card" aria-label="Benchmark migration note"><div><p class="section-label">Benchmark version · 29 July 2026</p><p>All arenas now use permanent denominator 63; Planned and Locked weights are reserved. Hydra returned from Active to Locked because no model passed Python, and its model-level zeroes were removed. Visual, Data Retrieval, Chess, and Overall scores changed, so active-only-denominator scores from the former version are not directly comparable.</p></div></aside>
         <section id="limitations" class="section-block limitations" aria-labelledby="limitations-title">
             <div class="section-intro compact">

@@ -6,7 +6,8 @@ export const METHODOLOGY = Object.freeze({
   title: 'Ultimate Bench: Methodology and Evaluation Protocol',
   webTitle: 'Ultimate Bench Methodology and Evaluation Protocol',
   description: 'The complete public methodology for Visual Bench, DATA Bench, and Chess Bench, including scoring, coverage, qualification, and limitations.',
-  canonicalPath: '/methodology/full/',
+  overviewPath: '/methodology/',
+  publicationPath: '/methodology/full/',
   pdfPath: '/methodology/ultimate-bench-methodology.pdf',
   versionedPdfPath: '/methodology/ultimate-bench-methodology-v1.0.0.pdf',
 });

@@ -15,7 +15,7 @@ async function findHtml(directory) {
   return paths;
 }
 
-const excludedRoutes = new Set(['/methodology/full/', '/methodology/visual-bench/', '/methodology/data-bench/', '/methodology/chess-bench/']);
+const excludedRoutes = new Set(['/methodology/full/']);
 
 const urls = (await findHtml(outputDirectory)).map((path) => {
   const page = relative(outputDirectory, path).split(sep).join('/');

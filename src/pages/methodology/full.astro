@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { METHODOLOGY, METHODOLOGY_SECTIONS, methodologyFacts } from '../../data/methodology';
-const canonical = new URL(METHODOLOGY.canonicalPath, Astro.site).href;
+const canonical = new URL(METHODOLOGY.publicationPath, Astro.site).href;
 ---
 <Layout robots="noindex, nosnippet" title={METHODOLOGY.webTitle} description={METHODOLOGY.description}>
   <Fragment slot="head">

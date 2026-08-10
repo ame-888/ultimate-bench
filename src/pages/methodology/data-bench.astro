@@ -10,7 +10,7 @@ const attainable=(activeWeight/denominator*100).toFixed(2);
 const formula=active.map(level=>`${level.weight===1?'':`${level.weight}×`}${level.name}`).join(' + ');
 const protocols=arena.levels.map(level=>({...level,anchor:`level-${level.number}-${level.name.toLowerCase()}`}));
 ---
-<Layout robots="noindex, nosnippet" title="DATA Bench Methodology | Ultimate Bench" description="Administration, exact-answer adjudication, level protocols, scoring, security, interpretation, and limitations for DATA Bench.">
+<Layout title="DATA Bench Methodology | Ultimate Bench" description="Administration, exact-answer adjudication, level protocols, scoring, security, interpretation, and limitations for DATA Bench.">
 <main class="content-page bench-methodology data-methodology" data-data-methodology data-active-level-count={active.length} data-operational-weight={activeWeight} data-complete-weight={denominator}>
   <MethodologyNotice />
 <header class="page-heading" id="overview"><span class="page-kicker">Arena 02 · Methodology</span><h1>DATA Bench Methodology</h1><p>How named chatbot products and interface configurations are evaluated on difficult, exact numerical information from obscure media-related sources.</p></header>
