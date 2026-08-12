@@ -343,6 +343,7 @@ export const benchmarks = {
         },
         {
             name: 'Claude 4.8 Opus (high)',
+            releaseDate: '2026-05-28',
             scores: {
                 'lvl1': 60,
                 'lvl2': 57,
@@ -426,6 +427,7 @@ export const benchmarks = {
         { name: 'GPT-5.6 Sol (high) - JULY', scores: { mouse: 97, spider: 68, wolf: 59, hawk: 0, python: 0 } },
         { name: 'Claude 5 Fable (high)', scores: { mouse: 38, spider: 20, wolf: 15, hawk: 0, python: 0 } },
         { name: 'Claude 3 Opus', releaseDate: '2024-03-04', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
-        { name: 'Claude 4.8 Opus (high)', scores: { mouse: 56, spider: 94, wolf: 25, hawk: 0, python: 0 } }
+        { name: 'Claude 4.8 Opus (high)', scores: { mouse: 56, spider: 94, wolf: 25, hawk: 0, python: 0 } },
+        { name: 'Claude 5 Opus (high)', scores: { mouse: 62, spider: 28, wolf: 43, hawk: 0, python: 0 } }
     ]
 };
