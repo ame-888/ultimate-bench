@@ -10,30 +10,16 @@ import { createParetoChartDomain, modelPricing, PRICING_CHECKED_ON, validatePric
 import { buildCapabilitySeries, resolveReleaseDate } from '../data/progression';
 import CapabilityTimeline from '../components/CapabilityTimeline.astro';
 import CreatureIcon from '../components/CreatureIcon.astro';
-import { getSimulatedDate, TIME_OFFSET } from '../scripts/TimeUtils';
+import { getSiteNow, isNewRelease, formatRelativeReleaseDate } from '../scripts/TimeUtils';
+import { getModelReleaseDate, validateModelMetadata } from '../data/modelMetadata';
 
 
 
 validateBenchmarkRecords(benchmarks);
 const canonicalLeaderboard = buildLeaderboard(benchmarks);
 
-// --- Simulated Time for Context ---
-const SIMULATED_NOW = getSimulatedDate();
-
-function isNew(dateStr) {
-    if (!dateStr) return false;
-    const release = new Date(dateStr);
-    const now = new Date(SIMULATED_NOW);
-    // Reset hours to compare just dates
-    release.setHours(0,0,0,0);
-    now.setHours(0,0,0,0);
-
-    const diffTime = now.getTime() - release.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    // Show new for items released in the last 30 days
-    return diffDays >= -1 && diffDays <= 30;
-}
+const BUILD_NOW = getSiteNow();
+const isNew = (dateStr) => isNewRelease(dateStr, BUILD_NOW);
 
 function formatReleaseDate(dateStr) {
     if (!dateStr) return 'Not recorded';
@@ -42,20 +28,7 @@ function formatReleaseDate(dateStr) {
     }).format(new Date(`${dateStr}T00:00:00Z`));
 }
 
-function formatTimeAgo(dateStr, now = SIMULATED_NOW) {
-    if (!dateStr) return '';
-    const release = new Date(`${dateStr}T00:00:00Z`);
-    const today = new Date(now);
-    const days = Math.max(0, Math.floor((today.getTime() - release.getTime()) / 86_400_000));
-    if (days === 0) return 'today';
-    if (days === 1) return '1 day ago';
-    if (days < 30) return `${days} days ago`;
-    const months = Math.floor(days / 30.4375);
-    if (months === 1) return '1 month ago';
-    if (months < 12) return `${months} months ago`;
-    const years = Math.floor(months / 12);
-    return `${years} ${years === 1 ? 'year' : 'years'} ago`;
-}
+const formatTimeAgo = (dateStr) => formatRelativeReleaseDate(dateStr, BUILD_NOW);
 
 const modelProviders = [
     { match: 'gemini', name: 'Google', slug: 'google' },
@@ -123,15 +96,15 @@ function computeRanks(items, scoreKeys) {
 
 // --- Unify Benchmark Data for Visual Mode ---
 const unifiedDataMap = new Map();
-const releaseDateByModel = new Map(
-    [benchmarks.models, benchmarks.dataRetrieval, benchmarks.chessModels]
-      .flat().filter(model => model.releaseDate).map(model => [model.name, model.releaseDate])
-);
+const benchmarkModelNames = [...new Set([benchmarks.models, benchmarks.dataRetrieval, benchmarks.chessModels].flat().map(model => model.name))];
+const metadataErrors = validateModelMetadata(benchmarkModelNames);
+if (metadataErrors.length) throw new Error(`Invalid model metadata:\n${metadataErrors.join('\n')}`);
+const releaseDateByModel = new Map(benchmarkModelNames.map(name => [name, getModelReleaseDate(name)]));
 
 benchmarks.models.forEach(m => {
     unifiedDataMap.set(m.name, {
         name: m.name,
-        releaseDate: m.releaseDate,
+        releaseDate: releaseDateByModel.get(m.name),
         lvl1: m.scores.lvl1,
         lvl2: m.scores.lvl2,
         lvl3: m.scores.lvl3,
@@ -633,7 +606,7 @@ function getRankDisplay(rank) {
                                         <tbody id={`${arena.id}-arena-summary`}>{arena.rows.map((item, index) => (
                                             <tr class="benchmark-row unified-row" data-model-name={item.name} hidden={index >= ARENA_PREVIEW_ROWS}>
                                                 <td class="rank" set:html={getRankDisplay(item.rank)}></td>
-                                                <th scope="row" class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}><span class="model-name" title={item.name}>{item.name}</span>{isNew(releaseDateByModel.get(item.name)) && <span class="new-badge">NEW</span>}</th>
+                                                <th scope="row" class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}><span class="model-name" title={item.name} data-release-date={releaseDateByModel.get(item.name)}>{item.name}</span>{isNew(releaseDateByModel.get(item.name)) && <span class="new-badge">NEW</span>}</th>
                                                 <td class="benchmark-cell score-cell">{formatAggregateScore(item.score)}%</td>
                                             </tr>
                                         ))}</tbody>
@@ -1130,6 +1103,6 @@ There are four Active levels. Raven is Planned with a documented proposed struct
 <script
     id="home-page-config"
     type="application/json"
-    set:html={JSON.stringify({ TIME_OFFSET, unifiedRawList: unifiedList, dataRawList: dataList, chessRawList: chessList, canonicalLeaders: { overall: canonicalModels[0]?.name, visual: canonicalLeaderboard.arenaLeaders.visual?.name, data: canonicalLeaderboard.arenaLeaders['data-retrieval']?.name, chess: canonicalLeaderboard.arenaLeaders.chess?.name } }).replaceAll('<', '\\u003c')}
+    set:html={JSON.stringify({ unifiedRawList: unifiedList, dataRawList: dataList, chessRawList: chessList, canonicalLeaders: { overall: canonicalModels[0]?.name, visual: canonicalLeaderboard.arenaLeaders.visual?.name, data: canonicalLeaderboard.arenaLeaders['data-retrieval']?.name, chess: canonicalLeaderboard.arenaLeaders.chess?.name } }).replaceAll('<', '\\u003c')}
 ></script>
 <script src="../scripts/home-page.js"></script>

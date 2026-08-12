@@ -1,9 +1,10 @@
 import { ARENA_LIST, LEVEL_STATUSES, RESULT_STATUSES, canonicalDenominator, operationalWeight } from './benchmarkSpec';
 import { benchmarks } from './benchmarks';
 import { buildLeaderboard } from './leaderboard';
-import type { BenchmarkCollections, BenchmarkRecord } from './scoring';
+import type { BenchmarkCollections } from './scoring';
 import { formatAggregateScore } from './formatting';
 import { modelPricing, validatePricing } from './modelPricing';
+import { getModelReleaseDate } from './modelMetadata';
 
 export const guideCapacity = ARENA_LIST.map(arena => {
   const denominator = canonicalDenominator(arena);
@@ -24,8 +25,6 @@ export const statusRows = [
 
 const collections = benchmarks as unknown as BenchmarkCollections;
 const leaderboard = buildLeaderboard(collections);
-const releaseDates = new Map<string, string>();
-for (const arena of ARENA_LIST) for (const row of (collections[arena.dataKey] ?? []) as BenchmarkRecord[]) if (row.releaseDate) releaseDates.set(row.name, row.releaseDate);
 
 export const guideComparisonRows = leaderboard.rows.map(row => {
   const pricing = validatePricing(modelPricing[row.name as keyof typeof modelPricing]);
@@ -33,7 +32,7 @@ export const guideComparisonRows = leaderboard.rows.map(row => {
     name: row.name, rank: row.rank, overall: formatAggregateScore(row.score),
     arenas: Object.fromEntries(ARENA_LIST.map(arena => [arena.id, formatAggregateScore(row.scores[arena.id])])),
     coverage: Object.fromEntries(ARENA_LIST.map(arena => [arena.id, row.results[arena.id].coverage])),
-    releaseDate: releaseDates.get(row.name) ?? 'Not recorded',
+    releaseDate: getModelReleaseDate(row.name) ?? 'Not recorded',
     pricing: pricing.valid ? `$${pricing.value.blendedCost.toFixed(2)} blended / 1M tokens` : 'Verified pricing unavailable',
   };
 });

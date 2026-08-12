@@ -4,7 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 const bundle = `/tmp/ultimate-bench-progression-${process.pid}.mjs`;
 execFileSync('node_modules/.bin/esbuild', ['test/progression-api.ts','--bundle','--platform=node','--format=esm',`--outfile=${bundle}`]);
-const { buildProgression, buildCapabilitySeries, buildLeaderboard, benchmarks } = await import(pathToFileURL(bundle));
+const { buildProgression, buildCapabilitySeries, buildLeaderboard, benchmarks, getModelReleaseDate } = await import(pathToFileURL(bundle));
 
 test('frontier is chronological, grouped, monotonic, and deterministic', () => {
   const result = buildProgression([
@@ -28,7 +28,7 @@ test('equal later scores do not manufacture a new record and malformed inputs ar
 
 test('canonical selectors exclude provisional arenas and use actual globally-qualified Ultimate scores', () => {
   const leaderboard = buildLeaderboard(benchmarks);
-  const dates = new Map(benchmarks.models.map(row => [row.name,row.releaseDate]));
+  const dates = new Map(benchmarks.models.map(row => [row.name,getModelReleaseDate(row.name)]));
   const series = buildCapabilitySeries(leaderboard.arenaRows, leaderboard.rows, name => dates.get(name));
   const provisional = leaderboard.arenaRows['data-retrieval'].find(row => row.rank === null);
   assert.ok(provisional);
@@ -43,7 +43,7 @@ test('canonical selectors exclude provisional arenas and use actual globally-qua
 test('selected metric domain is rounded, headed, and supports full scale', async () => {
   const { capabilityTimeWindow, progressionYDomain } = await import(pathToFileURL(bundle));
   const leaderboard = buildLeaderboard(benchmarks);
-  const dates = new Map(benchmarks.models.map(row => [row.name,row.releaseDate]));
+  const dates = new Map(benchmarks.models.map(row => [row.name,getModelReleaseDate(row.name)]));
   const series = buildCapabilitySeries(leaderboard.arenaRows, leaderboard.rows, name => dates.get(name));
   const window = capabilityTimeWindow(series, 'recent');
   const zoomed = progressionYDomain(series.ultimate, window, 'zoomed');
