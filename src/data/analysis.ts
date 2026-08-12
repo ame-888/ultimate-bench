@@ -1,6 +1,7 @@
 import { activeLevels, ARENA_LIST, RESULT_STATUSES, type ArenaDefinition, type ArenaId } from './benchmarkSpec';
 import { calculateArenaScore, normalizeResult, type BenchmarkCollections, type BenchmarkRecord } from './scoring';
 import type { LeaderboardRow } from './leaderboard';
+import { getModelReleaseDate } from './modelMetadata';
 
 export type ResultCategory = 'positive'|'zero'|'invalid'|'unavailable'|'not-tested';
 export const resultCategory = (value: unknown): ResultCategory => {
@@ -38,4 +39,4 @@ export function archetypes(rows:LeaderboardRow[],toolSensitive=new Set<string>()
 }
 export function matchedComparisons(benchmarks:BenchmarkCollections){return ARENA_LIST.flatMap(arena=>{const records=benchmarks[arena.dataKey]??[],groups=new Map<string,BenchmarkRecord[]>();records.filter(r=>r.comparison).forEach(r=>groups.set(r.comparison!.group,[...(groups.get(r.comparison!.group)??[]),r]));return [...groups].flatMap(([group,items])=>{const base=items.find(r=>r.comparison!.baseline),variants=items.filter(r=>!r.comparison!.baseline);if(!base)return [];return variants.map(variant=>({arena,group,condition:variant.comparison!.condition,baseline:base.name,comparison:variant.name,canonicalDelta:(calculateArenaScore(arena,variant.scores).score??0)-(calculateArenaScore(arena,base.scores).score??0),levels:activeLevels(arena).map(level=>{const before=normalizeResult(base.scores[level.key]),after=normalizeResult(variant.scores[level.key]);return {level,before,after,delta:typeof before==='number'&&typeof after==='number'?after-before:null,statusRegression:typeof before==='number'&&typeof after!=='number'}})}))})})}
 export function flatAverage(record:BenchmarkRecord,arena:ArenaDefinition,invalidAsZero=false){const v=activeLevels(arena).map(l=>exploratoryValue(record.scores[l.key],invalidAsZero)).filter((x):x is number=>x!==null);return v.length?mean(v):null}
-export function latestDatasetDate(benchmarks:BenchmarkCollections){const dates=Object.values(benchmarks).flat().map(r=>r.releaseDate).filter((x):x is string=>Boolean(x)).sort();return dates.at(-1)??null}
+export function latestDatasetDate(benchmarks:BenchmarkCollections){const dates=Object.values(benchmarks).flat().map(r=>getModelReleaseDate(r.name)).filter((x):x is string=>Boolean(x)).sort();return dates.at(-1)??null}

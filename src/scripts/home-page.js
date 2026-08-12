@@ -4,7 +4,8 @@ if (!(configElement instanceof HTMLScriptElement)) {
     throw new Error('Home page configuration is missing.');
 }
 
-const { TIME_OFFSET, unifiedRawList, dataRawList, chessRawList, canonicalLeaders } = JSON.parse(configElement.textContent || '{}');
+import { enhanceRelativeDates } from './TimeUtils.js';
+const { unifiedRawList, dataRawList, chessRawList, canonicalLeaders } = JSON.parse(configElement.textContent || '{}');
 
 function init() {
         const visualWrapper = document.getElementById('visual-benchmark-wrapper');
@@ -504,59 +505,8 @@ function init() {
         if (dataWrapper) dataWrapper.classList.add('hidden');
         if (chessWrapper) chessWrapper.classList.add('hidden');
 
-        // --- Dynamic "NEW" Badge Logic ---
-        const timeOffset = TIME_OFFSET;
-        const simNow = new Date(new Date().getTime() + timeOffset);
-
-        const relativeReleaseTime = (dateStr) => {
-            const release = new Date(`${dateStr}T00:00:00Z`);
-            const days = Math.max(0, Math.floor((simNow.getTime() - release.getTime()) / 86400000));
-            if (days === 0) return 'today';
-            if (days === 1) return '1 day ago';
-            if (days < 30) return `${days} days ago`;
-            const months = Math.floor(days / 30.4375);
-            if (months === 1) return '1 month ago';
-            if (months < 12) return `${months} months ago`;
-            const years = Math.floor(months / 12);
-            return `${years} ${years === 1 ? 'year' : 'years'} ago`;
-        };
-
-        document.querySelectorAll('.ultimate-model .model-name[data-release-date]').forEach(el => {
-            const relative = el.parentElement?.querySelector('.release-time-ago');
-            if (relative) relative.textContent = relativeReleaseTime(el.getAttribute('data-release-date'));
-        });
-
-        document.querySelectorAll('.model-name[data-release-date]').forEach(el => {
-            const dateStr = el.getAttribute('data-release-date');
-            if (!dateStr) return;
-
-            const release = new Date(dateStr);
-            // Reset hours
-            release.setHours(0,0,0,0);
-            const today = new Date(simNow);
-            today.setHours(0,0,0,0);
-
-            const diffTime = today.getTime() - release.getTime();
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-            // Should be new if within 30 days
-            const isNew = diffDays >= -1 && diffDays <= 30;
-
-            const nameLine = el.closest('.model-name-line');
-            if (!nameLine) return;
-
-            let badge = nameLine.querySelector('.new-badge');
-            if (isNew) {
-                if (!badge) {
-                    badge = document.createElement('span');
-                    badge.className = 'new-badge';
-                    badge.textContent = 'NEW';
-                    nameLine.appendChild(badge);
-                }
-            } else {
-                if (badge) badge.remove();
-            }
-        });
+        // Progressive enhancement uses the visitor's UTC calendar day, not build time.
+        enhanceRelativeDates(document);
 
         // Sorting and DOM update logic
         function calculateScores(item, keys, method, globalHardestKey) {

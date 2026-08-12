@@ -7,7 +7,6 @@ export const benchmarks = {
     models: [
         {
             name: 'Muse Spark 1.1',
-            releaseDate: '2026-07-15',
             scores: {
                 'lvl1': 68,
                 'lvl2': 40,
@@ -28,7 +27,6 @@ export const benchmarks = {
         },
         {
             name: 'GPT-5.5 Instant (0529)',
-            releaseDate: '2026-05-29',
             scores: {
                 'lvl1': 48,
                 'lvl2': 33,
@@ -80,7 +78,6 @@ export const benchmarks = {
         },
         {
             name: 'Claude 4.6 Sonnet (max thinking)',
-            releaseDate: '2026-02-21',
             scores: {
                 'lvl1': 14,
                 'lvl2': 6,
@@ -98,12 +95,10 @@ export const benchmarks = {
                 'lvl4': 0,
                 'lvl5': 0
             },
-            releaseDate: '2026-02-21'
         },
         {
             name: 'Gemini 3.5 Flash',
             comparison: { group: 'gemini-3-5-flash-code', condition: 'Code execution unavailable', baseline: true },
-            releaseDate: '2026-05-22',
             scores: {
                 'lvl1': 79,
                 'lvl2': 76,
@@ -122,7 +117,6 @@ export const benchmarks = {
                 'lvl4': 0,
                 'lvl5': 0
             },
-            releaseDate: '2026-02-20'
         },
         {
             name: 'Gemini 3.1 Pro Preview (with code execution)',
@@ -134,12 +128,10 @@ export const benchmarks = {
                 'lvl4': 0,
                 'lvl5': 0
             },
-            releaseDate: '2026-02-20'
         },
         {
             name: 'Gemini 3.1 Flashlite GA',
             comparison: { group: 'gemini-3-1-flashlite-code', condition: 'Code execution unavailable', baseline: true },
-            releaseDate: '2026-05-09',
             scores: {
                 'lvl1': 38,
                 'lvl2': 33,
@@ -169,7 +161,6 @@ export const benchmarks = {
                 'lvl4': 4,
                 'lvl5': 0
             },
-            releaseDate: '2026-02-06'
         },
         {
             name: 'Gemini 2.5 Pro',
@@ -204,7 +195,6 @@ export const benchmarks = {
         {
             name: 'Gemini 3.0 Flash Preview',
             comparison: { group: 'gemini-3-0-flash-code', condition: 'Code execution unavailable', baseline: true },
-            releaseDate: '2025-12-23',
             scores: {
                 'lvl1': 81,
                 'lvl2': 60,
@@ -232,11 +222,9 @@ export const benchmarks = {
                 'lvl4': 0,
                 'lvl5': 0
             },
-            releaseDate: '2026-02-18'
         },
         {
             name: 'Muse Spark (thinking)',
-            releaseDate: '2026-05-27',
             scores: {
                 'lvl1': 'INVALID',
                 'lvl2': 'INVALID',
@@ -247,7 +235,6 @@ export const benchmarks = {
         },
         {
             name: 'GPT-5.5 Instant (0505)',
-            releaseDate: '2026-05-05',
             scores: {
                 'lvl1': 30,
                 'lvl2': 38,
@@ -258,7 +245,6 @@ export const benchmarks = {
         },
         {
             name: 'Grok 4.3 Fast',
-            releaseDate: '2026-05-09',
             scores: {
                 'lvl1': 6,
                 'lvl2': 4,
@@ -269,7 +255,6 @@ export const benchmarks = {
         },
         {
             name: 'GPT-5.5',
-            releaseDate: '2026-06-02',
             scores: {
                 'lvl1': 71,
                 'lvl2': 64,
@@ -290,7 +275,6 @@ export const benchmarks = {
         },
         {
             name: 'GPT-5.6 Sol (high) - JULY',
-            releaseDate: '2026-07-12',
             scores: {
                 'lvl1': 86,
                 'lvl2': 71,
@@ -311,7 +295,6 @@ export const benchmarks = {
         },
         {
             name: 'Claude 5 Fable (high)',
-            releaseDate: '2026-07-18',
             scores: {
                 'lvl1': 72,
                 'lvl2': 71,
@@ -322,7 +305,6 @@ export const benchmarks = {
         },
         {
             name: 'Gemini 3.6 Flash',
-            releaseDate: '2026-07-21',
             scores: {
                 'lvl1': 74,
                 'lvl2': 67,
@@ -343,7 +325,6 @@ export const benchmarks = {
         },
         {
             name: 'Claude 4.8 Opus (high)',
-            releaseDate: '2026-05-28',
             scores: {
                 'lvl1': 60,
                 'lvl2': 57,
@@ -364,7 +345,6 @@ export const benchmarks = {
         },
         {
             name: 'Grok 4.5 Fast',
-            releaseDate: '2026-07-22',
             scores: {
                 'lvl1': 26,
                 'lvl2': 9,
@@ -375,7 +355,6 @@ export const benchmarks = {
         },
         {
             name: 'Claude 3 Opus',
-            releaseDate: '2024-03-04',
             scores: {
                 'lvl1': 0,
                 'lvl2': 0,
@@ -392,12 +371,12 @@ export const benchmarks = {
         { name: 'Claude 4.6 Sonnet (max thinking)', scores: { worm: 11, koala: 20, crow: 10, octopus: 0 } },
         { name: 'GPT-5.5 Instant (0529)', scores: { worm: 28, koala: 1, crow: 0, octopus: 0 } },
         { name: 'Gemini 3.5 Flash', scores: { worm: 16, koala: 'INVALID', crow: 'INVALID', octopus: 'INVALID' } },
-        { name: 'Grok 4.20 Expert', scores: { worm: 24, koala: "UNAVAILABLE", crow: "UNAVAILABLE", octopus: "UNAVAILABLE" }, releaseDate: '2026-02-18' },
+        { name: 'Grok 4.20 Expert', scores: { worm: 24, koala: "UNAVAILABLE", crow: "UNAVAILABLE", octopus: "UNAVAILABLE" }, },
         { name: 'Grok 4.3 Fast', scores: { worm: 27, koala: 21, crow: 7, octopus: 0 } },
         { name: 'Gemini 3.1 Pro Preview', scores: { worm: 20, koala: 11, crow: 11, octopus: 0 } },
         { name: 'Gemini 3.1 Pro Preview (with code execution)', scores: { worm: 21, koala: 'INVALID', crow: 14, octopus: 0 } },
         { name: 'Muse Spark (thinking)', scores: { worm: 13, koala: 'INVALID', crow: 'INVALID', octopus: 'INVALID' } },
-        { name: 'Claude 4.6 Sonnet (adaptive thinking)', scores: { worm: 9, koala: 10, crow: 3, octopus: 0 }, releaseDate: '2026-02-21' },
+        { name: 'Claude 4.6 Sonnet (adaptive thinking)', scores: { worm: 9, koala: 10, crow: 3, octopus: 0 }, },
         { name: 'GPT-5.5 Instant (0505)', scores: { worm: 34, koala: 3, crow: 0, octopus: 0 } },
         { name: 'Gemini 3.1 Flashlite GA', scores: { worm: 16, koala: 14, crow: 8, octopus: 0 } },
         { name: 'Gemini 3.0 Flash Preview', scores: { worm: 15, koala: 19, crow: 2, octopus: 0 } },
@@ -408,7 +387,7 @@ export const benchmarks = {
         { name: 'Claude 4.8 Opus (high)', scores: { worm: 14, koala: 0, crow: 0, octopus: 0 } },
         { name: 'Claude 5 Opus (high)', scores: { worm: 25, koala: 1, crow: 0, octopus: 0 } },
         { name: 'Grok 4.5 Fast', scores: { worm: 21, koala: 12, crow: 7, octopus: 0 } },
-        { name: 'Claude 3 Opus', releaseDate: '2024-03-04', scores: { worm: 0, koala: 0, crow: 0, octopus: 0 } }
+        { name: 'Claude 3 Opus', scores: { worm: 0, koala: 0, crow: 0, octopus: 0 } }
     ],
     chessModels: [
         { name: 'Muse Spark 1.1', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
@@ -426,7 +405,7 @@ export const benchmarks = {
         { name: 'GPT-5.5', scores: { mouse: 39, spider: 48, wolf: 22, hawk: 0, python: 0 } },
         { name: 'GPT-5.6 Sol (high) - JULY', scores: { mouse: 97, spider: 68, wolf: 59, hawk: 0, python: 0 } },
         { name: 'Claude 5 Fable (high)', scores: { mouse: 38, spider: 20, wolf: 15, hawk: 0, python: 0 } },
-        { name: 'Claude 3 Opus', releaseDate: '2024-03-04', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
+        { name: 'Claude 3 Opus', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Claude 4.8 Opus (high)', scores: { mouse: 56, spider: 94, wolf: 25, hawk: 0, python: 0 } },
         { name: 'Claude 5 Opus (high)', scores: { mouse: 62, spider: 28, wolf: 43, hawk: 0, python: 0 } }
     ]

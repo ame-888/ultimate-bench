@@ -56,15 +56,12 @@ test('former Chess gated values are direct observed numeric zeroes',()=>{
  const built=buildLeaderboard(benchmarks),overall=built.rows.find(row=>row.name===record.name);assert.ok(overall);assert.equal(overall.scores.chess,221/63);
 });
 test('new release metadata is canonical and inherited by arena presentation',()=>{
- const gemini=benchmarks.models.find(row=>row.name==='Gemini 3.6 Flash');
- const grok=benchmarks.models.find(row=>row.name==='Grok 4.5 Fast');
- assert.equal(gemini?.releaseDate,'2026-07-21');assert.equal(grok?.releaseDate,'2026-07-22');
+ assert.equal(api.getModelReleaseDate('Gemini 3.6 Flash'),'2026-07-21');assert.equal(api.getModelReleaseDate('Grok 4.5 Fast'),'2026-07-08');
  assert.equal(benchmarks.dataRetrieval.find(row=>row.name==='Grok 4.5 Fast')?.releaseDate,undefined);
  assert.equal(benchmarks.chessModels.some(row=>row.name==='Grok 4.5 Fast'),false);
 });
 test('Claude Opus release metadata and Chess results feed the canonical leaderboard',()=>{
- const claude48=benchmarks.models.find(row=>row.name==='Claude 4.8 Opus (high)');
- assert.equal(claude48?.releaseDate,'2026-05-28');
+ assert.equal(api.getModelReleaseDate('Claude 4.8 Opus (high)'),'2026-05-28');
  const name='Claude 5 Opus (high)',record=benchmarks.chessModels.find(row=>row.name===name);assert.ok(record);
  assert.deepEqual(record.scores,{mouse:62,spider:28,wolf:43,hawk:0,python:0});
  const built=buildLeaderboard(benchmarks),row=built.rows.find(item=>item.name===name);assert.ok(row);

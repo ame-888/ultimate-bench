@@ -31,7 +31,7 @@ test('all leaderboard names use the shared single-line truncation treatment', ()
 
 test('full model names stay in the DOM and title attributes', () => {
   assert.match(home, /class="model-name" title=\{item\.name\}[^>]*>\{item\.name\}<\/div>/);
-  assert.match(home, /class="model-name" title=\{item\.name\}>\{item\.name\}<\/span>/);
+  assert.match(home, /class="model-name" title=\{item\.name\}[^>]*>\{item\.name\}<\/span>/);
   assert.match(home, /<strong class="model-name" title=\{item\.name\}[^>]*>\{item\.name\}<\/strong>/);
   assert.match(home, /<h3 class="model-name" title=\{item\.name\}>\{item\.name\}<\/h3>/);
 });
@@ -46,7 +46,7 @@ test('NEW and PROVISIONAL stay separate while coverage retains its second line',
 });
 
 test('summary rows give optional NEW badges space only when present', () => {
-  assert.match(home, /<span class="model-name" title=\{item\.name\}>\{item\.name\}<\/span>\{isNew\(releaseDateByModel\.get\(item\.name\)\) && <span class="new-badge">NEW<\/span>}<\/th>/);
+  assert.match(home, /<span class="model-name" title=\{item\.name\}[^>]*>\{item\.name\}<\/span>\{isNew\(releaseDateByModel\.get\(item\.name\)\) && <span class="new-badge">NEW<\/span>}<\/th>/);
   assert.doesNotMatch(home, /class="benchmark-cell badge-cell"/);
   assert.match(css, /\.semantic-summary-table thead tr,[\s\S]*?grid-template-columns:\s*2\.45rem minmax\(0, 1fr\) 4\.1rem/);
   assert.match(css, /\.semantic-summary-table \.model-cell\s*\{[^}]*display:\s*flex[^}]*gap:\s*\.35rem[^}]*overflow:\s*hidden/s);
