@@ -62,6 +62,16 @@ test('new release metadata is canonical and inherited by arena presentation',()=
  assert.equal(benchmarks.dataRetrieval.find(row=>row.name==='Grok 4.5 Fast')?.releaseDate,undefined);
  assert.equal(benchmarks.chessModels.some(row=>row.name==='Grok 4.5 Fast'),false);
 });
+test('Claude Opus release metadata and Chess results feed the canonical leaderboard',()=>{
+ const claude48=benchmarks.models.find(row=>row.name==='Claude 4.8 Opus (high)');
+ assert.equal(claude48?.releaseDate,'2026-05-28');
+ const name='Claude 5 Opus (high)',record=benchmarks.chessModels.find(row=>row.name===name);assert.ok(record);
+ assert.deepEqual(record.scores,{mouse:62,spider:28,wolf:43,hawk:0,python:0});
+ const built=buildLeaderboard(benchmarks),row=built.rows.find(item=>item.name===name);assert.ok(row);
+ assert.equal(row.scores.chess,(62+2*28+4*43)/63);
+ assert.equal(row.score,(row.scores.visual+row.scores['data-retrieval']+row.scores.chess)/3);
+ assert.ok(row.rank>0);
+});
 test('Grok 4.5 Fast DATA results are complete, official, and do not qualify for Overall',()=>{
  const record=benchmarks.dataRetrieval.find(row=>row.name==='Grok 4.5 Fast');assert.ok(record);
  assert.deepEqual(record.scores,{worm:21,koala:12,crow:7,octopus:0});
