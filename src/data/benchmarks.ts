@@ -419,6 +419,8 @@ export const benchmarks = {
         { name: 'Claude 3 Opus', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Claude 4.8 Opus (high)', scores: { mouse: 56, spider: 94, wolf: 25, hawk: 0, python: 0 } },
         { name: 'Claude 5 Opus (high)', scores: { mouse: 62, spider: 28, wolf: 43, hawk: 0, python: 0 } },
+        // The supplied sixth value is Hydra: 0. Hydra is Locked, so its reserved zero is not a publishable model result.
+        { name: 'Grok 4.5 Fast', scores: { mouse: 2, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Grok 4.5 Expert', scores: { mouse: 16, spider: 0, wolf: 0, hawk: 0, python: 0 } }
     ]
 };

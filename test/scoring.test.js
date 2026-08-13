@@ -58,7 +58,7 @@ test('former Chess gated values are direct observed numeric zeroes',()=>{
 test('new release metadata is canonical and inherited by arena presentation',()=>{
  assert.equal(api.getModelReleaseDate('Gemini 3.6 Flash'),'2026-07-21');assert.equal(api.getModelReleaseDate('Grok 4.5 Fast'),'2026-07-08');
  assert.equal(benchmarks.dataRetrieval.find(row=>row.name==='Grok 4.5 Fast')?.releaseDate,undefined);
- assert.equal(benchmarks.chessModels.some(row=>row.name==='Grok 4.5 Fast'),false);
+ assert.equal(benchmarks.chessModels.find(row=>row.name==='Grok 4.5 Fast')?.releaseDate,undefined);
 });
 test('Claude Opus release metadata and Chess results feed the canonical leaderboard',()=>{
  assert.equal(api.getModelReleaseDate('Claude 4.8 Opus (high)'),'2026-05-28');
@@ -69,7 +69,8 @@ test('Claude Opus release metadata and Chess results feed the canonical leaderbo
  assert.equal(row.score,(row.scores.visual+row.scores['data-retrieval']+row.scores.chess)/3);
  assert.ok(row.rank>0);
 });
-test('Grok 4.5 Fast DATA results are complete, official, and do not qualify for Overall',()=>{
+test('Grok 4.5 Fast results are complete, official, and qualify for Overall',()=>{
+ const name='Grok 4.5 Fast';
  const record=benchmarks.dataRetrieval.find(row=>row.name==='Grok 4.5 Fast');assert.ok(record);
  assert.deepEqual(record.scores,{worm:21,koala:12,crow:7,octopus:0});
  assert.equal(Object.hasOwn(record.scores,'raven'),false);assert.equal(Object.hasOwn(record.scores,'athena'),false);
@@ -78,7 +79,12 @@ test('Grok 4.5 Fast DATA results are complete, official, and do not qualify for 
  assert.equal(formatAggregateScore(result.score),'1.16');assert.equal(result.coverage,'4/4 active levels');
  assert.equal(result.completeCoverage,true);assert.equal(result.rankEligible,true);
  const built=buildLeaderboard(benchmarks),row=built.arenaRows['data-retrieval'].find(item=>item.name===record.name);
- assert.ok(row?.rank);assert.equal(built.rows.some(item=>item.name===record.name),false);
+ assert.ok(row?.rank);
+ assert.deepEqual(benchmarks.models.find(item=>item.name===name)?.scores,{lvl1:26,lvl2:9,lvl3:3,lvl4:0,lvl5:0});
+ assert.deepEqual(benchmarks.chessModels.find(item=>item.name===name)?.scores,{mouse:2,spider:0,wolf:0,hawk:0,python:0});
+ const overall=built.rows.find(item=>item.name===name);assert.ok(overall);
+ assert.equal(overall.scores.visual,56/63);assert.equal(overall.scores['data-retrieval'],73/63);assert.equal(overall.scores.chess,2/63);
+ assert.equal(overall.score,(56/63+73/63+2/63)/3);assert.ok(overall.rank>0);
 });
 test('Grok 4.5 Expert results and release metadata feed every leaderboard',()=>{
  const name='Grok 4.5 Expert';
