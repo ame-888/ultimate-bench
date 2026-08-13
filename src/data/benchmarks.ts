@@ -77,6 +77,16 @@ export const benchmarks = {
             }
         },
         {
+            name: 'Gemini 3.7 Flash',
+            scores: {
+                'lvl1': 84,
+                'lvl2': 83,
+                'lvl3': 74,
+                'lvl4': 13,
+                'lvl5': 0
+            }
+        },
+        {
             name: 'Claude 4.6 Sonnet (max thinking)',
             scores: {
                 'lvl1': 14,

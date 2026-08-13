@@ -111,6 +111,18 @@ test('GPT-5.6 Sol August Visual and DATA results do not qualify for Overall with
  assert.equal(built.arenaRows.chess.some(row=>row.name===name),false);
  assert.equal(built.rows.some(row=>row.name===name),false);
 });
+test('Gemini 3.7 Flash publishes only its finalized Visual results',()=>{
+ const name='Gemini 3.7 Flash';
+ const visualRecords=benchmarks.models.filter(row=>row.name===name);assert.equal(visualRecords.length,1);
+ assert.deepEqual(visualRecords[0].scores,{lvl1:84,lvl2:83,lvl3:74,lvl4:13,lvl5:0});
+ assert.equal(benchmarks.dataRetrieval.some(row=>row.name===name),false);
+ assert.equal(benchmarks.chessModels.some(row=>row.name===name),false);
+ const built=buildLeaderboard(benchmarks);
+ assert.ok(built.arenaRows.visual.some(row=>row.name===name));
+ assert.equal(built.arenaRows['data-retrieval'].some(row=>row.name===name),false);
+ assert.equal(built.arenaRows.chess.some(row=>row.name===name),false);
+ assert.equal(built.rows.some(row=>row.name===name),false);
+});
 test('Gemini 3.1 Pro Preview with code execution has complete DATA results',()=>{
  const name='Gemini 3.1 Pro Preview (with code execution)';
  const record=benchmarks.dataRetrieval.find(row=>row.name===name);assert.ok(record);
