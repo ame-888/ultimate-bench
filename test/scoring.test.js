@@ -80,6 +80,17 @@ test('Grok 4.5 Fast DATA results are complete, official, and do not qualify for 
  const built=buildLeaderboard(benchmarks),row=built.arenaRows['data-retrieval'].find(item=>item.name===record.name);
  assert.ok(row?.rank);assert.equal(built.rows.some(item=>item.name===record.name),false);
 });
+test('Grok 4.5 Expert results and release metadata feed every leaderboard',()=>{
+ const name='Grok 4.5 Expert';
+ assert.equal(api.getModelReleaseDate(name),'2026-07-08');
+ assert.deepEqual(benchmarks.models.find(row=>row.name===name)?.scores,{lvl1:25,lvl2:19,lvl3:3,lvl4:0,lvl5:0});
+ assert.deepEqual(benchmarks.dataRetrieval.find(row=>row.name===name)?.scores,{worm:26,koala:18,crow:9,octopus:0});
+ assert.deepEqual(benchmarks.chessModels.find(row=>row.name===name)?.scores,{mouse:16,spider:0,wolf:0,hawk:0,python:0});
+ const built=buildLeaderboard(benchmarks),row=built.rows.find(item=>item.name===name);assert.ok(row);
+ assert.equal(row.scores.visual,75/63);assert.equal(row.scores['data-retrieval'],98/63);assert.equal(row.scores.chess,16/63);
+ assert.equal(row.score,63/63);assert.ok(row.rank>0);
+ for(const arena of ['visual','data-retrieval','chess'])assert.ok(built.arenaRows[arena].some(item=>item.name===name));
+});
 test('GPT-5.6 Sol August Visual and DATA results do not qualify for Overall without Chess',()=>{
  const name='GPT-5.6 Sol (high) - AUGUST';
  const visualRecords=benchmarks.models.filter(row=>row.name===name);assert.equal(visualRecords.length,1);
