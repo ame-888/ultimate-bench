@@ -111,15 +111,19 @@ test('GPT-5.6 Sol August Visual and DATA results do not qualify for Overall with
  assert.equal(built.arenaRows.chess.some(row=>row.name===name),false);
  assert.equal(built.rows.some(row=>row.name===name),false);
 });
-test('Gemini 3.7 Flash publishes only its finalized Visual results',()=>{
+test('Gemini 3.7 Flash publishes finalized Visual and DATA results',()=>{
  const name='Gemini 3.7 Flash';
+ assert.equal(api.getModelReleaseDate(name),'2026-08-13');
  const visualRecords=benchmarks.models.filter(row=>row.name===name);assert.equal(visualRecords.length,1);
  assert.deepEqual(visualRecords[0].scores,{lvl1:84,lvl2:83,lvl3:74,lvl4:13,lvl5:0});
- assert.equal(benchmarks.dataRetrieval.some(row=>row.name===name),false);
+ const dataRecords=benchmarks.dataRetrieval.filter(row=>row.name===name);assert.equal(dataRecords.length,1);
+ assert.deepEqual(dataRecords[0].scores,{worm:26,koala:'INVALID',crow:20,octopus:'INVALID'});
+ assert.equal(Object.hasOwn(dataRecords[0].scores,'raven'),false);assert.equal(Object.hasOwn(dataRecords[0].scores,'athena'),false);
  assert.equal(benchmarks.chessModels.some(row=>row.name===name),false);
  const built=buildLeaderboard(benchmarks);
  assert.ok(built.arenaRows.visual.some(row=>row.name===name));
- assert.equal(built.arenaRows['data-retrieval'].some(row=>row.name===name),false);
+ const dataRow=built.arenaRows['data-retrieval'].find(row=>row.name===name);assert.ok(dataRow?.rank);
+ assert.equal(dataRow.score,106/63);assert.equal(dataRow.canonical.coverage,'4/4 active levels');assert.equal(dataRow.canonical.rankEligible,true);
  assert.equal(built.arenaRows.chess.some(row=>row.name===name),false);
  assert.equal(built.rows.some(row=>row.name===name),false);
 });
