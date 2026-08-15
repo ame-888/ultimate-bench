@@ -66,7 +66,7 @@ export const benchmarks = {
             }
         },
         {
-            name: 'Gemini 3.5 Flash (with code execution)',
+            name: 'Gemini 3.5 Flash',
             comparison: { group: 'gemini-3-5-flash-code', condition: 'Code execution available' },
             scores: {
                 'lvl1': 84,
@@ -77,7 +77,7 @@ export const benchmarks = {
             }
         },
         {
-            name: 'Gemini 3.7 Flash',
+            name: 'Gemini 3.7 Flash (without code execution)',
             scores: {
                 'lvl1': 84,
                 'lvl2': 83,
@@ -107,7 +107,7 @@ export const benchmarks = {
             },
         },
         {
-            name: 'Gemini 3.5 Flash',
+            name: 'Gemini 3.5 Flash (without code execution)',
             comparison: { group: 'gemini-3-5-flash-code', condition: 'Code execution unavailable', baseline: true },
             scores: {
                 'lvl1': 79,
@@ -118,7 +118,7 @@ export const benchmarks = {
             }
         },
         {
-            name: 'Gemini 3.1 Pro Preview',
+            name: 'Gemini 3.1 Pro Preview (without code execution)',
             comparison: { group: 'gemini-3-1-pro-code', condition: 'Code execution unavailable', baseline: true },
             scores: {
                 'lvl1': 75,
@@ -129,7 +129,7 @@ export const benchmarks = {
             },
         },
         {
-            name: 'Gemini 3.1 Pro Preview (with code execution)',
+            name: 'Gemini 3.1 Pro Preview',
             comparison: { group: 'gemini-3-1-pro-code', condition: 'Code execution available' },
             scores: {
                 'lvl1': 84,
@@ -140,7 +140,7 @@ export const benchmarks = {
             },
         },
         {
-            name: 'Gemini 3.1 Flashlite GA',
+            name: 'Gemini 3.1 Flashlite GA (without code execution)',
             comparison: { group: 'gemini-3-1-flashlite-code', condition: 'Code execution unavailable', baseline: true },
             scores: {
                 'lvl1': 38,
@@ -151,7 +151,7 @@ export const benchmarks = {
             }
         },
         {
-            name: 'Gemini 3.1 Flashlite GA (with code execution)',
+            name: 'Gemini 3.1 Flashlite GA',
             comparison: { group: 'gemini-3-1-flashlite-code', condition: 'Code execution available' },
             scores: {
                 'lvl1': 40,
@@ -162,7 +162,7 @@ export const benchmarks = {
             }
         },
         {
-            name: 'Gemini 3.0 Flash Preview (with code execution)',
+            name: 'Gemini 3.0 Flash Preview',
             comparison: { group: 'gemini-3-0-flash-code', condition: 'Code execution available' },
             scores: {
                 'lvl1': 85,
@@ -173,7 +173,7 @@ export const benchmarks = {
             },
         },
         {
-            name: 'Gemini 2.5 Pro',
+            name: 'Gemini 2.5 Pro (without code execution)',
             scores: {
                 'lvl1': 40,
                 'lvl2': 32,
@@ -183,7 +183,7 @@ export const benchmarks = {
             }
         },
         {
-            name: 'Gemini 3.0 Pro Preview',
+            name: 'Gemini 3.0 Pro Preview (without code execution)',
             scores: {
                 'lvl1': 42,
                 'lvl2': 50,
@@ -193,7 +193,7 @@ export const benchmarks = {
             }
         },
         {
-            name: 'Gemini 3.1 Flashlite Preview',
+            name: 'Gemini 3.1 Flashlite Preview (without code execution)',
             scores: {
                 'lvl1': 30,
                 'lvl2': 29,
@@ -203,7 +203,7 @@ export const benchmarks = {
             }
         },
         {
-            name: 'Gemini 3.0 Flash Preview',
+            name: 'Gemini 3.0 Flash Preview (without code execution)',
             comparison: { group: 'gemini-3-0-flash-code', condition: 'Code execution unavailable', baseline: true },
             scores: {
                 'lvl1': 81,
@@ -214,7 +214,7 @@ export const benchmarks = {
             }
         },
         {
-            name: 'Gemini 2.5 Flash',
+            name: 'Gemini 2.5 Flash (without code execution)',
             scores: {
                 'lvl1': 6,
                 'lvl2': 11,
@@ -314,7 +314,7 @@ export const benchmarks = {
             }
         },
         {
-            name: 'Gemini 3.6 Flash',
+            name: 'Gemini 3.6 Flash (without code execution)',
             scores: {
                 'lvl1': 74,
                 'lvl2': 67,
@@ -324,7 +324,7 @@ export const benchmarks = {
             }
         },
         {
-            name: 'Gemini 3.6 Flash (with code execution)',
+            name: 'Gemini 3.6 Flash',
             scores: {
                 'lvl1': 91,
                 'lvl2': 87,
@@ -386,21 +386,21 @@ export const benchmarks = {
     ],
     dataRetrieval: [
         { name: 'Muse Spark 1.1', scores: { worm: 24, koala: 'INVALID', crow: 11, octopus: 0 } },
-        { name: 'Gemini 3.6 Flash', scores: { worm: 32, koala: 'INVALID', crow: 20, octopus: 'INVALID' } },
-        { name: 'Gemini 3.6 Flash (with code execution)', scores: { worm: 24, koala: 'INVALID', crow: 'INVALID', octopus: 'INVALID' } },
-        { name: 'Gemini 3.7 Flash', scores: { worm: 26, koala: 'INVALID', crow: 20, octopus: 'INVALID' } },
+        { name: 'Gemini 3.6 Flash (without code execution)', scores: { worm: 32, koala: 'INVALID', crow: 20, octopus: 'INVALID' } },
+        { name: 'Gemini 3.6 Flash', scores: { worm: 24, koala: 'INVALID', crow: 'INVALID', octopus: 'INVALID' } },
+        { name: 'Gemini 3.7 Flash (without code execution)', scores: { worm: 26, koala: 'INVALID', crow: 20, octopus: 'INVALID' } },
         { name: 'Claude 4.6 Sonnet (max thinking)', scores: { worm: 11, koala: 20, crow: 10, octopus: 0 } },
         { name: 'GPT-5.5 Instant (0529)', scores: { worm: 28, koala: 1, crow: 0, octopus: 0 } },
-        { name: 'Gemini 3.5 Flash', scores: { worm: 16, koala: 'INVALID', crow: 'INVALID', octopus: 'INVALID' } },
+        { name: 'Gemini 3.5 Flash (without code execution)', scores: { worm: 16, koala: 'INVALID', crow: 'INVALID', octopus: 'INVALID' } },
         { name: 'Grok 4.20 Expert', scores: { worm: 24, koala: "UNAVAILABLE", crow: "UNAVAILABLE", octopus: "UNAVAILABLE" }, },
         { name: 'Grok 4.3 Fast', scores: { worm: 27, koala: 21, crow: 7, octopus: 0 } },
-        { name: 'Gemini 3.1 Pro Preview', scores: { worm: 20, koala: 11, crow: 11, octopus: 0 } },
-        { name: 'Gemini 3.1 Pro Preview (with code execution)', scores: { worm: 21, koala: 'INVALID', crow: 14, octopus: 0 } },
+        { name: 'Gemini 3.1 Pro Preview (without code execution)', scores: { worm: 20, koala: 11, crow: 11, octopus: 0 } },
+        { name: 'Gemini 3.1 Pro Preview', scores: { worm: 21, koala: 'INVALID', crow: 14, octopus: 0 } },
         { name: 'Muse Spark (thinking)', scores: { worm: 13, koala: 'INVALID', crow: 'INVALID', octopus: 'INVALID' } },
         { name: 'Claude 4.6 Sonnet (adaptive thinking)', scores: { worm: 9, koala: 10, crow: 3, octopus: 0 }, },
         { name: 'GPT-5.5 Instant (0505)', scores: { worm: 34, koala: 3, crow: 0, octopus: 0 } },
-        { name: 'Gemini 3.1 Flashlite GA', scores: { worm: 16, koala: 14, crow: 8, octopus: 0 } },
-        { name: 'Gemini 3.0 Flash Preview', scores: { worm: 15, koala: 19, crow: 2, octopus: 0 } },
+        { name: 'Gemini 3.1 Flashlite GA (without code execution)', scores: { worm: 16, koala: 14, crow: 8, octopus: 0 } },
+        { name: 'Gemini 3.0 Flash Preview (without code execution)', scores: { worm: 15, koala: 19, crow: 2, octopus: 0 } },
         { name: 'GPT-5.5', scores: { worm: 29, koala: 30, crow: 18, octopus: 0 } },
         { name: 'GPT-5.6 Sol (high) - JULY', scores: { worm: 51, koala: 46, crow: 36, octopus: 3 } },
         { name: 'GPT-5.6 Sol (high) - AUGUST', scores: { worm: 57, koala: 49, crow: 33, octopus: 16 } },
@@ -413,17 +413,17 @@ export const benchmarks = {
     ],
     chessModels: [
         { name: 'Muse Spark 1.1', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
-        { name: 'Gemini 3.6 Flash', scores: { mouse: 65, spider: 34, wolf: 22, hawk: 0, python: 0 } },
-        { name: 'Gemini 3.1 Flashlite GA', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
+        { name: 'Gemini 3.6 Flash (without code execution)', scores: { mouse: 65, spider: 34, wolf: 22, hawk: 0, python: 0 } },
+        { name: 'Gemini 3.1 Flashlite GA (without code execution)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Grok 4.3 Fast', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
-        { name: 'Gemini 3.1 Pro Preview', scores: { mouse: 75, spider: 91, wolf: 100, hawk: 0, python: 0 } },
+        { name: 'Gemini 3.1 Pro Preview (without code execution)', scores: { mouse: 75, spider: 91, wolf: 100, hawk: 0, python: 0 } },
         { name: 'GPT-5.5 Instant (0505)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'GPT-5.5 Instant (0529)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
-        { name: 'Gemini 3.5 Flash', scores: { mouse: 40, spider: 43, wolf: 17, hawk: 0, python: 0 } },
+        { name: 'Gemini 3.5 Flash (without code execution)', scores: { mouse: 40, spider: 43, wolf: 17, hawk: 0, python: 0 } },
         { name: 'Claude 4.6 Sonnet (max thinking)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Claude 4.6 Sonnet (adaptive thinking)', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Muse Spark (thinking)', scores: { mouse: 3, spider: 0, wolf: 0, hawk: 0, python: 0 } },
-        { name: 'Gemini 3.0 Flash Preview', scores: { mouse: 24, spider: 0, wolf: 0, hawk: 0, python: 0 } },
+        { name: 'Gemini 3.0 Flash Preview (without code execution)', scores: { mouse: 24, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'GPT-5.5', scores: { mouse: 39, spider: 48, wolf: 22, hawk: 0, python: 0 } },
         { name: 'GPT-5.6 Sol (high) - JULY', scores: { mouse: 97, spider: 68, wolf: 59, hawk: 0, python: 0 } },
         { name: 'Claude 5 Fable (high)', scores: { mouse: 38, spider: 20, wolf: 15, hawk: 0, python: 0 } },

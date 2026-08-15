@@ -47,7 +47,7 @@ test('Chess Active levels are independent after numeric zero and INVALID',()=>{
  assert.equal(calculateArenaScore(ARENAS.chess,mixed.scores).included,5);
 });
 test('former Chess gated values are direct observed numeric zeroes',()=>{
- const record=benchmarks.chessModels.find(row=>row.name==='Gemini 3.6 Flash');assert.ok(record);
+ const record=benchmarks.chessModels.find(row=>row.name==='Gemini 3.6 Flash (without code execution)');assert.ok(record);
  assert.deepEqual(record.scores,{mouse:65,spider:34,wolf:22,hawk:0,python:0});
  assert.equal(Object.hasOwn(record,'origins'),false);assert.equal(Object.hasOwn(record.scores,'hydra'),false);
  const result=calculateArenaScore(ARENAS.chess,record.scores);
@@ -56,7 +56,7 @@ test('former Chess gated values are direct observed numeric zeroes',()=>{
  const built=buildLeaderboard(benchmarks),overall=built.rows.find(row=>row.name===record.name);assert.ok(overall);assert.equal(overall.scores.chess,221/63);
 });
 test('new release metadata is canonical and inherited by arena presentation',()=>{
- assert.equal(api.getModelReleaseDate('Gemini 3.6 Flash'),'2026-07-21');assert.equal(api.getModelReleaseDate('Grok 4.5 Fast'),'2026-07-08');
+ assert.equal(api.getModelReleaseDate('Gemini 3.6 Flash (without code execution)'),'2026-07-21');assert.equal(api.getModelReleaseDate('Grok 4.5 Fast'),'2026-07-08');
  assert.equal(benchmarks.dataRetrieval.find(row=>row.name==='Grok 4.5 Fast')?.releaseDate,undefined);
  assert.equal(benchmarks.chessModels.find(row=>row.name==='Grok 4.5 Fast')?.releaseDate,undefined);
 });
@@ -111,8 +111,8 @@ test('GPT-5.6 Sol August Visual and DATA results do not qualify for Overall with
  assert.equal(built.arenaRows.chess.some(row=>row.name===name),false);
  assert.equal(built.rows.some(row=>row.name===name),false);
 });
-test('Gemini 3.7 Flash publishes finalized Visual and DATA results',()=>{
- const name='Gemini 3.7 Flash';
+test('Gemini 3.7 Flash without code execution publishes finalized Visual and DATA results',()=>{
+ const name='Gemini 3.7 Flash (without code execution)';
  assert.equal(api.getModelReleaseDate(name),'2026-08-13');
  const visualRecords=benchmarks.models.filter(row=>row.name===name);assert.equal(visualRecords.length,1);
  assert.deepEqual(visualRecords[0].scores,{lvl1:84,lvl2:83,lvl3:74,lvl4:13,lvl5:0});
@@ -128,7 +128,7 @@ test('Gemini 3.7 Flash publishes finalized Visual and DATA results',()=>{
  assert.equal(built.rows.some(row=>row.name===name),false);
 });
 test('Gemini 3.1 Pro Preview with code execution has complete DATA results',()=>{
- const name='Gemini 3.1 Pro Preview (with code execution)';
+ const name='Gemini 3.1 Pro Preview';
  const record=benchmarks.dataRetrieval.find(row=>row.name===name);assert.ok(record);
  assert.deepEqual(record.scores,{worm:21,koala:'INVALID',crow:14,octopus:0});
  const result=calculateArenaScore(ARENAS.dataRetrieval,record.scores);
@@ -138,7 +138,7 @@ test('Gemini 3.1 Pro Preview with code execution has complete DATA results',()=>
  assert.ok(row?.rank);assert.equal(built.rows.some(item=>item.name===name),false);
 });
 test('Gemini 3.6 Flash with code execution has complete DATA results',()=>{
- const name='Gemini 3.6 Flash (with code execution)';
+ const name='Gemini 3.6 Flash';
  const record=benchmarks.dataRetrieval.find(row=>row.name===name);assert.ok(record);
  assert.deepEqual(record.scores,{worm:24,koala:'INVALID',crow:'INVALID',octopus:'INVALID'});
  const result=calculateArenaScore(ARENAS.dataRetrieval,record.scores);
