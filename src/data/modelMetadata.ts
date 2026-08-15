@@ -34,13 +34,13 @@ const aliases: Record<string, keyof typeof canonical> = {
   'Claude 3 Opus':'claude3opus','Claude 4.5 Sonnet (adaptive thinking)':'claude45sonnet','Claude 4.5 Haiku (adaptive thinking)':'claude45haiku',
   'Claude 4.6 Sonnet (max thinking)':'claude46sonnet','Claude 4.6 Sonnet (adaptive thinking)':'claude46sonnet','Claude 4.8 Opus (high)':'claude48opus','Claude 5 Fable (high)':'claude5fable','Claude 5 Opus (high)':'claude5opus',
   'GPT-5.4':'gpt54','GPT-5.4 Thinking Mini':'gpt54mini','GPT-5.5':'gpt55','GPT-5.5 Instant (0505)':'gpt550505','GPT-5.5 Instant (0529)':'gpt550529','GPT-5.5 Instant (0624)':'gpt550624','GPT-5.6 Sol (high) - JULY':'gpt56sol','GPT-5.6 Sol (high) - AUGUST':'gpt56sol',
-  'Gemini 2.5 Pro':'gemini25','Gemini 2.5 Flash':'gemini25','Gemini 3.0 Pro Preview':'gemini30pro','Gemini 3.0 Flash Preview':'gemini30flash','Gemini 3.0 Flash Preview (with code execution)':'gemini30flash','Gemini 3.1 Pro Preview':'gemini31pro','Gemini 3.1 Pro Preview (with code execution)':'gemini31pro','Gemini 3.1 Flashlite Preview':'gemini31flashpreview','Gemini 3.1 Flashlite GA':'gemini31flashga','Gemini 3.1 Flashlite GA (with code execution)':'gemini31flashga','Gemini 3.5 Flash':'gemini35flash','Gemini 3.5 Flash (with code execution)':'gemini35flash','Gemini 3.6 Flash':'gemini36flash','Gemini 3.6 Flash (with code execution)':'gemini36flash','Gemini 3.7 Flash':'gemini37flash',
+  'Gemini 2.5 Pro (without code execution)':'gemini25','Gemini 2.5 Flash (without code execution)':'gemini25','Gemini 3.0 Pro Preview (without code execution)':'gemini30pro','Gemini 3.0 Flash Preview (without code execution)':'gemini30flash','Gemini 3.0 Flash Preview':'gemini30flash','Gemini 3.1 Pro Preview (without code execution)':'gemini31pro','Gemini 3.1 Pro Preview':'gemini31pro','Gemini 3.1 Flashlite Preview (without code execution)':'gemini31flashpreview','Gemini 3.1 Flashlite GA (without code execution)':'gemini31flashga','Gemini 3.1 Flashlite GA':'gemini31flashga','Gemini 3.5 Flash (without code execution)':'gemini35flash','Gemini 3.5 Flash':'gemini35flash','Gemini 3.6 Flash (without code execution)':'gemini36flash','Gemini 3.6 Flash':'gemini36flash','Gemini 3.7 Flash (without code execution)':'gemini37flash',
   'Muse Spark (thinking)':'museSpark','Muse Spark 1.1':'museSpark11','Grok 4.20 Expert':'grok420','Grok 4.3 Fast':'grok43','Grok 4.5 Fast':'grok45','Grok 4.5 Expert':'grok45',
 };
 
 const observationByAlias: Record<string, string> = {
-  'Gemini 3.0 Flash Preview':'2025-12-23',
-  'Gemini 3.0 Flash Preview (with code execution)':'2026-02-06',
+  'Gemini 3.0 Flash Preview (without code execution)':'2025-12-23',
+  'Gemini 3.0 Flash Preview':'2026-02-06',
   'GPT-5.6 Sol (high) - JULY':'2026-07-12',
 };
 export function getModelMetadata(name: string): ModelMetadata | undefined {
