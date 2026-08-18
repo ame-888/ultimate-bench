@@ -437,6 +437,8 @@ export const benchmarks = {
         { name: 'Gemini 3.0 Flash Preview (without code execution)', scores: { mouse: 24, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'GPT-5.5', scores: { mouse: 39, spider: 48, wolf: 22, hawk: 0, python: 0 } },
         { name: 'GPT-5.6 Sol (high) - JULY', scores: { mouse: 97, spider: 68, wolf: 59, hawk: 0, python: 0 } },
+        // The supplied sixth value is Hydra: 0. Hydra is Locked, so its reserved zero is not a publishable model result.
+        { name: 'GPT-5.6 Sol (high) - AUGUST', scores: { mouse: 51, spider: 25, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Claude 5 Fable (high)', scores: { mouse: 38, spider: 20, wolf: 15, hawk: 0, python: 0 } },
         { name: 'Claude 3 Opus', scores: { mouse: 0, spider: 0, wolf: 0, hawk: 0, python: 0 } },
         { name: 'Claude 4.8 Opus (high)', scores: { mouse: 56, spider: 94, wolf: 25, hawk: 0, python: 0 } },

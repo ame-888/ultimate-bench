@@ -97,19 +97,27 @@ test('Grok 4.5 Expert results and release metadata feed every leaderboard',()=>{
  assert.equal(row.score,63/63);assert.ok(row.rank>0);
  for(const arena of ['visual','data-retrieval','chess'])assert.ok(built.arenaRows[arena].some(item=>item.name===name));
 });
-test('GPT-5.6 Sol August Visual and DATA results do not qualify for Overall without Chess',()=>{
+test('GPT-5.6 Sol August completed results qualify for Overall',()=>{
  const name='GPT-5.6 Sol (high) - AUGUST';
  const visualRecords=benchmarks.models.filter(row=>row.name===name);assert.equal(visualRecords.length,1);
  assert.deepEqual(visualRecords[0].scores,{lvl1:92,lvl2:84,lvl3:85,lvl4:50,lvl5:0});
- assert.equal(benchmarks.chessModels.some(row=>row.name===name),false);
+ const chessRecord=benchmarks.chessModels.find(row=>row.name===name);assert.ok(chessRecord);
+ assert.deepEqual(chessRecord.scores,{mouse:51,spider:25,wolf:0,hawk:0,python:0});
  const record=benchmarks.dataRetrieval.find(row=>row.name===name);assert.ok(record);
  assert.deepEqual(record.scores,{worm:57,koala:49,crow:33,octopus:16});
  assert.equal(Object.hasOwn(record.scores,'raven'),false);assert.equal(Object.hasOwn(record.scores,'athena'),false);
  const built=buildLeaderboard(benchmarks);
  assert.ok(built.arenaRows['data-retrieval'].some(row=>row.name===name));
  assert.ok(built.arenaRows.visual.some(row=>row.name===name));
- assert.equal(built.arenaRows.chess.some(row=>row.name===name),false);
- assert.equal(built.rows.some(row=>row.name===name),false);
+ const chessRow=built.arenaRows.chess.find(row=>row.name===name);assert.ok(chessRow?.rank);
+ assert.equal(chessRow.score,101/63);
+ const overall=built.rows.find(row=>row.name===name);assert.ok(overall);
+ assert.equal(overall.scores.visual,1000/63);
+ assert.equal(overall.scores['data-retrieval'],415/63);
+ assert.equal(overall.scores.chess,101/63);
+ assert.ok(Math.abs(overall.score-(1000+415+101)/63/3)<1e-12);
+ assert.equal(overall.rank,1);
+ assert.equal(api.getModelReleaseDate(name),'2026-08-06');
 });
 test('Gemini 3.7 Flash without code execution publishes finalized Visual and DATA results',()=>{
  const name='Gemini 3.7 Flash (without code execution)';
