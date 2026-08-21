@@ -119,7 +119,7 @@ test('GPT-5.6 Sol August completed results qualify for Overall',()=>{
  assert.equal(overall.rank,1);
  assert.equal(api.getModelReleaseDate(name),'2026-08-06');
 });
-test('Gemini 3.7 Flash without code execution publishes finalized Visual and DATA results',()=>{
+test('Gemini 3.7 Flash without code execution publishes finalized results and qualifies for Overall',()=>{
  const name='Gemini 3.7 Flash (without code execution)';
  assert.equal(api.getModelReleaseDate(name),'2026-08-13');
  const visualRecords=benchmarks.models.filter(row=>row.name===name);assert.equal(visualRecords.length,1);
@@ -127,13 +127,19 @@ test('Gemini 3.7 Flash without code execution publishes finalized Visual and DAT
  const dataRecords=benchmarks.dataRetrieval.filter(row=>row.name===name);assert.equal(dataRecords.length,1);
  assert.deepEqual(dataRecords[0].scores,{worm:26,koala:'INVALID',crow:20,octopus:'INVALID'});
  assert.equal(Object.hasOwn(dataRecords[0].scores,'raven'),false);assert.equal(Object.hasOwn(dataRecords[0].scores,'athena'),false);
- assert.equal(benchmarks.chessModels.some(row=>row.name===name),false);
+ const chessRecords=benchmarks.chessModels.filter(row=>row.name===name);assert.equal(chessRecords.length,1);
+ assert.deepEqual(chessRecords[0].scores,{mouse:84,spider:65,wolf:41,hawk:0,python:0});
+ assert.equal(Object.hasOwn(chessRecords[0].scores,'hydra'),false);
  const built=buildLeaderboard(benchmarks);
  assert.ok(built.arenaRows.visual.some(row=>row.name===name));
  const dataRow=built.arenaRows['data-retrieval'].find(row=>row.name===name);assert.ok(dataRow?.rank);
  assert.equal(dataRow.score,106/63);assert.equal(dataRow.canonical.coverage,'4/4 active levels');assert.equal(dataRow.canonical.rankEligible,true);
- assert.equal(built.arenaRows.chess.some(row=>row.name===name),false);
- assert.equal(built.rows.some(row=>row.name===name),false);
+ const chessRow=built.arenaRows.chess.find(row=>row.name===name);assert.ok(chessRow?.rank);
+ assert.equal(chessRow.canonical.numerator,378);assert.equal(chessRow.score,378/63);
+ assert.equal(chessRow.canonical.coverage,'5/5 active levels');assert.equal(chessRow.canonical.rankEligible,true);
+ const overall=built.rows.find(row=>row.name===name);assert.ok(overall);
+ assert.equal(overall.scores.visual,650/63);assert.equal(overall.scores['data-retrieval'],106/63);assert.equal(overall.scores.chess,378/63);
+ assert.equal(overall.score,6);assert.equal(overall.rank,4);
 });
 test('Gemini 3.1 Pro Preview with code execution has complete DATA results',()=>{
  const name='Gemini 3.1 Pro Preview';
