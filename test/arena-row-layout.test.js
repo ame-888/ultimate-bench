@@ -2,10 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const [home, css, script] = await Promise.all([
+const [home, css, script, environmentDisclosure] = await Promise.all([
   readFile('src/pages/index.astro', 'utf8'),
   readFile('src/styles/home.css', 'utf8'),
   readFile('src/scripts/home-page.js', 'utf8'),
+  readFile('src/components/ModelEnvironment.astro', 'utf8'),
 ]);
 
 test('provider badges are absent while provider metadata and filters remain wired', () => {
@@ -20,10 +21,18 @@ test('provider badges are absent while provider metadata and filters remain wire
   assert.match(script, /provider-filter-btn/);
 });
 
+test('test-environment disclosure supports hover, focus, and tap without leaderboard-specific model checks', () => {
+  assert.match(environmentDisclosure, /getModelTestEnvironment\(name\)/);
+  assert.match(environmentDisclosure, /<details class="model-environment">/);
+  assert.match(environmentDisclosure, /<summary aria-label=/);
+  assert.match(environmentDisclosure, /\.model-environment:hover[^}]*\.model-environment summary:focus[^}]*display:block/);
+  assert.doesNotMatch(environmentDisclosure, /name\.(?:includes|startsWith)|switch\s*\(name\)/);
+});
+
 test('all leaderboard names use the shared single-line truncation treatment', () => {
   assert.match(css, /\.model-name\s*\{[^}]*overflow:\s*hidden[^}]*text-overflow:\s*ellipsis[^}]*white-space:\s*nowrap/s);
   assert.doesNotMatch(css, /\.model-name\s*\{[^}]*overflow-wrap:\s*anywhere/s);
-  assert.match(css, /\.model-name-line\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) auto auto/s);
+  assert.match(css, /\.model-name-line\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) auto auto auto/s);
   assert.doesNotMatch(css, /\.model-name-line\s*\{[^}]*flex-wrap:\s*wrap/s);
   assert.doesNotMatch(css, /\.semantic-summary-table \.model-name\s*\{[^}]*white-space:\s*normal/s);
   assert.doesNotMatch(script, /adjustFontSizes|scrollWidth > el\.clientWidth/);
@@ -46,7 +55,7 @@ test('NEW and PROVISIONAL stay separate while coverage retains its second line',
 });
 
 test('summary rows give optional NEW badges space only when present', () => {
-  assert.match(home, /<span class="model-name" title=\{item\.name\}[^>]*>\{item\.name\}<\/span>\{isNew\(releaseDateByModel\.get\(item\.name\)\) && <span class="new-badge">NEW<\/span>}<\/th>/);
+  assert.match(home, /<span class="model-name" title=\{item\.name\}[^>]*>\{item\.name\}<\/span><ModelEnvironment name=\{item\.name\} \/>\{isNew\(releaseDateByModel\.get\(item\.name\)\) && <span class="new-badge">NEW<\/span>}<\/th>/);
   assert.doesNotMatch(home, /class="benchmark-cell badge-cell"/);
   assert.match(css, /\.semantic-summary-table thead tr,[\s\S]*?grid-template-columns:\s*2\.45rem minmax\(0, 1fr\) 4\.1rem/);
   assert.match(css, /\.semantic-summary-table \.model-cell\s*\{[^}]*display:\s*flex[^}]*gap:\s*\.35rem[^}]*overflow:\s*hidden/s);

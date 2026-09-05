@@ -1,5 +1,12 @@
 /** Canonical, auditable model dates. Date-only values are public-release UTC calendar dates. */
-export interface ModelMetadata { releaseDate: string; source: string; observationDate?: string; note?: string }
+export const TEST_ENVIRONMENTS = {
+  chatgpt: 'ChatGPT',
+  chatgptWork: 'ChatGPT Work',
+  googleAiStudio: 'Google AI Studio',
+} as const;
+
+export type TestEnvironment = typeof TEST_ENVIRONMENTS[keyof typeof TEST_ENVIRONMENTS] | (string & {});
+export interface ModelMetadata { releaseDate: string; source: string; observationDate?: string; note?: string; testEnvironment?: TestEnvironment }
 
 const sources = {
   anthropic: 'https://www.anthropic.com/news',
@@ -16,12 +23,12 @@ const canonical = {
   claude46sonnet: { releaseDate:'2026-02-17', observationDate:'2026-02-21', source:sources.anthropic }, claude48opus: { releaseDate:'2026-05-28', source:sources.anthropic },
   claude5fable: { releaseDate:'2026-06-09', observationDate:'2026-07-18', source:sources.anthropic, note:'Original public launch; July redeployment did not create a new model release.' },
   claude5opus: { releaseDate:'2026-07-24', source:sources.anthropicNotes },
-  gpt54: { releaseDate:'2026-03-05', source:sources.openai }, gpt54mini: { releaseDate:'2026-03-17', source:sources.openai, note:'Model launch; ChatGPT rollout followed March 18.' },
-  gpt55: { releaseDate:'2026-04-23', observationDate:'2026-06-02', source:sources.openai },
-  gpt550505: { releaseDate:'2026-05-05', source:sources.openai }, gpt550529: { releaseDate:'2026-05-28', observationDate:'2026-05-29', source:sources.openai },
-  gpt550624: { releaseDate:'2026-06-24', source:sources.openai },
-  gpt56sol: { releaseDate:'2026-07-09', source:sources.openai, note:'General public release; limited preview began June 26.' },
-  gpt56solAugust: { releaseDate:'2026-08-06', source:sources.openai, note:'August model update represented by the August benchmark entry.' },
+  gpt54: { releaseDate:'2026-03-05', source:sources.openai, testEnvironment:TEST_ENVIRONMENTS.chatgpt }, gpt54mini: { releaseDate:'2026-03-17', source:sources.openai, note:'Model launch; ChatGPT rollout followed March 18.', testEnvironment:TEST_ENVIRONMENTS.chatgpt },
+  gpt55: { releaseDate:'2026-04-23', observationDate:'2026-06-02', source:sources.openai, testEnvironment:TEST_ENVIRONMENTS.chatgpt },
+  gpt550505: { releaseDate:'2026-05-05', source:sources.openai, testEnvironment:TEST_ENVIRONMENTS.chatgpt }, gpt550529: { releaseDate:'2026-05-28', observationDate:'2026-05-29', source:sources.openai, testEnvironment:TEST_ENVIRONMENTS.chatgpt },
+  gpt550624: { releaseDate:'2026-06-24', source:sources.openai, testEnvironment:TEST_ENVIRONMENTS.chatgpt },
+  gpt56sol: { releaseDate:'2026-07-09', source:sources.openai, note:'General public release; limited preview began June 26.', testEnvironment:TEST_ENVIRONMENTS.chatgpt },
+  gpt56solAugust: { releaseDate:'2026-08-06', source:sources.openai, note:'August model update represented by the August benchmark entry.', testEnvironment:TEST_ENVIRONMENTS.chatgpt },
   gemini25: { releaseDate:'2025-06-17', source:sources.google }, gemini30pro: { releaseDate:'2025-11-18', source:sources.google }, gemini30flash: { releaseDate:'2025-12-17', source:sources.google },
   gemini31pro: { releaseDate:'2026-02-19', observationDate:'2026-02-20', source:sources.google }, gemini31flashpreview: { releaseDate:'2026-03-03', source:sources.google }, gemini31flashga: { releaseDate:'2026-05-07', observationDate:'2026-05-09', source:sources.google },
   gemini35flash: { releaseDate:'2026-05-19', observationDate:'2026-05-22', source:sources.google }, gemini36flash: { releaseDate:'2026-07-21', source:sources.google }, gemini37flash: { releaseDate:'2026-08-13', source:sources.google },
@@ -49,6 +56,7 @@ export function getModelMetadata(name: string): ModelMetadata | undefined {
   return observationByAlias[name] ? {...metadata,observationDate:observationByAlias[name]} : metadata;
 }
 export function getModelReleaseDate(name: string): string | undefined { return getModelMetadata(name)?.releaseDate }
+export function getModelTestEnvironment(name: string): TestEnvironment | undefined { return getModelMetadata(name)?.testEnvironment }
 export function validateModelMetadata(names: Iterable<string>): string[] {
   const errors:string[]=[]; for (const name of names) { const m=getModelMetadata(name); if(!m) errors.push(`${name}: missing metadata`); else if(!/^\d{4}-\d{2}-\d{2}$/.test(m.releaseDate)||Number.isNaN(Date.parse(`${m.releaseDate}T00:00:00Z`))) errors.push(`${name}: invalid release date`); }
   return errors;
