@@ -10,6 +10,7 @@ import { createParetoChartDomain, modelPricing, PRICING_CHECKED_ON, validatePric
 import { buildCapabilitySeries, resolveReleaseDate } from '../data/progression';
 import CapabilityTimeline from '../components/CapabilityTimeline.astro';
 import CreatureIcon from '../components/CreatureIcon.astro';
+import ModelEnvironment from '../components/ModelEnvironment.astro';
 import { getSiteNow, isNewRelease, formatRelativeReleaseDate } from '../scripts/TimeUtils';
 import { getModelReleaseDate, validateModelMetadata } from '../data/modelMetadata';
 
@@ -481,7 +482,7 @@ function getRankDisplay(rank) {
                                             <th scope="row" class={`ultimate-model model-cell ${getModelColorClass(item.name)}`}>
                                                 <div class="model-info" data-provider={getModelProvider(item.name).name}>
                                                     <div class="model-name-line">
-                                                        <strong class="model-name" title={item.name} data-release-date={item.releaseDate}>{item.name}</strong>
+                                                        <strong class="model-name" title={item.name} data-release-date={item.releaseDate}>{item.name}</strong><ModelEnvironment name={item.name} />
                                                         {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
                                                     </div>
                                                 </div>
@@ -606,7 +607,7 @@ function getRankDisplay(rank) {
                                         <tbody id={`${arena.id}-arena-summary`}>{arena.rows.map((item, index) => (
                                             <tr class="benchmark-row unified-row" data-model-name={item.name} hidden={index >= ARENA_PREVIEW_ROWS}>
                                                 <td class="rank" set:html={getRankDisplay(item.rank)}></td>
-                                                <th scope="row" class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}><span class="model-name" title={item.name} data-release-date={releaseDateByModel.get(item.name)}>{item.name}</span>{isNew(releaseDateByModel.get(item.name)) && <span class="new-badge">NEW</span>}</th>
+                                                <th scope="row" class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}><span class="model-name" title={item.name} data-release-date={releaseDateByModel.get(item.name)}>{item.name}</span><ModelEnvironment name={item.name} />{isNew(releaseDateByModel.get(item.name)) && <span class="new-badge">NEW</span>}</th>
                                                 <td class="benchmark-cell score-cell">{formatAggregateScore(item.score)}%</td>
                                             </tr>
                                         ))}</tbody>
@@ -621,7 +622,7 @@ function getRankDisplay(rank) {
                         <h2 id="excluded-results-title">Provisional result</h2>
                         <div class="excluded-results-list">
                             {provisionalArenaRows.map(item => <article class="excluded-result-card">
-                                <div class="excluded-result-model"><div class="model-name-line"><h3 class="model-name" title={item.name}>{item.name}</h3><span class="provisional-badge">PROVISIONAL</span></div><span class="excluded-arena">Data Retrieval Bench</span></div>
+                                <div class="excluded-result-model"><div class="model-name-line"><h3 class="model-name" title={item.name}>{item.name}</h3><ModelEnvironment name={item.name} /><span class="provisional-badge">PROVISIONAL</span></div><span class="excluded-arena">Data Retrieval Bench</span></div>
                                 <div class="excluded-result-score"><span>Provisional score</span><strong>{formatAggregateScore(item.score)}%</strong></div>
                                 <div class="excluded-result-copy"><p>Not eligible for ranking because benchmark coverage is insufficient.</p><dl><div><dt>Active-level coverage</dt><dd>{item.canonical.coverage}</dd></div><div><dt>Operational result weight</dt><dd>{item.canonical.weightCoverage}</dd></div></dl></div>
                             </article>)}
@@ -754,7 +755,7 @@ function getRankDisplay(rank) {
                                                 </div>
                                                 <div class="model-info">
                                                     <div class="model-name-line">
-                                                        <div class="model-name" title={item.name} data-release-date={item.releaseDate}>{item.name}</div>
+                                                        <div class="model-name" title={item.name} data-release-date={item.releaseDate}>{item.name}</div><ModelEnvironment name={item.name} />
                                                         {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
                                                     </div>
                                                     {item.rank === null && <small class="coverage-note" aria-label={`Insufficient coverage for an official rank: ${item.coverage}; ${item.weightCoverage}`}>{item.coverage} · {item.weightCoverage}</small>}
@@ -904,7 +905,7 @@ function getRankDisplay(rank) {
                                                     </div>
                                                     <div class="model-info">
                                                         <div class="model-name-line">
-                                                            <div class="model-name" title={item.name} data-release-date={item.releaseDate}>{item.name}</div>
+                                                            <div class="model-name" title={item.name} data-release-date={item.releaseDate}>{item.name}</div><ModelEnvironment name={item.name} />
                                                             {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
                                                         </div>
                                                         {item.rank === null && <small class="coverage-note" aria-label={`Insufficient coverage for an official rank: ${item.coverage}; ${item.weightCoverage}`}>{item.coverage} · {item.weightCoverage}</small>}
@@ -1059,7 +1060,7 @@ There are four Active levels. Raven is Planned with a documented proposed struct
                                                     </div>
                                                     <div class="model-info">
                                                         <div class="model-name-line">
-                                                            <div class="model-name" title={item.name} data-release-date={item.releaseDate}>{item.name}</div>
+                                                            <div class="model-name" title={item.name} data-release-date={item.releaseDate}>{item.name}</div><ModelEnvironment name={item.name} />
                                                             {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
                                                         </div>
                                                         {item.rank === null && <small class="coverage-note" aria-label={`Insufficient coverage for an official rank: ${item.coverage}; ${item.weightCoverage}`}>{item.coverage} · {item.weightCoverage}</small>}

@@ -1,0 +1,29 @@
+---
+import { getModelTestEnvironment } from '../data/modelMetadata';
+
+interface Props { name: string }
+const { name } = Astro.props;
+const environment = getModelTestEnvironment(name);
+const disclosure = environment ? `Tested in ${environment}` : 'Testing interface not recorded';
+---
+<details class="model-environment">
+  <summary aria-label={`${name}: ${disclosure}`}><span aria-hidden="true">ⓘ</span></summary>
+  <div class="model-environment-popover" role="note">
+    <strong>{disclosure}</strong>
+    <span>Results reflect the model as tested through this interface. Interface, system instructions, tools, and platform-level behavior may differ.</span>
+    <a href="/methodology/full/#administration">Methodology</a>
+  </div>
+</details>
+
+<style>
+  .model-environment{position:relative;flex:none;display:inline-block;color:#91a2b9;font:400 normal .72rem/1 system-ui,sans-serif}
+  .model-environment summary{display:grid;width:1.25rem;height:1.25rem;place-items:center;border-radius:50%;cursor:pointer;list-style:none;opacity:.72}
+  .model-environment summary::-webkit-details-marker{display:none}
+  .model-environment summary:hover,.model-environment summary:focus-visible{background:rgba(148,163,184,.14);color:#dbeafe;opacity:1;outline:1px solid #64748b;outline-offset:1px}
+  .model-environment-popover{display:none;position:absolute;z-index:30;top:calc(100% + .4rem);left:-.4rem;width:min(17rem,75vw);padding:.75rem;border:1px solid #41516a;border-radius:.55rem;background:#111c2c;box-shadow:0 .6rem 1.8rem rgba(0,0,0,.45);color:#cbd5e1;font-size:.72rem;line-height:1.45;text-align:left;white-space:normal}
+  .model-environment[open]>.model-environment-popover,.model-environment:hover>.model-environment-popover,.model-environment summary:focus+.model-environment-popover{display:block}
+  .model-environment-popover strong,.model-environment-popover span{display:block}
+  .model-environment-popover strong{margin-bottom:.3rem;color:#f1f5f9}
+  .model-environment-popover a{display:inline-block;margin-top:.45rem;color:#7dd3fc}
+  @media(max-width:600px){.model-environment-popover{position:fixed;top:auto;right:1rem;bottom:1rem;left:1rem;width:auto}}
+</style>
