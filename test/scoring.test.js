@@ -174,7 +174,7 @@ test('homepage formats aggregates to two decimals and keeps raw sort attributes'
  const fs=await import('node:fs/promises');
  const [home,script]=await Promise.all(['src/pages/index.astro','src/scripts/home-page.js'].map(path=>fs.readFile(path,'utf8')));
  assert.match(home,/formatAggregateScore\(Number\(score\)\)/);assert.match(home,/formatAggregateScore\(item\.ultimateScore\)/);
- assert.match(home,/formatAggregateScore\(item\.score\)/);assert.match(home,/formatAggregateScore\(sotaScore\)/);
+ assert.match(home,/formatAggregateScore\(item\.score\)/);
  assert.match(home,/data-absolute-score=\{item\.ultimateScore\}/);assert.doesNotMatch(home,/data-absolute-score=\{[^}]*toFixed/);
  assert.match(script,/getAttribute\('data-absolute-score'\)/);assert.doesNotMatch(script,/cellA \? parseFloat\(cellA\.textContent\)/);
 });

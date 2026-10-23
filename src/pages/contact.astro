@@ -27,67 +27,9 @@ import '../styles/content-pages.css';
 </Layout>
 
 <style>
-    .contact-container {
-        text-align: center;
-    }
 
-    .contact-methods {
-        margin-top: 2rem;
-        display: flex;
-        justify-content: center;
-    }
+.contact-methods { margin-top: 2rem; }.contact-method { max-width: 40rem; }.mail-icon { display: none; }
+.method-label { color: var(--muted); font-size: .8rem; }.contact-method h2 { margin: .4rem 0 .75rem; }
+.email-link { display: inline-block; overflow-wrap: anywhere; margin-top: .4rem; color: var(--link); font-size: 1rem; }
 
-    .contact-method {
-        width: min(32rem, 100%);
-        padding: clamp(1.75rem, 5vw, 3rem);
-        border: 1px solid rgba(52, 211, 153, .24);
-        border-radius: 1.25rem;
-        background: linear-gradient(145deg, rgba(15, 23, 42, .8), rgba(16, 38, 43, .55));
-        box-shadow: 0 18px 45px rgba(0, 0, 0, .2), inset 0 1px rgba(255, 255, 255, .04);
-    }
-
-    .mail-icon {
-        display: grid;
-        place-items: center;
-        width: 3.25rem;
-        height: 3.25rem;
-        margin: 0 auto 1rem;
-        border: 1px solid rgba(52, 211, 153, .35);
-        border-radius: 1rem;
-        color: #6ee7b7;
-        background: rgba(52, 211, 153, .08);
-        box-shadow: 0 0 28px rgba(52, 211, 153, .12);
-    }
-
-    .method-label {
-        color: #6ee7b7;
-        font-size: .68rem;
-        font-weight: 800;
-        letter-spacing: .16em;
-        text-transform: uppercase;
-    }
-
-    .contact-method h2 {
-        font-size: 1.5rem;
-        color: #fff;
-        margin-top: .35rem;
-        margin-bottom: 1rem;
-        font-weight: 700;
-    }
-
-    .email-link {
-        display: inline-block;
-        overflow-wrap: anywhere;
-        margin-top: 1rem;
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #6ee7b7;
-        text-decoration: none;
-        transition: color 0.3s ease;
-    }
-
-    .email-link:hover {
-        color: #d1fae5;
-        text-decoration: underline;
-    }
 </style>

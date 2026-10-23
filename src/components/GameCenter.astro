@@ -18,17 +18,17 @@ const games = [
       <div id="crt-overlay" class="hidden"></div>
       <header class="modal-header">
         <button id="header-back-btn" class="icon-btn hidden" aria-label="Back to game library">←</button>
-        <div class="title-lockup"><span class="eyebrow">UB // PLAY SYSTEM</span><h2 id="modal-title">Arcade Library</h2></div>
+        <div class="title-lockup"><h2 id="modal-title">Games</h2></div>
         <div class="header-actions">
-          <button id="crt-toggle-btn" class="icon-btn" aria-label="Toggle scanlines" title="Toggle scanlines">CRT</button>
-          <button id="suggest-game-btn" class="icon-btn" aria-label="Suggest a game" title="Suggest a game">+IDEA</button>
+          <button id="crt-toggle-btn" class="icon-btn" aria-label="Toggle scanlines" title="Toggle scanlines">Scanlines</button>
+          <button id="suggest-game-btn" class="icon-btn" aria-label="Suggest a game" title="Suggest a game">Suggest</button>
           <button id="close-modal-btn" class="icon-btn close-btn" aria-label="Close arcade">×</button>
         </div>
       </header>
 
       <div id="game-menu" class="fade-in">
         <div class="library-intro">
-          <p>SELECT PROGRAM</p><span>6 experiments online</span>
+          <p>Choose a game</p><span>6 games</span>
         </div>
         <div class="game-grid">
           {games.map((game) => (
@@ -36,7 +36,7 @@ const games = [
               <span class="game-number">{game.number}</span>
               <span class="game-glyph" aria-hidden="true">{game.icon}</span>
               <span class="game-meta"><small>{game.genre}</small><strong>{game.name}</strong><span>{game.description}</span></span>
-              <span class="launch-arrow" aria-hidden="true">↗</span>
+              <span class="launch-arrow" aria-hidden="true">→</span>
             </button>
           ))}
         </div>
@@ -59,7 +59,7 @@ const games = [
           </div>
           <div id="canvas-container" class="game-canvas-wrapper"><canvas id="game-canvas" width="400" height="400" tabindex="0" aria-label="Arcade game canvas. Controls are described in the Input Map.">Your browser does not support canvas games.</canvas><div id="game-overlay" class="hidden"><span class="view-kicker">RUN TERMINATED</span><h3 id="game-overlay-title">Game Over</h3><p id="game-overlay-score">Score: 0</p><button id="game-restart-btn">Run it back</button><button id="game-quit-btn">Return to library</button></div><div id="cutscene-overlay" class="hidden"><div class="cutscene-content"><div class="glitch-text" data-text="WARNING">WARNING</div><p class="cutscene-msg">UNAUTHORIZED WIN STREAK DETECTED</p><p class="cutscene-sub">ENGAGING MAX DIFFICULTY PROTOCOL...</p></div></div></div>
         </div>
-        <aside class="game-controls-info"><div class="score-card"><div class="score-label">LIVE SCORE</div><div class="score-display" id="current-score">0</div></div><div class="info-card"><span class="panel-label">INPUT MAP</span><p id="controls-hint">Controls Info</p></div><button id="side-quit-btn" class="side-btn">← Exit program</button></aside>
+        <aside class="game-controls-info"><div class="score-card"><div class="score-label">Score</div><div class="score-display" id="current-score">0</div></div><div class="info-card"><span class="panel-label">Controls</span><p id="controls-hint">Controls Info</p></div><button id="side-quit-btn" class="side-btn">← Exit program</button></aside>
       </div>
     </section>
   </div>
@@ -95,6 +95,13 @@ const games = [
   #adventure-wrapper{display:flex;flex-direction:column;gap:.75rem}.adventure-top-bar{display:flex;gap:.5rem;align-items:center}.adventure-main-layout{display:grid;grid-template-columns:180px 1fr;gap:.75rem}.adv-side-panel,.adv-bottom-panel,.terminal-screen{box-sizing:border-box;border:1px solid #31513b;background:#020503;color:#77f39a;padding:1rem;font: .78rem/1.5 monospace}.adv-side-panel h4,.adv-bottom-panel h4{margin:0 0 .75rem;color:#c9ff3d}.adv-stat-row{display:flex;justify-content:space-between;padding:.16rem 0}.terminal-screen{min-height:420px;display:flex;flex-direction:column}.terminal-text{flex:1;white-space:pre-wrap;overflow:auto}.terminal-choices{display:flex;flex-direction:column;gap:.4rem}.inv-list{display:flex;gap:.5rem;flex-wrap:wrap}.inv-item{border:1px solid #31513b;padding:.2rem .4rem}.cutscene-content{color:#ff786b}.glitch-text{font:900 3rem Poppins}.hidden{display:none!important}.fade-in{animation:fade .35s ease}@keyframes fade{from{opacity:0;transform:translateY(8px)}}
   @media(max-width:700px){.modal-content{width:calc(100% - 1rem);padding:1rem}.game-grid{grid-template-columns:1fr}.game-select-btn{min-height:150px}.game-layout-wrapper{grid-template-columns:1fr}.game-controls-info{display:grid;grid-template-columns:1fr 1fr}.side-btn{grid-column:1/-1}.adventure-main-layout{grid-template-columns:1fr}.modal-header{align-items:flex-start}.header-actions{flex-wrap:wrap;justify-content:flex-end}.eyebrow{display:none}.game-meta>span{display:none}}
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+#game-center-container{--arcade-paper:var(--text);--arcade-line:var(--line);--arcade-lime:var(--link)}
+.modal-header{margin-bottom:1rem;padding-bottom:1rem}#modal-title{margin:0;font-size:1.2rem;letter-spacing:0;font-weight:600}.icon-btn{border-radius:4px;font:400 .8rem var(--font-body);letter-spacing:0;color:var(--muted)}
+.library-intro{color:var(--muted);font-size:.8rem;letter-spacing:0}.library-intro p{color:var(--text);font-weight:500}
+.game-grid{gap:0 1.5rem;border:0}.game-select-btn{display:grid;grid-template-columns:minmax(0,1fr) auto;min-height:100px;padding:1rem 0;border:0;border-bottom:1px solid var(--line);background:transparent;transition:none}.game-select-btn:hover{background:transparent}.game-select-btn:after{display:none}.game-number,.game-glyph{display:none}.game-meta{align-self:center;gap:.3rem}.game-meta small{color:var(--muted);font:400 .72rem var(--font-body);letter-spacing:0}.game-meta strong{color:var(--text);font:500 1rem var(--font-body);letter-spacing:0}.game-meta>span{display:block;color:var(--muted);font-size:.8rem}.launch-arrow{align-self:center;color:var(--muted)}
+.leaderboard-strip{display:flex;gap:1rem;justify-content:space-between;padding:1rem;border-radius:4px;background:var(--panel)}.rank-icon{display:none}.leaderboard-strip small{color:var(--muted);font-size:.75rem;letter-spacing:0}.leaderboard-strip strong{color:var(--text);font-size:.85rem;font-weight:500}.score-label,.panel-label,.view-kicker{color:var(--muted);font-size:.75rem;letter-spacing:0}.score-display{color:var(--text);font:600 1.75rem var(--font-body)}.score-card,.info-card{background:var(--panel);border-radius:4px}.side-btn,.adv-action-btn,.pool-controls button{border-radius:4px;color:var(--text)}
+#leaderboard-view h3{font-size:1.4rem}.leaderboard-game-title{color:var(--text);font-size:.85rem;letter-spacing:0}.adv-side-panel,.adv-bottom-panel,.terminal-screen{border-color:var(--line);background:var(--panel);color:var(--text)}.adv-side-panel h4,.adv-bottom-panel h4{color:var(--text)}.inv-item{border-color:var(--line)}.fade-in{animation:none}
 </style>
 
 <script>
@@ -121,7 +128,7 @@ const games = [
     let typeWriterInterval = null;
     let isTyping = false;
 
-    let crtEnabled = true;
+    let crtEnabled = false;
 
     function init() {
         joystickBtn = document.getElementById('joystick-btn');
@@ -423,7 +430,7 @@ const games = [
         document.getElementById('leaderboard-view').classList.add('hidden');
         document.getElementById('header-back-btn').classList.add('hidden'); // Hide back button on menu
         document.getElementById('suggest-game-btn').classList.remove('hidden'); // Show suggest button
-        document.getElementById('modal-title').textContent = "Synaptic Arcade";
+        document.getElementById('modal-title').textContent = "Games";
         document.getElementById('crt-overlay')?.classList.add('hidden');
     }
 

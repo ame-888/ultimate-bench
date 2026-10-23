@@ -89,6 +89,11 @@ try {
         assert.equal(await page.evaluate(() => document.activeElement.id), 'manage-cookies');
         await page.locator('#reject-cookies').click();
     });
+    await check('Mobile visitors see model names and Overall without scrolling sideways', async () => {
+        const score = await page.locator('.ultimate-score-cell').first().boundingBox();
+        assert.ok(score.x >= 0 && score.x + score.width <= 375, 'Overall is in the initial mobile table viewport');
+        assert.ok(score.y < 650, 'The leaderboard starts near the top of the page');
+    });
     await check('Mobile navigation is inert while closed and Escape restores focus', async () => {
         assert.ok(await page.locator('#navbar-menu').evaluate(element => element.inert));
         await page.locator('#navbar-toggle').click();
@@ -134,11 +139,13 @@ try {
             assert.equal(await page.evaluate(() => document.activeElement.dataset.target), arena);
         }
     });
-    await check('Achievements focus trap and chart controls', async () => {
-        await page.locator('#achievements-btn').click();
-        await page.keyboard.press('Tab');
-        assert.ok(await page.evaluate(() => document.activeElement.closest('#achievements-modal') !== null));
-        await page.keyboard.press('Escape');
+    await check('Expandable arena summaries and chart controls', async () => {
+        const summaries = page.locator('.arena-summary');
+        assert.equal(await summaries.count(), 3);
+        assert.equal(await summaries.evaluateAll(items => items.every(item => !item.open)), true);
+        await summaries.first().locator('summary').click();
+        assert.ok(await summaries.first().locator('table').isVisible());
+        await summaries.first().locator('summary').click();
         await page.locator('[data-score-mode="pareto"]').click();
         assert.ok(await page.locator('.pareto-panel').isVisible());
         await page.locator('[data-score-mode="progress"]').click();
@@ -209,7 +216,6 @@ try {
     restrictedPage.on('pageerror', error => storageErrors.push(error.message));
     await restrictedPage.goto(origin + '/arcade/');
     await restrictedPage.locator('#reject-cookies').click();
-    await restrictedPage.locator('#curiosity-button').click();
     await restrictedPage.locator('#leaderboard-btn').click();
     await restrictedPage.locator('#header-back-btn').click();
     await restrictedPage.locator('[data-game="adventure"]').click();
