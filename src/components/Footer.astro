@@ -39,14 +39,15 @@ const year = new Date().getUTCFullYear();
 </footer>
 
 <style>
-.site-footer { border-top: 1px solid var(--line); color: var(--muted); font-size: .82rem; }
-.footer-inner { display: grid; grid-template-columns: 2fr 1.2fr .8fr 1fr; gap: 2rem; width: min(100% - 3rem, 76rem); margin: auto; padding: 2rem 0; }
-.footer-brand { color: var(--text); font-size: .9rem; font-weight: 600; text-decoration: none; }
-.footer-about p { max-width: 18rem; margin-top: .5rem; }
+.site-footer { border-top: 1px solid var(--line); background: #09101d; color: var(--muted); font-size: .82rem; }
+.footer-inner { display: grid; grid-template-columns: 2fr 1.2fr .8fr 1fr; gap: 2rem; width: min(100% - 3rem, 76rem); margin: auto; padding: 2.75rem 0; }
+.footer-brand { display: inline-flex; align-items: center; gap: .7rem; color: var(--text); font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; letter-spacing: -.035em; text-decoration: none; }
+.footer-brand::before { content: ''; width: .35rem; height: 1.1rem; border-radius: .2rem; background: linear-gradient(#60a5fa, #a78bfa); }
+.footer-about p { max-width: 18rem; margin-top: .75rem; line-height: 1.7; }
 .site-footer nav { display: flex; flex-direction: column; align-items: flex-start; gap: .35rem; }
-.site-footer h2 { margin: 0 0 .4rem; color: var(--text); font-size: .82rem; font-weight: 500; }
+.site-footer h2 { margin: 0 0 .6rem; color: var(--text); font-size: .72rem; font-weight: 750; letter-spacing: .09em; text-transform: uppercase; }
 .site-footer nav a { color: var(--muted); text-decoration: none; }
-.site-footer nav a:hover { color: var(--text); text-decoration: underline; }
+.site-footer nav a:hover { color: var(--link); text-decoration: underline; }
 .footer-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem; width: min(100% - 3rem, 76rem); margin: auto; padding: 1rem 0 1.5rem; border-top: 1px solid var(--line); font-size: .75rem; }
 @media (max-width: 700px) { .footer-inner { grid-template-columns: 1fr 1fr; gap: 1.5rem; width: calc(100% - 2rem); }.footer-about { grid-column: 1/-1; }.footer-meta { width: calc(100% - 2rem); } }
 </style>

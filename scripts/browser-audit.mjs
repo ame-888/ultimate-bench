@@ -142,9 +142,16 @@ try {
     await check('Expandable arena summaries and chart controls', async () => {
         const summaries = page.locator('.arena-summary');
         assert.equal(await summaries.count(), 3);
-        assert.equal(await summaries.evaluateAll(items => items.every(item => !item.open)), true);
-        await summaries.first().locator('summary').click();
+        assert.equal(await summaries.evaluateAll(items => items.every(item => item.open)), true);
         assert.ok(await summaries.first().locator('table').isVisible());
+        const arenaRows = summaries.first().locator('tbody tr');
+        assert.equal(await arenaRows.filter({ visible: true }).count(), 5);
+        await summaries.first().locator('.arena-toggle').click();
+        assert.equal(await arenaRows.filter({ visible: true }).count(), await arenaRows.count());
+        await summaries.first().locator('.arena-toggle').click();
+        assert.equal(await arenaRows.filter({ visible: true }).count(), 5);
+        await summaries.first().locator('summary').click();
+        assert.equal(await summaries.first().locator('table').isVisible(), false);
         await summaries.first().locator('summary').click();
         await page.locator('[data-score-mode="pareto"]').click();
         assert.ok(await page.locator('.pareto-panel').isVisible());

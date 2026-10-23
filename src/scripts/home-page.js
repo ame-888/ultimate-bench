@@ -259,7 +259,7 @@ function init() {
             const toggle = card.querySelector('.arena-toggle');
             if (!toggle) return;
 
-            const rowsAfterPreview = [...card.querySelectorAll('tbody tr')].slice(10);
+            const rowsAfterPreview = [...card.querySelectorAll('tbody tr')].slice(Number(card.dataset.previewRows));
             const label = toggle.querySelector('[data-arena-toggle-label]');
             const setExpanded = (expanded) => {
                 rowsAfterPreview.forEach(row => { row.hidden = !expanded; });

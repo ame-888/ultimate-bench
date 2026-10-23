@@ -1,21 +1,29 @@
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/inter-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/inter-latin-500-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/inter-latin-600-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/poppins-latin-600-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 700; font-display: swap; src: url('/fonts/poppins-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 900; font-display: swap; src: url('/fonts/poppins-latin-900-normal.woff2') format('woff2'); }
+
 :root {
     color-scheme: dark;
-    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --font-heading: var(--font-body);
-    --color-bg: #121518;
-    --text: #edf0f3;
+    --font-body: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-heading: Poppins, 'Segoe UI', sans-serif;
+    --color-bg: #0b1220;
+    --text: #edf2fa;
     --color-text: var(--text);
-    --muted: #adb5bf;
-    --panel: #1b2025;
-    --line: #343c45;
-    --link: #b5cde7;
-    --accent: #b5cde7;
+    --muted: #a8b6ca;
+    --panel: #121e31;
+    --line: #2b3b53;
+    --link: #93c5fd;
+    --accent: #fbbf24;
+    --surface: #0f192a;
 }
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { margin: 0; width: 100%; min-height: 100vh; overflow-x: hidden; background: var(--color-bg); color: var(--text); font-family: var(--font-body); font-size: 16px; line-height: 1.6; }
-body { -webkit-font-smoothing: antialiased; }
-h1, h2, h3, h4, h5, h6 { color: var(--text); font-family: var(--font-heading); font-weight: 600; line-height: 1.25; letter-spacing: -.018em; }
+body { -webkit-font-smoothing: antialiased; background: radial-gradient(ellipse at 50% 0, #15213a 0, var(--color-bg) 48rem); }
+h1, h2, h3, h4, h5, h6 { color: var(--text); font-family: var(--font-heading); font-weight: 700; line-height: 1.2; letter-spacing: -.035em; }
 h1 { font-size: clamp(1.85rem, 4vw, 2.6rem); }
 h2 { font-size: 1.5rem; }
 h3 { font-size: 1.1rem; }
