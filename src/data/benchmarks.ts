@@ -6,6 +6,28 @@ export const benchmarks = {
     ],
     models: [
         {
+            name: 'Gemini 4.0 Argon',
+            comparison: { group: 'gemini-4-0-argon-code', condition: 'Code execution available' },
+            scores: {
+                'lvl1': 93,
+                'lvl2': 94,
+                'lvl3': 84,
+                'lvl4': 71,
+                'lvl5': 0
+            }
+        },
+        {
+            name: 'Gemini 4.0 Argon (without code execution)',
+            comparison: { group: 'gemini-4-0-argon-code', condition: 'Code execution unavailable', baseline: true },
+            scores: {
+                'lvl1': 85,
+                'lvl2': 85,
+                'lvl3': 79,
+                'lvl4': 35,
+                'lvl5': 0
+            }
+        },
+        {
             name: 'Muse Spark 1.1',
             scores: {
                 'lvl1': 68,
