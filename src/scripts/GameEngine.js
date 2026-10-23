@@ -220,7 +220,14 @@ export class ScoreManager {
         const defaults = { tetris: [], snake: [], breakout: [], tictactoe: 0, pool: [] };
         try {
             const stored = JSON.parse(localStorage.getItem(this.key));
-            return { ...defaults, ...stored };
+            if (!stored || typeof stored !== 'object') return defaults;
+            for (const game of ['tetris', 'snake', 'breakout', 'pool']) {
+                if (Array.isArray(stored[game])) defaults[game] = stored[game]
+                    .filter(entry => entry && typeof entry.score === 'number' && Number.isFinite(entry.score) && entry.score >= 0 && typeof entry.date === 'string' && Number.isFinite(Date.parse(entry.date)))
+                    .sort((a, b) => b.score - a.score).slice(0, 5);
+            }
+            if (typeof stored.tictactoe === 'number' && Number.isFinite(stored.tictactoe) && stored.tictactoe >= 0) defaults.tictactoe = stored.tictactoe;
+            return defaults;
         } catch (e) {
             return defaults;
         }

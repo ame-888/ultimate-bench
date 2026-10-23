@@ -89,7 +89,7 @@ const protocols = [
 
         <section id="status-handling" aria-labelledby="status-title">
             <p class="section-label">Canonical semantics</p><h2 id="status-title">Status handling</h2>
-            <div class="table-wrap"><table><thead><tr><th>Result</th><th>Meaning</th><th>Composite treatment</th></tr></thead><tbody>
+            <div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable benchmark table"><table><thead><tr><th>Result</th><th>Meaning</th><th>Composite treatment</th></tr></thead><tbody>
                 <tr><th scope="row">0</th><td>A completed, evaluable level with no correct response instances.</td><td>Zero points; the level’s full weight remains.</td></tr>
                 <tr><th scope="row">INVALID</th><td>Three consecutive administrations could not be evaluated because the requested answers were absent, refused, unrelated, severely malformed, or not reliably mappable. Incorrect but evaluable answers do not trigger INVALID.</td><td>Zero points; the level’s full weight remains. It is distinct from a completed zero.</td></tr>
                 <tr><th scope="row">UNAVAILABLE</th><td>The configuration could not be accessed for that Active level.</td><td>Zero numerator contribution; denominator remains 63; Active-level coverage is incomplete.</td></tr>
@@ -145,7 +145,7 @@ const protocols = [
     <article class="content-card closing-methodology">
         <section id="weighting" aria-labelledby="weighting-title">
             <p class="section-label">Official index</p><h2 id="weighting-title">Arena weighting and aggregate score</h2><p><strong>Fixed six-level normalization:</strong> the full ladder denominator is permanently 63. Operational weight is {activeWeight}/63, so the current maximum is 49.21%. Beholder reserves 32 points but has no model-level result. Future activation creates earning opportunity without changing the denominator.</p>
-            <div class="table-wrap"><table data-visual-weights><thead><tr><th>Active level</th><th>Weight</th><th>Share of complete score</th></tr></thead><tbody>
+            <div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable benchmark table"><table data-visual-weights><thead><tr><th>Active level</th><th>Weight</th><th>Share of complete score</th></tr></thead><tbody>
                 {visualLevels.map(level => <tr data-level={level.number} data-weight={level.weight}><th scope="row">{level.number} — {level.name}</th><td>{level.weight}</td><td>{level.weight}/63</td></tr>)}
                 <tr><th scope="row">6 — Beholder (Planned)</th><td>32 reserved</td><td>32/63</td></tr><tr class="total"><th scope="row">Full ladder denominator</th><td>{fullWeight}</td><td>Permanent</td></tr>
             </tbody></table></div>

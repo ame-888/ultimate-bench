@@ -6,26 +6,28 @@
     "dev": "astro dev",
     "build": "astro build && npm run methodology:pdf && node scripts/generate-sitemap.mjs",
     "methodology:pdf": "tsx scripts/generate-methodology-pdf.ts",
-    "test": "node --test",
+    "test": "node --test test/*.test.js",
     "preview": "astro preview",
     "astro": "astro",
-    "check": "astro check"
+    "check": "astro check",
+    "test:browser": "node scripts/browser-audit.mjs"
   },
   "dependencies": {
-    "@astrojs/react": "^4.4.0",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "astro": "^5.17.3",
+    "astro": "^7.4.2",
     "pdfkit": "^0.19.1",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
     "tslib": "^2.8.1"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.10",
+    "@astrojs/check": "^0.9.12",
+    "@axe-core/playwright": "^4.14.0",
     "@types/pdfkit": "^0.17.6",
-    "pdfjs-dist": "^4.10.38",
+    "esbuild": "^0.28.2",
+    "pdfjs-dist": "^6.4.299",
+    "playwright-core": "^1.64.1",
     "tsx": "^4.23.1",
     "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=22.23.4"
   }
 }

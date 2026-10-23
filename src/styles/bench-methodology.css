@@ -5,7 +5,7 @@
 .bench-methodology .section-navigation a:focus-visible{outline:3px solid var(--page-accent);outline-offset:2px}
 .bench-methodology .section-navigation .pending{color:#c4b5fd;border-color:rgba(196,181,253,.35)}
 .bench-methodology .content-card+.content-card,.bench-methodology .protocol+.protocol{margin-top:1.5rem}
-.bench-methodology .content-card section{scroll-margin-top:1.5rem}
+.bench-methodology .content-card section{scroll-margin-top:5rem}
 .bench-methodology .content-card section+section{margin-top:3rem;padding-top:2.5rem;border-top:1px solid rgba(148,163,184,.14)}
 .bench-methodology .section-label,.bench-methodology .protocol-level{margin:0 0 .2rem!important;color:var(--page-accent);font-size:.7rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
 .bench-methodology .content-card h2{margin:.2rem 0 1rem;font-size:clamp(1.55rem,4vw,2.3rem)}
@@ -25,13 +25,13 @@
 .bench-methodology thead th{color:#f8fafc;background:rgba(15,23,42,.65)}
 .bench-methodology tbody th{color:#e2e8f0}
 .bench-methodology .total th,.bench-methodology .total td{font-weight:900;color:#f8fafc}
-.bench-methodology .protocol{scroll-margin-top:1.5rem}
+.bench-methodology .protocol{scroll-margin-top:5rem}
 .bench-methodology .protocol header{padding-bottom:1.2rem;border-bottom:1px solid rgba(148,163,184,.14)}
 .bench-methodology .protocol header h2{font-size:clamp(2.2rem,6vw,3.8rem)}
 .bench-methodology .protocol header>p:last-child{margin:0;color:#aab8ca;font-weight:600}
 .bench-methodology .protocol section+section{margin-top:1.8rem;padding-top:1.5rem}
 .bench-methodology .protocol section h3{margin:0 0 .55rem}
 .bench-methodology .protocols{margin:1.5rem 0}
-.bench-methodology .closing-methodology code{display:block;padding:1rem;overflow-x:auto;border-radius:.65rem;color:#f8fafc;background:#0b1220;white-space:nowrap}
+.bench-methodology .closing-methodology code{display:block;padding:1rem;overflow-x:auto;border-radius:.65rem;color:#f8fafc;background:#0b1220;white-space:normal;overflow-wrap:anywhere}
 @media(max-width:760px){.bench-methodology .section-navigation{grid-template-columns:repeat(2,minmax(0,1fr))}.bench-methodology .procedure-grid,.bench-methodology .policy-list{grid-template-columns:1fr}}
 @media(max-width:430px){.bench-methodology .section-navigation{grid-template-columns:1fr}.bench-methodology .content-card{padding:1.25rem}.bench-methodology th,.bench-methodology td{padding:.7rem}.bench-methodology .protocol header h2{font-size:2.25rem}}

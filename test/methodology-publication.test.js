@@ -27,7 +27,7 @@ test('generated deployment contains structurally valid stable and versioned PDFs
     const parsed = await openPdf(artifact);
     assert.ok(parsed.numPages > 2 && parsed.numPages < 27);
     assert.equal((await parsed.getMetadata()).info.Title, 'Ultimate Bench: Methodology and Evaluation Protocol');
-    await parsed.destroy();
+    await parsed.loadingTask.destroy();
   }
 });
 
@@ -62,7 +62,7 @@ test('PDF text, contents links, bookmarks, and external link are publication-saf
   assert.ok(contentsLinks.length >= 25, `expected at least 25 contents links, found ${contentsLinks.length}`);
   const coverLinks = await (await pdf.getPage(1)).getAnnotations();
   assert.ok(coverLinks.some(annotation => annotation.url === 'https://ultimate-bench.vercel.app/methodology/full/'));
-  await pdf.destroy();
+  await pdf.loadingTask.destroy();
 });
 
 test('PDF builder has no network-loaded fonts or assets', async () => {
