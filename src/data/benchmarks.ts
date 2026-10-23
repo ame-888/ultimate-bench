@@ -416,6 +416,26 @@ export const benchmarks = {
             }
         },
         {
+            name: 'Grok 4.7 Fast',
+            scores: {
+                'lvl1': 49,
+                'lvl2': 23,
+                'lvl3': 9,
+                'lvl4': 0,
+                'lvl5': 0
+            }
+        },
+        {
+            name: 'Grok 4.7 Expert',
+            scores: {
+                'lvl1': 45,
+                'lvl2': 19,
+                'lvl3': 23,
+                'lvl4': 0,
+                'lvl5': 0
+            }
+        },
+        {
             name: 'Claude 3 Opus',
             scores: {
                 'lvl1': 0,

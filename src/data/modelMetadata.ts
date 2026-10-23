@@ -30,6 +30,7 @@ const canonical = {
   grok420: { releaseDate:'2026-03-10', observationDate:'2026-02-18', source:sources.xai, note:'Canonical base-model public release; Expert is a product configuration.' },
   grok43: { releaseDate:'2026-05-15', observationDate:'2026-05-09', source:sources.xai, note:'Earliest clearly documented first-party availability for Grok 4.3.' },
   grok45: { releaseDate:'2026-07-08', observationDate:'2026-07-22', source:sources.xai, note:'Earliest verified API availability; product announcement followed July 16.' },
+  grok47: { releaseDate:'2026-09-21', source:sources.xai, note:'Release date supplied by the benchmark maintainer with the Visual results update.' },
 } satisfies Record<string, ModelMetadata>;
 
 const aliases: Record<string, keyof typeof canonical> = {
@@ -37,7 +38,7 @@ const aliases: Record<string, keyof typeof canonical> = {
   'Claude 4.6 Sonnet (max thinking)':'claude46sonnet','Claude 4.6 Sonnet (adaptive thinking)':'claude46sonnet','Claude 4.8 Opus (high)':'claude48opus','Claude 5 Fable (high)':'claude5fable','Claude 5 Opus (high)':'claude5opus',
   'GPT-5.4':'gpt54','GPT-5.4 Thinking Mini':'gpt54mini','GPT-5.5':'gpt55','GPT-5.5 Instant (0505)':'gpt550505','GPT-5.5 Instant (0529)':'gpt550529','GPT-5.5 Instant (0624)':'gpt550624','GPT-5.6 Sol (high) - JULY':'gpt56sol','GPT-5.6 Sol (high) - AUGUST':'gpt56solAugust','GPT-6 Sol (High)':'gpt6sol',
   'Gemini 2.5 Pro (without code execution)':'gemini25','Gemini 2.5 Flash (without code execution)':'gemini25','Gemini 3.0 Pro Preview (without code execution)':'gemini30pro','Gemini 3.0 Flash Preview (without code execution)':'gemini30flash','Gemini 3.0 Flash Preview':'gemini30flash','Gemini 3.1 Pro Preview (without code execution)':'gemini31pro','Gemini 3.1 Pro Preview':'gemini31pro','Gemini 3.1 Flashlite Preview (without code execution)':'gemini31flashpreview','Gemini 3.1 Flashlite GA (without code execution)':'gemini31flashga','Gemini 3.1 Flashlite GA':'gemini31flashga','Gemini 3.5 Flash (without code execution)':'gemini35flash','Gemini 3.5 Flash':'gemini35flash','Gemini 3.6 Flash (without code execution)':'gemini36flash','Gemini 3.6 Flash':'gemini36flash','Gemini 3.7 Flash (without code execution)':'gemini37flash','Gemini 3.7 Flash':'gemini37flash','Gemini 4.0 Argon':'gemini40argon','Gemini 4.0 Argon (without code execution)':'gemini40argon',
-  'Muse Spark (thinking)':'museSpark','Muse Spark 1.1':'museSpark11','Grok 4.20 Expert':'grok420','Grok 4.3 Fast':'grok43','Grok 4.5 Fast':'grok45','Grok 4.5 Expert':'grok45',
+  'Muse Spark (thinking)':'museSpark','Muse Spark 1.1':'museSpark11','Grok 4.20 Expert':'grok420','Grok 4.3 Fast':'grok43','Grok 4.5 Fast':'grok45','Grok 4.5 Expert':'grok45','Grok 4.7 Fast':'grok47','Grok 4.7 Expert':'grok47',
 };
 
 const observationByAlias: Record<string, string> = {
