@@ -22,6 +22,9 @@ test('relative output accepts browser now at runtime rather than a frozen build 
   assert.equal(formatRelativeReleaseDate('2026-01-01',at('2026-01-01T12:00:00Z')),'today');
   assert.equal(formatRelativeReleaseDate('2026-01-01',at('2026-02-01T12:00:00Z')),'1 month ago');
 });
+test('thirty-day-old releases never display zero months',()=>{
+  assert.equal(formatRelativeReleaseDate('2026-03-01',at('2026-03-31T12:00:00Z')),'1 month ago');
+});
 test('static homepage performs client-side clock enhancement',()=>{
   const client=readFileSync('src/scripts/home-page.js','utf8');
   assert.match(client,/enhanceRelativeDates\(document\)/); assert.doesNotMatch(client,/TIME_OFFSET|simNow/);

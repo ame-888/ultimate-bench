@@ -12,11 +12,15 @@ const facts = [
 ];
 const curiosity = document.querySelector<HTMLButtonElement>('#curiosity-button');
 const card = document.querySelector<HTMLElement>('#curiosity-card');
-let factIndex = Number(sessionStorage.getItem('ub-fact') || '0');
+let factIndex = 0;
+try {
+  const stored = Number(sessionStorage.getItem('ub-fact'));
+  if (Number.isSafeInteger(stored) && stored >= 0) factIndex = stored % facts.length;
+} catch { /* Curiosities work without browser storage. */ }
 curiosity?.addEventListener('click', () => {
   if (!card) return;
   card.textContent = facts[factIndex++ % facts.length];
-  sessionStorage.setItem('ub-fact', String(factIndex));
+  try { sessionStorage.setItem('ub-fact', String(factIndex)); } catch { /* Keep session state in memory. */ }
   card.classList.remove('show'); requestAnimationFrame(() => card.classList.add('show'));
 });
 

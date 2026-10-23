@@ -41,6 +41,8 @@ Contact for general inquiries, corrections, result disputes, and privacy request
 
 ## Development and verification
 
+Use Node.js 24 (see `.nvmrc`); the minimum supported version is 22.23.4.
+
 ```sh
 npm ci
 npm test
@@ -48,6 +50,17 @@ npm run build
 npm run check
 npm run dev
 ```
+
+The optional browser audit checks every built route at 1440, 375, and 320 pixels, internal links, WCAG A/AA rules, and interactive flows (including blocked storage, consent withdrawal, and JavaScript disabled). It serves `dist/` locally and blocks external requests, so it does not validate live hosting or advertising services.
+
+```sh
+npx playwright-core install chromium
+npm run test:browser
+# Or use an installed browser:
+CHROMIUM_PATH=/usr/bin/chromium npm run test:browser
+```
+
+The audit writes its detailed results to ignored `work/browser-audit.json`. See [`reports/website-review-2026-10-23.md`](reports/website-review-2026-10-23.md) for findings and remaining follow-up.
 
 The build validates benchmark records before rendering and then generates sitemaps from every generated HTML route. The repository does not include an evaluation runner, raw evaluation artifacts, uncertainty analysis, or independent result verification. A successful build validates data shape and presentation, not the accuracy or representativeness of recorded results.
 

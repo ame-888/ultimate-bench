@@ -13,21 +13,86 @@
 </div>
 <button id="reopen-cookie-settings" class="reopen-cookie-settings" aria-controls="cookie-preferences-dialog" aria-expanded="false" hidden>Cookie preferences</button>
 <script>
-// @ts-nocheck -- DOM elements are narrowed together by the runtime guard below.
-const CONSENT_KEY="ultimate_bench_cookie_consent";
-function loadAdsense(){if(document.querySelector('script[data-consent-service="adsense"]'))return;const script=document.createElement("script");script.async=true;script.crossOrigin="anonymous";script.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5230972214569734";script.dataset.consentService="adsense";document.head.appendChild(script)}
-document.addEventListener("DOMContentLoaded",()=>{const notice=document.getElementById("cookie-notice"),backdrop=document.getElementById("cookie-preferences-backdrop"),dialog=document.getElementById("cookie-preferences-dialog"),advertising=document.getElementById("advertising-consent"),accept=document.getElementById("accept-cookies"),reject=document.getElementById("reject-cookies"),manage=document.getElementById("manage-cookies"),save=document.getElementById("save-cookies"),cancel=document.getElementById("cancel-cookie-settings"),reopen=document.getElementById("reopen-cookie-settings");if(!(notice&&backdrop&&dialog&&advertising instanceof HTMLInputElement&&accept&&reject&&manage&&save&&cancel&&reopen))return;
-let consent=null,lastOpener=null,scrollY=0,reopened=false;try{const stored=localStorage.getItem(CONSENT_KEY);consent=stored?JSON.parse(stored):null}catch{localStorage.removeItem(CONSENT_KEY)}
-const background=[...document.body.children].filter(el=>!el.contains(notice)&&!el.contains(backdrop)&&!el.contains(reopen));
-const setBackgroundInert=value=>background.forEach(el=>{if('inert' in el)el.inert=value;else value?el.setAttribute('aria-hidden','true'):el.removeAttribute('aria-hidden')});
-const closeDialog=restore=>{backdrop.hidden=true;manage.setAttribute('aria-expanded','false');reopen.setAttribute('aria-expanded','false');setBackgroundInert(false);document.body.style.overflow='';window.scrollTo(0,scrollY);if(restore&&lastOpener instanceof HTMLElement)lastOpener.focus()};
-const openDialog=(opener,isReopened)=>{lastOpener=opener;reopened=isReopened;advertising.checked=Boolean(consent?.advertising);backdrop.hidden=false;notice.hidden=true;reopen.hidden=true;manage.setAttribute('aria-expanded','true');reopen.setAttribute('aria-expanded','true');scrollY=window.scrollY;document.body.style.overflow='hidden';setBackgroundInert(true);advertising.focus()};
-const storeConsent=allowed=>{consent={necessary:true,advertising:allowed};localStorage.setItem(CONSENT_KEY,JSON.stringify(consent));notice.hidden=true;closeDialog(false);reopen.hidden=false;if(allowed)loadAdsense();reopen.focus()};
-if(consent&&typeof consent.advertising==='boolean'){reopen.hidden=false;if(consent.advertising)loadAdsense()}else notice.hidden=false;
-accept.addEventListener('click',()=>storeConsent(true));reject.addEventListener('click',()=>storeConsent(false));manage.addEventListener('click',()=>openDialog(manage,false));reopen.addEventListener('click',()=>openDialog(reopen,true));save.addEventListener('click',()=>storeConsent(advertising.checked));cancel.addEventListener('click',()=>{closeDialog(true);if(!consent)notice.hidden=false;else reopen.hidden=false});
-dialog.addEventListener('keydown',event=>{if(event.key==='Escape'&&reopened){event.preventDefault();closeDialog(true);reopen.hidden=false}if(event.key!=='Tab')return;const focusable=[...dialog.querySelectorAll('button,input:not([disabled]),a[href]')].filter(el=>!el.hidden);if(!focusable.length)return;const first=focusable[0],last=focusable.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}});
+// @ts-nocheck -- component IDs are guarded together before binding events.
+import { isolateDialog, trapDialogFocus } from '../scripts/DialogUtils.js';
+const CONSENT_KEY = 'ultimate_bench_cookie_consent';
+function loadAdsense() {
+    if (document.querySelector('script[data-consent-service="adsense"]')) return;
+    const script = document.createElement('script');
+    script.async = true;
+    script.crossOrigin = 'anonymous';
+    script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5230972214569734';
+    script.dataset.consentService = 'adsense';
+    document.head.appendChild(script);
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const notice = document.getElementById('cookie-notice');
+    const backdrop = document.getElementById('cookie-preferences-backdrop');
+    const dialog = document.getElementById('cookie-preferences-dialog');
+    const advertising = document.getElementById('advertising-consent');
+    const accept = document.getElementById('accept-cookies');
+    const reject = document.getElementById('reject-cookies');
+    const manage = document.getElementById('manage-cookies');
+    const save = document.getElementById('save-cookies');
+    const cancel = document.getElementById('cancel-cookie-settings');
+    const reopen = document.getElementById('reopen-cookie-settings');
+    if (!(notice && backdrop && dialog && advertising instanceof HTMLInputElement && accept && reject && manage && save && cancel && reopen)) return;
+
+    let consent = null, lastOpener = null, restoreBackground = null;
+    try {
+        const stored = JSON.parse(localStorage.getItem(CONSENT_KEY) || 'null');
+        if (stored && typeof stored.advertising === 'boolean') consent = stored;
+    } catch { /* Browser storage can be blocked or malformed. Keep an in-memory choice. */ }
+
+    const closeDialog = (restoreFocus = true) => {
+        backdrop.hidden = true;
+        restoreBackground?.();
+        restoreBackground = null;
+        manage.setAttribute('aria-expanded', 'false');
+        reopen.setAttribute('aria-expanded', 'false');
+        notice.hidden = Boolean(consent);
+        reopen.hidden = !consent;
+        if (restoreFocus) lastOpener?.focus({ preventScroll: true });
+    };
+    const openDialog = opener => {
+        lastOpener = opener;
+        advertising.checked = Boolean(consent?.advertising);
+        backdrop.hidden = false;
+        notice.hidden = true;
+        reopen.hidden = true;
+        opener.setAttribute('aria-expanded', 'true');
+        restoreBackground = isolateDialog(backdrop);
+        advertising.focus();
+    };
+    const storeConsent = allowed => {
+        const revoked = consent?.advertising && !allowed;
+        consent = { necessary: true, advertising: allowed };
+        let persisted = false;
+        try {
+            localStorage.setItem(CONSENT_KEY, JSON.stringify(consent));
+            persisted = true;
+        } catch { /* Preferences still work for this page when storage is unavailable. */ }
+        closeDialog(false);
+        reopen.focus({ preventScroll: true });
+        if (allowed) loadAdsense();
+        // Removing a script does not stop already-running advertising code.
+        if (revoked && persisted) window.location.reload();
+    };
+    notice.hidden = Boolean(consent);
+    reopen.hidden = !consent;
+    if (consent?.advertising) loadAdsense();
+    accept.addEventListener('click', () => storeConsent(true));
+    reject.addEventListener('click', () => storeConsent(false));
+    manage.addEventListener('click', () => openDialog(manage));
+    reopen.addEventListener('click', () => openDialog(reopen));
+    save.addEventListener('click', () => storeConsent(advertising.checked));
+    cancel.addEventListener('click', () => closeDialog());
+    dialog.addEventListener('keydown', event => {
+        if (event.key === 'Escape') { event.preventDefault(); closeDialog(); }
+        trapDialogFocus(event, dialog);
+    });
 });
 </script>
 <style>
-.cookie-banner{position:fixed;inset:auto 0 0;background:rgba(17,24,39,.98);color:#F3F4F6;padding:1rem;z-index:10000;border-top:1px solid #374151}.cookie-banner[hidden],[hidden]{display:none!important}.cookie-content{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1.5rem}.cookie-content h2,.cookie-dialog h2{margin:0 0 .4rem;font-size:1.1rem}.cookie-content p,.cookie-dialog p{margin:0;font-size:.875rem;line-height:1.5}.cookie-content a{color:#34D399}.cookie-options{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0;font-size:.875rem}.cookie-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:.5rem;min-width:22rem}.cookie-btn,.reopen-cookie-settings{border:1px solid #6B7280;background:#1F2937;color:#F3F4F6;padding:.6rem .9rem;border-radius:4px;font-weight:600;cursor:pointer}.cookie-btn.primary{background:#10B981;border-color:#10B981;color:#111827}.cookie-dialog-backdrop{position:fixed;inset:0;z-index:10001;display:grid;place-items:center;padding:1rem;background:rgba(0,0,0,.72)}.cookie-dialog{width:min(32rem,100%);padding:1.5rem;border:1px solid #4B5563;border-radius:10px;background:#111827;color:#F3F4F6;box-shadow:0 24px 80px #000}.reopen-cookie-settings{display:block;position:static;width:max-content;min-height:2.5rem;margin:.75rem max(1rem,calc((100% - 78rem)/2 + 1.5rem)) .75rem auto;font-size:.72rem}@media(max-width:767px){.cookie-content{flex-direction:column;align-items:stretch}.cookie-actions{min-width:0;justify-content:flex-start}}@media(prefers-reduced-motion:reduce){.cookie-banner,.cookie-dialog,.cookie-dialog-backdrop{animation:none!important;transition:none!important}}
+.cookie-banner{position:fixed;inset:auto 0 0;background:rgba(17,24,39,.98);color:#F3F4F6;padding:1rem;z-index:10000;border-top:1px solid #374151}.cookie-banner[hidden]{display:none!important}.cookie-content{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1.5rem}.cookie-content h2,.cookie-dialog h2{margin:0 0 .4rem;font-size:1.1rem}.cookie-content p,.cookie-dialog p{margin:0;font-size:.875rem;line-height:1.5}.cookie-content a{color:#34D399}.cookie-options{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0;font-size:.875rem}.cookie-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:.5rem;min-width:22rem}.cookie-btn,.reopen-cookie-settings{border:1px solid #6B7280;background:#1F2937;color:#F3F4F6;padding:.6rem .9rem;border-radius:4px;font-weight:600;cursor:pointer}.cookie-btn.primary{background:#10B981;border-color:#10B981;color:#111827}.cookie-dialog-backdrop{position:fixed;inset:0;z-index:10001;display:grid;place-items:center;padding:1rem;background:rgba(0,0,0,.72)}.cookie-dialog{max-height:calc(100dvh - 2rem);overflow-y:auto;width:min(32rem,100%);padding:1.5rem;border:1px solid #4B5563;border-radius:10px;background:#111827;color:#F3F4F6;box-shadow:0 24px 80px #000}.reopen-cookie-settings{display:block;position:static;width:max-content;min-height:2.5rem;margin:.75rem max(1rem,calc((100% - 78rem)/2 + 1.5rem)) .75rem auto;font-size:.72rem}@media(max-width:767px){.cookie-content{flex-direction:column;align-items:stretch}.cookie-actions{min-width:0;justify-content:flex-start}}@media(prefers-reduced-motion:reduce){.cookie-banner,.cookie-dialog,.cookie-dialog-backdrop{animation:none!important;transition:none!important}}
 </style>

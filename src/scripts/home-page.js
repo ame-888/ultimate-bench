@@ -1,3 +1,4 @@
+import { isolateDialog, trapDialogFocus } from './DialogUtils.js';
 const configElement = document.getElementById('home-page-config');
 
 if (!(configElement instanceof HTMLScriptElement)) {
@@ -21,6 +22,7 @@ function init() {
         const achModalCloseBtn = document.getElementById('achievements-modal-close');
         const achBtn = document.getElementById('achievements-btn');
 
+        let restoreAchievementBackground = null;
         if (achBtn && achModalOverlay && achModalCloseBtn) {
             achBtn.addEventListener('click', () => {
                 // Populate data
@@ -61,7 +63,7 @@ function init() {
 
                      // try to get avg score by scraping cells
                      const scoreCells = Array.from(row.querySelectorAll('.score-cell')).filter(c => !c.classList.contains('rank-cell'));
-                     const numericScores = scoreCells.map(c => parseInt(c.textContent.replace('%', ''))).filter(n => !isNaN(n));
+                     const numericScores = scoreCells.map(c => parseFloat(c.textContent.replace('%', ''))).filter(n => !isNaN(n));
                      if (numericScores.length > 0) {
                           const sum = numericScores.reduce((a,b)=>a+b,0);
                           const avg = sum / numericScores.length;
@@ -120,15 +122,18 @@ function init() {
                 document.getElementById('ach-specialist').textContent = specialist;
                 document.getElementById('ach-depth').textContent = depth;
 
+                achModalOverlay.hidden = false;
                 achModalOverlay.classList.add('active');
+                restoreAchievementBackground = isolateDialog(achModalOverlay);
                 achModalCloseBtn.focus();
-                document.body.style.overflow = 'hidden'; // Prevent background scrolling
             });
 
             const closeAchModal = () => {
                 achModalOverlay.classList.remove('active');
-                achBtn.focus();
-                document.body.style.overflow = '';
+                achModalOverlay.hidden = true;
+                restoreAchievementBackground?.();
+                restoreAchievementBackground = null;
+                achBtn.focus({ preventScroll: true });
             };
 
             achModalCloseBtn.addEventListener('click', closeAchModal);
@@ -142,6 +147,7 @@ function init() {
 
 
         let modalReturnFocus = null;
+        let restoreModalBackground = null;
         function openModal(mode) {
             if (!modalOverlay || !modalBody) return;
 
@@ -170,10 +176,11 @@ function init() {
                 targetWrapper.classList.remove('hidden');
                 modalBody.appendChild(targetWrapper);
                 modalReturnFocus = document.activeElement;
+                modalOverlay.hidden = false;
                 modalOverlay.classList.add('active');
+                restoreModalBackground = isolateDialog(modalOverlay);
                 document.querySelector(`.expand-btn[data-target="${mode}"]`)?.setAttribute('aria-expanded', 'true');
                 modalCloseBtn?.focus();
-                document.body.style.overflow = 'hidden'; // Prevent background scrolling
             }
         }
 
@@ -181,24 +188,16 @@ function init() {
             if (!modalOverlay || !modalBody) return;
 
             modalOverlay.classList.remove('active');
+            modalOverlay.hidden = true;
+            restoreModalBackground?.();
+            restoreModalBackground = null;
             document.querySelectorAll('.expand-btn').forEach(button => button.setAttribute('aria-expanded', 'false'));
-            if (modalReturnFocus instanceof HTMLElement) modalReturnFocus.focus();
-            document.body.style.overflow = ''; // Restore background scrolling
-
-            const handleTransitionEnd = (e) => {
-                // Ignore events bubbling from children, only react to modalOverlay's transition
-                if (e.target !== modalOverlay) return;
-
-                if (modalBody.firstElementChild) {
-                    const child = modalBody.firstElementChild;
-                    child.classList.add('hidden');
-                    document.getElementById('home-wrapper').parentNode.appendChild(child);
-                }
-                modalOverlay.removeEventListener('transitionend', handleTransitionEnd);
-            };
-
-            // Add listener and ensure we don't pile up listeners if called multiple times fast
-            modalOverlay.addEventListener('transitionend', handleTransitionEnd);
+            if (modalBody.firstElementChild) {
+                const child = modalBody.firstElementChild;
+                child.classList.add('hidden');
+                homeWrapper.parentNode.appendChild(child);
+            }
+            if (modalReturnFocus instanceof HTMLElement) modalReturnFocus.focus({ preventScroll: true });
         }
 
         if (modalCloseBtn) {
@@ -217,15 +216,7 @@ function init() {
                 if (modalOverlay?.classList.contains('active')) closeModal();
                 if (achModalOverlay?.classList.contains('active')) achModalCloseBtn?.click();
             }
-            if (event.key === 'Tab' && activeDialog) {
-                const focusable = [...activeDialog.querySelectorAll('button, a[href], select, input, [tabindex]:not([tabindex="-1"])')]
-                    .filter(element => !element.hasAttribute('disabled'));
-                if (!focusable.length) return;
-                const first = focusable[0];
-                const last = focusable[focusable.length - 1];
-                if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-                else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-            }
+            if (activeDialog) trapDialogFocus(event, activeDialog);
         });
 
         // --- Ultimate Bench Sorting Logic ---
@@ -373,7 +364,7 @@ function init() {
         document.addEventListener('keydown', (event) => {
             const target = event.target;
             const isEditing = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target?.isContentEditable;
-            if (event.key === '/' && !isEditing) {
+            if (event.key === '/' && !isEditing && !modalOverlay?.classList.contains('active') && !achModalOverlay?.classList.contains('active')) {
                 event.preventDefault();
                 modelFilterInput?.focus();
             }
@@ -394,7 +385,7 @@ function init() {
             'EVENT HORIZON': {
                 score: '80%',
                 color: '#3B82F6',
-                desc: 'The point of no return. AI systems exhibit profound understanding and begin to recursively self-improve.'
+                desc: 'An illustrative milestone on the benchmark scale. It does not imply recursive self-improvement or general intelligence.'
             },
             'SUPERNOVA': {
                 score: '60%',
@@ -474,7 +465,7 @@ function init() {
         // Expand buttons
         document.querySelectorAll('.expand-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const target = e.target.getAttribute('data-target');
+                const target = btn.dataset.target;
                 openModal(target);
             });
         });
@@ -557,7 +548,7 @@ function init() {
             'baseline': 'Sorts descending by Level 1. If tied, looks at Level 2, then Level 3, and so on. Highlights models with the highest foundational capability.',
             'average': 'Exploratory flat mean of included results. INVALID contributes zero; UNAVAILABLE is excluded. Changes row order only.',
             'crucible': 'Exploratory Linear Level Multiplier (Level 1 x1, Level 2 x2, and so on). Changes row order only and is not the official score.',
-            'resilience': 'Calculates the retention percentage between the hardest level attempted and Level 1. Highlights models that don\'t suffer from "Contextual Collapse".'
+            'resilience': 'Exploratory retention: uses the highest level with any positive result in this arena, divided by Level 1. Missing coverage at that level is unknown. Changes row order only.'
         };
 
         function getPixelMedalHtml(rank) {
@@ -703,6 +694,7 @@ function init() {
                 });
                 item.isUnknownResilience = false; // Reset state flag on every re-render
                                 item._sortValue = calculateScores(item, keys, method, globalHardestKey);
+                item.isUnknownResilience = item._sortValue === 'UNKNOWN';
             });
 
             let sorted = list.sort((a, b) => {

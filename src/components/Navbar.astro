@@ -12,7 +12,7 @@ const links = [
 ];
 ---
 
-<nav class="navbar">
+<nav class="navbar" aria-label="Main navigation">
     <div class="navbar-container">
         <a class="brand-link" href="/" aria-label="Ultimate Bench home">
             <span class="brand-mark" aria-hidden="true">UB</span>
@@ -169,12 +169,13 @@ const links = [
         display: none;
         flex-direction: column;
         justify-content: space-between;
-        width: 30px;
-        height: 21px;
+        width: 44px;
+        height: 44px;
         background: transparent;
         border: none;
         cursor: pointer;
-        padding: 0;
+        padding: 11px 7px;
+        margin-left: auto;
         z-index: 101;
     }
 
@@ -223,6 +224,12 @@ const links = [
         }
     }
 
+    @media (max-width: 1100px) {
+        .navbar:not([data-enhanced]) .navbar-container { height: auto; flex-wrap: wrap; padding-block: 1rem; gap: 1rem; }
+        .navbar:not([data-enhanced]) .navbar-menu { position: static; max-height: none; flex: 1 0 100%; }
+        .navbar:not([data-enhanced]) .navbar-toggle { display: none; }
+    }
+
     @media (max-width: 420px) {
         .brand-name {
             display: none;
@@ -231,68 +238,32 @@ const links = [
 </style>
 
 <script>
-    // @ts-nocheck -- navigation elements are selected from this component's fixed markup.
-    // Mobile Menu Toggle
     const toggle = document.getElementById('navbar-toggle');
     const menu = document.getElementById('navbar-menu');
-
-    if (toggle && menu) {
-        toggle.addEventListener('click', () => {
-            const isOpen = menu.classList.toggle('active');
-            toggle.setAttribute('aria-expanded', String(isOpen));
+    const navbar = document.querySelector('.navbar');
+    if (toggle && menu && navbar) {
+        const mobile = matchMedia('(max-width: 1100px)');
+        navbar.setAttribute('data-enhanced', '');
+        const setOpen = (open: boolean) => {
+            menu.classList.toggle('active', open);
+            toggle.setAttribute('aria-expanded', String(open));
+            menu.inert = mobile.matches && !open;
+        };
+        setOpen(false);
+        toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+        menu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setOpen(false)));
+        mobile.addEventListener('change', () => setOpen(false));
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && menu.classList.contains('active')) {
+                setOpen(false);
+                toggle.focus();
+            }
         });
-
-        menu.querySelectorAll('a').forEach((link) => {
-            link.addEventListener('click', () => {
-                menu.classList.remove('active');
-                toggle.setAttribute('aria-expanded', 'false');
-            });
+        document.addEventListener('click', event => {
+            if (event.target instanceof Node && !navbar.contains(event.target)) setOpen(false);
+        });
+        navbar.addEventListener('focusout', event => {
+            if (event instanceof FocusEvent && event.relatedTarget instanceof Node && !navbar.contains(event.relatedTarget)) setOpen(false);
         });
     }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        // Also highlight active link
-        const currentPath = window.location.pathname;
-        const currentSearch = window.location.search;
-        const urlParams = new URLSearchParams(currentSearch);
-        const activeTab = urlParams.get('tab') || 'home';
-
-        document.querySelectorAll('.nav-link').forEach(link => {
-            const href = link.getAttribute('href');
-
-            // Handle active state for benchmark tabs on homepage
-            if (currentPath === '/' && href === '/') {
-                if (activeTab === 'home') {
-                    link.classList.add('active-bench');
-                } else {
-                    link.classList.remove('active-bench');
-                }
-            }
-            // Regular links
-            else if (href === currentPath && currentPath !== '/') {
-                link.style.color = '#60A5FA';
-                link.style.fontWeight = '700';
-            }
-
-            // Intercept home click to prevent reload if already on homepage
-            if (href === '/') {
-                link.addEventListener('click', (e) => {
-                    if (window.location.pathname === '/') {
-                        e.preventDefault();
-                        const newTab = 'home';
-
-                        // Update URL without reload
-                        window.history.pushState({}, '', '/');
-
-                        // Update UI
-                        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active-bench'));
-                        link.classList.add('active-bench');
-
-                        // Trigger custom event so index.astro can update the view
-                        window.dispatchEvent(new CustomEvent('benchmarkTabChanged', { detail: newTab }));
-                    }
-                });
-            }
-        });
-    });
 </script>

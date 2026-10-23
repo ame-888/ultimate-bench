@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import MethodologyFingerprint from '../components/MethodologyFingerprint.astro';
 import '../styles/content-pages.css';
-import { ARENA_LIST, activeLevels, plannedLevels, canonicalDenominator, operationalWeight } from '../data/benchmarkSpec';
+import { ARENA_LIST, activeLevels, plannedLevels } from '../data/benchmarkSpec';
 import { METHODOLOGY } from '../data/methodology';
 
 const pillars = [
@@ -241,4 +241,8 @@ const process = [
     }
     @media (max-width: 520px) { .trust-note { grid-template-columns: 1fr; } .status-pill { grid-column: 1; } .limitation-grid { grid-template-columns: 1fr; } .limitation-grid p { border: 0 !important; border-bottom: 1px solid rgba(148,163,184,.14) !important; } .limitation-grid p:last-child { border-bottom: 0 !important; } }
     @media (prefers-reduced-motion: reduce) { .pillar-card, .jump-links a { transition: none; } }
+
+    .methodology-page p > a { color: #93c5fd; }
+    .correction-card p { color: #334155; }
+    .correction-card .section-label { color: #115e59; }
 </style>
