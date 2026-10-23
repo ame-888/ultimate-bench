@@ -99,22 +99,22 @@ const principles = [
 .about-page { max-width: 68rem; margin: auto; padding: 2.75rem 1.5rem 4rem; color: var(--muted); }
 .ambient, .status-dot, .squiggle, .card-icon { display: none; }
 .hero { max-width: 48rem; margin-bottom: 2.5rem; }
-.eyebrow { color: var(--muted); font-size: .8rem; margin-bottom: .5rem; }
-h1 { margin: 0 0 .75rem; font-size: clamp(1.85rem, 4vw, 2.6rem); }
+.eyebrow { color: #a5b4fc; font-weight: 700; letter-spacing: .06em; font-size: .75rem; margin-bottom: .5rem; }
+h1 { margin: 0 0 .75rem; font-size: clamp(2rem, 4.5vw, 3.1rem); letter-spacing: -.035em; }
 .hero-copy { line-height: 1.75; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-top: 1rem; font-size: .9rem; }
-.hero-actions a { color: var(--link); }
+.hero-actions a { color: var(--link); }.hero-actions .primary-link { padding: .55rem .85rem; border: 1px solid #526397; border-radius: 8px; background: #222d4d; color: #d5dcff; text-decoration: none; }.hero-actions { align-items: center; }
 .transparency, .manifesto, .principles { padding: 2rem 0; border-top: 1px solid var(--line); }
-.transparency { display: grid; grid-template-columns: 15rem minmax(0,1fr); gap: 2rem; }
+.transparency { padding: 1.5rem; margin-bottom: 1.25rem; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); display: grid; grid-template-columns: 15rem minmax(0,1fr); gap: 2rem; }
 .transparency h2, .section-heading h2, .manifesto h2 { margin: .4rem 0 1rem; font-size: 1.4rem; }
 .transparency-heading > p, .section-heading > p, .manifesto-label { color: var(--muted); font-size: .78rem; }
 .transparency-content p, .manifesto-copy p, .principle-card p { margin-top: 0; line-height: 1.75; }
 .transparency-links { display: flex; flex-direction: column; align-items: flex-start; gap: .6rem; font-size: .85rem; }
 .manifesto-copy { max-width: 46rem; }.manifesto-copy em { color: inherit; font-style: normal; }
 .principle-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 2rem; }
-.principle-card { padding-top: 1rem; border-top: 1px solid var(--line); }.card-number { color: var(--muted); font-size: .8rem; }
+.principle-card { padding: 1.25rem; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }.card-number { color: #a5b4fc; font-size: .8rem; font-weight: 700; }
 .principle-card h3 { margin: .5rem 0; font-size: 1.05rem; }.principle-card p { font-size: .9rem; }
-.field-note { margin-top: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--line); font-size: .85rem; }.note-tab { display: none; }.field-note p { color: var(--text); }
+.field-note { margin-top: 1rem; padding: 1rem 1.25rem; border-left: 3px solid #a5b4fc; border-radius: 0 10px 10px 0; background: var(--panel); font-size: .85rem; }.note-tab { display: none; }.field-note p { color: var(--text); }
 @media(max-width:700px){.about-page{padding:1.75rem 1rem 3rem}.transparency,.principle-grid{grid-template-columns:1fr;gap:.75rem}}
 
 </style>

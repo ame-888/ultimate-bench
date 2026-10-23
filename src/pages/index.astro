@@ -9,6 +9,7 @@ import { formatAggregateScore } from '../data/formatting';
 import { createParetoChartDomain, modelPricing, PRICING_CHECKED_ON, validatePricing } from '../data/modelPricing';
 import { buildCapabilitySeries, resolveReleaseDate } from '../data/progression';
 import CapabilityTimeline from '../components/CapabilityTimeline.astro';
+import CreatureIcon from '../components/CreatureIcon.astro';
 import { getSiteNow, isNewRelease, formatRelativeReleaseDate } from '../scripts/TimeUtils';
 import { getModelReleaseDate, validateModelMetadata } from '../data/modelMetadata';
 
@@ -215,7 +216,7 @@ const chessArenaRows = canonicalLeaderboard.arenaRows.chess;
 
 // Homepage arena summaries intentionally show only officially ranked results.
 // Incomplete, computable results remain visible separately for transparency.
-const ARENA_PREVIEW_ROWS = 10;
+const ARENA_PREVIEW_ROWS = 5;
 const provisionalArenaRows = canonicalLeaderboard.arenaRows['data-retrieval'].filter(row => row.rank === null);
 
 const rowsChess = Array.from({ length: chessList.length }, (_, i) => i);
@@ -286,9 +287,10 @@ function getRankDisplay(rank) {
 <Layout title="AI Model Leaderboard | Ultimate Bench" description="Independent AI model benchmarking across visual reasoning, data retrieval, and chess. Compare tested configurations, scores, and coverage.">
     <main>
         <header class="editorial-hero">
-            <h1>AI model benchmarks</h1>
+            <p class="hero-kicker">Ultimate Bench <span aria-hidden="true">/</span> Independent experimental research</p>
+            <h1>AI model <span>benchmarks.</span></h1>
             <p>Independent comparisons of tested configurations across visual reasoning, data retrieval, and chess.</p>
-            <nav class="intro-links" aria-label="Benchmark resources"><a href="/methodology">How scoring works</a><a href="/guide">Reading the results</a></nav>
+            <nav class="intro-links" aria-label="Benchmark resources"><a href="/methodology">How scoring works <svg aria-hidden="true" viewBox="0 0 16 16"><path d="M4 12 12 4M4 4h8v8" /></svg></a><a href="/guide">Reading the results <svg aria-hidden="true" viewBox="0 0 16 16"><path d="M4 12 12 4M4 4h8v8" /></svg></a></nav>
         </header>
         <div class="leaderboard-grid">
             <!-- Benchmarks Section -->
@@ -307,7 +309,7 @@ function getRankDisplay(rank) {
                     <!-- Ultimate Global Bench Section -->
                     <section class="ultimate-bench-section" id="global-leaderboard" aria-labelledby="ultimate-leaderboard-title">
                         <header class="ultimate-title-container">
-                            <h2 id="ultimate-leaderboard-title">Leaderboard</h2>
+                            <div><span class="leaderboard-kicker">Across all three arenas</span><h2 id="ultimate-leaderboard-title">Ultimate leaderboard</h2></div>
                             <p>{canonicalModels.length} qualified configurations · 3 arenas</p>
                         </header>
 
@@ -361,7 +363,7 @@ function getRankDisplay(rank) {
                             </div>
                             {pricedModels.length === 0 && <p class="pareto-empty" role="status">No qualified models have valid verified pricing for this cost comparison.</p>}
                             {omittedPricingCount > 0 && <p class="pareto-omission" role="note">{omittedPricingCount} qualified {omittedPricingCount === 1 ? 'model is' : 'models are'} omitted from this cost comparison because verified pricing is unavailable or invalid.</p>}
-                            <p class="pareto-footnote"><span>↳</span> Cost blends 75% input and 25% output token pricing. Prices checked {PRICING_CHECKED_ON}; both axes preserve the raw benchmark data—no invented efficiency score.</p>
+                            <p class="pareto-footnote"><svg class="note-arrow" aria-hidden="true" width="13" height="13" viewBox="0 0 16 16"><path d="M3 3v7h10m-4-4 4 4-4 4" /></svg> Cost blends 75% input and 25% output token pricing. Prices checked {PRICING_CHECKED_ON}; both axes preserve the raw benchmark data—no invented efficiency score.</p>
                         </section>
 
                         <CapabilityTimeline series={capabilitySeries} />
@@ -370,7 +372,7 @@ function getRankDisplay(rank) {
                             <table class="ultimate-modern-container semantic-leaderboard-table">
                                 <caption class="sr-only">Global canonical Ultimate Bench standings</caption>
                                 <thead><tr class="ultimate-table-header">
-                                    <th scope="col">Rank</th><th scope="col">Model</th>
+                                    <th scope="col"><span class="sr-only">Rank</span><span aria-hidden="true">#</span></th><th scope="col">Model</th>
                                     <th scope="col" aria-sort="descending"><button id="ultimate-sort-btn" class="overall-sort" aria-label="Sort by Overall Score"><span>Overall</span><small id="ultimate-sort-text" aria-hidden="true">▼</small></button></th>
                                     <th scope="col" aria-sort="none"><button id="ultimate-visual-sort-btn" aria-label="Sort by Visual Score"><span>Visual</span><small id="ultimate-visual-sort-text" aria-hidden="true">▼</small></button></th>
                                     <th scope="col" aria-sort="none"><button id="ultimate-data-sort-btn" aria-label="Sort by Data Score"><span>Data</span><small id="ultimate-data-sort-text" aria-hidden="true">▼</small></button></th>
@@ -406,7 +408,7 @@ function getRankDisplay(rank) {
                                 <div id="ultimate-filter-empty" class="ultimate-empty" hidden>No models match those filters.</div>
                                 {canonicalModels.length === 0 && <div class="ultimate-empty">No models currently span all three benchmarks.</div>}
                         </div>
-                        <p class="leaderboard-note absolute-note"><span>↳</span> Overall equally averages the three progressively weighted arena scores. Token price does not affect it.</p>
+                        <p class="leaderboard-note absolute-note"><svg class="note-arrow" aria-hidden="true" width="13" height="13" viewBox="0 0 16 16"><path d="M3 3v7h10m-4-4 4 4-4 4" /></svg> Overall equally averages the three progressively weighted arena scores. Token price does not affect it.</p>
                     </section>
 
                     <section class="arena-results" aria-labelledby="arena-results-title">
@@ -418,13 +420,13 @@ function getRankDisplay(rank) {
                             { id: 'data', title: 'Data Retrieval Bench', description: 'Evidence retrieval and source synthesis', protocol: 'data-bench', rows: dataArenaRows.filter(row => row.rank !== null) },
                             { id: 'chess', title: 'Chess Bench', description: 'Chess-position analysis and play', protocol: 'chess-bench', rows: chessArenaRows.filter(row => row.rank !== null) }
                         ].map(arena => (
-                            <article class="home-column" data-arena-card>
-                                <div class="home-column-header"><div><h3>{arena.title}</h3><p>{arena.description}</p></div><div class="arena-actions"><a href={`/methodology/${arena.protocol}/`}>Methodology</a><button class="expand-btn" data-target={arena.id} aria-expanded="false" aria-controls="benchmark-modal">Level results</button></div></div>
-                                <details class="arena-summary"><summary>Ranked configurations</summary>
+                            <article class={`home-column arena-${arena.id}`} data-arena-card data-preview-rows={ARENA_PREVIEW_ROWS}>
+                                <div class="home-column-header"><div><span class="arena-label">{arena.id === 'visual' ? '01 / PERCEPTION' : arena.id === 'data' ? '02 / RETRIEVAL' : '03 / STRATEGY'}</span><h3>{arena.title}</h3><p>{arena.description}</p></div><div class="arena-actions"><a href={`/methodology/${arena.protocol}/`}>Methodology</a><button class="expand-btn" data-target={arena.id} aria-expanded="false" aria-controls="benchmark-modal">Level results</button></div></div>
+                                <details class="arena-summary" open><summary>Ranked configurations</summary>
                                 <div class="benchmark-desktop-container semantic-summary-wrap">
                                     <table class="benchmark-container semantic-summary-table">
                                         <caption class="sr-only">Canonical {arena.title} standings</caption>
-                                        <thead><tr><th scope="col">Rank</th><th scope="col">Model</th><th scope="col">Score</th></tr></thead>
+                                        <thead><tr><th scope="col"><span class="sr-only">Rank</span><span aria-hidden="true">#</span></th><th scope="col">Model</th><th scope="col">Score</th></tr></thead>
                                         <tbody id={`${arena.id}-arena-summary`}>{arena.rows.map((item, index) => (
                                             <tr class="benchmark-row unified-row" data-model-name={item.name} hidden={index >= ARENA_PREVIEW_ROWS}>
                                                 <td class="rank" set:html={getRankDisplay(item.rank)}></td>
@@ -493,6 +495,7 @@ function getRankDisplay(rank) {
                                 <div role="columnheader" class="col-header model-col-header" style="justify-content: flex-start; padding-left: 0.5rem;"><h3>MODEL</h3></div>
                                 <div role="columnheader" class="col-header mole-header">
                                     <div class="header-title-wrapper">
+                                        <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="mole" /></span>
                                         <h3>MOLE</h3>
                                         <span class="tooltip-container">
                                             <button type="button" class="tooltip-icon" aria-label="Show Mole Level 1 explanation" aria-controls="tooltip-explanation-2">ⓘ</button>
@@ -503,6 +506,7 @@ function getRankDisplay(rank) {
                                 </div>
                                 <div role="columnheader" class="col-header rhino-header">
                                     <div class="header-title-wrapper">
+                                        <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="rhino" /></span>
                                         <h3>RHINO</h3>
                                         <span class="tooltip-container">
                                             <button type="button" class="tooltip-icon" aria-label="Show Rhino Level 2 explanation" aria-controls="tooltip-explanation-3">ⓘ</button>
@@ -513,6 +517,7 @@ function getRankDisplay(rank) {
                                 </div>
                                 <div role="columnheader" class="col-header chimp-header">
                                     <div class="header-title-wrapper">
+                                        <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="chimpanzee" /></span>
                                         <h3>CHIMPANZEE</h3>
                                         <span class="tooltip-container">
                                             <button type="button" class="tooltip-icon" aria-label="Show Chimpanzee Level 3 explanation" aria-controls="tooltip-explanation-4">ⓘ</button>
@@ -523,6 +528,7 @@ function getRankDisplay(rank) {
                                 </div>
                                 <div role="columnheader" class="col-header owl-header">
                                     <div class="header-title-wrapper">
+                                        <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="owl" /></span>
                                         <h3>OWL</h3>
                                         <span class="tooltip-container">
                                             <button type="button" class="tooltip-icon" aria-label="Show Owl Level 4 explanation" aria-controls="tooltip-explanation-5">ⓘ</button>
@@ -533,6 +539,7 @@ function getRankDisplay(rank) {
                                 </div>
                                 <div role="columnheader" class="col-header eagle-header">
                                     <div class="header-title-wrapper">
+                                        <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="eagle" /></span>
                                         <h3>EAGLE</h3>
                                         <span class="tooltip-container">
                                             <button type="button" class="tooltip-icon" aria-label="Show Eagle Level 5 explanation" aria-controls="tooltip-explanation-6">ⓘ</button>
@@ -543,6 +550,7 @@ function getRankDisplay(rank) {
                                 </div>
                                 <div role="columnheader" class="col-header beholder-header">
                                     <div class="header-title-wrapper">
+                                        <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="beholder" /></span>
                                         <h3>BEHOLDER</h3>
                                         <span class="tooltip-container">
                                             <button type="button" class="tooltip-icon" aria-label="Show Beholder Level 6 explanation" aria-controls="tooltip-explanation-7">ⓘ</button>
@@ -632,6 +640,7 @@ function getRankDisplay(rank) {
                                     <div role="columnheader" class="col-header model-col-header" style="justify-content: flex-start; padding-left: 0.5rem; flex: 2;"><h3>MODEL</h3></div>
                                     <div role="columnheader" class="col-header mouse-header" style="flex: 1;">
                                         <div class="header-title-wrapper">
+                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="mouse" /></span>
                                             <h3>MOUSE</h3>
                                             <span class="tooltip-container">
                                                 <button type="button" class="tooltip-icon" aria-label="Show Chess Mouse Level 1 explanation" aria-controls="tooltip-explanation-9">ⓘ</button>
@@ -642,6 +651,7 @@ function getRankDisplay(rank) {
                                     </div>
                                     <div role="columnheader" class="col-header spider-header" style="flex: 1;">
                                         <div class="header-title-wrapper">
+                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="spider" /></span>
                                             <h3>SPIDER</h3>
                                             <span class="tooltip-container">
                                                 <button type="button" class="tooltip-icon" aria-label="Show Chess Spider Level 2 explanation" aria-controls="tooltip-explanation-10">ⓘ</button>
@@ -652,6 +662,7 @@ function getRankDisplay(rank) {
                                     </div>
                                     <div role="columnheader" class="col-header wolf-header" style="flex: 1;">
                                         <div class="header-title-wrapper">
+                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="wolf" /></span>
                                             <h3>WOLF</h3>
                                             <span class="tooltip-container">
                                                 <button type="button" class="tooltip-icon" aria-label="Show Chess Wolf Level 3 explanation" aria-controls="tooltip-explanation-11">ⓘ</button>
@@ -662,6 +673,7 @@ function getRankDisplay(rank) {
                                     </div>
                                     <div role="columnheader" class="col-header hawk-header" style="flex: 1;">
                                         <div class="header-title-wrapper">
+                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="hawk" /></span>
                                             <h3>HAWK</h3>
                                             <span class="tooltip-container">
                                                 <button type="button" class="tooltip-icon" aria-label="Show Chess Hawk Level 4 explanation" aria-controls="tooltip-explanation-12">ⓘ</button>
@@ -672,6 +684,7 @@ function getRankDisplay(rank) {
                                     </div>
                                     <div role="columnheader" class="col-header python-header" style="flex: 1;">
                                         <div class="header-title-wrapper">
+                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="python" /></span>
                                             <h3>PYTHON</h3>
                                             <span class="tooltip-container">
                                                 <button type="button" class="tooltip-icon" aria-label="Show Chess Python Level 5 explanation" aria-controls="tooltip-explanation-13">ⓘ</button>
@@ -682,6 +695,7 @@ function getRankDisplay(rank) {
                                     </div>
                                     <div role="columnheader" class="col-header hydra-header" style="flex: 1;">
                                         <div class="header-title-wrapper">
+                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="hydra" /></span>
                                             <h3>HYDRA</h3>
                                             <span class="tooltip-container">
                                                 <button type="button" class="tooltip-icon" aria-label="Show Chess Hydra Level 6 explanation" aria-controls="tooltip-explanation-14">ⓘ</button>
@@ -775,6 +789,7 @@ There are four Active levels. Raven is Planned with a documented proposed struct
                                     <div role="columnheader" class="col-header model-col-header" style="justify-content: flex-start; padding-left: 0.5rem; flex: 2;"><h3>MODEL</h3></div>
                                     <div role="columnheader" class="col-header worm-header" style="flex: 1;">
                                         <div class="header-title-wrapper">
+                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="worm" /></span>
                                             <h3>WORM</h3>
                                             <span class="tooltip-container">
                                                 <button type="button" class="tooltip-icon" aria-label="Show Data Retrieval Worm Level 1 explanation" aria-controls="tooltip-explanation-16">ⓘ</button>
@@ -785,6 +800,7 @@ There are four Active levels. Raven is Planned with a documented proposed struct
                                     </div>
                                     <div role="columnheader" class="col-header koala-header" style="flex: 1;">
                                         <div class="header-title-wrapper">
+                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="koala" /></span>
                                             <h3>KOALA</h3>
                                             <span class="tooltip-container">
                                                 <button type="button" class="tooltip-icon" aria-label="Show Data Retrieval Koala Level 2 explanation" aria-controls="tooltip-explanation-17">ⓘ</button>
@@ -795,6 +811,7 @@ There are four Active levels. Raven is Planned with a documented proposed struct
                                     </div>
                                     <div role="columnheader" class="col-header crow-header" style="flex: 1;">
                                         <div class="header-title-wrapper">
+                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="crow" /></span>
                                             <h3>CROW</h3>
                                             <span class="tooltip-container">
                                                 <button type="button" class="tooltip-icon" aria-label="Show Data Retrieval Crow Level 3 explanation" aria-controls="tooltip-explanation-18">ⓘ</button>
@@ -805,6 +822,7 @@ There are four Active levels. Raven is Planned with a documented proposed struct
                                     </div>
                                     <div role="columnheader" class="col-header octopus-header" style="flex: 1;">
                                         <div class="header-title-wrapper">
+                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="octopus" /></span>
                                             <h3>OCTOPUS</h3>
                                             <span class="tooltip-container">
                                                 <button type="button" class="tooltip-icon" aria-label="Show Data Retrieval Octopus Level 4 explanation" aria-controls="tooltip-explanation-19">ⓘ</button>
@@ -815,6 +833,7 @@ There are four Active levels. Raven is Planned with a documented proposed struct
                                     </div>
                                     <div role="columnheader" class="col-header raven-header" style="flex: 1;">
                                         <div class="header-title-wrapper">
+                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="raven" /></span>
                                             <h3>RAVEN</h3>
                                             <span class="tooltip-container">
                                                 <button type="button" class="tooltip-icon" aria-label="Show Data Retrieval Raven Level 5 explanation" aria-controls="tooltip-explanation-20">ⓘ</button>
@@ -825,6 +844,7 @@ There are four Active levels. Raven is Planned with a documented proposed struct
                                     </div>
                                     <div role="columnheader" class="col-header athena-header" style="flex: 1;">
                                         <div class="header-title-wrapper">
+                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="athena" /></span>
                                             <h3>ATHENA</h3>
                                             <span class="tooltip-container">
                                                 <button type="button" class="tooltip-icon" aria-label="Show Data Retrieval Athena Level 6 explanation" aria-controls="tooltip-explanation-21">ⓘ</button>
