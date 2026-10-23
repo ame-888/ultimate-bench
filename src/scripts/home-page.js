@@ -6,7 +6,7 @@ if (!(configElement instanceof HTMLScriptElement)) {
 }
 
 import { enhanceRelativeDates } from './TimeUtils.js';
-const { unifiedRawList, dataRawList, chessRawList, canonicalLeaders } = JSON.parse(configElement.textContent || '{}');
+const { unifiedRawList, dataRawList, chessRawList } = JSON.parse(configElement.textContent || '{}');
 
 function init() {
         const visualWrapper = document.getElementById('visual-benchmark-wrapper');
@@ -18,134 +18,6 @@ function init() {
         const modalOverlay = document.getElementById('benchmark-modal');
         const modalBody = document.getElementById('benchmark-modal-body');
         const modalCloseBtn = document.getElementById('benchmark-modal-close');
-        const achModalOverlay = document.getElementById('achievements-modal');
-        const achModalCloseBtn = document.getElementById('achievements-modal-close');
-        const achBtn = document.getElementById('achievements-btn');
-
-        let restoreAchievementBackground = null;
-        if (achBtn && achModalOverlay && achModalCloseBtn) {
-            achBtn.addEventListener('click', () => {
-                // Populate data
-                const firstSota = canonicalLeaders?.overall || 'None';
-                const firstVisual = canonicalLeaders?.visual || 'None';
-                const firstData = canonicalLeaders?.data || 'None';
-                const firstChess = canonicalLeaders?.chess || 'None';
-
-                document.getElementById('ach-sota').textContent = firstSota;
-                document.getElementById('ach-visual').textContent = firstVisual;
-                document.getElementById('ach-data').textContent = firstData;
-                document.getElementById('ach-chess').textContent = firstChess;
-
-                // Calculate "A for Effort" (lowest positive average score) and "Glitch in the Matrix" (has INVALID/PENDING) dynamically
-                let effortModel = 'None';
-                let effortScore = Infinity;
-                let glitchModel = 'None';
-
-                // Scrape the tables
-                const visualRows = Array.from(document.querySelectorAll('#visual-table-body .benchmark-row'));
-                const dataRows = Array.from(document.querySelectorAll('#data-table-body .benchmark-row'));
-                const chessRows = Array.from(document.querySelectorAll('#chess-table-body .benchmark-row'));
-
-                const allRows = [...visualRows, ...dataRows, ...chessRows];
-                const modelAverages = {};
-
-                for (const row of allRows) {
-                     const nameEl = row.querySelector('.model-name');
-                     if (!nameEl) continue;
-                     const name = nameEl.textContent.trim();
-                     if (!modelAverages[name]) modelAverages[name] = [];
-
-                     // check for glitch
-                     const text = row.textContent;
-                     if (text.includes('INVALID') || text.includes('PENDING')) {
-                          glitchModel = name;
-                     }
-
-                     // try to get avg score by scraping cells
-                     const scoreCells = Array.from(row.querySelectorAll('.score-cell')).filter(c => !c.classList.contains('rank-cell'));
-                     const numericScores = scoreCells.map(c => parseFloat(c.textContent.replace('%', ''))).filter(n => !isNaN(n));
-                     if (numericScores.length > 0) {
-                          const sum = numericScores.reduce((a,b)=>a+b,0);
-                          const avg = sum / numericScores.length;
-                          if (avg > 0) {
-                               modelAverages[name].push(avg);
-                          }
-                     }
-                }
-
-                for (const model in modelAverages) {
-                    const scores = modelAverages[model];
-                    if (scores.length > 0) {
-                        const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-                        if (avg > 0 && avg < effortScore) {
-                            effortScore = avg;
-                            effortModel = model;
-                        }
-                    }
-                }
-
-                document.getElementById('ach-effort').textContent = effortModel;
-                document.getElementById('ach-glitch').textContent = glitchModel;
-
-                // Compare category-level averages for the cross-discipline honors.
-                const profiles = {};
-                [visualRows, dataRows, chessRows].forEach((rows, categoryIndex) => {
-                    rows.forEach(row => {
-                        const name = row.querySelector('.model-name')?.textContent.trim();
-                        if (!name) return;
-                        const values = Array.from(row.querySelectorAll('.score-cell:not(.rank-cell)'))
-                            .map(cell => Number.parseFloat(cell.textContent.replace('%', '')))
-                            .filter(Number.isFinite);
-                        if (!values.length) return;
-                        profiles[name] ||= { categories: [], trials: 0 };
-                        profiles[name].categories[categoryIndex] = values.reduce((sum, value) => sum + value, 0) / values.length;
-                        profiles[name].trials += values.length;
-                    });
-                });
-
-                const entries = Object.entries(profiles);
-                const balanced = entries
-                    .filter(([, profile]) => profile.categories.filter(Number.isFinite).length === 3)
-                    .sort(([, a], [, b]) => (b.categories.reduce((x, y) => x + y, 0) - a.categories.reduce((x, y) => x + y, 0)))[0]?.[0] || 'None';
-                const categorySpread = profile => {
-                    const scores = profile.categories.filter(Number.isFinite);
-                    return Math.max(...scores) - Math.min(...scores);
-                };
-                const specialist = entries
-                    .filter(([, profile]) => profile.categories.filter(Number.isFinite).length > 1)
-                    .sort(([, a], [, b]) => categorySpread(b) - categorySpread(a))[0]?.[0] || 'None';
-                const depth = [...entries].sort(([, a], [, b]) => b.trials - a.trials)[0]?.[0] || 'None';
-                const globalNames = Array.from(document.querySelectorAll('.ultimate-row-hover .model-name')).map(el => el.textContent.trim());
-
-                document.getElementById('ach-runner').textContent = globalNames[1] || 'None';
-                document.getElementById('ach-balanced').textContent = firstSota;
-                document.getElementById('ach-specialist').textContent = specialist;
-                document.getElementById('ach-depth').textContent = depth;
-
-                achModalOverlay.hidden = false;
-                achModalOverlay.classList.add('active');
-                restoreAchievementBackground = isolateDialog(achModalOverlay);
-                achModalCloseBtn.focus();
-            });
-
-            const closeAchModal = () => {
-                achModalOverlay.classList.remove('active');
-                achModalOverlay.hidden = true;
-                restoreAchievementBackground?.();
-                restoreAchievementBackground = null;
-                achBtn.focus({ preventScroll: true });
-            };
-
-            achModalCloseBtn.addEventListener('click', closeAchModal);
-
-            achModalOverlay.addEventListener('click', (e) => {
-                if (e.target === achModalOverlay) {
-                    closeAchModal();
-                }
-            });
-        }
-
-
         let modalReturnFocus = null;
         let restoreModalBackground = null;
         function openModal(mode) {
@@ -211,10 +83,9 @@ function init() {
         }
 
         document.addEventListener('keydown', event => {
-            const activeDialog = [modalOverlay, achModalOverlay].find(dialog => dialog?.classList.contains('active'));
+            const activeDialog = [modalOverlay].find(dialog => dialog?.classList.contains('active'));
             if (event.key === 'Escape') {
                 if (modalOverlay?.classList.contains('active')) closeModal();
-                if (achModalOverlay?.classList.contains('active')) achModalCloseBtn?.click();
             }
             if (activeDialog) trapDialogFocus(event, activeDialog);
         });
@@ -364,7 +235,7 @@ function init() {
         document.addEventListener('keydown', (event) => {
             const target = event.target;
             const isEditing = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target?.isContentEditable;
-            if (event.key === '/' && !isEditing && !modalOverlay?.classList.contains('active') && !achModalOverlay?.classList.contains('active')) {
+            if (event.key === '/' && !isEditing && !modalOverlay?.classList.contains('active')) {
                 event.preventDefault();
                 modelFilterInput?.focus();
             }
@@ -374,93 +245,6 @@ function init() {
             }
         });
 
-
-        // --- Milestone Details Logic ---
-        const milestoneData = {
-            '100% MARKER': {
-                score: '100%',
-                color: '#FBBF24',
-                desc: 'The journey’s luminous horizon: a final marker for imagining what the full scale might hold.'
-            },
-            'EVENT HORIZON': {
-                score: '80%',
-                color: '#3B82F6',
-                desc: 'An illustrative milestone on the benchmark scale. It does not imply recursive self-improvement or general intelligence.'
-            },
-            'SUPERNOVA': {
-                score: '60%',
-                color: '#F97316',
-                desc: 'Capabilities radiate outward, bringing ambitious, multi-step challenges within reach.'
-            },
-            'STAR': {
-                score: '40%',
-                color: '#EF4444',
-                desc: 'The fusion of knowledge. Reliable, powerful models shine brightly, solving everyday challenges autonomously.'
-            },
-            'NEBULA': {
-                score: '20%',
-                color: '#A855F7',
-                desc: 'Signals gather into a promising foundation, opening the way to more capable systems.'
-            },
-            'INCEPTION': {
-                score: '0%',
-                color: '#9CA3AF',
-                desc: 'The beginning of the journey. Early systems lay the groundwork for what is to come.'
-            }
-        };
-
-        const panel = document.getElementById('milestone-details-panel');
-        const panelTitle = document.getElementById('milestone-title');
-        const panelScore = document.getElementById('milestone-score');
-        const panelDesc = document.getElementById('milestone-desc');
-        const panelIcon = document.getElementById('milestone-icon');
-
-        document.querySelectorAll('.sota-node-interactive').forEach(node => {
-            node.addEventListener('click', (e) => {
-                const title = node.dataset.milestone;
-                const data = milestoneData[title];
-
-                if (data && panel) {
-                    document.querySelectorAll('.sota-node-interactive').forEach(item => item.classList.remove('selected'));
-                    node.classList.add('selected');
-
-                    // Update content
-                    panelTitle.textContent = title;
-                    panelTitle.style.color = data.color;
-                    panelScore.textContent = data.score;
-                    panelScore.style.color = data.color;
-                    panelDesc.textContent = data.desc;
-                    panelIcon.style.boxShadow = `0 0 15px ${data.color}`;
-                    panelIcon.style.borderColor = data.color;
-                    panelIcon.style.color = data.color;
-                    panel.style.borderColor = `${data.color}55`;
-
-                    // Show panel
-                    panel.style.visibility = 'visible';
-                    panel.style.opacity = '1';
-                    panel.style.transform = 'translateY(0)';
-
-                    // Ripple effect
-                    const existingRipple = node.querySelector('.ripple-effect');
-                    if (existingRipple) existingRipple.remove();
-
-                    const ripple = document.createElement('div');
-                    ripple.className = 'ripple-effect';
-                    ripple.style.boxShadow = `0 0 0 0 ${data.color}80`;
-                    node.appendChild(ripple);
-                }
-            });
-
-            node.addEventListener('keydown', (event) => {
-                if (!['ArrowUp', 'ArrowDown'].includes(event.key)) return;
-                event.preventDefault();
-                const nodes = [...document.querySelectorAll('.sota-node-interactive')];
-                const direction = event.key === 'ArrowDown' ? 1 : -1;
-                nodes[(nodes.indexOf(node) + direction + nodes.length) % nodes.length].focus();
-            });
-        });
-
-        document.querySelector('.sota-node-interactive.current')?.classList.add('selected');
 
         // Expand buttons
         document.querySelectorAll('.expand-btn').forEach(btn => {
