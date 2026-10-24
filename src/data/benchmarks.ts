@@ -465,6 +465,7 @@ export const benchmarks = {
         { name: 'Gemini 3.1 Flashlite GA (without code execution)', scores: { worm: 16, koala: 14, crow: 8, octopus: 0 } },
         { name: 'Gemini 3.0 Flash Preview (without code execution)', scores: { worm: 15, koala: 19, crow: 2, octopus: 0 } },
         { name: 'GPT-5.5', scores: { worm: 29, koala: 30, crow: 18, octopus: 0 } },
+        { name: 'GPT-6 Sol (High)', scores: { worm: 43, koala: 33, crow: 28, octopus: 0 } },
         { name: 'GPT-5.6 Sol (high) - JULY', scores: { worm: 51, koala: 46, crow: 36, octopus: 3 } },
         { name: 'GPT-5.6 Sol (high) - AUGUST', scores: { worm: 57, koala: 49, crow: 33, octopus: 16 } },
         { name: 'Claude 5 Fable (high)', scores: { worm: 30, koala: 19, crow: 6, octopus: 0 } },
