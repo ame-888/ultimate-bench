@@ -318,11 +318,11 @@ export const benchmarks = {
         {
             name: 'GPT-6 Sol (High)',
             scores: {
-                'lvl1': 72,
+                'lvl1': 95,
                 'lvl2': 80,
                 'lvl3': 80,
                 'lvl4': 26,
-                'lvl5': 0
+                'lvl5': 8
             }
         },
         {
