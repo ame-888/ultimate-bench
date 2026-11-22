@@ -4,7 +4,7 @@ import '../styles/content-pages.css';
 ---
 
 <Layout title="Contact | Ultimate Bench" description="Contact Ultimate Bench with questions, concerns, or feedback about the benchmark and website.">
-    <main class="content-page contact-page" style="--page-accent: #34d399; --page-accent-rgb: 52, 211, 153;">
+    <main class="content-page contact-page" style="--page-accent: var(--accent-chess);">
         <header class="page-heading">
             <span class="page-kicker">A direct line to the project</span>
             <h1 id="contact-title">Contact Ultimate Bench</h1>
@@ -15,7 +15,6 @@ import '../styles/content-pages.css';
 
             <div class="contact-methods">
                 <div class="contact-method">
-                    <div class="mail-icon" aria-hidden="true">✦</div>
                     <span class="method-label">General contact</span>
                     <h2>Email Ultimate Bench</h2>
                     <p>For benchmark corrections, methodology criticism, reproducibility questions, data issues, collaboration inquiries, or website problems:</p>
@@ -27,9 +26,42 @@ import '../styles/content-pages.css';
 </Layout>
 
 <style>
+.contact-methods {
+    margin-top: 1.75rem;
+}
 
-.contact-methods { margin-top: 2rem; }.contact-method { max-width: 40rem; padding: 1.25rem; border: 1px solid var(--line); border-radius: 12px; background: var(--color-bg); }.mail-icon { display: none; }
-.method-label { color: #6ee7b7; font-size: .75rem; font-weight: 700; letter-spacing: .06em; }.contact-method h2 { margin: .4rem 0 .75rem; }
-.email-link { display: inline-block; overflow-wrap: anywhere; margin-top: .4rem; color: #6ee7b7; font-size: 1rem; font-weight: 600; }
+.contact-method {
+    max-width: 42rem;
+    padding: 1.35rem 1.5rem;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent-chess);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    background: var(--surface);
+    box-shadow: var(--surface-highlight);
+}
 
+.method-label {
+    color: var(--accent-chess);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.contact-method h2 {
+    margin: 0.4rem 0 0.65rem;
+}
+
+.email-link {
+    display: inline-block;
+    overflow-wrap: anywhere;
+    margin-top: 0.35rem;
+    color: var(--accent-chess);
+    font-size: 1.02rem;
+    font-weight: 600;
+}
+
+.email-link:hover {
+    color: #9bf2d2;
+}
 </style>

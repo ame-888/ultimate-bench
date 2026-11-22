@@ -1,5 +1,10 @@
 // --- GameEngine.js ---
 
+function createAudioContext() {
+    const AudioCtx = window.AudioContext || /** @type {typeof AudioContext | undefined} */ (/** @type {any} */ (window).webkitAudioContext);
+    return new AudioCtx();
+}
+
 // Utility Classes
 export class SoundManager {
     constructor() {
@@ -10,7 +15,7 @@ export class SoundManager {
 
     init() {
         if (!this.ctx) {
-            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            this.ctx = createAudioContext();
         }
         if (this.ctx.state === 'suspended') {
             this.ctx.resume();
@@ -106,7 +111,7 @@ export class MusicManager {
 
     init() {
         if (!this.ctx) {
-            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            this.ctx = createAudioContext();
         }
         if (this.ctx.state === 'suspended') this.ctx.resume();
     }
@@ -354,7 +359,7 @@ export const GameLogic = {
                 y: Math.floor(Math.random() * rows)
             };
         },
-        onKeyDown: (e, state, callbacks) => {
+        onKeyDown: (e, state, _callbacks) => {
             const keys = { 'ArrowUp': {x:0,y:-1}, 'ArrowDown': {x:0,y:1}, 'ArrowLeft': {x:-1,y:0}, 'ArrowRight': {x:1,y:0} };
             const newDir = keys[e.key];
             if (newDir) {
@@ -471,7 +476,7 @@ export const GameLogic = {
             state.piece = GameLogic.tetris.spawnPiece(state);
             return state;
         },
-        spawnPiece: (state) => {
+        spawnPiece: (_state) => {
              const id = Math.floor(Math.random() * GameLogic.tetris.shapes.length);
              return {
                  shape: GameLogic.tetris.shapes[id],
@@ -731,7 +736,7 @@ export const GameLogic = {
 
     // Tic Tac Toe
     tictactoe: {
-        init: (canvas) => {
+        init: (_canvas) => {
              return {
                 board: Array(9).fill(null),
                 player: 'X',
@@ -1053,7 +1058,7 @@ export const GameLogic = {
             }
             return state;
         },
-        handleMouseUp: (e, state, canvas, callbacks) => {
+        handleMouseUp: (_e, state, _canvas, callbacks) => {
             if (state.dragging) {
                 state.dragging = false;
                 // Shoot
@@ -1072,7 +1077,7 @@ export const GameLogic = {
             }
             return state;
         },
-        update: (dt, state, canvas, callbacks, input) => {
+        update: (_dt, state, canvas, callbacks, _input) => {
              if (state.gameOver) return state;
 
              // Physics Sub-steps for stability

@@ -18,7 +18,9 @@ const year = new Date().getUTCFullYear();
             <a href="/blog">Articles</a>
             <a href="/glossary">Glossary</a>
             <a href="/revisions">Revisions</a>
-            <a href="https://github.com/ame-888/ultimate-bench" target="_blank" rel="noopener noreferrer">GitHub repository<span class="sr-only"> (opens in a new tab)</span></a>
+            <a href="https://github.com/ame-888/ultimate-bench" target="_blank" rel="noopener noreferrer">
+                GitHub repository<span class="sr-only"> (opens in a new tab)</span>
+            </a>
         </nav>
         <nav aria-label="Optional extras">
             <h2>Extras</h2>
@@ -39,15 +41,106 @@ const year = new Date().getUTCFullYear();
 </footer>
 
 <style>
-.site-footer { border-top: 1px solid var(--line); background: #09101d; color: var(--muted); font-size: .82rem; }
-.footer-inner { display: grid; grid-template-columns: 2fr 1.2fr .8fr 1fr; gap: 2rem; width: min(100% - 3rem, 76rem); margin: auto; padding: 2.75rem 0; }
-.footer-brand { display: inline-flex; align-items: center; gap: .7rem; color: var(--text); font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; letter-spacing: -.035em; text-decoration: none; }
-.footer-brand::before { content: ''; width: .35rem; height: 1.1rem; border-radius: .2rem; background: linear-gradient(#60a5fa, #a78bfa); }
-.footer-about p { max-width: 18rem; margin-top: .75rem; line-height: 1.7; }
-.site-footer nav { display: flex; flex-direction: column; align-items: flex-start; gap: .35rem; }
-.site-footer h2 { margin: 0 0 .6rem; color: var(--text); font-size: .72rem; font-weight: 750; letter-spacing: .09em; text-transform: uppercase; }
-.site-footer nav a { color: var(--muted); text-decoration: none; }
-.site-footer nav a:hover { color: var(--link); text-decoration: underline; }
-.footer-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem; width: min(100% - 3rem, 76rem); margin: auto; padding: 1rem 0 1.5rem; border-top: 1px solid var(--line); font-size: .75rem; }
-@media (max-width: 700px) { .footer-inner { grid-template-columns: 1fr 1fr; gap: 1.5rem; width: calc(100% - 2rem); }.footer-about { grid-column: 1/-1; }.footer-meta { width: calc(100% - 2rem); } }
+.site-footer {
+    border-top: 1px solid var(--line);
+    background: linear-gradient(180deg, #070e1a 0%, #060b15 100%);
+    color: var(--muted);
+    font-size: 0.84rem;
+}
+
+.footer-inner {
+    display: grid;
+    grid-template-columns: 2fr 1.2fr 0.8fr 1fr;
+    gap: 2.25rem;
+    width: min(100% - 3rem, var(--container-max));
+    margin: auto;
+    padding: 3rem 0 2.5rem;
+}
+
+.footer-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: var(--text);
+    font-family: var(--font-heading);
+    font-size: 1.12rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    text-decoration: none;
+}
+
+.footer-brand::before {
+    content: '';
+    width: 0.3rem;
+    height: 1.15rem;
+    border-radius: 2px;
+    background: linear-gradient(180deg, var(--accent) 0%, var(--link) 100%);
+}
+
+.footer-brand:hover {
+    color: #ffffff;
+}
+
+.footer-about p {
+    max-width: 19rem;
+    margin: 0.75rem 0 0;
+    line-height: 1.7;
+}
+
+.site-footer nav {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.42rem;
+}
+
+.site-footer h2 {
+    margin: 0 0 0.65rem;
+    color: var(--text);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.site-footer nav a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.site-footer nav a:hover {
+    color: var(--link);
+    text-decoration: underline;
+}
+
+.footer-meta {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.5rem;
+    width: min(100% - 3rem, var(--container-max));
+    margin: auto;
+    padding: 1.15rem 0 1.6rem;
+    border-top: 1px solid var(--line-subtle);
+    color: var(--subtle);
+    font-size: 0.76rem;
+}
+
+@media (max-width: 700px) {
+    .footer-inner {
+        grid-template-columns: 1fr 1fr;
+        gap: 1.75rem;
+        width: calc(100% - 2rem);
+        padding: 2.25rem 0 2rem;
+    }
+
+    .footer-about {
+        grid-column: 1 / -1;
+    }
+
+    .footer-meta {
+        width: calc(100% - 2rem);
+    }
+}
 </style>

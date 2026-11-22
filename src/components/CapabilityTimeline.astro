@@ -4,67 +4,568 @@ const { series } = Astro.props as { series: CapabilitySeries };
 const labels = { visual: 'Visual', 'data-retrieval': 'Data Retrieval', chess: 'Chess', ultimate: 'Ultimate' };
 ---
 <section class="capability-timeline progress-panel" aria-labelledby="progress-title" hidden>
-  <header>
-    <span class="timeline-kicker">Progress over time</span>
-    <h3 id="progress-title">Capability Progress</h3>
-  </header>
+    <header>
+        <span class="timeline-kicker">Progress over time</span>
+        <h3 id="progress-title">Capability Progress</h3>
+    </header>
 
-  <div class="metric-tabs" role="tablist" aria-label="Benchmark metric">
-    {Object.entries(labels).map(([key, label]) => (
-      <button type="button" role="tab" data-metric={key} aria-selected={key === 'ultimate'} tabindex={key === 'ultimate' ? '0' : '-1'}>{label}</button>
-    ))}
-  </div>
-
-  <div class="timeline-toolbar" aria-label="Chart options">
-    <div class="range-switch" role="group" aria-label="Time range">
-      <button type="button" data-range="recent" aria-pressed="true">Recent</button>
-      <button type="button" data-range="full" aria-pressed="false">Full history</button>
+    <div class="metric-tabs" role="tablist" aria-label="Benchmark metric">
+        {Object.entries(labels).map(([key, label]) => (
+            <button type="button" role="tab" data-metric={key} aria-selected={key === 'ultimate'} tabindex={key === 'ultimate' ? '0' : '-1'}>
+                {label}
+            </button>
+        ))}
     </div>
-    <label class="quiet-toggle"><input type="checkbox" data-full-scale /><span aria-hidden="true"></span>Full 0–100%</label>
-    <label class="quiet-toggle"><input type="checkbox" data-frontier checked /><span aria-hidden="true"></span>Show frontier</label>
-  </div>
 
-  <div class="timeline-chart" data-chart></div>
-  <div class="timeline-legend" data-legend aria-label="Provider legend"></div>
-  <div class="timeline-detail" data-detail aria-live="polite"></div>
-  <script is:inline type="application/json" data-timeline-data set:html={JSON.stringify(series).replace(/</g, '\u003c')}></script>
+    <div class="timeline-toolbar" aria-label="Chart options">
+        <div class="range-switch" role="group" aria-label="Time range">
+            <button type="button" data-range="recent" aria-pressed="true">Recent</button>
+            <button type="button" data-range="full" aria-pressed="false">Full history</button>
+        </div>
+        <label class="quiet-toggle"><input type="checkbox" data-full-scale /><span aria-hidden="true"></span>Full 0–100%</label>
+        <label class="quiet-toggle"><input type="checkbox" data-frontier checked /><span aria-hidden="true"></span>Show frontier</label>
+    </div>
+
+    <div class="timeline-chart" data-chart></div>
+    <div class="timeline-legend" data-legend aria-label="Provider legend"></div>
+    <div class="timeline-detail" data-detail aria-live="polite"></div>
+    <script is:inline type="application/json" data-timeline-data set:html={JSON.stringify(series).replace(/</g, '\u003c')}></script>
 </section>
 
 <style is:global>
-  .capability-timeline{--text:#f5f7fb;--muted:#9cacc1;--subtle:#74859c;--line:rgba(148,163,184,.14);padding:clamp(1rem,2.5vw,1.75rem);border:1px solid rgba(148,163,184,.16);border-radius:20px;background:linear-gradient(145deg,rgba(13,27,45,.96),rgba(7,17,30,.98));box-shadow:0 18px 55px rgba(0,0,0,.16);color:var(--text)}
-  .capability-timeline header{margin-bottom:1.25rem}.capability-timeline header h3{margin:.25rem 0 0;font-size:clamp(1.45rem,3vw,1.8rem);letter-spacing:-.025em}.timeline-kicker{color:#69dbc9;font-size:.66rem;font-weight:750;letter-spacing:.13em;text-transform:uppercase}
-  .metric-tabs{display:flex;gap:.25rem;width:fit-content;max-width:100%;margin-bottom:.75rem;padding:.25rem;border:1px solid rgba(148,163,184,.15);border-radius:12px;background:rgba(5,13,24,.46);overflow-x:auto}.metric-tabs button{min-height:38px;padding:.5rem .9rem;border:0;border-radius:8px;background:transparent;color:#9eafc4;font:inherit;font-size:.8rem;font-weight:700;white-space:nowrap;cursor:pointer;transition:background .18s,color .18s,box-shadow .18s}.metric-tabs button[aria-selected=true]{background:#1b3444;color:#f7fffd;box-shadow:inset 0 0 0 1px rgba(94,234,212,.32),0 3px 12px rgba(0,0,0,.16)}
-  .timeline-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:.45rem 1rem;margin-bottom:.55rem;color:#aab8ca;font-size:.72rem}.range-switch{display:flex;padding:2px;border:1px solid rgba(148,163,184,.16);border-radius:999px;background:rgba(5,13,24,.38)}.range-switch button{min-height:30px;padding:.3rem .7rem;border:0;border-radius:999px;background:transparent;color:#8fa0b5;font:inherit;font-weight:650;cursor:pointer}.range-switch button[aria-pressed=true]{background:rgba(148,163,184,.15);color:#eef3f9}
-  .quiet-toggle{display:inline-flex;align-items:center;gap:.42rem;min-height:30px;cursor:pointer;white-space:nowrap}.quiet-toggle input{position:absolute;width:1px;height:1px;opacity:0}.quiet-toggle span{position:relative;width:1.65rem;height:.94rem;border:1px solid rgba(148,163,184,.35);border-radius:999px;background:#111d2c;transition:.18s}.quiet-toggle span:after{content:"";position:absolute;top:2px;left:2px;width:.58rem;height:.58rem;border-radius:50%;background:#8090a5;transition:.18s}.quiet-toggle input:checked+span{border-color:rgba(94,234,212,.48);background:rgba(45,212,191,.18)}.quiet-toggle input:checked+span:after{transform:translateX(.68rem);background:#75e6d4}
-  button:focus-visible,.quiet-toggle:has(input:focus-visible){outline:2px solid #5eead4;outline-offset:3px}
-  .timeline-chart{width:100%;min-height:410px}.timeline-chart svg{display:block;width:100%;height:410px;overflow:visible}.timeline-grid{stroke:var(--line);stroke-width:1}.timeline-axis{stroke:rgba(148,163,184,.26);stroke-width:1}.timeline-axis-text,.timeline-axis-label{fill:#91a1b5;font:11px var(--font-body);letter-spacing:.01em}.timeline-axis-label{fill:#a9b6c7;font-size:10.5px;font-weight:650;letter-spacing:.04em}.timeline-frontier{fill:none;stroke:#d8e3ee;stroke-width:1.65;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke;opacity:.9}.timeline-hit{fill:transparent;cursor:pointer}.timeline-point{stroke:#dbe5ef;stroke-width:.85;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35));transition:r .12s,stroke-width .12s}.timeline-record-ring{fill:none;stroke:rgba(216,227,238,.54);stroke-width:1}.timeline-point.is-selected,.timeline-point-group:focus .timeline-point{stroke:#fff4bd;stroke-width:2;r:5}.timeline-point-group:focus{outline:none}
-  .timeline-legend{display:flex;flex-wrap:wrap;gap:.45rem 1rem;margin:.45rem 0 .55rem;color:#93a3b7;font-size:.68rem}.timeline-legend span{display:inline-flex;align-items:center;gap:.35rem}.timeline-legend i{width:.48rem;height:.48rem;border:1px solid rgba(255,255,255,.58);border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.03)}
-  .timeline-detail{min-height:2.6rem;padding:.6rem 0 .05rem;border-top:1px solid rgba(148,163,184,.12);color:#95a6ba;font-size:.72rem;line-height:1.45}.timeline-detail strong{color:#edf3f9;font-size:.78rem}.timeline-detail .detail-score{color:#dce8f4;font-variant-numeric:tabular-nums}.timeline-detail .detail-context{color:#718299}
-  @media(max-width:700px){.metric-tabs{width:100%}.metric-tabs button{flex:1;padding:.45rem .55rem}.timeline-chart{min-height:290px}.timeline-chart svg{height:290px}.timeline-toolbar{gap:.35rem .75rem}.timeline-axis-text{font-size:10px}}
-  @media(max-width:430px){.capability-timeline{padding:.9rem;border-radius:16px}.metric-tabs button{font-size:.7rem}.timeline-toolbar{font-size:.68rem}.range-switch{width:100%}.range-switch button{flex:1}.timeline-chart{min-height:180px;margin-top:.15rem}.timeline-chart svg{height:180px}.timeline-detail{min-height:3rem}}
+.capability-timeline {
+    padding: 0.75rem 0 0.25rem;
+    color: var(--text);
+}
 
-.capability-timeline{padding:1rem 0;border:0;border-radius:0;background:transparent;box-shadow:none;--text:var(--color-text);--muted:#adb5bf;--subtle:#adb5bf;--line:#343c45}.capability-timeline header h3{font-size:1.1rem;letter-spacing:0}.timeline-kicker{color:var(--muted);font-size:.8rem;font-weight:400;letter-spacing:0;text-transform:none}.metric-tabs{padding:0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent}.metric-tabs button{border-radius:0;color:var(--muted);font-weight:400}.metric-tabs button[aria-selected=true]{background:var(--panel);color:var(--text);box-shadow:none}.range-switch{border-radius:4px;background:transparent}.range-switch button{border-radius:3px;color:var(--muted)}.range-switch button[aria-pressed=true]{background:var(--panel)}.quiet-toggle span{background:var(--panel)}.quiet-toggle input:checked+span{border-color:var(--link);background:#34495e}.quiet-toggle input:checked+span:after{background:var(--link)}.timeline-axis-text,.timeline-axis-label{fill:var(--muted)}.timeline-detail,.timeline-detail .detail-context{color:var(--muted)}
+.capability-timeline header {
+    margin-bottom: 1rem;
+}
+
+.capability-timeline header h3 {
+    margin: 0.25rem 0 0;
+    font-size: 1.2rem;
+    letter-spacing: -0.02em;
+}
+
+.timeline-kicker {
+    display: block;
+    color: var(--accent-data);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.metric-tabs {
+    display: flex;
+    gap: 0.25rem;
+    width: fit-content;
+    max-width: 100%;
+    margin-bottom: 0.85rem;
+    padding: 0.25rem;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: var(--surface);
+    overflow-x: auto;
+}
+
+.metric-tabs button {
+    min-height: 2.3rem;
+    padding: 0.45rem 0.85rem;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.metric-tabs button:hover {
+    color: var(--text);
+    background: rgba(27, 46, 77, 0.55);
+}
+
+.metric-tabs button[aria-selected="true"] {
+    background: var(--panel-elevated);
+    border-color: rgba(103, 216, 247, 0.36);
+    color: #dff6ff;
+    font-weight: 600;
+}
+
+.timeline-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.15rem;
+    margin-bottom: 0.75rem;
+    color: var(--muted);
+    font-size: 0.76rem;
+}
+
+.range-switch {
+    display: flex;
+    padding: 2px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--surface);
+}
+
+.range-switch button {
+    min-height: 1.9rem;
+    padding: 0.28rem 0.7rem;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.range-switch button:hover {
+    color: var(--text);
+}
+
+.range-switch button[aria-pressed="true"] {
+    background: var(--panel-elevated);
+    color: var(--text);
+    font-weight: 600;
+}
+
+.quiet-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 30px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.quiet-toggle input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.quiet-toggle span {
+    position: relative;
+    width: 1.7rem;
+    height: 0.98rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: var(--surface);
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.quiet-toggle span::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: var(--subtle);
+    transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.quiet-toggle input:checked + span {
+    border-color: rgba(125, 196, 255, 0.55);
+    background: rgba(125, 196, 255, 0.2);
+}
+
+.quiet-toggle input:checked + span::after {
+    transform: translateX(0.7rem);
+    background: var(--link);
+}
+
+.capability-timeline .quiet-toggle:has(input:focus-visible) {
+    outline: 2px solid var(--link);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+.timeline-chart {
+    width: 100%;
+    min-height: 410px;
+    padding: 0.5rem 0.5rem 0.25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: #0a1322;
+}
+
+.timeline-chart svg {
+    display: block;
+    width: 100%;
+    height: 410px;
+    overflow: visible;
+}
+
+.timeline-grid {
+    stroke: rgba(54, 77, 112, 0.42);
+    stroke-width: 1;
+    stroke-dasharray: 3 4;
+}
+
+.timeline-axis {
+    stroke: var(--line-strong);
+    stroke-width: 1;
+}
+
+.timeline-axis-text,
+.timeline-axis-label {
+    fill: var(--subtle);
+    font: 11px var(--font-body);
+    letter-spacing: 0.01em;
+}
+
+.timeline-axis-label {
+    fill: var(--muted);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.timeline-frontier {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.8;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+    opacity: 0.92;
+}
+
+.timeline-hit {
+    fill: transparent;
+    cursor: pointer;
+}
+
+.timeline-point {
+    stroke: #0a1322;
+    stroke-width: 1.25;
+    transition: r var(--transition-fast), stroke-width var(--transition-fast);
+}
+
+.timeline-record-ring {
+    fill: none;
+    stroke: rgba(243, 201, 105, 0.58);
+    stroke-width: 1.2;
+}
+
+.timeline-point.is-selected,
+.timeline-point-group:focus .timeline-point {
+    stroke: #ffffff;
+    stroke-width: 2;
+    r: 5.5;
+}
+
+.timeline-point-group:focus {
+    outline: none;
+}
+
+.timeline-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 1.1rem;
+    margin: 0.7rem 0 0.65rem;
+    color: var(--muted);
+    font-size: 0.72rem;
+}
+
+.timeline-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+}
+
+.timeline-legend i {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+}
+
+.timeline-detail {
+    min-height: 2.75rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--line-subtle);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 0.76rem;
+    line-height: 1.5;
+}
+
+.timeline-detail strong {
+    color: var(--text);
+    font-size: 0.82rem;
+}
+
+.timeline-detail .detail-score {
+    color: var(--accent);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.timeline-detail .detail-context {
+    color: var(--subtle);
+}
+
+@media (max-width: 700px) {
+    .metric-tabs {
+        width: 100%;
+    }
+
+    .metric-tabs button {
+        flex: 1;
+        padding: 0.45rem 0.55rem;
+    }
+
+    .timeline-chart {
+        min-height: 290px;
+    }
+
+    .timeline-chart svg {
+        height: 290px;
+    }
+
+    .timeline-toolbar {
+        gap: 0.4rem 0.75rem;
+    }
+
+    .timeline-axis-text {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 430px) {
+    .metric-tabs button {
+        font-size: 0.72rem;
+    }
+
+    .timeline-toolbar {
+        font-size: 0.7rem;
+    }
+
+    .range-switch {
+        width: 100%;
+    }
+
+    .range-switch button {
+        flex: 1;
+    }
+
+    .timeline-chart {
+        min-height: 200px;
+    }
+
+    .timeline-chart svg {
+        height: 200px;
+    }
+
+    .timeline-detail {
+        min-height: 3.1rem;
+    }
+}
 </style>
 
 <script is:inline>
-const root=document.querySelector('.capability-timeline');
-if(root){
- const series=JSON.parse(root.querySelector('[data-timeline-data]').textContent),chart=root.querySelector('[data-chart]'),detail=root.querySelector('[data-detail]'),legend=root.querySelector('[data-legend]');
- const colors={Google:'#60a5fa',OpenAI:'#34d399',Anthropic:'#fb923c',xAI:'#e879f9',Meta:'#f472b6',DeepSeek:'#a78bfa',Other:'#94a3b8'};
- const provider=n=>{n=n.toLowerCase();if(n.includes('gemini'))return'Google';if(n.includes('gpt')||n.includes('o3')||n.includes('o4'))return'OpenAI';if(n.includes('claude'))return'Anthropic';if(n.includes('grok'))return'xAI';if(n.includes('llama')||n.includes('muse'))return'Meta';if(n.includes('deepseek'))return'DeepSeek';return'Other'};
- const labels={visual:'Visual','data-retrieval':'Data Retrieval',chess:'Chess',ultimate:'Ultimate'},state={metric:'ultimate',range:'recent',fullScale:false,frontier:true};
- const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const fullDate=t=>new Intl.DateTimeFormat('en-US',{year:'numeric',month:'long',day:'numeric',timeZone:'UTC'}).format(t),shortDate=t=>new Intl.DateTimeFormat('en-US',{year:'numeric',month:'short',timeZone:'UTC'}).format(t);
- function select(point,node){chart.querySelectorAll('.timeline-point').forEach(p=>p.classList.remove('is-selected'));node?.querySelector('.timeline-point')?.classList.add('is-selected');const status=point.isRecord?'Frontier record':'Model result';detail.innerHTML=`<strong>${esc(point.name)}</strong> <span class="detail-score">${point.score.toFixed(2)}%</span><br><span>${esc(provider(point.name))} · ${fullDate(point.timestamp)} · ${labels[state.metric]}</span> <span class="detail-context">· ${status}</span>`}
- function render(){
-  const progression=series[state.metric],days=progression.dates,latest=Math.max(...days.map(d=>d.timestamp)),earliest=Math.min(...days.map(d=>d.timestamp));let start=earliest;if(state.range==='recent'){const d=new Date(latest);d.setUTCMonth(d.getUTCMonth()-18);start=d.getTime()}
-  const visible=days.filter(d=>d.timestamp>=start&&d.timestamp<=latest),points=visible.flatMap(d=>d.observations),scores=points.map(p=>p.score),maxScore=Math.max(0,...scores),minScore=Math.min(...scores);let yMin=0,yMax=100;if(!state.fullScale){const spread=Math.max(8,maxScore-minScore);yMin=Math.max(0,Math.floor((minScore-spread*.18)/5)*5);yMax=Math.min(100,Math.ceil((maxScore+spread*.18)/5)*5);if(yMax-yMin<10)yMin=Math.max(0,yMax-10)}
-  const W=1000,H=410,m={l:58,r:22,t:20,b:56},pad=Math.max(86400000*10,(latest-start)*.025),xmin=start-pad,xmax=latest+pad,x=t=>m.l+(t-xmin)/(xmax-xmin)*(W-m.l-m.r),y=v=>m.t+(yMax-v)/(yMax-yMin)*(H-m.t-m.b),mobile=innerWidth<600,tickCount=mobile?3:6,xt=Array.from({length:tickCount},(_,i)=>start+(latest-start)*i/(tickCount-1)),yTicks=5,yt=Array.from({length:yTicks},(_,i)=>yMin+(yMax-yMin)*i/(yTicks-1));
-  let record=-Infinity;const line=[];for(const day of days.filter(d=>d.timestamp<=latest)){record=Math.max(record,day.frontierScore);if(day.timestamp>=start)line.push({x:x(day.timestamp),y:y(record)});else if(!line.length)line.push({x:x(start),y:y(record)})}const path=line.map((p,i)=>i?`H ${p.x} V ${p.y}`:`M ${p.x} ${p.y}`).join(' ');
-  chart.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="group" aria-label="${labels[state.metric]} scores by release date"><g>${yt.map(t=>`<line class="timeline-grid" x1="${m.l}" x2="${W-m.r}" y1="${y(t)}" y2="${y(t)}"/><text class="timeline-axis-text" text-anchor="end" x="${m.l-9}" y="${y(t)+4}">${Number.isInteger(t)?t:t.toFixed(1)}%</text>`).join('')}</g><line class="timeline-axis" x1="${m.l}" x2="${W-m.r}" y1="${H-m.b}" y2="${H-m.b}"/>${xt.map((t,i)=>`<text class="timeline-axis-text" text-anchor="${i===0?'start':i===xt.length-1?'end':'middle'}" x="${x(t)}" y="${H-m.b+23}">${shortDate(t)}</text>`).join('')}<text class="timeline-axis-label" text-anchor="middle" x="${(m.l+W-m.r)/2}" y="${H-7}">Release date</text><text class="timeline-axis-label" text-anchor="middle" transform="translate(14 ${(m.t+H-m.b)/2}) rotate(-90)">Score</text>${state.frontier?`<path class="timeline-frontier" d="${path}"/>`:''}<g>${points.map((p,i)=>`<g class="timeline-point-group" tabindex="0" role="button" data-i="${i}" aria-label="${esc(p.name)}, ${p.score.toFixed(2)} percent, ${fullDate(p.timestamp)}">${p.isRecord?`<circle class="timeline-record-ring" cx="${x(p.timestamp)}" cy="${y(p.score)}" r="6.5"/>`:''}<circle class="timeline-hit" cx="${x(p.timestamp)}" cy="${y(p.score)}" r="11"/><circle class="timeline-point" cx="${x(p.timestamp)}" cy="${y(p.score)}" r="4" fill="${colors[provider(p.name)]}"/></g>`).join('')}</g></svg>`;
-  const providers=[...new Set(points.map(p=>provider(p.name)))].sort();legend.innerHTML=providers.map(p=>`<span><i style="background:${colors[p]}"></i>${p}</span>`).join('');chart.querySelectorAll('[data-i]').forEach(node=>{const p=points[+node.dataset.i];['mouseenter','focus','click','touchstart'].forEach(e=>node.addEventListener(e,()=>select(p,node),{passive:true}));node.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();select(p,node)}})});const holder=days.flatMap(d=>d.observations).findLast(p=>p.isRecord);if(holder)select(holder,chart.querySelector(`[data-i="${points.indexOf(holder)}"]`))
- }
- root.querySelectorAll('[data-metric]').forEach(tab=>{tab.addEventListener('click',()=>{state.metric=tab.dataset.metric;root.querySelectorAll('[data-metric]').forEach(x=>{const active=x===tab;x.setAttribute('aria-selected',String(active));x.tabIndex=active?0:-1});render()});tab.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight'].includes(e.key))return;e.preventDefault();const tabs=[...root.querySelectorAll('[data-metric]')],next=tabs[(tabs.indexOf(tab)+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length];next.focus();next.click()})});
- root.querySelectorAll('[data-range]').forEach(button=>button.addEventListener('click',()=>{state.range=button.dataset.range;root.querySelectorAll('[data-range]').forEach(x=>x.setAttribute('aria-pressed',String(x===button)));render()}));root.querySelector('[data-full-scale]').addEventListener('change',e=>{state.fullScale=e.target.checked;render()});root.querySelector('[data-frontier]').addEventListener('change',e=>{state.frontier=e.target.checked;render()});let resizeTimer;addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(render,100)});render();
+const root = document.querySelector('.capability-timeline');
+if (root) {
+    const series = JSON.parse(root.querySelector('[data-timeline-data]').textContent);
+    const chart = root.querySelector('[data-chart]');
+    const detail = root.querySelector('[data-detail]');
+    const legend = root.querySelector('[data-legend]');
+
+    const colors = {
+        Google: '#7dc4ff',
+        OpenAI: '#5fe0b5',
+        Anthropic: '#f2a97e',
+        xAI: '#e2e8f0',
+        Meta: '#67d8f7',
+        DeepSeek: '#f3c969',
+        Other: '#94a3b8',
+    };
+
+    const provider = (name) => {
+        const lower = name.toLowerCase();
+        if (lower.includes('gemini')) return 'Google';
+        if (lower.includes('gpt') || lower.includes('o3') || lower.includes('o4')) return 'OpenAI';
+        if (lower.includes('claude')) return 'Anthropic';
+        if (lower.includes('grok')) return 'xAI';
+        if (lower.includes('llama') || lower.includes('muse')) return 'Meta';
+        if (lower.includes('deepseek')) return 'DeepSeek';
+        return 'Other';
+    };
+
+    const labels = {
+        visual: 'Visual',
+        'data-retrieval': 'Data Retrieval',
+        chess: 'Chess',
+        ultimate: 'Ultimate',
+    };
+
+    const state = {
+        metric: 'ultimate',
+        range: 'recent',
+        fullScale: false,
+        frontier: true,
+    };
+
+    const esc = (str) =>
+        String(str).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+    const fullDate = (timestamp) =>
+        new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }).format(timestamp);
+    const shortDate = (timestamp) =>
+        new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', timeZone: 'UTC' }).format(timestamp);
+
+    function select(point, node) {
+        chart.querySelectorAll('.timeline-point').forEach((el) => el.classList.remove('is-selected'));
+        node?.querySelector('.timeline-point')?.classList.add('is-selected');
+        const status = point.isRecord ? 'Frontier record' : 'Model result';
+        detail.innerHTML =
+            `<strong>${esc(point.name)}</strong> <span class="detail-score">${point.score.toFixed(2)}%</span>` +
+            `<br><span>${esc(provider(point.name))} · ${fullDate(point.timestamp)} · ${labels[state.metric]}</span> ` +
+            `<span class="detail-context">· ${status}</span>`;
+    }
+
+    function render() {
+        const progression = series[state.metric];
+        const days = progression.dates;
+        const latest = Math.max(...days.map((d) => d.timestamp));
+        const earliest = Math.min(...days.map((d) => d.timestamp));
+
+        let start = earliest;
+        if (state.range === 'recent') {
+            const d = new Date(latest);
+            d.setUTCMonth(d.getUTCMonth() - 18);
+            start = d.getTime();
+        }
+
+        const visible = days.filter((d) => d.timestamp >= start && d.timestamp <= latest);
+        const points = visible.flatMap((d) => d.observations);
+        const scores = points.map((p) => p.score);
+        const maxScore = Math.max(0, ...scores);
+        const minScore = Math.min(...scores);
+
+        let yMin = 0;
+        let yMax = 100;
+        if (!state.fullScale) {
+            const spread = Math.max(8, maxScore - minScore);
+            yMin = Math.max(0, Math.floor((minScore - spread * 0.18) / 5) * 5);
+            yMax = Math.min(100, Math.ceil((maxScore + spread * 0.18) / 5) * 5);
+            if (yMax - yMin < 10) yMin = Math.max(0, yMax - 10);
+        }
+
+        const W = 1000;
+        const H = 410;
+        const m = { l: 58, r: 22, t: 20, b: 56 };
+        const pad = Math.max(86400000 * 10, (latest - start) * 0.025);
+        const xmin = start - pad;
+        const xmax = latest + pad;
+        const x = (t) => m.l + ((t - xmin) / (xmax - xmin)) * (W - m.l - m.r);
+        const y = (v) => m.t + ((yMax - v) / (yMax - yMin)) * (H - m.t - m.b);
+
+        const mobile = innerWidth < 600;
+        const tickCount = mobile ? 3 : 6;
+        const xt = Array.from({ length: tickCount }, (_, i) => start + ((latest - start) * i) / (tickCount - 1));
+        const yTicks = 5;
+        const yt = Array.from({ length: yTicks }, (_, i) => yMin + ((yMax - yMin) * i) / (yTicks - 1));
+
+        let record = -Infinity;
+        const line = [];
+        for (const day of days.filter((d) => d.timestamp <= latest)) {
+            record = Math.max(record, day.frontierScore);
+            if (day.timestamp >= start) {
+                line.push({ x: x(day.timestamp), y: y(record) });
+            } else if (!line.length) {
+                line.push({ x: x(start), y: y(record) });
+            }
+        }
+        const path = line.map((p, i) => (i ? `H ${p.x} V ${p.y}` : `M ${p.x} ${p.y}`)).join(' ');
+
+        chart.innerHTML =
+            `<svg viewBox="0 0 ${W} ${H}" role="group" aria-label="${labels[state.metric]} scores by release date">` +
+            `<g>${yt.map((t) => `<line class="timeline-grid" x1="${m.l}" x2="${W - m.r}" y1="${y(t)}" y2="${y(t)}"/><text class="timeline-axis-text" text-anchor="end" x="${m.l - 9}" y="${y(t) + 4}">${Number.isInteger(t) ? t : t.toFixed(1)}%</text>`).join('')}</g>` +
+            `<line class="timeline-axis" x1="${m.l}" x2="${W - m.r}" y1="${H - m.b}" y2="${H - m.b}"/>` +
+            `${xt.map((t, i) => `<text class="timeline-axis-text" text-anchor="${i === 0 ? 'start' : i === xt.length - 1 ? 'end' : 'middle'}" x="${x(t)}" y="${H - m.b + 23}">${shortDate(t)}</text>`).join('')}` +
+            `<text class="timeline-axis-label" text-anchor="middle" x="${(m.l + W - m.r) / 2}" y="${H - 7}">Release date</text>` +
+            `<text class="timeline-axis-label" text-anchor="middle" transform="translate(14 ${(m.t + H - m.b) / 2}) rotate(-90)">Score</text>` +
+            `${state.frontier ? `<path class="timeline-frontier" d="${path}"/>` : ''}` +
+            `<g>${points.map((p, i) => `<g class="timeline-point-group" tabindex="0" role="button" data-i="${i}" aria-label="${esc(p.name)}, ${p.score.toFixed(2)} percent, ${fullDate(p.timestamp)}">${p.isRecord ? `<circle class="timeline-record-ring" cx="${x(p.timestamp)}" cy="${y(p.score)}" r="7"/>` : ''}<circle class="timeline-hit" cx="${x(p.timestamp)}" cy="${y(p.score)}" r="11"/><circle class="timeline-point" cx="${x(p.timestamp)}" cy="${y(p.score)}" r="4.2" fill="${colors[provider(p.name)]}"/></g>`).join('')}</g>` +
+            `</svg>`;
+
+        const providers = [...new Set(points.map((p) => provider(p.name)))].sort();
+        legend.innerHTML = providers.map((p) => `<span><i style="background:${colors[p]}"></i>${p}</span>`).join('');
+
+        chart.querySelectorAll('[data-i]').forEach((node) => {
+            const p = points[Number(node.dataset.i)];
+            ['mouseenter', 'focus', 'click', 'touchstart'].forEach((evt) =>
+                node.addEventListener(evt, () => select(p, node), { passive: true }),
+            );
+            node.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    select(p, node);
+                }
+            });
+        });
+
+        const holder = days.flatMap((d) => d.observations).findLast((p) => p.isRecord);
+        if (holder) select(holder, chart.querySelector(`[data-i="${points.indexOf(holder)}"]`));
+    }
+
+    root.querySelectorAll('[data-metric]').forEach((tab) => {
+        tab.addEventListener('click', () => {
+            state.metric = tab.dataset.metric;
+            root.querySelectorAll('[data-metric]').forEach((x) => {
+                const active = x === tab;
+                x.setAttribute('aria-selected', String(active));
+                x.tabIndex = active ? 0 : -1;
+            });
+            render();
+        });
+        tab.addEventListener('keydown', (e) => {
+            if (!['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+            e.preventDefault();
+            const tabs = [...root.querySelectorAll('[data-metric]')];
+            const next = tabs[(tabs.indexOf(tab) + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
+            next.focus();
+            next.click();
+        });
+    });
+
+    root.querySelectorAll('[data-range]').forEach((button) =>
+        button.addEventListener('click', () => {
+            state.range = button.dataset.range;
+            root.querySelectorAll('[data-range]').forEach((x) => x.setAttribute('aria-pressed', String(x === button)));
+            render();
+        }),
+    );
+
+    root.querySelector('[data-full-scale]').addEventListener('change', (e) => {
+        state.fullScale = e.target.checked;
+        render();
+    });
+
+    root.querySelector('[data-frontier]').addEventListener('change', (e) => {
+        state.frontier = e.target.checked;
+        render();
+    });
+
+    let resizeTimer;
+    addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(render, 100);
+    });
+
+    render();
 }
 </script>

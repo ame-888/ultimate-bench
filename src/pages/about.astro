@@ -6,30 +6,24 @@ const principles = [
         number: '01',
         title: 'Curiosity first',
         copy: 'Each evaluation starts with a focused question and an experiment that lets the results do the talking.',
-        icon: '◇',
     },
     {
         number: '02',
         title: 'Context included',
         copy: 'A score without a story is just a number wearing a tiny hat. Ultimate Bench shows the method and the limits.',
-        icon: '≋',
     },
     {
         number: '03',
         title: 'Independently minded',
         copy: 'No model gets the home-team treatment. Every system meets the same task and the same rubric.',
-        icon: '↗',
     },
 ];
 ---
 
 <Layout title="About | Ultimate Bench" description="Learn about Ultimate Bench, its independent operator, evaluation principles, and content rights.">
     <main class="about-page">
-        <div class="ambient ambient-one" aria-hidden="true"></div>
-        <div class="ambient ambient-two" aria-hidden="true"></div>
-
         <section class="hero" aria-labelledby="about-title">
-            <div class="eyebrow"><span class="status-dot"></span> Independent by design</div>
+            <div class="eyebrow">Independent by design</div>
             <h1 id="about-title">About Ultimate Bench</h1>
             <p class="hero-copy" id="about-desc1">Ultimate Bench is an independent experimental benchmark comparing AI model results across visual, data retrieval, and chess tasks.</p>
             <div class="hero-actions">
@@ -39,12 +33,18 @@ const principles = [
         </section>
 
         <section class="transparency" aria-labelledby="rights-title">
-            <div class="transparency-heading"><p>SOURCE &amp; RIGHTS</p><h2 id="rights-title">Open code, protected content.</h2></div>
-            <div class="transparency-content"><p>The repository's original software code is available under the MIT License, so it may be inspected, forked, modified, and redistributed under those terms. Benchmark datasets and results, protocols and prompts, protected test material, branding, editorial text, and non-code assets remain all rights reserved unless a file says otherwise.</p><p>Public results may be referenced or quoted with attribution, but there is no general open-data license. See the repository <a href="https://github.com/ame-888/ultimate-bench/blob/main/LICENSE">LICENSE</a> and <a href="https://github.com/ame-888/ultimate-bench/blob/main/RIGHTS-NOTICE.md">rights notice</a>.</p></div>
+            <div class="transparency-heading">
+                <p>SOURCE &amp; RIGHTS</p>
+                <h2 id="rights-title">Open code, protected content.</h2>
+            </div>
+            <div class="transparency-content">
+                <p>The repository's original software code is available under the MIT License, so it may be inspected, forked, modified, and redistributed under those terms. Benchmark datasets and results, protocols and prompts, protected test material, branding, editorial text, and non-code assets remain all rights reserved unless a file says otherwise.</p>
+                <p>Public results may be referenced or quoted with attribution, but there is no general open-data license. See the repository <a href="https://github.com/ame-888/ultimate-bench/blob/main/LICENSE">LICENSE</a> and <a href="https://github.com/ame-888/ultimate-bench/blob/main/RIGHTS-NOTICE.md">rights notice</a>.</p>
+            </div>
         </section>
 
         <section class="manifesto" aria-labelledby="about-welcome">
-            <div class="manifesto-label"><span>THE SHORT VERSION</span><span class="squiggle" aria-hidden="true">⌁⌁⌁</span></div>
+            <div class="manifesto-label"><span>THE SHORT VERSION</span></div>
             <div class="manifesto-copy">
                 <h2 id="about-welcome">Why this project exists</h2>
                 <p id="about-desc2">Ultimate Bench presents practical evaluations that make model capabilities—and their awkward edges—easier to understand. The goal is not to crown a permanent champion. It is to offer a useful snapshot, explain how it was made, and leave enough breadcrumbs for you to challenge it.</p>
@@ -61,7 +61,6 @@ const principles = [
                     <article class="principle-card">
                         <div class="card-top">
                             <span class="card-number">{principle.number}</span>
-                            <span class="card-icon" aria-hidden="true">{principle.icon}</span>
                         </div>
                         <h3>{principle.title}</h3>
                         <p>{principle.copy}</p>
@@ -87,7 +86,6 @@ const principles = [
         </section>
 
         <aside class="field-note" aria-label="A note from the bench">
-            <div class="note-tab">FIELD NOTE № 001</div>
             <p>Good evaluation is a practice, not a finish line.</p>
             <span id="secret-hint">Corrections and methodological criticism are welcome.</span>
         </aside>
@@ -95,26 +93,187 @@ const principles = [
 </Layout>
 
 <style>
+.about-page {
+    max-width: 68rem;
+    margin: auto;
+    padding: 2.75rem 1.5rem 4.25rem;
+    color: var(--muted);
+}
 
-.about-page { max-width: 68rem; margin: auto; padding: 2.75rem 1.5rem 4rem; color: var(--muted); }
-.ambient, .status-dot, .squiggle, .card-icon { display: none; }
-.hero { max-width: 48rem; margin-bottom: 2.5rem; }
-.eyebrow { color: #a5b4fc; font-weight: 700; letter-spacing: .06em; font-size: .75rem; margin-bottom: .5rem; }
-h1 { margin: 0 0 .75rem; font-size: clamp(2rem, 4.5vw, 3.1rem); letter-spacing: -.035em; }
-.hero-copy { line-height: 1.75; }
-.hero-actions { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-top: 1rem; font-size: .9rem; }
-.hero-actions a { color: var(--link); }.hero-actions .primary-link { padding: .55rem .85rem; border: 1px solid #526397; border-radius: 8px; background: #222d4d; color: #d5dcff; text-decoration: none; }.hero-actions { align-items: center; }
-.transparency, .manifesto, .principles { padding: 2rem 0; border-top: 1px solid var(--line); }
-.transparency { padding: 1.5rem; margin-bottom: 1.25rem; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); display: grid; grid-template-columns: 15rem minmax(0,1fr); gap: 2rem; }
-.transparency h2, .section-heading h2, .manifesto h2 { margin: .4rem 0 1rem; font-size: 1.4rem; }
-.transparency-heading > p, .section-heading > p, .manifesto-label { color: var(--muted); font-size: .78rem; }
-.transparency-content p, .manifesto-copy p, .principle-card p { margin-top: 0; line-height: 1.75; }
-.transparency-links { display: flex; flex-direction: column; align-items: flex-start; gap: .6rem; font-size: .85rem; }
-.manifesto-copy { max-width: 46rem; }.manifesto-copy em { color: inherit; font-style: normal; }
-.principle-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 2rem; }
-.principle-card { padding: 1.25rem; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }.card-number { color: #a5b4fc; font-size: .8rem; font-weight: 700; }
-.principle-card h3 { margin: .5rem 0; font-size: 1.05rem; }.principle-card p { font-size: .9rem; }
-.field-note { margin-top: 1rem; padding: 1rem 1.25rem; border-left: 3px solid #a5b4fc; border-radius: 0 10px 10px 0; background: var(--panel); font-size: .85rem; }.note-tab { display: none; }.field-note p { color: var(--text); }
-@media(max-width:700px){.about-page{padding:1.75rem 1rem 3rem}.transparency,.principle-grid{grid-template-columns:1fr;gap:.75rem}}
+.hero {
+    max-width: 50rem;
+    margin-bottom: 2.5rem;
+}
 
+.eyebrow {
+    margin-bottom: 0.55rem;
+    color: var(--link);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+h1 {
+    margin: 0 0 0.75rem;
+    font-size: clamp(2rem, 4.4vw, 3.05rem);
+    letter-spacing: -0.03em;
+}
+
+.hero-copy {
+    line-height: 1.75;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.85rem 1.35rem;
+    margin-top: 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.hero-actions a {
+    color: var(--link);
+}
+
+.hero-actions .primary-link {
+    padding: 0.58rem 0.95rem;
+    border: 1px solid rgba(125, 196, 255, 0.42);
+    border-radius: 8px;
+    background: rgba(30, 54, 89, 0.88);
+    color: #e4f2ff;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: var(--surface-highlight);
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.hero-actions .primary-link:hover {
+    border-color: var(--link);
+    background: rgba(38, 68, 112, 0.95);
+    color: #ffffff;
+}
+
+.manifesto,
+.principles {
+    padding: 2.25rem 0;
+    border-top: 1px solid var(--line-subtle);
+}
+
+.transparency {
+    display: grid;
+    grid-template-columns: 16rem minmax(0, 1fr);
+    gap: 2rem;
+    padding: 1.65rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, #101c31 0%, #0d1728 100%);
+    box-shadow: var(--surface-highlight);
+}
+
+.transparency h2,
+.section-heading h2,
+.manifesto h2 {
+    margin: 0.35rem 0 0.85rem;
+    font-size: 1.42rem;
+}
+
+.transparency-heading > p,
+.section-heading > p,
+.manifesto-label {
+    margin: 0;
+    color: var(--link);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.transparency-content p,
+.manifesto-copy p,
+.principle-card p {
+    margin-top: 0;
+    line-height: 1.75;
+}
+
+.transparency-content strong {
+    color: var(--text);
+}
+
+.transparency-links {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.55rem;
+    margin-top: 1rem;
+    font-size: 0.86rem;
+    font-weight: 500;
+}
+
+.manifesto-copy {
+    max-width: 48rem;
+}
+
+.principle-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin-top: 1.25rem;
+}
+
+.principle-card {
+    padding: 1.4rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: linear-gradient(180deg, #101c31 0%, #0d1728 100%);
+    box-shadow: var(--surface-highlight);
+}
+
+.card-number {
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.principle-card h3 {
+    margin: 0.55rem 0 0.5rem;
+    font-size: 1.06rem;
+}
+
+.principle-card p {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
+.field-note {
+    margin-top: 1rem;
+    padding: 1.15rem 1.35rem;
+    border: 1px solid var(--line-subtle);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    background: var(--surface);
+    font-size: 0.88rem;
+}
+
+.field-note p {
+    margin: 0 0 0.3rem;
+    color: var(--text);
+    font-weight: 600;
+}
+
+@media (max-width: 700px) {
+    .about-page {
+        padding: 1.75rem 1rem 3rem;
+    }
+
+    .transparency,
+    .principle-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
 </style>

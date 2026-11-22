@@ -1,20 +1,233 @@
-.bench-methodology { max-width: 72rem; }
-.visual-methodology { --page-accent: #fbbf24; }
-.data-methodology { --page-accent: #67e8f9; }
-.chess-methodology { --page-accent: #c4b5fd; }
-.bench-methodology .section-navigation { display: flex; flex-wrap: wrap; gap: .6rem 1.25rem; margin: 0 0 1.5rem; }
-.bench-methodology .section-navigation a { color: var(--link); font-size: .85rem; }
-.bench-methodology .content-card + .content-card,.bench-methodology .protocol + .protocol { margin-top: 2rem; }
-.bench-methodology .content-card section,.bench-methodology .protocol { scroll-margin-top: 5rem; }
-.bench-methodology .content-card section + section { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
-.bench-methodology .section-label,.bench-methodology .protocol-level { margin: 0 0 .3rem; color: var(--page-accent); font-size: .75rem; font-weight: 700; letter-spacing: .04em; }
-.bench-methodology .content-card h2 { margin: .3rem 0 1rem; font-size: 1.5rem; }.bench-methodology .content-card h3 { margin: 1.5rem 0 .5rem; font-size: 1.1rem; }
-.bench-methodology .procedure-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1.5rem; margin: 1rem 0; }
-.bench-methodology .procedure-grid div { padding: 1rem; border: 1px solid var(--line); border-radius: 10px; background: var(--color-bg); }
-.bench-methodology .procedure-grid strong,.bench-methodology .procedure-grid span { display: block; }.bench-methodology .procedure-grid span { margin-top: .3rem; color: var(--muted); font-size: .85rem; }
-.bench-methodology .callout { margin: 1rem 0; padding: 1rem; border-left: 3px solid var(--page-accent); border-radius: 0 10px 10px 0; background: var(--color-bg); }.bench-methodology .callout p { margin: .4rem 0 0; }
-.bench-methodology .policy-list { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 2rem; }.bench-methodology .policy-list div { padding-top: 1rem; border-top: 1px solid var(--line); }.bench-methodology .policy-list dt { color: var(--text); font-weight: 600; }.bench-methodology .policy-list dd { margin: .3rem 0 0; }
-.bench-methodology .table-wrap { max-width: 100%; overflow-x: auto; margin: 1.25rem 0; }.bench-methodology table { width: 100%; min-width: 38rem; border-collapse: collapse; }.bench-methodology th,.bench-methodology td { padding: .7rem .8rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; font-size: .9rem; }.bench-methodology thead th { color: var(--text); background: var(--panel); font-weight: 500; }.bench-methodology tbody th { color: var(--text); font-weight: 500; }
-.bench-methodology .protocol header { margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--line); }.bench-methodology .protocol header h2 { font-size: 1.6rem; }.bench-methodology .protocol header > p:last-child { color: var(--muted); }.bench-methodology .protocols { margin: 2rem 0; }
-.bench-methodology .closing-methodology code { display: block; padding: 1rem; border: 1px solid var(--line); border-radius: 4px; color: var(--text); white-space: normal; overflow-wrap: anywhere; }
-@media(max-width:760px){.bench-methodology .procedure-grid,.bench-methodology .policy-list{grid-template-columns:1fr}.bench-methodology .content-card{padding-top:1rem}}
+/* Dedicated arena methodology pages (Visual Bench, DATA Bench, Chess Bench). */
+
+.bench-methodology {
+    max-width: 72rem;
+}
+
+.visual-methodology {
+    --page-accent: var(--accent-visual);
+}
+
+.data-methodology {
+    --page-accent: var(--accent-data);
+}
+
+.chess-methodology {
+    --page-accent: var(--accent-chess);
+}
+
+.bench-methodology .section-navigation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 0.65rem;
+    margin: 0 0 1.65rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+}
+
+.bench-methodology .section-navigation a {
+    padding: 0.25rem 0.55rem;
+    border-radius: 5px;
+    color: var(--link);
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.bench-methodology .section-navigation a:hover {
+    background: var(--panel-elevated);
+    color: var(--link-hover);
+}
+
+.bench-methodology .section-navigation a.pending {
+    color: var(--subtle);
+}
+
+.bench-methodology .content-card + .content-card,
+.bench-methodology .protocol + .protocol {
+    margin-top: 1.75rem;
+}
+
+.bench-methodology .content-card section,
+.bench-methodology .protocol {
+    scroll-margin-top: 5.5rem;
+}
+
+.bench-methodology .content-card section + section {
+    margin-top: 2.1rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--line-subtle);
+}
+
+.bench-methodology .section-label,
+.bench-methodology .protocol-level {
+    margin: 0 0 0.35rem;
+    color: var(--page-accent);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.bench-methodology .content-card h2 {
+    margin: 0.25rem 0 1rem;
+    font-size: 1.48rem;
+}
+
+.bench-methodology .content-card h3 {
+    margin: 1.5rem 0 0.55rem;
+    font-size: 1.08rem;
+}
+
+.bench-methodology .procedure-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 1.25rem 0;
+}
+
+.bench-methodology .procedure-grid div {
+    padding: 1rem 1.15rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: var(--surface-highlight);
+}
+
+.bench-methodology .procedure-grid strong,
+.bench-methodology .procedure-grid span {
+    display: block;
+}
+
+.bench-methodology .procedure-grid strong {
+    color: var(--text);
+    font-size: 0.96rem;
+}
+
+.bench-methodology .procedure-grid span {
+    margin-top: 0.3rem;
+    color: var(--muted);
+    font-size: 0.84rem;
+    line-height: 1.55;
+}
+
+.bench-methodology .callout {
+    margin: 1.25rem 0;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--line-subtle);
+    border-left: 3px solid var(--page-accent);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    background: var(--surface);
+}
+
+.bench-methodology .callout p {
+    margin: 0.4rem 0 0;
+}
+
+.bench-methodology .policy-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.1rem 2rem;
+    margin: 1.25rem 0;
+}
+
+.bench-methodology .policy-list div {
+    padding-top: 1rem;
+    border-top: 1px solid var(--line-subtle);
+}
+
+.bench-methodology .policy-list dt {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.bench-methodology .policy-list dd {
+    margin: 0.35rem 0 0;
+    line-height: 1.7;
+}
+
+.bench-methodology .table-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 1.25rem 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: #0a1322;
+}
+
+.bench-methodology table {
+    width: 100%;
+    min-width: 38rem;
+    border-collapse: collapse;
+}
+
+.bench-methodology th,
+.bench-methodology td {
+    padding: 0.78rem 0.9rem;
+    border-bottom: 1px solid var(--line-subtle);
+    text-align: left;
+    vertical-align: top;
+    font-size: 0.88rem;
+}
+
+.bench-methodology tbody tr:last-child th,
+.bench-methodology tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.bench-methodology thead th {
+    color: var(--muted);
+    background: #132238;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.bench-methodology tbody th {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.bench-methodology .protocol header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--line-subtle);
+}
+
+.bench-methodology .protocol header h2 {
+    font-size: 1.55rem;
+}
+
+.bench-methodology .protocol header > p:last-child {
+    color: var(--muted);
+}
+
+.bench-methodology .protocols {
+    margin: 2rem 0;
+}
+
+.bench-methodology .closing-methodology code {
+    display: block;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+    .bench-methodology .procedure-grid,
+    .bench-methodology .policy-list {
+        grid-template-columns: 1fr;
+    }
+
+    .bench-methodology .content-card {
+        padding-top: 1.2rem;
+    }
+}

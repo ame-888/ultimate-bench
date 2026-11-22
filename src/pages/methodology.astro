@@ -37,10 +37,10 @@ const process = [
             <p class="eyebrow"><span aria-hidden="true"></span> Behind the benchmark</p>
             <h1>Methodology</h1>
             <p class="hero-copy">A clear view of the public protocols, scoring rules, safeguards, and protected test material behind the current experimental comparison.</p>
-        <section class="publication-download" aria-label="Complete methodology publication">
-            <div><strong>Complete methodology · PDF · v{METHODOLOGY.version}</strong><span>Updated {METHODOLOGY.revisionDate}</span></div>
-            <div><a class="download" href={METHODOLOGY.pdfPath} download>Download complete methodology</a><a href={METHODOLOGY.publicationPath}>Read complete methodology online</a></div>
-        </section>
+            <section class="publication-download" aria-label="Complete methodology publication">
+                <div><strong>Complete methodology · PDF · v{METHODOLOGY.version}</strong><span>Updated {METHODOLOGY.revisionDate}</span></div>
+                <div><a class="download" href={METHODOLOGY.pdfPath} download>Download complete methodology</a><a href={METHODOLOGY.publicationPath}>Read complete methodology online</a></div>
+            </section>
 
             <nav class="jump-links" aria-label="On this page">
                 <a href="#protocols">Protocols</a>
@@ -51,7 +51,6 @@ const process = [
                 <a href="#limitations">Limitations</a>
             </nav>
         </header>
-
 
         <section id="protocols" class="protocol-card" aria-labelledby="protocols-title">
             <div>
@@ -116,17 +115,89 @@ const process = [
         </section>
 
         <section id="scoring" class="score-section" aria-labelledby="scoring-title">
-            <div class="score-copy"><p class="section-label">Scoring &amp; aggregation</p><h2 id="scoring-title">Progressive Level Weighting,<br />three distinct signals.</h2>
-            <p><strong>Fixed six-level normalization:</strong> Every arena is permanently normalized against all six progressive weights—1, 2, 4, 8, 16, and 32—for a full ladder denominator of 63. Active numeric results earn weighted points; all unearned or unavailable capacity contributes zero to the numerator. Planned and Locked levels reserve future weight without model-level results, so activation never changes the denominator.</p>
-            <p><code>Arena score = Σ(earned level result × level weight) / 63</code>. Operational weight is Visual 31/63, Data Retrieval 15/63, and Chess 31/63; the currently attainable maxima are 49.21%, 23.81%, and 49.21%. An arena score is weighted performance earned against the complete intended six-level arena—not a percentage only across Active levels.</p>
-            <p><strong>Overall = (Visual + Data Retrieval + Chess) / 3</strong>, calculated at full precision and rounded only for display. Token price affects only cost comparisons, chart position, and Pareto membership—never results, canonical scores, or ranks.</p></div>
-            <div class="formula-card" aria-label="Progressive Level Weighting formula"><p>Universal weights</p><div class="fraction"><span><b>1, 2, 4, 8, 16, 32</b></span><span>Level 1 → Level 6</span></div><small>Full ladder denominator: 63. Status determines whether weight is operational or reserved.</small></div>
+            <div class="score-copy">
+                <p class="section-label">Scoring &amp; aggregation</p>
+                <h2 id="scoring-title">Progressive Level Weighting,<br />three distinct signals.</h2>
+                <p><strong>Fixed six-level normalization:</strong> Every arena is permanently normalized against all six progressive weights—1, 2, 4, 8, 16, and 32—for a full ladder denominator of 63. Active numeric results earn weighted points; all unearned or unavailable capacity contributes zero to the numerator. Planned and Locked levels reserve future weight without model-level results, so activation never changes the denominator.</p>
+                <p><code>Arena score = Σ(earned level result × level weight) / 63</code>. Operational weight is Visual 31/63, Data Retrieval 15/63, and Chess 31/63; the currently attainable maxima are 49.21%, 23.81%, and 49.21%. An arena score is weighted performance earned against the complete intended six-level arena—not a percentage only across Active levels.</p>
+                <p><strong>Overall = (Visual + Data Retrieval + Chess) / 3</strong>, calculated at full precision and rounded only for display. Token price affects only cost comparisons, chart position, and Pareto membership—never results, canonical scores, or ranks.</p>
+            </div>
+            <div class="formula-card" aria-label="Progressive Level Weighting formula">
+                <p>Universal weights</p>
+                <div class="fraction"><span><b>1, 2, 4, 8, 16, 32</b></span><span>Level 1 → Level 6</span></div>
+                <small>Full ladder denominator: 63. Status determines whether weight is operational or reserved.</small>
+            </div>
         </section>
-        <section class="section-block" aria-labelledby="structure-title"><div class="section-intro"><div><p class="section-label">Current structure</p><h2 id="structure-title">Active, Planned, and Locked levels.</h2></div></div><div class="pillar-grid">{ARENA_LIST.map(arena => <article class="pillar-card"><h3>{arena.name}</h3><p>{activeLevels(arena).length} Active; {plannedLevels(arena).length} Planned; {arena.levels.filter(level => level.status === 'Locked').length} Locked.</p><ul>{arena.levels.map(level => <li>Level {level.number} — {level.name}: <strong>{level.status}</strong> · weight {level.weight} {level.status === 'Active' ? 'operational' : 'reserved'}</li>)}</ul></article>)}</div></section>
-        <section class="section-block" aria-labelledby="status-rules-title"><div class="section-intro"><div><p class="section-label">Coverage and qualification</p><h2 id="status-rules-title">Every result state has one rule.</h2></div></div><div class="limitation-grid"><p><strong>Numeric 0–100:</strong> the Active level was administered and produced a valid result; zero means an observed score of zero and is fully weighted.</p><p><strong>Invalid:</strong> attempted but failed validity; contributes zero and retains weight.</p><p><strong>Unavailable:</strong> could not run; contributes zero without reducing denominator 63, and makes Active-level coverage incomplete.</p><p><strong>Not tested:</strong> not attempted; contributes zero without reducing denominator 63, and makes Active-level coverage incomplete.</p><p><strong>Missing:</strong> a validation error for any Active level.</p><p><strong>Locked / Planned:</strong> reserved zero capacity, not a model result. Locked requires a protocol and unlock condition; Planned has no operational protocol.</p></div><p><strong>Independent administration.</strong> Every model/configuration is administered on every Active level, regardless of earlier results. A score of 0% or INVALID does not stop testing or prevent administration of later Active levels.</p><h3>Computable score</h3><p>A score always uses denominator 63. Score normalization is separate from Active-level coverage.</p><h3>Officially rankable score</h3><p>An arena score is officially rankable only when every Active level is included. Officially ranked models therefore use the same set of levels and the same full denominator.</p><h3>Provisional score</h3><p>A computable score with one or more <strong>Unavailable</strong> or <strong>Not tested</strong> Active levels is provisional. It remains visible for transparency, but receives no official rank and cannot determine an arena leader or Overall qualification. For example, a result covering 1/4 Active levels remains provisional even though its score uses the same denominator 63 as every other result.</p><p>A model qualifies for Overall only with a rank-eligible score and complete Active-level coverage in all three arenas. Equal full-precision scores share rank; alphabetical order between ties is presentation only. Alternate arena modes reorder rows for exploration and never modify canonical scores, coverage, eligibility, or official ranks.</p></section>
-        <section class="section-block" aria-labelledby="worked-example-title"><div class="section-intro"><div><p class="section-label">Recorded worked example</p><h2 id="worked-example-title">GPT-5.6 Sol (high) - JULY.</h2></div></div><p><strong>Visual:</strong> <code>(86 + 2×71 + 4×65 + 8×25 + 16×0) / 63 = 688 / 63 = 10.9206…</code> → 10.9%.</p><p><strong>Data Retrieval:</strong> <code>(51 + 2×46 + 4×36 + 8×3) / 63 = 311 / 63 = 4.9365…</code> → 4.9%.</p><p><strong>Chess:</strong> <code>(97 + 2×68 + 4×59 + 8×0 + 16×0) / 63 = 469 / 63 = 7.4444…</code> → 7.4%.</p><p><strong>Overall:</strong> the equal mean of those unrounded values is 7.7672… → 7.8%.</p><p>Raw trials are individual administration outcomes; arena aggregates apply Progressive Level Weighting; Overall averages arena aggregates; cost comparisons place Overall beside separate price data.</p></section>
+
+        <section class="section-block" aria-labelledby="structure-title">
+            <div class="section-intro">
+                <div>
+                    <p class="section-label">Current structure</p>
+                    <h2 id="structure-title">Active, Planned, and Locked levels.</h2>
+                </div>
+            </div>
+            <div class="pillar-grid">
+                {ARENA_LIST.map((arena) => (
+                    <article class="pillar-card">
+                        <h3>{arena.name}</h3>
+                        <p>{activeLevels(arena).length} Active; {plannedLevels(arena).length} Planned; {arena.levels.filter((level) => level.status === 'Locked').length} Locked.</p>
+                        <ul>
+                            {arena.levels.map((level) => (
+                                <li>Level {level.number} — {level.name}: <strong>{level.status}</strong> · weight {level.weight} {level.status === 'Active' ? 'operational' : 'reserved'}</li>
+                            ))}
+                        </ul>
+                    </article>
+                ))}
+            </div>
+        </section>
+
+        <section class="section-block" aria-labelledby="status-rules-title">
+            <div class="section-intro">
+                <div>
+                    <p class="section-label">Coverage and qualification</p>
+                    <h2 id="status-rules-title">Every result state has one rule.</h2>
+                </div>
+            </div>
+            <div class="limitation-grid">
+                <p><strong>Numeric 0–100:</strong> the Active level was administered and produced a valid result; zero means an observed score of zero and is fully weighted.</p>
+                <p><strong>Invalid:</strong> attempted but failed validity; contributes zero and retains weight.</p>
+                <p><strong>Unavailable:</strong> could not run; contributes zero without reducing denominator 63, and makes Active-level coverage incomplete.</p>
+                <p><strong>Not tested:</strong> not attempted; contributes zero without reducing denominator 63, and makes Active-level coverage incomplete.</p>
+                <p><strong>Missing:</strong> a validation error for any Active level.</p>
+                <p><strong>Locked / Planned:</strong> reserved zero capacity, not a model result. Locked requires a protocol and unlock condition; Planned has no operational protocol.</p>
+            </div>
+            <p><strong>Independent administration.</strong> Every model/configuration is administered on every Active level, regardless of earlier results. A score of 0% or INVALID does not stop testing or prevent administration of later Active levels.</p>
+            <h3>Computable score</h3>
+            <p>A score always uses denominator 63. Score normalization is separate from Active-level coverage.</p>
+            <h3>Officially rankable score</h3>
+            <p>An arena score is officially rankable only when every Active level is included. Officially ranked models therefore use the same set of levels and the same full denominator.</p>
+            <h3>Provisional score</h3>
+            <p>A computable score with one or more <strong>Unavailable</strong> or <strong>Not tested</strong> Active levels is provisional. It remains visible for transparency, but receives no official rank and cannot determine an arena leader or Overall qualification. For example, a result covering 1/4 Active levels remains provisional even though its score uses the same denominator 63 as every other result.</p>
+            <p>A model qualifies for Overall only with a rank-eligible score and complete Active-level coverage in all three arenas. Equal full-precision scores share rank; alphabetical order between ties is presentation only. Alternate arena modes reorder rows for exploration and never modify canonical scores, coverage, eligibility, or official ranks.</p>
+        </section>
+
+        <section class="section-block" aria-labelledby="worked-example-title">
+            <div class="section-intro">
+                <div>
+                    <p class="section-label">Recorded worked example</p>
+                    <h2 id="worked-example-title">GPT-5.6 Sol (high) - JULY.</h2>
+                </div>
+            </div>
+            <p><strong>Visual:</strong> <code>(86 + 2×71 + 4×65 + 8×25 + 16×0) / 63 = 688 / 63 = 10.9206…</code> → 10.9%.</p>
+            <p><strong>Data Retrieval:</strong> <code>(51 + 2×46 + 4×36 + 8×3) / 63 = 311 / 63 = 4.9365…</code> → 4.9%.</p>
+            <p><strong>Chess:</strong> <code>(97 + 2×68 + 4×59 + 8×0 + 16×0) / 63 = 469 / 63 = 7.4444…</code> → 7.4%.</p>
+            <p><strong>Overall:</strong> the equal mean of those unrounded values is 7.7672… → 7.8%.</p>
+            <p>Raw trials are individual administration outcomes; arena aggregates apply Progressive Level Weighting; Overall averages arena aggregates; cost comparisons place Overall beside separate price data.</p>
+        </section>
+
         <section id="analysis-methods" class="section-block" aria-labelledby="analysis-methods-title">
-            <div class="section-intro"><div><p class="section-label">Analysis dashboard</p><h2 id="analysis-methods-title">Official scores, exploratory lenses.</h2></div><p>The Analysis page derives every result from the published records at build time. It never replaces or modifies canonical leaderboard arithmetic.</p></div>
+            <div class="section-intro">
+                <div>
+                    <p class="section-label">Analysis dashboard</p>
+                    <h2 id="analysis-methods-title">Official scores, exploratory lenses.</h2>
+                </div>
+                <p>The Analysis page derives every result from the published records at build time. It never replaces or modifies canonical leaderboard arithmetic.</p>
+            </div>
             <div class="limitation-grid">
                 <p><strong>Cohorts and transfer.</strong> Cross-arena analysis includes only globally qualified configurations. Spearman correlation is Pearson correlation of ascending ranks; tied values receive their average rank. Rank-gap outliers are the largest absolute differences between a configuration’s two arena mid-ranks.</p>
                 <p><strong>Status policy.</strong> Numeric positives and observed numeric zeroes remain distinct counts. Numeric exploratory medians include all numeric values. INVALID, UNAVAILABLE, and NOT_TESTED are omitted unless a view explicitly says INVALID is mapped to zero.</p>
@@ -137,8 +208,16 @@ const process = [
             </div>
             <p>These descriptive analyses have no significance test or confidence interval. Small globally qualified cohorts, uneven arena coverage, related configurations, provider-controlled settings, and protected test cases limit inference and independent reproduction. “Early-level collapse” is shown at level and status granularity rather than assigned as a cross-arena archetype because the data do not support a defensible cross-arena threshold.</p>
         </section>
+
         <p><a href="/glossary">Open the public benchmark glossary</a> · <a href="/revisions">Review methodology and dataset revisions</a></p>
-        <aside class="correction-card" aria-label="Benchmark migration note"><div><p class="section-label">Benchmark version · 29 July 2026</p><p>All arenas now use permanent denominator 63; Planned and Locked weights are reserved. Hydra returned from Active to Locked because no model passed Python, and its model-level zeroes were removed. Visual, Data Retrieval, Chess, and Overall scores changed, so active-only-denominator scores from the former version are not directly comparable.</p></div></aside>
+
+        <aside class="correction-card" aria-label="Benchmark migration note">
+            <div>
+                <p class="section-label">Benchmark version · 29 July 2026</p>
+                <p>All arenas now use permanent denominator 63; Planned and Locked weights are reserved. Hydra returned from Active to Locked because no model passed Python, and its model-level zeroes were removed. Visual, Data Retrieval, Chess, and Overall scores changed, so active-only-denominator scores from the former version are not directly comparable.</p>
+            </div>
+        </aside>
+
         <section id="limitations" class="section-block limitations" aria-labelledby="limitations-title">
             <div class="section-intro compact">
                 <div>
@@ -155,24 +234,379 @@ const process = [
         </section>
 
         <aside class="correction-card">
-            <div><p class="section-label">Help us keep it accurate</p><h2>Spot something that needs attention?</h2></div>
+            <div>
+                <p class="section-label">Help us keep it accurate</p>
+                <h2>Spot something that needs attention?</h2>
+            </div>
             <a href="/contact">Submit a correction <span aria-hidden="true">→</span></a>
         </aside>
-      <MethodologyFingerprint value="UB-METH-20260730-A7Q4" />
-</main>
+
+        <MethodologyFingerprint value="UB-METH-20260730-A7Q4" />
+    </main>
 </Layout>
 
 <style>
+.methodology-page {
+    --mint: var(--accent-data);
+    max-width: 72rem;
+    margin: auto;
+    padding: 2.75rem 1.5rem 4.25rem;
+    color: var(--muted);
+}
 
-.methodology-page{--mint:#67e8f9;max-width:72rem;margin:auto;padding:2.75rem 1.5rem 4rem;color:var(--muted)}.methodology-hero{max-width:48rem;margin-bottom:2.5rem}.eyebrow,.section-label{font-size:.75rem;color:var(--mint);font-weight:700;letter-spacing:.06em;margin:0 0 .5rem}h1{margin:0 0 .75rem;font-size:clamp(2rem,4.5vw,3.1rem);letter-spacing:-.035em}h1 em{color:inherit;font-style:normal}.hero-copy{line-height:1.75}
-.jump-links{display:flex;flex-wrap:wrap;gap:.6rem 1.25rem;font-size:.85rem}.protocol-card,.trust-note{display:grid;grid-template-columns:1fr auto;gap:2rem;padding:1.5rem;margin-bottom:1.25rem;border:1px solid var(--line);border-radius:14px;background:var(--panel)}.protocol-card h2,.trust-note h2{font-size:1.25rem;margin:0 0 .6rem}.protocol-card p,.trust-note p{max-width:50rem;line-height:1.75}.protocol-links{display:flex;flex-direction:column;gap:.5rem;font-size:.85rem}.lock-mark,.status-pill{display:none}
-.section-block{padding-top:2rem;margin-top:2rem;border-top:1px solid var(--line)}.section-intro{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:1.5rem}.section-intro h2,.score-section h2{font-size:1.5rem;margin:.5rem 0}.section-intro p{line-height:1.75}
-.pillar-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5rem}.pillar-card{padding:1.25rem;border:1px solid var(--line);border-radius:12px;background:var(--panel)}.card-number{color:var(--mint);font-size:.8rem;font-weight:700}.pillar-card h3{margin:.5rem 0;font-size:1.05rem}.pillar-card p,.pillar-card li{font-size:.9rem;line-height:1.75}.pillar-card ul{padding-left:1.25rem}
-.process-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.5rem;padding:0;list-style:none}.step-index{font-size:.8rem;color:var(--mint);font-weight:700}.process-list h3{font-size:1rem;margin:.5rem 0}.process-list p{font-size:.85rem;line-height:1.7}
-.score-section{display:grid;grid-template-columns:1fr .8fr;gap:2rem;margin-top:2rem;padding-top:2rem;border-top:1px solid var(--line)}.score-copy p{line-height:1.75}.data-note{font-size:.85rem}code{color:var(--text);overflow-wrap:anywhere}.formula-card{align-self:start;padding:1.5rem;border:1px solid var(--line);background:var(--panel);border-radius:14px;text-align:center}.formula-card>p{margin:0 0 1rem;font-size:.8rem}.fraction{display:inline-flex;flex-direction:column;font-size:1.2rem;color:var(--text)}.fraction span:first-child{padding-bottom:.5rem;border-bottom:1px solid var(--line)}.fraction span:last-child{padding-top:.5rem}.formula-card small{display:block;margin-top:1rem;color:var(--muted)}
-.limitation-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem 2rem}.limitation-grid p{margin:0;padding:1rem 0;border-top:1px solid var(--line);font-size:.9rem;line-height:1.75}.limitation-grid strong{display:block;color:var(--text)}.correction-card{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;margin-top:2rem;padding:1.5rem 0;border-top:1px solid var(--line)}.correction-card h2{font-size:1.2rem}.correction-card p{line-height:1.75}.correction-card a{font-size:.85rem}
-@media(max-width:760px){.methodology-page{padding:1.75rem 1rem 3rem}.protocol-card,.trust-note,.section-intro,.score-section,.pillar-grid,.process-list,.limitation-grid{grid-template-columns:1fr;gap:1rem}}
+.methodology-hero {
+    max-width: 52rem;
+    margin-bottom: 2.5rem;
+}
 
+.eyebrow,
+.section-label {
+    margin: 0 0 0.5rem;
+    color: var(--mint);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
 
-.publication-download{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;padding:1rem 1.25rem;margin:1.5rem 0;border:1px solid var(--line);border-radius:12px;background:var(--panel);font-size:.85rem}.publication-download>div{display:flex;flex-wrap:wrap;gap:.5rem 1rem}.publication-download span{color:var(--muted)}.publication-download strong{font-weight:500;color:var(--text)}
+h1 {
+    margin: 0 0 0.75rem;
+    font-size: clamp(2rem, 4.4vw, 3.05rem);
+    letter-spacing: -0.03em;
+}
+
+h1 em {
+    color: inherit;
+    font-style: normal;
+}
+
+.hero-copy {
+    line-height: 1.75;
+}
+
+.publication-download {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.9rem 1.25rem;
+    padding: 1.05rem 1.3rem;
+    margin: 1.5rem 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: linear-gradient(180deg, #111f35 0%, #0d1728 100%);
+    font-size: 0.85rem;
+    box-shadow: var(--surface-highlight);
+}
+
+.publication-download > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+}
+
+.publication-download span {
+    color: var(--subtle);
+}
+
+.publication-download strong {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.publication-download .download {
+    padding: 0.45rem 0.85rem;
+    border: 1px solid rgba(103, 216, 247, 0.4);
+    border-radius: 7px;
+    background: rgba(16, 56, 76, 0.65);
+    color: #ccf3ff;
+    font-weight: 600;
+    text-decoration: none;
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.publication-download .download:hover {
+    border-color: var(--accent-data);
+    background: rgba(20, 70, 94, 0.8);
+    color: #ffffff;
+}
+
+.jump-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.protocol-card,
+.trust-note {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    padding: 1.65rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, #101c31 0%, #0d1728 100%);
+    box-shadow: var(--surface-highlight);
+}
+
+.protocol-card h2,
+.trust-note h2 {
+    margin: 0 0 0.6rem;
+    font-size: 1.28rem;
+}
+
+.protocol-card p,
+.trust-note p {
+    max-width: 50rem;
+    line-height: 1.75;
+}
+
+.protocol-links {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.6rem;
+    font-size: 0.86rem;
+    font-weight: 500;
+}
+
+.lock-mark,
+.status-pill {
+    display: none;
+}
+
+.section-block {
+    padding-top: 2.25rem;
+    margin-top: 2.25rem;
+    border-top: 1px solid var(--line-subtle);
+}
+
+.section-block strong {
+    color: var(--text);
+}
+
+.section-intro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-intro h2,
+.score-section h2 {
+    margin: 0.4rem 0 0.6rem;
+    font-size: 1.55rem;
+}
+
+.section-intro p {
+    line-height: 1.75;
+}
+
+.pillar-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.pillar-card {
+    padding: 1.35rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: linear-gradient(180deg, #101c31 0%, #0d1728 100%);
+    box-shadow: var(--surface-highlight);
+}
+
+.card-number {
+    color: var(--mint);
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.pillar-card h3 {
+    margin: 0.5rem 0 0.55rem;
+    font-size: 1.06rem;
+}
+
+.pillar-card p,
+.pillar-card li {
+    font-size: 0.9rem;
+    line-height: 1.72;
+}
+
+.pillar-card ul {
+    padding-left: 1.2rem;
+    margin: 0.6rem 0 0;
+}
+
+.process-list {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+    padding: 0;
+    list-style: none;
+}
+
+.process-list li {
+    padding: 1.2rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+}
+
+.step-index {
+    color: var(--mint);
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.process-list h3 {
+    margin: 0.45rem 0 0.4rem;
+    font-size: 1.02rem;
+}
+
+.process-list p {
+    margin: 0;
+    font-size: 0.86rem;
+    line-height: 1.68;
+}
+
+.score-section {
+    display: grid;
+    grid-template-columns: 1fr 0.78fr;
+    gap: 2rem;
+    margin-top: 2.25rem;
+    padding-top: 2.25rem;
+    border-top: 1px solid var(--line-subtle);
+}
+
+.score-copy p {
+    line-height: 1.75;
+}
+
+.score-copy strong {
+    color: var(--text);
+}
+
+code {
+    color: var(--text);
+    overflow-wrap: anywhere;
+}
+
+.formula-card {
+    align-self: start;
+    padding: 1.65rem;
+    border: 1px solid var(--line);
+    border-top: 2px solid var(--accent);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, #111f35 0%, #0d1728 100%);
+    text-align: center;
+    box-shadow: var(--surface-highlight), 0 10px 26px rgba(2, 8, 20, 0.25);
+}
+
+.formula-card > p {
+    margin: 0 0 1rem;
+    color: var(--accent);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.fraction {
+    display: inline-flex;
+    flex-direction: column;
+    font-size: 1.22rem;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+}
+
+.fraction span:first-child {
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid var(--line-strong);
+}
+
+.fraction span:last-child {
+    padding-top: 0.55rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.formula-card small {
+    display: block;
+    margin-top: 1.15rem;
+    color: var(--subtle);
+    font-size: 0.78rem;
+    line-height: 1.55;
+}
+
+.limitation-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 2rem;
+}
+
+.limitation-grid p {
+    margin: 0;
+    padding: 1rem 0;
+    border-top: 1px solid var(--line-subtle);
+    font-size: 0.9rem;
+    line-height: 1.75;
+}
+
+.limitation-grid strong {
+    display: block;
+    margin-bottom: 0.2rem;
+    color: var(--text);
+}
+
+.correction-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding: 1.35rem 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+}
+
+.correction-card h2 {
+    margin: 0.25rem 0 0;
+    font-size: 1.2rem;
+}
+
+.correction-card p {
+    margin: 0.35rem 0 0;
+    line-height: 1.72;
+}
+
+.correction-card a {
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+@media (max-width: 760px) {
+    .methodology-page {
+        padding: 1.75rem 1rem 3rem;
+    }
+
+    .protocol-card,
+    .trust-note,
+    .section-intro,
+    .score-section,
+    .pillar-grid,
+    .process-list,
+    .limitation-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
 </style>

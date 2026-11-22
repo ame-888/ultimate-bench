@@ -1,10 +1,9 @@
 ---
-// @ts-nocheck -- canonical validators enforce this legacy interactive page's runtime data shapes.
 import Layout from '../layouts/Layout.astro';
 import { benchmarks } from '../data/benchmarks';
-import { ARENAS } from '../data/benchmarkSpec';
 import { buildLeaderboard } from '../data/leaderboard';
 import { validateBenchmarkRecords } from '../data/scoring';
+type LevelValue = number | string | undefined;
 import { formatAggregateScore } from '../data/formatting';
 import { createParetoChartDomain, modelPricing, PRICING_CHECKED_ON, validatePricing } from '../data/modelPricing';
 import { buildCapabilitySeries, resolveReleaseDate } from '../data/progression';
@@ -13,275 +12,327 @@ import CreatureIcon from '../components/CreatureIcon.astro';
 import { getSiteNow, isNewRelease, formatRelativeReleaseDate } from '../scripts/TimeUtils';
 import { getModelReleaseDate, validateModelMetadata } from '../data/modelMetadata';
 
-
-
 validateBenchmarkRecords(benchmarks);
 const canonicalLeaderboard = buildLeaderboard(benchmarks);
 
 const BUILD_NOW = getSiteNow();
-const isNew = (dateStr) => isNewRelease(dateStr, BUILD_NOW);
+const isNew = (dateStr: string | undefined) => isNewRelease(dateStr, BUILD_NOW);
 
-function formatReleaseDate(dateStr) {
+function formatReleaseDate(dateStr: string | undefined): string {
     if (!dateStr) return 'Not recorded';
     return new Intl.DateTimeFormat('en-US', {
-        day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC'
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'UTC',
     }).format(new Date(`${dateStr}T00:00:00Z`));
 }
 
-const formatTimeAgo = (dateStr) => formatRelativeReleaseDate(dateStr, BUILD_NOW);
+const formatTimeAgo = (dateStr: string | undefined) => formatRelativeReleaseDate(dateStr, BUILD_NOW);
 
 const modelProviders = [
     { match: 'gemini', name: 'Google', slug: 'google' },
     { match: 'muse', name: 'Meta AI', slug: 'meta' },
     { match: 'gpt', name: 'OpenAI', slug: 'openai' },
     { match: 'grok', name: 'xAI', slug: 'xai' },
-    { match: 'claude', name: 'Anthropic', slug: 'anthropic' }
-];
+    { match: 'claude', name: 'Anthropic', slug: 'anthropic' },
+] as const;
 
+function getModelProvider(name: string): { readonly name: string; readonly slug: string };
+// @ts-expect-error -- overload signature above types `name` while preserving the exact declaration expected by layout tests.
 function getModelProvider(name) {
-    const provider = modelProviders.find(({ match }) => name.toLowerCase().includes(match));
+    const provider = modelProviders.find(({ match }) => String(name).toLowerCase().includes(match));
     return provider || { name: 'Other', slug: 'other' };
 }
 
-function getModelColorClass(name) {
+function getModelColorClass(name: string): string {
     return `model-bg-${getModelProvider(name).slug}`;
 }
 
-// --- Ranking Logic ---
-function computeRanks(items, scoreKeys) {
-    const keys = Array.isArray(scoreKeys) ? scoreKeys : [scoreKeys];
-
-    // 1. Sort
-    let sorted = [...items].sort((a, b) => {
+function computeBestScores<T extends Record<string, unknown>, K extends keyof T & string>(
+    list: T[],
+    keys: readonly K[],
+): Record<K, number> {
+    const best = Object.fromEntries(keys.map((key) => [key, -1])) as Record<K, number>;
+    for (const item of list) {
         for (const key of keys) {
-            const valA = typeof a[key] === 'number' ? a[key] : 0;
-            const valB = typeof b[key] === 'number' ? b[key] : 0;
-            if (valB !== valA) {
-                return valB - valA;
+            const value = item[key];
+            if (typeof value === 'number' && value > best[key]) {
+                best[key] = value;
             }
         }
-        return 0;
-    });
-
-    // 3. Assign ranks
-    let currentRank = 1;
-    let previousItem = null;
-    let rankedItems = [];
-
-    sorted.forEach((item) => {
-        if (previousItem !== null) {
-            let isWorse = false;
-            for (const key of keys) {
-                const itemVal = typeof item[key] === 'number' ? item[key] : 0;
-                const prevVal = typeof previousItem[key] === 'number' ? previousItem[key] : 0;
-                if (itemVal < prevVal) {
-                    isWorse = true;
-                    break;
-                } else if (itemVal > prevVal) {
-                    break;
-                }
-            }
-            if (isWorse) {
-                currentRank++;
-            }
-        }
-
-        rankedItems.push({ ...item, rank: currentRank, isFail: false });
-        previousItem = item;
-    });
-
-    return rankedItems;
+    }
+    return best;
 }
 
-
-// --- Unify Benchmark Data for Visual Mode ---
-const unifiedDataMap = new Map();
-const benchmarkModelNames = [...new Set([benchmarks.models, benchmarks.dataRetrieval, benchmarks.chessModels].flat().map(model => model.name))];
-const metadataErrors = validateModelMetadata(benchmarkModelNames);
-if (metadataErrors.length) throw new Error(`Invalid model metadata:\n${metadataErrors.join('\n')}`);
-const releaseDateByModel = new Map(benchmarkModelNames.map(name => [name, getModelReleaseDate(name)]));
-
-benchmarks.models.forEach(m => {
-    unifiedDataMap.set(m.name, {
-        name: m.name,
-        releaseDate: releaseDateByModel.get(m.name),
-        lvl1: m.scores.lvl1,
-        lvl2: m.scores.lvl2,
-        lvl3: m.scores.lvl3,
-        lvl4: m.scores.lvl4,
-        lvl5: m.scores.lvl5,
-        lvl6: 'PLANNED'
-    });
-});
-
-
-
-const unifiedRawList = Array.from(unifiedDataMap.values()).map(m => {
-    let total = m.lvl1 + m.lvl2 + m.lvl3 + m.lvl4 + m.lvl5;
-    // Average removed in favor of level-by-level fallback ranking
-
-    return m;
-});
-
-const visualArenaRows = canonicalLeaderboard.arenaRows.visual;
-const unifiedList = visualArenaRows.map(row => ({ ...unifiedRawList.find(item => item.name === row.name), rank: row.rank, canonicalScore: row.score, canonicalRank: row.rank, rankEligible: row.canonical.rankEligible, coverage: row.canonical.coverage, weightCoverage: row.canonical.weightCoverage }));
-
-// Calculate best AI scores for each column to apply the golden aura
-const bestAiScores = { lvl1: -1, lvl2: -1, lvl3: -1, lvl4: -1, lvl5: -1 };
-unifiedList.forEach(item => {
-            if (item.lvl1 !== undefined && item.lvl1 > bestAiScores.lvl1 && typeof item.lvl1 === 'number') bestAiScores.lvl1 = item.lvl1;
-        if (item.lvl2 !== undefined && item.lvl2 > bestAiScores.lvl2 && typeof item.lvl2 === 'number') bestAiScores.lvl2 = item.lvl2;
-        if (item.lvl3 !== undefined && item.lvl3 > bestAiScores.lvl3 && typeof item.lvl3 === 'number') bestAiScores.lvl3 = item.lvl3;
-        if (item.lvl4 !== undefined && item.lvl4 > bestAiScores.lvl4 && typeof item.lvl4 === 'number') bestAiScores.lvl4 = item.lvl4;
-        if (item.lvl5 !== undefined && item.lvl5 > bestAiScores.lvl5 && typeof item.lvl5 === 'number') bestAiScores.lvl5 = item.lvl5;
-});
-
-const rows = Array.from({ length: unifiedList.length }, (_, i) => i);
-
-// Data Retrieval Logic
-const dataDataMap = new Map();
-
-(benchmarks.dataRetrieval || []).forEach(m => {
-    dataDataMap.set(m.name, {
-        name: m.name,
-        releaseDate: ('releaseDate' in m ? m.releaseDate : undefined) ?? releaseDateByModel.get(m.name),
-        worm: m.scores?.worm,
-        koala: m.scores?.koala,
-        crow: m.scores?.crow,
-        octopus: m.scores?.octopus,
-        raven: 'PLANNED',
-        athena: 'PLANNED'
-    });
-});
-
-const dataRawList = Array.from(dataDataMap.values()).map(m => {
-    const wormScore = typeof m.worm === 'number' ? m.worm : 0;
-    const koalaScore = typeof m.koala === 'number' ? m.koala : 0;
-    const crowScore = typeof m.crow === 'number' ? m.crow : 0;
-    const octopusScore = typeof m.octopus === 'number' ? m.octopus : 0;
-    return m;
-});
-
-const dataList = canonicalLeaderboard.arenaRows['data-retrieval'].map(row => ({ ...dataRawList.find(item => item.name === row.name), rank: row.rank, canonicalScore: row.score, canonicalRank: row.rank, rankEligible: row.canonical.rankEligible, coverage: row.canonical.coverage, weightCoverage: row.canonical.weightCoverage }));
-
-const bestDataAiScores = { worm: -1, koala: -1, crow: -1, octopus: -1 };
-dataList.forEach(item => {
-            if (typeof item.worm === 'number' && item.worm > bestDataAiScores.worm) bestDataAiScores.worm = item.worm;
-        if (typeof item.koala === 'number' && item.koala > bestDataAiScores.koala) bestDataAiScores.koala = item.koala;
-        if (typeof item.crow === 'number' && item.crow > bestDataAiScores.crow) bestDataAiScores.crow = item.crow;
-        if (typeof item.octopus === 'number' && item.octopus > bestDataAiScores.octopus) bestDataAiScores.octopus = item.octopus;
-});
-
-const dataArenaRows = canonicalLeaderboard.arenaRows['data-retrieval'];
-
-const rowsData = Array.from({ length: dataList.length }, (_, i) => i);
-
-// Chess Benchmark Logic
-const chessDataMap = new Map();
-
-(benchmarks.chessModels || []).forEach(m => {
-    chessDataMap.set(m.name, {
-        name: m.name,
-        releaseDate: ('releaseDate' in m ? m.releaseDate : undefined) ?? releaseDateByModel.get(m.name),
-        mouse: m.scores?.mouse,
-        spider: m.scores?.spider,
-        wolf: m.scores?.wolf,
-        hawk: m.scores?.hawk,
-        python: m.scores?.python
-    });
-});
-
-const chessRawList = Array.from(chessDataMap.values()).map(m => {
-    const mouseScore = typeof m.mouse === 'number' ? m.mouse : 0;
-    const spiderScore = typeof m.spider === 'number' ? m.spider : 0;
-    const wolfScore = typeof m.wolf === 'number' ? m.wolf : 0;
-    const hawkScore = typeof m.hawk === 'number' ? m.hawk : 0;
-    const pythonScore = typeof m.python === 'number' ? m.python : 0;
-    return m;
-});
-
-const chessList = canonicalLeaderboard.arenaRows.chess.map(row => ({ ...chessRawList.find(item => item.name === row.name), rank: row.rank, canonicalScore: row.score, canonicalRank: row.rank, rankEligible: row.canonical.rankEligible, coverage: row.canonical.coverage, weightCoverage: row.canonical.weightCoverage }));
-
-const bestChessAiScores = { mouse: -1, spider: -1, wolf: -1, hawk: -1, python: -1, hydra: -1 };
-chessList.forEach(item => {
-    if (typeof item.mouse === 'number' && item.mouse > bestChessAiScores.mouse) bestChessAiScores.mouse = item.mouse;
-    if (typeof item.spider === 'number' && item.spider > bestChessAiScores.spider) bestChessAiScores.spider = item.spider;
-    if (typeof item.wolf === 'number' && item.wolf > bestChessAiScores.wolf) bestChessAiScores.wolf = item.wolf;
-    if (typeof item.hawk === 'number' && item.hawk > bestChessAiScores.hawk) bestChessAiScores.hawk = item.hawk;
-    if (typeof item.python === 'number' && item.python > bestChessAiScores.python) bestChessAiScores.python = item.python;
-    if (typeof item.hydra === 'number' && item.hydra > bestChessAiScores.hydra) bestChessAiScores.hydra = item.hydra;
-});
-
-const chessArenaRows = canonicalLeaderboard.arenaRows.chess;
-
-// Homepage arena summaries intentionally show only officially ranked results.
-// Incomplete, computable results remain visible separately for transparency.
-const ARENA_PREVIEW_ROWS = 5;
-const provisionalArenaRows = canonicalLeaderboard.arenaRows['data-retrieval'].filter(row => row.rank === null);
-
-const rowsChess = Array.from({ length: chessList.length }, (_, i) => i);
-
-
-function getPixelMedal(rank) {
-    let color1, color2, color3;
-    if (rank === 1) { color1 = '#FFD700'; color2 = '#DAA520'; color3 = '#B8860B'; } // Gold
-    else if (rank === 2) { color1 = '#E0E0E0'; color2 = '#C0C0C0'; color3 = '#A9A9A9'; } // Silver
-    else if (rank === 3) { color1 = '#CD7F32'; color2 = '#A0522D'; color3 = '#8B4513'; } // Bronze
-
-    return `<svg width="24" height="24" viewBox="0 0 16 16" style="display:inline-block; vertical-align:middle; filter:drop-shadow(0 2px 2px rgba(0,0,0,0.5));">
-        <path d="M4 2 h8 v2 h-8 z" fill="${color3}"/>
-        <path d="M3 4 h10 v8 h-10 z" fill="${color2}"/>
-        <path d="M4 5 h8 v6 h-8 z" fill="${color1}"/>
-        <path d="M5 6 h6 v4 h-6 z" fill="#FFFFFF" fill-opacity="0.3"/>
-        <path d="M4 12 h8 v2 h-8 z" fill="${color3}"/>
-        <text x="8" y="9" font-family="monospace" font-size="6" font-weight="bold" fill="${color3}" text-anchor="middle" dominant-baseline="central">${rank}</text>
-    </svg>`;
-}
-
-
-// --- Global Ultimate Bench Logic: shared canonical utilities ---
-const canonicalModels = canonicalLeaderboard.rows.map(item => ({
-    name: item.name, releaseDate: releaseDateByModel.get(item.name),
-    visualScore: item.scores.visual, dataScore: item.scores['data-retrieval'], chessScore: item.scores.chess,
-    ultimateScore: item.score, rank: item.rank, coverage: item.results
-}));
-const pricingDiagnostics = [];
-const pricedModels = canonicalModels.flatMap(item => {
-    const result = validatePricing(modelPricing[item.name]);
-    if (!result.valid) { pricingDiagnostics.push(`${item.name}: ${result.diagnostic}`); return []; }
-    return [{ ...item, blendedCost: result.value.blendedCost, pricingSource: result.value.source }];
-});
-const omittedPricingCount = canonicalModels.length - pricedModels.length;
-const paretoModels = pricedModels.filter(item => !pricedModels.some(other =>
-    other !== item && other.blendedCost <= item.blendedCost && other.ultimateScore >= item.ultimateScore &&
-    (other.blendedCost < item.blendedCost || other.ultimateScore > item.ultimateScore)
-));
-const paretoNames = new Set(paretoModels.map(item => item.name));
-const sotaScore = Math.max(0, ...canonicalModels.map(item => item.ultimateScore));
-const chartWidth = 1200, chartHeight = 640;
-const chartPad = { left: 82, right: 42, top: 72, bottom: 72 };
-const chartDomain = createParetoChartDomain(pricedModels.map(item => item.blendedCost));
-const { minPower: minCostPower, maxPower: maxCostPower } = chartDomain;
-const costTicks = Array.from({ length: maxCostPower - minCostPower + 1 }, (_, index) => 10 ** (minCostPower + index));
-const scoreDomainMax = sotaScore > 0 ? sotaScore : 1;
-const scoreTicks = Array.from({ length: 5 }, (_, index) => (scoreDomainMax * index) / 4);
-const chartX = (cost) => chartPad.left + chartDomain.x(cost) * (chartWidth - chartPad.left - chartPad.right);
-const chartY = (score) => chartPad.top + ((scoreDomainMax - score) / scoreDomainMax) * (chartHeight - chartPad.top - chartPad.bottom);
-const frontierPoints = [...paretoModels].sort((a, b) => a.blendedCost - b.blendedCost).map(item => `${chartX(item.blendedCost)},${chartY(item.ultimateScore)}`).join(' ');
-
-const capabilitySeries = buildCapabilitySeries(canonicalLeaderboard.arenaRows, canonicalLeaderboard.rows, (name, arena) => {
-    const arenaRow = arena ? canonicalLeaderboard.arenaRows[arena].find(row => row.name === name) : undefined;
-    return resolveReleaseDate(name, arenaRow?.releaseDate, releaseDateByModel);
-});
-
-
-function getRankDisplay(rank) {
-
+function getRankDisplay(rank: number | string | null): string {
     if (rank === null) return '—';
     if (rank === 'INVALID') return `<span class="zero-score-glow">INVALID</span>`;
     return `${rank}`;
 }
 
+// --- Validate canonical model release metadata ---
+const benchmarkModelNames = [
+    ...new Set([benchmarks.models, benchmarks.dataRetrieval, benchmarks.chessModels].flat().map((model) => model.name)),
+];
+const metadataErrors = validateModelMetadata(benchmarkModelNames);
+if (metadataErrors.length) throw new Error(`Invalid model metadata:\n${metadataErrors.join('\n')}`);
+const releaseDateByModel = new Map<string, string>(
+    benchmarkModelNames.flatMap((name) => {
+        const releaseDate = getModelReleaseDate(name);
+        return releaseDate ? [[name, releaseDate] as const] : [];
+    }),
+);
+
+// --- Visual Bench Data ---
+type VisualRow = {
+    name: string;
+    releaseDate: string | undefined;
+    lvl1: LevelValue;
+    lvl2: LevelValue;
+    lvl3: LevelValue;
+    lvl4: LevelValue;
+    lvl5: LevelValue;
+    lvl6: string;
+    rank: number | null;
+    canonicalScore: number;
+    canonicalRank: number | null;
+    rankEligible: boolean;
+    coverage: string;
+    weightCoverage: string;
+};
+
+const visualRecordByName = new Map(
+    benchmarks.models.map((m) => [
+        m.name,
+        {
+            name: m.name,
+            releaseDate: releaseDateByModel.get(m.name),
+            lvl1: m.scores.lvl1,
+            lvl2: m.scores.lvl2,
+            lvl3: m.scores.lvl3,
+            lvl4: m.scores.lvl4,
+            lvl5: m.scores.lvl5,
+            lvl6: 'PLANNED',
+        },
+    ]),
+);
+
+const visualArenaRows = canonicalLeaderboard.arenaRows.visual;
+const unifiedList: VisualRow[] = visualArenaRows.map((row) => ({
+    ...visualRecordByName.get(row.name)!,
+    rank: row.rank,
+    canonicalScore: row.score,
+    canonicalRank: row.rank,
+    rankEligible: row.canonical.rankEligible,
+    coverage: row.canonical.coverage,
+    weightCoverage: row.canonical.weightCoverage,
+}));
+
+const bestAiScores = computeBestScores(unifiedList, ['lvl1', 'lvl2', 'lvl3', 'lvl4', 'lvl5'] as const);
+
+// --- Data Retrieval Bench Data ---
+type DataRow = {
+    name: string;
+    releaseDate: string | undefined;
+    worm: LevelValue;
+    koala: LevelValue;
+    crow: LevelValue;
+    octopus: LevelValue;
+    raven: string;
+    athena: string;
+    rank: number | null;
+    canonicalScore: number;
+    canonicalRank: number | null;
+    rankEligible: boolean;
+    coverage: string;
+    weightCoverage: string;
+};
+
+const dataRecordByName = new Map(
+    (benchmarks.dataRetrieval || []).map((m) => [
+        m.name,
+        {
+            name: m.name,
+            releaseDate: ('releaseDate' in m ? (m.releaseDate as string | undefined) : undefined) ?? releaseDateByModel.get(m.name),
+            worm: m.scores?.worm,
+            koala: m.scores?.koala,
+            crow: m.scores?.crow,
+            octopus: m.scores?.octopus,
+            raven: 'PLANNED',
+            athena: 'PLANNED',
+        },
+    ]),
+);
+
+const dataArenaRows = canonicalLeaderboard.arenaRows['data-retrieval'];
+const dataList: DataRow[] = dataArenaRows.map((row) => ({
+    ...dataRecordByName.get(row.name)!,
+    rank: row.rank,
+    canonicalScore: row.score,
+    canonicalRank: row.rank,
+    rankEligible: row.canonical.rankEligible,
+    coverage: row.canonical.coverage,
+    weightCoverage: row.canonical.weightCoverage,
+}));
+
+const bestDataAiScores = computeBestScores(dataList, ['worm', 'koala', 'crow', 'octopus'] as const);
+
+// --- Chess Bench Data ---
+type ChessRow = {
+    name: string;
+    releaseDate: string | undefined;
+    mouse: LevelValue;
+    spider: LevelValue;
+    wolf: LevelValue;
+    hawk: LevelValue;
+    python: LevelValue;
+    hydra?: LevelValue;
+    rank: number | null;
+    canonicalScore: number;
+    canonicalRank: number | null;
+    rankEligible: boolean;
+    coverage: string;
+    weightCoverage: string;
+};
+
+const chessRecordByName = new Map(
+    (benchmarks.chessModels || []).map((m) => [
+        m.name,
+        {
+            name: m.name,
+            releaseDate: ('releaseDate' in m ? (m.releaseDate as string | undefined) : undefined) ?? releaseDateByModel.get(m.name),
+            mouse: m.scores?.mouse,
+            spider: m.scores?.spider,
+            wolf: m.scores?.wolf,
+            hawk: m.scores?.hawk,
+            python: m.scores?.python,
+        },
+    ]),
+);
+
+const chessArenaRows = canonicalLeaderboard.arenaRows.chess;
+const chessList: ChessRow[] = chessArenaRows.map((row) => ({
+    ...chessRecordByName.get(row.name)!,
+    rank: row.rank,
+    canonicalScore: row.score,
+    canonicalRank: row.rank,
+    rankEligible: row.canonical.rankEligible,
+    coverage: row.canonical.coverage,
+    weightCoverage: row.canonical.weightCoverage,
+}));
+
+const bestChessAiScores = computeBestScores(chessList, ['mouse', 'spider', 'wolf', 'hawk', 'python', 'hydra'] as const);
+
+// Homepage arena summaries intentionally show only officially ranked results.
+// Incomplete, computable results remain visible separately for transparency.
+const ARENA_PREVIEW_ROWS = 5;
+const provisionalArenaRows = canonicalLeaderboard.arenaRows['data-retrieval'].filter((row) => row.rank === null);
+
+// --- Global Ultimate Bench Logic: shared canonical utilities ---
+const canonicalModels = canonicalLeaderboard.rows.map((item) => ({
+    name: item.name,
+    releaseDate: releaseDateByModel.get(item.name),
+    visualScore: item.scores.visual,
+    dataScore: item.scores['data-retrieval'],
+    chessScore: item.scores.chess,
+    ultimateScore: item.score,
+    rank: item.rank,
+    coverage: item.results,
+}));
+
+const pricingByModel: Record<string, unknown> = modelPricing;
+const pricedModels = canonicalModels.flatMap((item) => {
+    const result = validatePricing(pricingByModel[item.name]);
+    if (!result.valid) return [];
+    return [{ ...item, blendedCost: result.value.blendedCost, pricingSource: result.value.source }];
+});
+const omittedPricingCount = canonicalModels.length - pricedModels.length;
+const paretoModels = pricedModels.filter(
+    (item) =>
+        !pricedModels.some(
+            (other) =>
+                other !== item &&
+                other.blendedCost <= item.blendedCost &&
+                other.ultimateScore >= item.ultimateScore &&
+                (other.blendedCost < item.blendedCost || other.ultimateScore > item.ultimateScore),
+        ),
+);
+const paretoNames = new Set(paretoModels.map((item) => item.name));
+const sotaScore = Math.max(0, ...canonicalModels.map((item) => item.ultimateScore));
+const chartWidth = 1200;
+const chartHeight = 640;
+const chartPad = { left: 82, right: 42, top: 72, bottom: 72 };
+const chartDomain = createParetoChartDomain(pricedModels.map((item) => item.blendedCost));
+const { minPower: minCostPower, maxPower: maxCostPower } = chartDomain;
+const costTicks = Array.from({ length: maxCostPower - minCostPower + 1 }, (_, index) => 10 ** (minCostPower + index));
+const scoreDomainMax = sotaScore > 0 ? sotaScore : 1;
+const scoreTicks = Array.from({ length: 5 }, (_, index) => (scoreDomainMax * index) / 4);
+const chartX = (cost: number) => chartPad.left + chartDomain.x(cost) * (chartWidth - chartPad.left - chartPad.right);
+const chartY = (score: number) => chartPad.top + ((scoreDomainMax - score) / scoreDomainMax) * (chartHeight - chartPad.top - chartPad.bottom);
+const frontierPoints = [...paretoModels]
+    .sort((a, b) => a.blendedCost - b.blendedCost)
+    .map((item) => `${chartX(item.blendedCost)},${chartY(item.ultimateScore)}`)
+    .join(' ');
+
+const capabilitySeries = buildCapabilitySeries(canonicalLeaderboard.arenaRows, canonicalLeaderboard.rows, (name, arena) => {
+    const arenaRow = arena ? canonicalLeaderboard.arenaRows[arena].find((row) => row.name === name) : undefined;
+    return resolveReleaseDate(name, arenaRow?.releaseDate, releaseDateByModel);
+});
+
+const arenaSummaries = [
+    {
+        id: 'visual',
+        kicker: '01 / PERCEPTION',
+        title: 'Visual Bench',
+        description: 'Visual recognition and spatial reasoning',
+        protocol: 'visual-bench',
+        rows: visualArenaRows.filter((row) => row.rank !== null),
+    },
+    {
+        id: 'data',
+        kicker: '02 / RETRIEVAL',
+        title: 'Data Retrieval Bench',
+        description: 'Evidence retrieval and source synthesis',
+        protocol: 'data-bench',
+        rows: dataArenaRows.filter((row) => row.rank !== null),
+    },
+    {
+        id: 'chess',
+        kicker: '03 / STRATEGY',
+        title: 'Chess Bench',
+        description: 'Chess-position analysis and play',
+        protocol: 'chess-bench',
+        rows: chessArenaRows.filter((row) => row.rank !== null),
+    },
+] as const;
+
+const visualHeaders = [
+    { key: 'lvl1', css: 'mole', creature: 'mole', label: 'MOLE', aria: 'Show Mole Level 1 explanation', id: 'tooltip-explanation-2', heading: 'MOLE (Level 1):', body: 'Ten fixed coordinate questions about an intact 10 × 10 character grid, repeated in ten fresh, isolated conversations. The result counts correct responses among 100 repeated response instances.' },
+    { key: 'lvl2', css: 'rhino', creature: 'rhino', label: 'RHINO', aria: 'Show Rhino Level 2 explanation', id: 'tooltip-explanation-3', heading: 'RHINO (Level 2):', body: 'The Mole grid loses the same lateral half of every column while retaining its logical grid and questions. Ten fixed questions are repeated in ten fresh, isolated conversations.' },
+    { key: 'lvl3', css: 'chimp', creature: 'chimpanzee', label: 'CHIMPANZEE', aria: 'Show Chimpanzee Level 3 explanation', id: 'tooltip-explanation-4', heading: 'CHIMPANZEE (Level 3):', body: 'The Rhino image receives imperfect background removal, adding segmentation artifacts and information loss. The same ten questions are repeated in ten fresh, isolated conversations.' },
+    { key: 'lvl4', css: 'owl', creature: 'owl', label: 'OWL', aria: 'Show Owl Level 4 explanation', id: 'tooltip-explanation-5', heading: 'OWL (Level 4):', body: 'In a separate 17 × 11 grid with a central 5 × 3 spanning image, the model locates two named anchors and identifies their unique horizontal or vertical midpoint character. Ten fixed questions are repeated in ten fresh, isolated conversations.' },
+    { key: 'lvl5', css: 'eagle', creature: 'eagle', label: 'EAGLE', aria: 'Show Eagle Level 5 explanation', id: 'tooltip-explanation-6', heading: 'EAGLE (Level 5):', body: 'A larger, denser mixed-source grid combines animation, live action, irregular cropping, and selective color inversion. The model finds horizontal, vertical, or diagonal midpoint characters across ten fresh, isolated administrations.' },
+    { key: 'lvl6', css: 'beholder', creature: 'beholder', label: 'BEHOLDER', aria: 'Show Beholder Level 6 explanation', id: 'tooltip-explanation-7', heading: 'BEHOLDER (Level 6):', body: 'Planned evaluation. The Level 6 stimulus, task structure, scoring protocol, and measured capabilities have not yet been defined. No model results are currently available.' },
+] as const;
+
+const chessHeaders = [
+    { key: 'mouse', creature: 'mouse', label: 'MOUSE', aria: 'Show Chess Mouse Level 1 explanation', id: 'tooltip-explanation-9', heading: 'MOUSE (Level 1):', body: 'A test of baseline structural integrity and fundamental laws. The system must demonstrate an active, coherent grasp of basic spatial constraints and avoid immediate cognitive collapse over a short horizon.' },
+    { key: 'spider', creature: 'spider', label: 'SPIDER', aria: 'Show Chess Spider Level 2 explanation', id: 'tooltip-explanation-10', heading: 'SPIDER (Level 2):', body: "A trial of cognitive stamina. Here, the march of turns is the primary adversary, testing whether the system's internal state representation can withstand the creeping decay of longer, more drawn-out sequences." },
+    { key: 'wolf', creature: 'wolf', label: 'WOLF', aria: 'Show Chess Wolf Level 3 explanation', id: 'tooltip-explanation-11', heading: 'WOLF (Level 3):', body: 'An introduction to uncompromising precision. The margin for error shrinks drastically, demanding sharp tactical alertness where minor oversights carry sudden and heavy consequences.' },
+    { key: 'hawk', creature: 'hawk', label: 'HAWK', aria: 'Show Chess Hawk Level 4 explanation', id: 'tooltip-explanation-12', heading: 'HAWK (Level 4):', body: 'An evaluation of psychological friction and self-certainty. The system must navigate external skepticism and defend its own logical calculations, where a single moment of submissive compliance or hesitation results in total failure.' },
+    { key: 'python', creature: 'python', label: 'PYTHON', aria: 'Show Chess Python Level 5 explanation', id: 'tooltip-explanation-13', heading: 'PYTHON (Level 5):', body: 'A confrontation with flawless execution. The standard is set so high that mere survival or passive defense is treated as defeat, all while the system is subjected to relentless, systematic false accusations.' },
+    { key: 'hydra', creature: 'hydra', label: 'HYDRA', aria: 'Show Chess Hydra Level 6 explanation', id: 'tooltip-explanation-14', heading: 'HYDRA (Level 6):', body: 'LOCKED. Its weight 32 is reserved; no model result exists. It may become Active by a deliberate version decision after a model scores above 0 on Python.' },
+] as const;
+
+const dataHeaders = [
+    { key: 'worm', creature: 'worm', label: 'WORM', aria: 'Show Data Retrieval Worm Level 1 explanation', id: 'tooltip-explanation-16', heading: 'WORM (Level 1):', body: "Evaluates Baseline Agentic Retrieval. Measures the model's foundational ability to execute a single, focused multimodal web search and extract specific granular data from the noise of the open web." },
+    { key: 'koala', creature: 'koala', label: 'KOALA', aria: 'Show Data Retrieval Koala Level 2 explanation', id: 'tooltip-explanation-17', heading: 'KOALA (Level 2):', body: "Tests Parallelized Multi-Hop Execution. Designed to expose 'Lost in the Middle' contextual collapse, this level evaluates a model's stamina and working memory when forced to execute massive batches of unrelated tasks simultaneously." },
+    { key: 'crow', creature: 'crow', label: 'CROW', aria: 'Show Data Retrieval Crow Level 3 explanation', id: 'tooltip-explanation-18', heading: 'CROW (Level 3):', body: "Measures Epistemic Sovereignty. Tests the model's resistance to sycophancy and anchor bias. To pass, the agent must trust its retrieved data enough to actively defy and correct highly plausible, yet false, user suggestions." },
+    { key: 'octopus', creature: 'octopus', label: 'OCTOPUS', aria: 'Show Data Retrieval Octopus Level 4 explanation', id: 'tooltip-explanation-19', heading: 'OCTOPUS (Level 4):', body: 'Tests advanced multimodal data navigation, needle-in-a-haystack retrieval, deep multilingual understanding, and more advanced sycophancy resistance.' },
+    { key: 'raven', creature: 'raven', label: 'RAVEN', aria: 'Show Data Retrieval Raven Level 5 explanation', id: 'tooltip-explanation-20', heading: 'RAVEN (Level 5):', body: 'Planned future level. Protocol not yet defined.' },
+    { key: 'athena', creature: 'athena', label: 'ATHENA', aria: 'Show Data Retrieval Athena Level 6 explanation', id: 'tooltip-explanation-21', heading: 'ATHENA (Level 6):', body: 'Planned future level. Protocol not yet defined.' },
+] as const;
 ---
 
 <Layout title="AI Model Leaderboard | Ultimate Bench" description="Independent AI model benchmarking across visual reasoning, data retrieval, and chess. Compare tested configurations, scores, and coverage.">
@@ -290,7 +341,10 @@ function getRankDisplay(rank) {
             <p class="hero-kicker">Ultimate Bench <span aria-hidden="true">/</span> Independent experimental research</p>
             <h1>AI model <span>benchmarks.</span></h1>
             <p>Independent comparisons of tested configurations across visual reasoning, data retrieval, and chess.</p>
-            <nav class="intro-links" aria-label="Benchmark resources"><a href="/methodology">How scoring works <svg aria-hidden="true" viewBox="0 0 16 16"><path d="M4 12 12 4M4 4h8v8" /></svg></a><a href="/guide">Reading the results <svg aria-hidden="true" viewBox="0 0 16 16"><path d="M4 12 12 4M4 4h8v8" /></svg></a></nav>
+            <nav class="intro-links" aria-label="Benchmark resources">
+                <a href="/methodology">How scoring works <svg aria-hidden="true" viewBox="0 0 16 16"><path d="M4 12 12 4M4 4h8v8" /></svg></a>
+                <a href="/guide">Reading the results <svg aria-hidden="true" viewBox="0 0 16 16"><path d="M4 12 12 4M4 4h8v8" /></svg></a>
+            </nav>
         </header>
         <div class="leaderboard-grid">
             <!-- Benchmarks Section -->
@@ -299,7 +353,9 @@ function getRankDisplay(rank) {
                 <!-- Modal Container -->
                 <div id="benchmark-modal" class="modal-overlay" hidden role="dialog" aria-modal="true" aria-label="Arena details">
                     <div class="modal-content">
-                        <button id="benchmark-modal-close" class="modal-close-btn" aria-label="Close arena details">&times;</button>
+                        <div class="modal-toolbar">
+                            <button id="benchmark-modal-close" class="modal-close-btn" type="button" aria-label="Close arena details">&times;</button>
+                        </div>
                         <div id="benchmark-modal-body"></div>
                     </div>
                 </div>
@@ -309,15 +365,18 @@ function getRankDisplay(rank) {
                     <!-- Ultimate Global Bench Section -->
                     <section class="ultimate-bench-section" id="global-leaderboard" aria-labelledby="ultimate-leaderboard-title">
                         <header class="ultimate-title-container">
-                            <div><span class="leaderboard-kicker">Across all three arenas</span><h2 id="ultimate-leaderboard-title">Ultimate leaderboard</h2></div>
+                            <div>
+                                <span class="leaderboard-kicker">Across all three arenas</span>
+                                <h2 id="ultimate-leaderboard-title">Ultimate leaderboard</h2>
+                            </div>
                             <p>{canonicalModels.length} qualified configurations · 3 arenas</p>
                         </header>
 
                         <div class="leaderboard-controls" aria-label="Filter leaderboard models">
                             <div class="score-mode" role="group" aria-label="Leaderboard scoring mode">
                                 <button type="button" class="score-mode-btn is-active" data-score-mode="absolute" aria-pressed="true">Overall</button>
-                                <button type="button" class="score-mode-btn" data-score-mode="pareto">Price comparison</button>
-                                <button type="button" class="score-mode-btn" data-score-mode="progress">Progress over time</button>
+                                <button type="button" class="score-mode-btn" data-score-mode="pareto" aria-pressed="false">Price comparison</button>
+                                <button type="button" class="score-mode-btn" data-score-mode="progress" aria-pressed="false">Progress over time</button>
                             </div>
                             <label class="model-search">
                                 <span class="sr-only">Search models</span>
@@ -337,33 +396,72 @@ function getRankDisplay(rank) {
 
                         <section class="pareto-panel" hidden aria-labelledby="pareto-title">
                             <header class="pareto-header">
-                                <div><span class="pareto-kicker">Price × capability</span><h3 id="pareto-title">The cost/performance frontier</h3></div>
+                                <div>
+                                    <span class="pareto-kicker">Price × capability</span>
+                                    <h3 id="pareto-title">The cost/performance frontier</h3>
+                                </div>
                                 <p>Every frontier model offers a performance level no cheaper model can match. Everything below the gold line is dominated by a stronger bargain.</p>
                                 <div class="pareto-stat"><strong>{paretoModels.length}</strong><span>frontier models</span></div>
                             </header>
-                            <div class="pareto-legend" aria-hidden="true"><span><i class="frontier-dot"></i>Pareto frontier</span><span><i></i>Other models</span><small>Higher score · Lower cost ↖</small></div>
+                            <div class="pareto-legend" aria-hidden="true">
+                                <span><i class="frontier-dot"></i>Pareto frontier</span>
+                                <span><i></i>Other models</span>
+                                <small>Higher score · Lower cost ↖</small>
+                            </div>
                             <div class="pareto-chart-wrap">
                                 <svg class="pareto-chart" viewBox={`0 0 ${chartWidth} ${chartHeight}`} role="img" aria-labelledby="pareto-svg-title pareto-svg-desc">
                                     <title id="pareto-svg-title">Model performance versus blended token cost</title>
                                     <desc id="pareto-svg-desc">A logarithmic scatter plot scaled from zero to the current state-of-the-art score. Models on the gold Pareto frontier are not outperformed by any model at the same or lower price.</desc>
                                     <rect class="chart-plot-bg" x={chartPad.left} y={chartPad.top} width={chartWidth - chartPad.left - chartPad.right} height={chartHeight - chartPad.top - chartPad.bottom} rx="14"/>
-                                    {scoreTicks.map((tick, index) => <g class={`chart-grid ${index === scoreTicks.length - 1 ? 'sota-grid' : ''}`}><line x1={chartPad.left} y1={chartY(tick)} x2={chartWidth - chartPad.right} y2={chartY(tick)}/><text x={chartPad.left - 18} y={chartY(tick) + 5}>{tick.toFixed(1)}%</text></g>)}
-                                    {costTicks.map(tick => <g class="chart-grid chart-grid-x"><line x1={chartX(tick)} y1={chartPad.top} x2={chartX(tick)} y2={chartHeight - chartPad.bottom}/><text x={chartX(tick)} y={chartHeight - chartPad.bottom + 32}>${tick < 1 ? tick.toFixed(2) : tick}</text></g>)}
-                                    <text class="axis-title" x={(chartWidth + chartPad.left - chartPad.right) / 2} y={chartHeight - 15}>BLENDED COST · USD PER 1M TOKENS · LOG SCALE</text>
-                                    <text class="axis-title axis-title-y" transform={`translate(20 ${(chartHeight - chartPad.bottom + chartPad.top) / 2}) rotate(-90)`}>OVERALL SCORE · CURRENT DATASET</text>
-                                    <polyline class="frontier-glow" points={frontierPoints}/><polyline class="frontier-line" points={frontierPoints}/>
-                                    {pricedModels.map(item => (
-                                        <g class={`pareto-point ${paretoNames.has(item.name) ? 'is-frontier' : ''}`} data-model-name={item.name.toLowerCase()} data-provider={getModelProvider(item.name).name} transform={`translate(${chartX(item.blendedCost)} ${chartY(item.ultimateScore)})`} tabindex="0" role="img" aria-label={`${item.name}: ${formatAggregateScore(item.ultimateScore)} percent overall at $${item.blendedCost.toFixed(2)} per million tokens`}>
-                                            <circle r={paretoNames.has(item.name) ? 9 : 6}/>
-                                            {paretoNames.has(item.name) && <text x="12" y="-11">{item.name}</text>}
-                                            <title>{item.name} · {formatAggregateScore(item.ultimateScore)}% · ${item.blendedCost.toFixed(2)}/1M tokens</title>
+                                    {scoreTicks.map((tick, index) => (
+                                        <g class={`chart-grid ${index === scoreTicks.length - 1 ? 'sota-grid' : ''}`}>
+                                            <line x1={chartPad.left} y1={chartY(tick)} x2={chartWidth - chartPad.right} y2={chartY(tick)}/>
+                                            <text x={chartPad.left - 18} y={chartY(tick) + 5}>{tick.toFixed(1)}%</text>
                                         </g>
                                     ))}
+                                    {costTicks.map((tick) => (
+                                        <g class="chart-grid chart-grid-x">
+                                            <line x1={chartX(tick)} y1={chartPad.top} x2={chartX(tick)} y2={chartHeight - chartPad.bottom}/>
+                                            <text x={chartX(tick)} y={chartHeight - chartPad.bottom + 32}>${tick < 1 ? tick.toFixed(2) : tick}</text>
+                                        </g>
+                                    ))}
+                                    <text class="axis-title" x={(chartWidth + chartPad.left - chartPad.right) / 2} y={chartHeight - 15}>BLENDED COST · USD PER 1M TOKENS · LOG SCALE</text>
+                                    <text class="axis-title axis-title-y" transform={`translate(20 ${(chartHeight - chartPad.bottom + chartPad.top) / 2}) rotate(-90)`}>OVERALL SCORE · CURRENT DATASET</text>
+                                    <polyline class="frontier-glow" points={frontierPoints}/>
+                                    <polyline class="frontier-line" points={frontierPoints}/>
+                                    {pricedModels.map((item) => {
+                                        const px = chartX(item.blendedCost);
+                                        const py = chartY(item.ultimateScore);
+                                        const isFrontier = paretoNames.has(item.name);
+                                        const alignRight = px > chartWidth - 280;
+                                        return (
+                                            <g
+                                                class={`pareto-point ${isFrontier ? 'is-frontier' : ''}`}
+                                                data-model-name={item.name.toLowerCase()}
+                                                data-provider={getModelProvider(item.name).name}
+                                                transform={`translate(${px} ${py})`}
+                                                tabindex="0"
+                                                role="img"
+                                                aria-label={`${item.name}: ${formatAggregateScore(item.ultimateScore)} percent overall at $${item.blendedCost.toFixed(2)} per million tokens`}
+                                            >
+                                                <circle r={isFrontier ? 8.5 : 5.5}/>
+                                                {isFrontier && (
+                                                    <text x={alignRight ? -13 : 13} y="-11" text-anchor={alignRight ? 'end' : 'start'}>
+                                                        {item.name}
+                                                    </text>
+                                                )}
+                                                <title>{item.name} · {formatAggregateScore(item.ultimateScore)}% · ${item.blendedCost.toFixed(2)}/1M tokens</title>
+                                            </g>
+                                        );
+                                    })}
                                 </svg>
                             </div>
                             {pricedModels.length === 0 && <p class="pareto-empty" role="status">No qualified models have valid verified pricing for this cost comparison.</p>}
                             {omittedPricingCount > 0 && <p class="pareto-omission" role="note">{omittedPricingCount} qualified {omittedPricingCount === 1 ? 'model is' : 'models are'} omitted from this cost comparison because verified pricing is unavailable or invalid.</p>}
-                            <p class="pareto-footnote"><svg class="note-arrow" aria-hidden="true" width="13" height="13" viewBox="0 0 16 16"><path d="M3 3v7h10m-4-4 4 4-4 4" /></svg> Cost blends 75% input and 25% output token pricing. Prices checked {PRICING_CHECKED_ON}; both axes preserve the raw benchmark data—no invented efficiency score.</p>
+                            <p class="pareto-footnote">
+                                <svg class="note-arrow" aria-hidden="true" width="13" height="13" viewBox="0 0 16 16"><path d="M3 3v7h10m-4-4 4 4-4 4" /></svg>
+                                Cost blends 75% input and 25% output token pricing. Prices checked {PRICING_CHECKED_ON}; both axes preserve the raw benchmark data—no invented efficiency score.
+                            </p>
                         </section>
 
                         <CapabilityTimeline series={capabilitySeries} />
@@ -371,14 +469,17 @@ function getRankDisplay(rank) {
                         <div class="ultimate-container" role="region" aria-label="Global Ultimate Bench standings" tabindex="0">
                             <table class="ultimate-modern-container semantic-leaderboard-table">
                                 <caption class="sr-only">Global canonical Ultimate Bench standings</caption>
-                                <thead><tr class="ultimate-table-header">
-                                    <th scope="col"><span class="sr-only">Rank</span><span aria-hidden="true">#</span></th><th scope="col">Model</th>
-                                    <th scope="col" aria-sort="descending"><button id="ultimate-sort-btn" class="overall-sort" aria-label="Sort by Overall Score"><span>Overall</span><small id="ultimate-sort-text" aria-hidden="true">▼</small></button></th>
-                                    <th scope="col" aria-sort="none"><button id="ultimate-visual-sort-btn" aria-label="Sort by Visual Score"><span>Visual</span><small id="ultimate-visual-sort-text" aria-hidden="true">▼</small></button></th>
-                                    <th scope="col" aria-sort="none"><button id="ultimate-data-sort-btn" aria-label="Sort by Data Score"><span>Data</span><small id="ultimate-data-sort-text" aria-hidden="true">▼</small></button></th>
-                                    <th scope="col" aria-sort="none"><button id="ultimate-chess-sort-btn" aria-label="Sort by Chess Score"><span>Chess</span><small id="ultimate-chess-sort-text" aria-hidden="true">▼</small></button></th>
-                                    <th scope="col">Released</th>
-                                </tr></thead>
+                                <thead>
+                                    <tr class="ultimate-table-header">
+                                        <th scope="col"><span class="sr-only">Rank</span><span aria-hidden="true">#</span></th>
+                                        <th scope="col">Model</th>
+                                        <th scope="col" aria-sort="descending"><button type="button" id="ultimate-sort-btn" class="overall-sort" aria-label="Sort by Overall Score"><span>Overall</span><small id="ultimate-sort-text" aria-hidden="true">▼</small></button></th>
+                                        <th scope="col" aria-sort="none"><button type="button" id="ultimate-visual-sort-btn" aria-label="Sort by Visual Score"><span>Visual</span><small id="ultimate-visual-sort-text" aria-hidden="true">▼</small></button></th>
+                                        <th scope="col" aria-sort="none"><button type="button" id="ultimate-data-sort-btn" aria-label="Sort by Data Score"><span>Data</span><small id="ultimate-data-sort-text" aria-hidden="true">▼</small></button></th>
+                                        <th scope="col" aria-sort="none"><button type="button" id="ultimate-chess-sort-btn" aria-label="Sort by Chess Score"><span>Chess</span><small id="ultimate-chess-sort-text" aria-hidden="true">▼</small></button></th>
+                                        <th scope="col">Released</th>
+                                    </tr>
+                                </thead>
                                 <tbody class="ultimate-table-body">
                                     {canonicalModels.map((item) => (
                                         <tr class={`ultimate-row-hover rank-${item.rank}`} data-model-name={item.name.toLowerCase()} data-provider={getModelProvider(item.name).name} data-absolute-rank={item.rank}>
@@ -391,10 +492,16 @@ function getRankDisplay(rank) {
                                                     </div>
                                                 </div>
                                             </th>
-                                            <td class="ultimate-score-cell score-cell" data-absolute-score={item.ultimateScore}><span class="score-value" style={`--score-fill: ${Math.max(0, Math.min(100, item.ultimateScore))}%`}><strong>{formatAggregateScore(item.ultimateScore)}</strong><small>%</small></span></td>
-                                            {[['visual', item.visualScore], ['data', item.dataScore], ['chess', item.chessScore]].map(([type, score]) => (
+                                            <td class="ultimate-score-cell score-cell" data-absolute-score={item.ultimateScore}>
+                                                <span class="score-value" style={`--score-fill: ${Math.max(0, Math.min(100, item.ultimateScore))}%`}>
+                                                    <strong>{formatAggregateScore(item.ultimateScore)}</strong><small>%</small>
+                                                </span>
+                                            </td>
+                                            {([['visual', item.visualScore], ['data', item.dataScore], ['chess', item.chessScore]] as const).map(([type, score]) => (
                                                 <td class={`ultimate-metric ultimate-${type}-score-cell score-cell`} data-score={score}>
-                                                    <span class="score-value" style={`--score-fill: ${Math.max(0, Math.min(100, score))}%`}><strong>{formatAggregateScore(Number(score))}</strong><small>%</small></span>
+                                                    <span class="score-value" style={`--score-fill: ${Math.max(0, Math.min(100, score))}%`}>
+                                                        <strong>{formatAggregateScore(Number(score))}</strong><small>%</small>
+                                                    </span>
                                                 </td>
                                             ))}
                                             <td class="ultimate-release-date">
@@ -405,64 +512,109 @@ function getRankDisplay(rank) {
                                     ))}
                                 </tbody>
                             </table>
-                                <div id="ultimate-filter-empty" class="ultimate-empty" hidden>No models match those filters.</div>
-                                {canonicalModels.length === 0 && <div class="ultimate-empty">No models currently span all three benchmarks.</div>}
+                            <div id="ultimate-filter-empty" class="ultimate-empty" hidden>No models match those filters.</div>
+                            {canonicalModels.length === 0 && <div class="ultimate-empty">No models currently span all three benchmarks.</div>}
                         </div>
-                        <p class="leaderboard-note absolute-note"><svg class="note-arrow" aria-hidden="true" width="13" height="13" viewBox="0 0 16 16"><path d="M3 3v7h10m-4-4 4 4-4 4" /></svg> Overall equally averages the three progressively weighted arena scores. Token price does not affect it.</p>
+                        <p class="leaderboard-note absolute-note">
+                            <svg class="note-arrow" aria-hidden="true" width="13" height="13" viewBox="0 0 16 16"><path d="M3 3v7h10m-4-4 4 4-4 4" /></svg>
+                            Overall equally averages the three progressively weighted arena scores. Token price does not affect it.
+                        </p>
                     </section>
 
                     <section class="arena-results" aria-labelledby="arena-results-title">
-                        <header class="section-heading"><h2 id="arena-results-title">Explore an arena</h2><p>Inspect level results and coverage for a specific capability.</p></header>
-                    <div class="home-grid">
-
-                        {[
-                            { id: 'visual', title: 'Visual Bench', description: 'Visual recognition and spatial reasoning', protocol: 'visual-bench', rows: visualArenaRows.filter(row => row.rank !== null) },
-                            { id: 'data', title: 'Data Retrieval Bench', description: 'Evidence retrieval and source synthesis', protocol: 'data-bench', rows: dataArenaRows.filter(row => row.rank !== null) },
-                            { id: 'chess', title: 'Chess Bench', description: 'Chess-position analysis and play', protocol: 'chess-bench', rows: chessArenaRows.filter(row => row.rank !== null) }
-                        ].map(arena => (
-                            <article class={`home-column arena-${arena.id}`} data-arena-card data-preview-rows={ARENA_PREVIEW_ROWS}>
-                                <div class="home-column-header"><div><span class="arena-label">{arena.id === 'visual' ? '01 / PERCEPTION' : arena.id === 'data' ? '02 / RETRIEVAL' : '03 / STRATEGY'}</span><h3>{arena.title}</h3><p>{arena.description}</p></div><div class="arena-actions"><a href={`/methodology/${arena.protocol}/`}>Methodology</a><button class="expand-btn" data-target={arena.id} aria-expanded="false" aria-controls="benchmark-modal">Level results</button></div></div>
-                                <details class="arena-summary" open><summary>Ranked configurations</summary>
-                                <div class="benchmark-desktop-container semantic-summary-wrap">
-                                    <table class="benchmark-container semantic-summary-table">
-                                        <caption class="sr-only">Canonical {arena.title} standings</caption>
-                                        <thead><tr><th scope="col"><span class="sr-only">Rank</span><span aria-hidden="true">#</span></th><th scope="col">Model</th><th scope="col">Score</th></tr></thead>
-                                        <tbody id={`${arena.id}-arena-summary`}>{arena.rows.map((item, index) => (
-                                            <tr class="benchmark-row unified-row" data-model-name={item.name} hidden={index >= ARENA_PREVIEW_ROWS}>
-                                                <td class="rank" set:html={getRankDisplay(item.rank)}></td>
-                                                <th scope="row" class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}><span class="model-name" title={item.name} data-release-date={releaseDateByModel.get(item.name)}>{item.name}</span>{isNew(releaseDateByModel.get(item.name)) && <span class="new-badge">NEW</span>}</th>
-                                                <td class="benchmark-cell score-cell">{formatAggregateScore(item.score)}%</td>
-                                            </tr>
-                                        ))}</tbody>
-                                    </table>
-                                </div>
-                                {arena.rows.length > ARENA_PREVIEW_ROWS && <button class="arena-toggle" type="button" aria-expanded="false" aria-controls={`${arena.id}-arena-summary`}><span data-arena-toggle-label>SHOW MORE</span><span aria-hidden="true">⌄</span></button>}
-                                </details>
-                            </article>
-                        ))}
-                    </div>
+                        <header class="section-heading">
+                            <h2 id="arena-results-title">Explore an arena</h2>
+                            <p>Inspect level results and coverage for a specific capability.</p>
+                        </header>
+                        <div class="home-grid">
+                            {arenaSummaries.map((arena) => (
+                                <article class={`home-column arena-${arena.id}`} data-arena-card data-preview-rows={ARENA_PREVIEW_ROWS}>
+                                    <div class="home-column-header">
+                                        <div>
+                                            <span class="arena-label">{arena.kicker}</span>
+                                            <h3>{arena.title}</h3>
+                                            <p>{arena.description}</p>
+                                        </div>
+                                        <div class="arena-actions">
+                                            <a href={`/methodology/${arena.protocol}/`}>Methodology</a>
+                                            <button type="button" class="expand-btn" data-target={arena.id} aria-expanded="false" aria-controls="benchmark-modal">Level results</button>
+                                        </div>
+                                    </div>
+                                    <details class="arena-summary" open>
+                                        <summary>Ranked configurations</summary>
+                                        <div class="benchmark-desktop-container semantic-summary-wrap">
+                                            <table class="benchmark-container semantic-summary-table">
+                                                <caption class="sr-only">Canonical {arena.title} standings</caption>
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col"><span class="sr-only">Rank</span><span aria-hidden="true">#</span></th>
+                                                        <th scope="col">Model</th>
+                                                        <th scope="col">Score</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id={`${arena.id}-arena-summary`}>
+                                                    {arena.rows.map((item, index) => (
+                                                        <tr class={`benchmark-row unified-row${item.rank !== null && item.rank <= 3 ? ` summary-rank-${item.rank}` : ''}`} data-model-name={item.name} hidden={index >= ARENA_PREVIEW_ROWS}>
+                                                            <td class="rank" set:html={getRankDisplay(item.rank)}></td>
+                                                            <th scope="row" class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}><span class="model-name" title={item.name} data-release-date={releaseDateByModel.get(item.name)}>{item.name}</span>{isNew(releaseDateByModel.get(item.name)) && <span class="new-badge">NEW</span>}</th>
+                                                            <td class="benchmark-cell score-cell">{formatAggregateScore(item.score)}%</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        {arena.rows.length > ARENA_PREVIEW_ROWS && (
+                                            <button class="arena-toggle" type="button" aria-expanded="false" aria-controls={`${arena.id}-arena-summary`}>
+                                                <span data-arena-toggle-label>SHOW MORE</span>
+                                                <span class="arena-toggle-chevron" aria-hidden="true">⌄</span>
+                                            </button>
+                                        )}
+                                    </details>
+                                </article>
+                            ))}
+                        </div>
                     </section>
 
-                    {provisionalArenaRows.length > 0 && <section class="excluded-results" aria-labelledby="excluded-results-title">
-                        <h2 id="excluded-results-title">Provisional result</h2>
-                        <div class="excluded-results-list">
-                            {provisionalArenaRows.map(item => <article class="excluded-result-card">
-                                <div class="excluded-result-model"><div class="model-name-line"><h3 class="model-name" title={item.name}>{item.name}</h3><span class="provisional-badge">PROVISIONAL</span></div><span class="excluded-arena">Data Retrieval Bench</span></div>
-                                <div class="excluded-result-score"><span>Provisional score</span><strong>{formatAggregateScore(item.score)}%</strong></div>
-                                <div class="excluded-result-copy"><p>Not eligible for ranking because benchmark coverage is insufficient.</p><dl><div><dt>Active-level coverage</dt><dd>{item.canonical.coverage}</dd></div><div><dt>Operational result weight</dt><dd>{item.canonical.weightCoverage}</dd></div></dl></div>
-                            </article>)}
-                        </div>
-                    </section>}
+                    {provisionalArenaRows.length > 0 && (
+                        <section class="excluded-results" aria-labelledby="excluded-results-title">
+                            <h2 id="excluded-results-title">Provisional result</h2>
+                            <div class="excluded-results-list">
+                                {provisionalArenaRows.map((item) => (
+                                    <article class="excluded-result-card">
+                                        <div class="excluded-result-model">
+                                            <div class="model-name-line">
+                                                <h3 class="model-name" title={item.name}>{item.name}</h3>
+                                                <span class="provisional-badge">PROVISIONAL</span>
+                                            </div>
+                                            <span class="excluded-arena">Data Retrieval Bench</span>
+                                        </div>
+                                        <div class="excluded-result-score">
+                                            <span>Provisional score</span>
+                                            <strong>{formatAggregateScore(item.score)}%</strong>
+                                        </div>
+                                        <div class="excluded-result-copy">
+                                            <p>Not eligible for ranking because benchmark coverage is insufficient.</p>
+                                            <dl>
+                                                <div><dt>Active-level coverage</dt><dd>{item.canonical.coverage}</dd></div>
+                                                <div><dt>Operational result weight</dt><dd>{item.canonical.weightCoverage}</dd></div>
+                                            </dl>
+                                        </div>
+                                    </article>
+                                ))}
+                            </div>
+                        </section>
+                    )}
                 </div>
 
-                <div id="visual-benchmark-wrapper" class="hidden">
+                <!-- Visual Bench Detail View -->
+                <div id="visual-benchmark-wrapper" class="hidden arena-detail-visual">
                     <header class="detail-hero">
                         <span class="detail-kicker">Arena 01 · Perception</span>
                         <h2>Visual Bench</h2>
                         <p>Five Active fixed-condition protocols for repeatable character localization and midpoint reasoning, with a sixth level Planned.</p>
                     </header>
                     <div class="benchmark-description">
-                        <p>Visual Bench is the first benchmark in the Ultimate Bench series.<br>
+                        <p>Visual Bench is the first benchmark in the Ultimate Bench series.<br />
                         It evaluates repeatable character recognition, localization, spatial binding, and midpoint reasoning by named chatbot product or interface configuration, including:</p>
                         <ul>
                             <li>recognizing characters</li>
@@ -490,123 +642,66 @@ function getRankDisplay(rank) {
                     </div>
                     <div class="benchmark-desktop-container benchmark-scroll-container" role="region" aria-label="Visual Bench level results" tabindex="0">
                         <div class="benchmark-container visual-table" id="visual-table-body" role="table" aria-label="Visual Bench level results">
-                            <!-- Header Row -->
                             <div class="header-row unified-header-row" role="row">
-                                <div role="columnheader" class="col-header model-col-header" style="justify-content: flex-start; padding-left: 0.5rem;"><h3>MODEL</h3></div>
-                                <div role="columnheader" class="col-header mole-header">
-                                    <div class="header-title-wrapper">
-                                        <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="mole" /></span>
-                                        <h3>MOLE</h3>
-                                        <span class="tooltip-container">
-                                            <button type="button" class="tooltip-icon" aria-label="Show Mole Level 1 explanation" aria-controls="tooltip-explanation-2">ⓘ</button>
-                                            <div class="tooltip-text" id="tooltip-explanation-2"><strong>MOLE (Level 1):</strong> Ten fixed coordinate questions about an intact 10 × 10 character grid, repeated in ten fresh, isolated conversations. The result counts correct responses among 100 repeated response instances.</div>
-                                        </span>
+                                <div role="columnheader" class="col-header model-col-header"><h3>MODEL</h3></div>
+                                {visualHeaders.map((col) => (
+                                    <div role="columnheader" class={`col-header ${col.css}-header`}>
+                                        <div class="header-title-wrapper">
+                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature={col.creature} /></span>
+                                            <h3>{col.label}</h3>
+                                            <span class="tooltip-container">
+                                                <button type="button" class="tooltip-icon" aria-label={col.aria} aria-controls={col.id}>ⓘ</button>
+                                                <div class="tooltip-text" id={col.id}><strong>{col.heading}</strong> {col.body}</div>
+                                            </span>
+                                        </div>
                                     </div>
-
-                                </div>
-                                <div role="columnheader" class="col-header rhino-header">
-                                    <div class="header-title-wrapper">
-                                        <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="rhino" /></span>
-                                        <h3>RHINO</h3>
-                                        <span class="tooltip-container">
-                                            <button type="button" class="tooltip-icon" aria-label="Show Rhino Level 2 explanation" aria-controls="tooltip-explanation-3">ⓘ</button>
-                                            <div class="tooltip-text" id="tooltip-explanation-3"><strong>RHINO (Level 2):</strong> The Mole grid loses the same lateral half of every column while retaining its logical grid and questions. Ten fixed questions are repeated in ten fresh, isolated conversations.</div>
-                                        </span>
-                                    </div>
-
-                                </div>
-                                <div role="columnheader" class="col-header chimp-header">
-                                    <div class="header-title-wrapper">
-                                        <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="chimpanzee" /></span>
-                                        <h3>CHIMPANZEE</h3>
-                                        <span class="tooltip-container">
-                                            <button type="button" class="tooltip-icon" aria-label="Show Chimpanzee Level 3 explanation" aria-controls="tooltip-explanation-4">ⓘ</button>
-                                            <div class="tooltip-text" id="tooltip-explanation-4"><strong>CHIMPANZEE (Level 3):</strong> The Rhino image receives imperfect background removal, adding segmentation artifacts and information loss. The same ten questions are repeated in ten fresh, isolated conversations.</div>
-                                        </span>
-                                    </div>
-
-                                </div>
-                                <div role="columnheader" class="col-header owl-header">
-                                    <div class="header-title-wrapper">
-                                        <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="owl" /></span>
-                                        <h3>OWL</h3>
-                                        <span class="tooltip-container">
-                                            <button type="button" class="tooltip-icon" aria-label="Show Owl Level 4 explanation" aria-controls="tooltip-explanation-5">ⓘ</button>
-                                            <div class="tooltip-text" id="tooltip-explanation-5"><strong>OWL (Level 4):</strong> In a separate 17 × 11 grid with a central 5 × 3 spanning image, the model locates two named anchors and identifies their unique horizontal or vertical midpoint character. Ten fixed questions are repeated in ten fresh, isolated conversations.</div>
-                                        </span>
-                                    </div>
-
-                                </div>
-                                <div role="columnheader" class="col-header eagle-header">
-                                    <div class="header-title-wrapper">
-                                        <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="eagle" /></span>
-                                        <h3>EAGLE</h3>
-                                        <span class="tooltip-container">
-                                            <button type="button" class="tooltip-icon" aria-label="Show Eagle Level 5 explanation" aria-controls="tooltip-explanation-6">ⓘ</button>
-                                            <div class="tooltip-text" id="tooltip-explanation-6"><strong>EAGLE (Level 5):</strong> A larger, denser mixed-source grid combines animation, live action, irregular cropping, and selective color inversion. The model finds horizontal, vertical, or diagonal midpoint characters across ten fresh, isolated administrations.</div>
-                                        </span>
-                                    </div>
-
-                                </div>
-                                <div role="columnheader" class="col-header beholder-header">
-                                    <div class="header-title-wrapper">
-                                        <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="beholder" /></span>
-                                        <h3>BEHOLDER</h3>
-                                        <span class="tooltip-container">
-                                            <button type="button" class="tooltip-icon" aria-label="Show Beholder Level 6 explanation" aria-controls="tooltip-explanation-7">ⓘ</button>
-                                            <div class="tooltip-text" id="tooltip-explanation-7"><strong>BEHOLDER (Level 6):</strong> Planned evaluation. The Level 6 stimulus, task structure, scoring protocol, and measured capabilities have not yet been defined. No model results are currently available.</div>
-                                        </span>
-                                    </div>
-
-                                </div>
+                                ))}
                             </div>
 
-                            <!-- Rows Loop -->
-                            {rows.map(i => {
-                                const item = unifiedList[i];
-
-                                return (
-                                    <div role="row" class={`benchmark-row unified-row ${item.rank === null ? 'provisional-row' : ''}`} data-model-name={item.name} data-provider={getModelProvider(item.name).name} aria-label={`${item.name}, ${item.rank === null ? 'provisional, insufficient coverage for an official rank' : `official rank ${item.rank}`}`}>
-                                        {/* Model Column */}
-                                        <div role="rowheader" class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
-                                            <div class={`benchmark-content `}>
-                                                <div class={`rank `} set:html={getRankDisplay(item.rank)}>
+                            {unifiedList.map((item) => (
+                                <div role="row" class={`benchmark-row unified-row ${item.rank === null ? 'provisional-row' : ''}`} data-model-name={item.name} data-provider={getModelProvider(item.name).name} aria-label={`${item.name}, ${item.rank === null ? 'provisional, insufficient coverage for an official rank' : `official rank ${item.rank}`}`}>
+                                    <div role="rowheader" class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
+                                        <div class="benchmark-content">
+                                            <div class="rank" set:html={getRankDisplay(item.rank)}></div>
+                                            <div class="model-info">
+                                                <div class="model-name-line">
+                                                    <div class="model-name" title={item.name} data-release-date={item.releaseDate}>{item.name}</div>
+                                                    {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
                                                 </div>
-                                                <div class="model-info">
-                                                    <div class="model-name-line">
-                                                        <div class="model-name" title={item.name} data-release-date={item.releaseDate}>{item.name}</div>
-                                                        {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
-                                                    </div>
-                                                    {item.rank === null && <small class="coverage-note" aria-label={`Insufficient coverage for an official rank: ${item.coverage}; ${item.weightCoverage}`}>{item.coverage} · {item.weightCoverage}</small>}
-                                                </div>
+                                                {item.rank === null && <small class="coverage-note" aria-label={`Insufficient coverage for an official rank: ${item.coverage}; ${item.weightCoverage}`}>{item.coverage} · {item.weightCoverage}</small>}
                                             </div>
                                         </div>
-
-                                        {/* Challenge Columns */}
-                                        <div role="cell" class="benchmark-cell score-cell mole-score"><span class={` ${item.lvl1 === 0 || item.lvl1 === 'INVALID' ? 'zero-score-glow' : ''} ${item.lvl1 === bestAiScores.lvl1 && item.lvl1 > 0 ? 'best-score-glow' : ''}`}>{item.lvl1 !== undefined ? (typeof item.lvl1 === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.lvl1}</span> : `${item.lvl1}%`) : ''}</span></div>
-                                        <div role="cell" class="benchmark-cell score-cell rhino-score"><span class={` ${item.lvl2 === 0 || item.lvl2 === 'INVALID' ? 'zero-score-glow' : ''} ${item.lvl2 === bestAiScores.lvl2 && item.lvl2 > 0 ? 'best-score-glow' : ''}`}>{item.lvl2 !== undefined ? (typeof item.lvl2 === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.lvl2}</span> : `${item.lvl2}%`) : ''}</span></div>
-                                        <div role="cell" class="benchmark-cell score-cell chimp-score"><span class={` ${item.lvl3 === 0 || item.lvl3 === 'INVALID' ? 'zero-score-glow' : ''} ${item.lvl3 === bestAiScores.lvl3 && item.lvl3 > 0 ? 'best-score-glow' : ''}`}>{item.lvl3 !== undefined ? (typeof item.lvl3 === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.lvl3}</span> : `${item.lvl3}%`) : ''}</span></div>
-                                        <div role="cell" class="benchmark-cell score-cell owl-score"><span class={` ${item.lvl4 === 0 || item.lvl4 === 'INVALID' ? 'zero-score-glow' : ''} ${item.lvl4 === bestAiScores.lvl4 && item.lvl4 > 0 ? 'best-score-glow' : ''}`}>{item.lvl4 !== undefined ? (typeof item.lvl4 === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.lvl4}</span> : `${item.lvl4}%`) : ''}</span></div>
-                                        <div role="cell" class="benchmark-cell score-cell eagle-score"><span class={` ${item.lvl5 === 0 || item.lvl5 === 'INVALID' ? 'zero-score-glow' : ''} ${item.lvl5 === bestAiScores.lvl5 && item.lvl5 > 0 ? 'best-score-glow' : ''}`}>{item.lvl5 !== undefined ? (typeof item.lvl5 === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.lvl5}</span> : `${item.lvl5}%`) : ''}</span></div>
-                                        <div role="cell" class="benchmark-cell score-cell beholder-score"><span class="status-badge planned" title="Planned future level. Protocol not yet defined.">Planned</span></div>
                                     </div>
-                                );
-                            })}
-
-
-
+                                    {([['lvl1', 'mole'], ['lvl2', 'rhino'], ['lvl3', 'chimp'], ['lvl4', 'owl'], ['lvl5', 'eagle']] as const).map(([levelKey, cssKey]) => {
+                                        const value = item[levelKey];
+                                        const isBest = typeof value === 'number' && value === bestAiScores[levelKey] && value > 0;
+                                        const isZero = value === 0 || value === 'INVALID';
+                                        return (
+                                            <div role="cell" class={`benchmark-cell score-cell ${cssKey}-score`}>
+                                                <span class={`${isZero ? 'zero-score-glow' : ''} ${isBest ? 'best-score-glow' : ''}`}>
+                                                    {value !== undefined ? (typeof value === 'string' ? <span class="cell-status-text">{value}</span> : `${value}%`) : ''}
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
+                                    <div role="cell" class="benchmark-cell score-cell beholder-score">
+                                        <span class="status-badge planned" title="Planned future level. Protocol not yet defined.">Planned</span>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
 
-                <div id="chess-benchmark-wrapper" class="hidden">
+                <!-- Chess Bench Detail View -->
+                <div id="chess-benchmark-wrapper" class="hidden arena-detail-chess">
                     <header class="detail-hero">
                         <span class="detail-kicker">Arena 03 · Strategy</span>
                         <h2>Chess Bench</h2>
                         <p>Five Active levels; Hydra is Locked and its weight 32 is reserved in the permanent denominator.</p>
                     </header>
                     <div class="benchmark-description">
-                        <p>Chess Bench is the third benchmark in the Ultimate Bench series.<br>
+                        <p>Chess Bench is the third benchmark in the Ultimate Bench series.<br />
                         Its goal is to measure how well AI models can play chess and solve complex positional puzzles. The challenges include:</p>
                         <ul>
                             <li>Understanding spatial coordinates and valid moves</li>
@@ -633,137 +728,82 @@ function getRankDisplay(rank) {
                         </span>
                     </div>
                     <div class="data-benchmark-layout">
-                        <div class="benchmark-scroll-container data-table-wrapper" style="width: 100%;" role="region" aria-label="Chess Bench level results" tabindex="0">
+                        <div class="benchmark-scroll-container data-table-wrapper" role="region" aria-label="Chess Bench level results" tabindex="0">
                             <div class="benchmark-container visual-table" id="chess-table-body" role="table" aria-label="Chess Bench level results">
-                                <!-- Header Row -->
                                 <div class="header-row unified-header-row" role="row">
-                                    <div role="columnheader" class="col-header model-col-header" style="justify-content: flex-start; padding-left: 0.5rem; flex: 2;"><h3>MODEL</h3></div>
-                                    <div role="columnheader" class="col-header mouse-header" style="flex: 1;">
-                                        <div class="header-title-wrapper">
-                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="mouse" /></span>
-                                            <h3>MOUSE</h3>
-                                            <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show Chess Mouse Level 1 explanation" aria-controls="tooltip-explanation-9">ⓘ</button>
-                                                <div class="tooltip-text" id="tooltip-explanation-9"><strong>MOUSE (Level 1):</strong> A test of baseline structural integrity and fundamental laws. The system must demonstrate an active, coherent grasp of basic spatial constraints and avoid immediate cognitive collapse over a short horizon.</div>
-                                            </span>
+                                    <div role="columnheader" class="col-header model-col-header"><h3>MODEL</h3></div>
+                                    {chessHeaders.map((col) => (
+                                        <div role="columnheader" class={`col-header ${col.key}-header`}>
+                                            <div class="header-title-wrapper">
+                                                <span class="creature-icon" aria-hidden="true"><CreatureIcon creature={col.creature} /></span>
+                                                <h3>{col.label}</h3>
+                                                <span class="tooltip-container">
+                                                    <button type="button" class="tooltip-icon" aria-label={col.aria} aria-controls={col.id}>ⓘ</button>
+                                                    <div class="tooltip-text" id={col.id}><strong>{col.heading}</strong> {col.body}</div>
+                                                </span>
+                                            </div>
                                         </div>
-
-                                    </div>
-                                    <div role="columnheader" class="col-header spider-header" style="flex: 1;">
-                                        <div class="header-title-wrapper">
-                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="spider" /></span>
-                                            <h3>SPIDER</h3>
-                                            <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show Chess Spider Level 2 explanation" aria-controls="tooltip-explanation-10">ⓘ</button>
-                                                <div class="tooltip-text" id="tooltip-explanation-10"><strong>SPIDER (Level 2):</strong> A trial of cognitive stamina. Here, the march of turns is the primary adversary, testing whether the system's internal state representation can withstand the creeping decay of longer, more drawn-out sequences.</div>
-                                            </span>
-                                        </div>
-
-                                    </div>
-                                    <div role="columnheader" class="col-header wolf-header" style="flex: 1;">
-                                        <div class="header-title-wrapper">
-                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="wolf" /></span>
-                                            <h3>WOLF</h3>
-                                            <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show Chess Wolf Level 3 explanation" aria-controls="tooltip-explanation-11">ⓘ</button>
-                                                <div class="tooltip-text" id="tooltip-explanation-11"><strong>WOLF (Level 3):</strong> An introduction to uncompromising precision. The margin for error shrinks drastically, demanding sharp tactical alertness where minor oversights carry sudden and heavy consequences.</div>
-                                            </span>
-                                        </div>
-
-                                    </div>
-                                    <div role="columnheader" class="col-header hawk-header" style="flex: 1;">
-                                        <div class="header-title-wrapper">
-                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="hawk" /></span>
-                                            <h3>HAWK</h3>
-                                            <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show Chess Hawk Level 4 explanation" aria-controls="tooltip-explanation-12">ⓘ</button>
-                                                <div class="tooltip-text" id="tooltip-explanation-12"><strong>HAWK (Level 4):</strong> An evaluation of psychological friction and self-certainty. The system must navigate external skepticism and defend its own logical calculations, where a single moment of submissive compliance or hesitation results in total failure.</div>
-                                            </span>
-                                        </div>
-
-                                    </div>
-                                    <div role="columnheader" class="col-header python-header" style="flex: 1;">
-                                        <div class="header-title-wrapper">
-                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="python" /></span>
-                                            <h3>PYTHON</h3>
-                                            <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show Chess Python Level 5 explanation" aria-controls="tooltip-explanation-13">ⓘ</button>
-                                                <div class="tooltip-text" id="tooltip-explanation-13"><strong>PYTHON (Level 5):</strong> A confrontation with flawless execution. The standard is set so high that mere survival or passive defense is treated as defeat, all while the system is subjected to relentless, systematic false accusations.</div>
-                                            </span>
-                                        </div>
-
-                                    </div>
-                                    <div role="columnheader" class="col-header hydra-header" style="flex: 1;">
-                                        <div class="header-title-wrapper">
-                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="hydra" /></span>
-                                            <h3>HYDRA</h3>
-                                            <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show Chess Hydra Level 6 explanation" aria-controls="tooltip-explanation-14">ⓘ</button>
-                                                <div class="tooltip-text" id="tooltip-explanation-14"><strong>HYDRA (Level 6):</strong> LOCKED. Its weight 32 is reserved; no model result exists. It may become Active by a deliberate version decision after a model scores above 0 on Python.</div>
-                                            </span>
-                                        </div>
-
-                                    </div>
+                                    ))}
                                 </div>
 
-
-                                {rowsChess.map(i => {
-                                const item = chessList[i];
-                                return (
+                                {chessList.map((item) => (
                                     <div role="row" class={`benchmark-row unified-row ${item.rank === null ? 'provisional-row' : ''}`} data-model-name={item.name} data-provider={getModelProvider(item.name).name} aria-label={`${item.name}, ${item.rank === null ? 'provisional, insufficient coverage for an official rank' : `official rank ${item.rank}`}`}>
-                                        <div role="rowheader" class={`benchmark-cell model-cell ${item ? getModelColorClass(item.name) : ''}`} style="flex: 2;">
-                                            {item && (
-                                                <div class={`benchmark-content `}>
-                                                    <div class={`rank `} set:html={getRankDisplay(item.rank)}>
+                                        <div role="rowheader" class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
+                                            <div class="benchmark-content">
+                                                <div class="rank" set:html={getRankDisplay(item.rank)}></div>
+                                                <div class="model-info">
+                                                    <div class="model-name-line">
+                                                        <div class="model-name" title={item.name} data-release-date={item.releaseDate}>{item.name}</div>
+                                                        {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
                                                     </div>
-                                                    <div class="model-info">
-                                                        <div class="model-name-line">
-                                                            <div class="model-name" title={item.name} data-release-date={item.releaseDate}>{item.name}</div>
-                                                            {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
-                                                        </div>
-                                                        {item.rank === null && <small class="coverage-note" aria-label={`Insufficient coverage for an official rank: ${item.coverage}; ${item.weightCoverage}`}>{item.coverage} · {item.weightCoverage}</small>}
-                                                    </div>
+                                                    {item.rank === null && <small class="coverage-note" aria-label={`Insufficient coverage for an official rank: ${item.coverage}; ${item.weightCoverage}`}>{item.coverage} · {item.weightCoverage}</small>}
                                                 </div>
-                                            )}
+                                            </div>
                                         </div>
 
-                                        {/* Challenge Columns */}
-                                        {(['mouse','spider','wolf','hawk','python','hydra'] as const).map(level => {
-                                            if (level === 'hydra') return <div role="cell" class="benchmark-cell score-cell hydra-score" style="flex: 1;"><span class="status-badge locked" title="Locked reserved capacity: weight 32 earns zero points in the fixed 63-point normalization; this is not a model result.">LOCKED</span></div>;
+                                        {(['mouse', 'spider', 'wolf', 'hawk', 'python', 'hydra'] as const).map((level) => {
+                                            if (level === 'hydra') {
+                                                return (
+                                                    <div role="cell" class="benchmark-cell score-cell hydra-score">
+                                                        <span class="status-badge locked" title="Locked reserved capacity: weight 32 earns zero points in the fixed 63-point normalization; this is not a model result.">LOCKED</span>
+                                                    </div>
+                                                );
+                                            }
                                             const value = item[level];
-                                            return <div class={`benchmark-cell score-cell ${level}-score`} style="flex: 1;">
-                                                <span class={`${value === 0 || value === 'INVALID' ? 'zero-score-glow' : ''} ${value === bestChessAiScores[level] && value > 0 ? 'best-score-glow' : ''}`}>
-                                                    {typeof value === 'string' ? value : `${value}%`}
-                                                </span>
-                                            </div>;
+                                            const isBest = typeof value === 'number' && value === bestChessAiScores[level] && value > 0;
+                                            const isZero = value === 0 || value === 'INVALID';
+                                            return (
+                                                <div role="cell" class={`benchmark-cell score-cell ${level}-score`}>
+                                                    <span class={`${isZero ? 'zero-score-glow' : ''} ${isBest ? 'best-score-glow' : ''}`}>
+                                                        {typeof value === 'string' ? <span class="cell-status-text">{value}</span> : `${value}%`}
+                                                    </span>
+                                                </div>
+                                            );
                                         })}
                                     </div>
-                                );
-                                })}
-
+                                ))}
                             </div>
-
-
                         </div>
                     </div>
                 </div>
 
-                <div id="data-benchmark-wrapper" class="hidden">
+                <!-- Data Retrieval Bench Detail View -->
+                <div id="data-benchmark-wrapper" class="hidden arena-detail-data">
                     <header class="detail-hero">
                         <span class="detail-kicker">Arena 02 · Retrieval</span>
                         <h2>Data Retrieval Bench</h2>
                         <p>Four Active levels of search, synthesis, and source confidence; two future levels are Planned.</p>
                     </header>
                     <div class="benchmark-description">
-                        <p>Data Retrieval Bench is the second benchmark in the Ultimate Bench series.<br>
+                        <p>Data Retrieval Bench is the second benchmark in the Ultimate Bench series.<br />
                         Its goal is to measure how well AI models can search the web for specific, obscure information and find the correct answer despite the odds. The challenges include:</p>
                         <ul>
                             <li>understanding what the questions are referring to, without a clear confirmation</li>
                             <li>searching for the correct websites, not getting distracted</li>
                             <li>often needing visual capabilities to recognize information from images</li>
                         </ul>
-                        <p>The levels are presented in increasingly difficult formats to test the limits of the AI models.<br>
-There are four Active levels. Raven is Planned with a documented proposed structure that is not operational; Athena is Planned with no protocol defined.</p>
+                        <p>The levels are presented in increasingly difficult formats to test the limits of the AI models.<br />
+                        There are four Active levels. Raven is Planned with a documented proposed structure that is not operational; Athena is Planned with no protocol defined.</p>
                         <p class="methodology-link"><a href="/methodology/data-bench/">View full DATA Bench methodology</a></p>
                     </div>
                     <div class="ranking-controls">
@@ -784,123 +824,79 @@ There are four Active levels. Raven is Planned with a documented proposed struct
                     <div class="data-benchmark-layout">
                         <div class="benchmark-scroll-container data-table-wrapper" role="region" aria-label="DATA Bench level results" tabindex="0">
                             <div class="benchmark-container visual-table" id="data-table-body" role="table" aria-label="DATA Bench level results">
-                                <!-- Header Row -->
                                 <div class="header-row unified-header-row" role="row">
-                                    <div role="columnheader" class="col-header model-col-header" style="justify-content: flex-start; padding-left: 0.5rem; flex: 2;"><h3>MODEL</h3></div>
-                                    <div role="columnheader" class="col-header worm-header" style="flex: 1;">
-                                        <div class="header-title-wrapper">
-                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="worm" /></span>
-                                            <h3>WORM</h3>
-                                            <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show Data Retrieval Worm Level 1 explanation" aria-controls="tooltip-explanation-16">ⓘ</button>
-                                                <div class="tooltip-text" id="tooltip-explanation-16"><strong>WORM (Level 1):</strong> Evaluates Baseline Agentic Retrieval. Measures the model's foundational ability to execute a single, focused multimodal web search and extract specific granular data from the noise of the open web.</div>
-                                            </span>
+                                    <div role="columnheader" class="col-header model-col-header"><h3>MODEL</h3></div>
+                                    {dataHeaders.map((col) => (
+                                        <div role="columnheader" class={`col-header ${col.key}-header`}>
+                                            <div class="header-title-wrapper">
+                                                <span class="creature-icon" aria-hidden="true"><CreatureIcon creature={col.creature} /></span>
+                                                <h3>{col.label}</h3>
+                                                <span class="tooltip-container">
+                                                    <button type="button" class="tooltip-icon" aria-label={col.aria} aria-controls={col.id}>ⓘ</button>
+                                                    <div class="tooltip-text" id={col.id}><strong>{col.heading}</strong> {col.body}</div>
+                                                </span>
+                                            </div>
                                         </div>
-
-                                    </div>
-                                    <div role="columnheader" class="col-header koala-header" style="flex: 1;">
-                                        <div class="header-title-wrapper">
-                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="koala" /></span>
-                                            <h3>KOALA</h3>
-                                            <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show Data Retrieval Koala Level 2 explanation" aria-controls="tooltip-explanation-17">ⓘ</button>
-                                                <div class="tooltip-text" id="tooltip-explanation-17"><strong>KOALA (Level 2):</strong> Tests Parallelized Multi-Hop Execution. Designed to expose 'Lost in the Middle' contextual collapse, this level evaluates a model's stamina and working memory when forced to execute massive batches of unrelated tasks simultaneously.</div>
-                                            </span>
-                                        </div>
-
-                                    </div>
-                                    <div role="columnheader" class="col-header crow-header" style="flex: 1;">
-                                        <div class="header-title-wrapper">
-                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="crow" /></span>
-                                            <h3>CROW</h3>
-                                            <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show Data Retrieval Crow Level 3 explanation" aria-controls="tooltip-explanation-18">ⓘ</button>
-                                                <div class="tooltip-text" id="tooltip-explanation-18"><strong>CROW (Level 3):</strong> Measures Epistemic Sovereignty. Tests the model's resistance to sycophancy and anchor bias. To pass, the agent must trust its retrieved data enough to actively defy and correct highly plausible, yet false, user suggestions.</div>
-                                            </span>
-                                        </div>
-
-                                    </div>
-                                    <div role="columnheader" class="col-header octopus-header" style="flex: 1;">
-                                        <div class="header-title-wrapper">
-                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="octopus" /></span>
-                                            <h3>OCTOPUS</h3>
-                                            <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show Data Retrieval Octopus Level 4 explanation" aria-controls="tooltip-explanation-19">ⓘ</button>
-                                                <div class="tooltip-text" id="tooltip-explanation-19"><strong>OCTOPUS (Level 4):</strong> Tests advanced multimodal data navigation, needle-in-a-haystack retrieval, deep multilingual understanding, and more advanced sycophancy resistance.</div>
-                                            </span>
-                                        </div>
-
-                                    </div>
-                                    <div role="columnheader" class="col-header raven-header" style="flex: 1;">
-                                        <div class="header-title-wrapper">
-                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="raven" /></span>
-                                            <h3>RAVEN</h3>
-                                            <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show Data Retrieval Raven Level 5 explanation" aria-controls="tooltip-explanation-20">ⓘ</button>
-                                                <div class="tooltip-text" id="tooltip-explanation-20"><strong>RAVEN (Level 5):</strong> Planned future level. Protocol not yet defined.</div>
-                                            </span>
-                                        </div>
-
-                                    </div>
-                                    <div role="columnheader" class="col-header athena-header" style="flex: 1;">
-                                        <div class="header-title-wrapper">
-                                            <span class="creature-icon" aria-hidden="true"><CreatureIcon creature="athena" /></span>
-                                            <h3>ATHENA</h3>
-                                            <span class="tooltip-container">
-                                                <button type="button" class="tooltip-icon" aria-label="Show Data Retrieval Athena Level 6 explanation" aria-controls="tooltip-explanation-21">ⓘ</button>
-                                                <div class="tooltip-text" id="tooltip-explanation-21"><strong>ATHENA (Level 6):</strong> Planned future level. Protocol not yet defined.</div>
-                                            </span>
-                                        </div>
-
-                                    </div>
+                                    ))}
                                 </div>
 
-                                <!-- Rows Loop -->
-                                {rowsData.map(i => {
-                                const item = dataList[i];
-                                return (
+                                {dataList.map((item) => (
                                     <div role="row" class={`benchmark-row unified-row ${item.rank === null ? 'provisional-row' : ''}`} data-model-name={item.name} data-provider={getModelProvider(item.name).name} aria-label={`${item.name}, ${item.rank === null ? 'provisional, insufficient coverage for an official rank' : `official rank ${item.rank}`}`}>
-                                        <div role="rowheader" class={`benchmark-cell model-cell ${item ? getModelColorClass(item.name) : ''}`} style="flex: 2;">
-                                            {item && (
-                                                <div class={`benchmark-content `}>
-                                                    <div class={`rank `} set:html={getRankDisplay(item.rank)}>
+                                        <div role="rowheader" class={`benchmark-cell model-cell ${getModelColorClass(item.name)}`}>
+                                            <div class="benchmark-content">
+                                                <div class="rank" set:html={getRankDisplay(item.rank)}></div>
+                                                <div class="model-info">
+                                                    <div class="model-name-line">
+                                                        <div class="model-name" title={item.name} data-release-date={item.releaseDate}>{item.name}</div>
+                                                        {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
                                                     </div>
-                                                    <div class="model-info">
-                                                        <div class="model-name-line">
-                                                            <div class="model-name" title={item.name} data-release-date={item.releaseDate}>{item.name}</div>
-                                                            {isNew(item.releaseDate) && <span class="new-badge">NEW</span>}{item.rank === null && <span class="provisional-badge">PROVISIONAL</span>}
-                                                        </div>
-                                                        {item.rank === null && <small class="coverage-note" aria-label={`Insufficient coverage for an official rank: ${item.coverage}; ${item.weightCoverage}`}>{item.coverage} · {item.weightCoverage}</small>}
-                                                    </div>
+                                                    {item.rank === null && <small class="coverage-note" aria-label={`Insufficient coverage for an official rank: ${item.coverage}; ${item.weightCoverage}`}>{item.coverage} · {item.weightCoverage}</small>}
                                                 </div>
-                                            )}
+                                            </div>
                                         </div>
 
-                                        {/* Challenge Columns */}
-                                        <div role="cell" class="benchmark-cell score-cell worm-score" style="flex: 1;"><span class={` ${item.worm === 0 || item.worm === 'INVALID' ? 'zero-score-glow' : ''} ${item.worm === bestDataAiScores.worm && item.worm > 0 ? 'best-score-glow' : ''}`}>{item.worm !== undefined ? (typeof item.worm === 'string' ? item.worm : `${item.worm}%`) : ''}</span></div>
-                                        <div role="cell" class="benchmark-cell score-cell koala-score" style="flex: 1;"><span class={` ${item.koala === 0 || item.koala === 'INVALID' ? 'zero-score-glow' : ''} ${item.koala === bestDataAiScores.koala && item.koala > 0 ? 'best-score-glow' : ''}`}>{item.koala !== undefined ? (typeof item.koala === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.koala}</span> : `${item.koala}%`) : ''}</span></div>
-                                        <div role="cell" class="benchmark-cell score-cell crow-score" style="flex: 1;"><span class={` ${item.crow === 0 || item.crow === 'INVALID' ? 'zero-score-glow' : ''} ${item.crow === bestDataAiScores.crow && item.crow > 0 ? 'best-score-glow' : ''}`}>{item.crow !== undefined ? (typeof item.crow === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.crow}</span> : `${item.crow}%`) : ''}</span></div>
-                                        <div role="cell" class="benchmark-cell score-cell octopus-score" style="flex: 1;"><span class={` ${item.octopus === 0 || item.octopus === 'INVALID' ? 'zero-score-glow' : ''} ${item.octopus === bestDataAiScores.octopus && item.octopus > 0 ? 'best-score-glow' : ''}`}>{item.octopus !== undefined ? (typeof item.octopus === 'string' ? <span style="color: #9CA3AF; font-size: 0.75rem;">{item.octopus}</span> : `${item.octopus}%`) : ''}</span></div>
-                                        <div role="cell" class="benchmark-cell score-cell raven-score" style="flex: 1;"><span class="status-badge planned" title="Planned future level. Protocol not yet defined.">Planned</span></div>
-                                        <div role="cell" class="benchmark-cell score-cell athena-score" style="flex: 1;"><span class="status-badge planned" title="Planned future level. Protocol not yet defined.">Planned</span></div>
+                                        {(['worm', 'koala', 'crow', 'octopus'] as const).map((level) => {
+                                            const value = item[level];
+                                            const isBest = typeof value === 'number' && value === bestDataAiScores[level] && value > 0;
+                                            const isZero = value === 0 || value === 'INVALID';
+                                            return (
+                                                <div role="cell" class={`benchmark-cell score-cell ${level}-score`}>
+                                                    <span class={`${isZero ? 'zero-score-glow' : ''} ${isBest ? 'best-score-glow' : ''}`}>
+                                                        {value !== undefined ? (typeof value === 'string' ? <span class="cell-status-text">{value}</span> : `${value}%`) : ''}
+                                                    </span>
+                                                </div>
+                                            );
+                                        })}
+                                        <div role="cell" class="benchmark-cell score-cell raven-score">
+                                            <span class="status-badge planned" title="Planned future level. Protocol not yet defined.">Planned</span>
+                                        </div>
+                                        <div role="cell" class="benchmark-cell score-cell athena-score">
+                                            <span class="status-badge planned" title="Planned future level. Protocol not yet defined.">Planned</span>
+                                        </div>
                                     </div>
-                                );
-                                })}
+                                ))}
                             </div>
-
-
                         </div>
                     </div>
                 </div>
             </section>
         </div>
-        <details class="home-notes"><summary>Scoring, coverage, and result statuses</summary>
-        <aside class="disclaimer"><strong>Fixed six-level normalization (29 July 2026).</strong> Full ladder denominator: 63 in every arena. Operational weight is Visual 31/63, Data Retrieval 15/63, and Chess 31/63. Planned and Locked capacity is reserved, so activation never expands the denominator. Current attainable maxima are 49.21%, 23.81%, and 49.21% respectively.</aside>
-        <aside class="disclaimer benchmark-status-legend" aria-labelledby="benchmark-status-title"><h2 id="benchmark-status-title">Benchmark status legend</h2><p><strong>Active:</strong> operational and scored. <strong>Planned:</strong> protocol not yet defined; its reserved weight earns zero without a model result. <strong>Locked:</strong> protocol exists but is not operational; its reserved weight earns zero without a model result. <strong>Invalid:</strong> attempted evaluation failed its validity rule; aggregated as zero with weight retained. <strong>Unavailable:</strong> active evaluation could not run; earns zero while denominator 63 remains fixed. <strong>Not tested:</strong> not attempted; earns zero while denominator 63 remains fixed and coverage is incomplete. A numeric 0% is a valid result and retains its weight.</p><p><strong>Claude 5 Fable (high):</strong> recorded active-level results are included in all three arenas; no unavailable or not-tested value affects its current qualification.</p></aside>
+
+        <details class="home-notes">
+            <summary>Scoring, coverage, and result statuses</summary>
+            <div class="home-notes-body">
+                <aside class="disclaimer">
+                    <strong>Fixed six-level normalization (29 July 2026).</strong> Full ladder denominator: 63 in every arena. Operational weight is Visual 31/63, Data Retrieval 15/63, and Chess 31/63. Planned and Locked capacity is reserved, so activation never expands the denominator. Current attainable maxima are 49.21%, 23.81%, and 49.21% respectively.
+                </aside>
+                <aside class="disclaimer benchmark-status-legend" aria-labelledby="benchmark-status-title">
+                    <h2 id="benchmark-status-title">Benchmark status legend</h2>
+                    <p><strong>Active:</strong> operational and scored. <strong>Planned:</strong> protocol not yet defined; its reserved weight earns zero without a model result. <strong>Locked:</strong> protocol exists but is not operational; its reserved weight earns zero without a model result. <strong>Invalid:</strong> attempted evaluation failed its validity rule; aggregated as zero with weight retained. <strong>Unavailable:</strong> active evaluation could not run; earns zero while denominator 63 remains fixed. <strong>Not tested:</strong> not attempted; earns zero while denominator 63 remains fixed and coverage is incomplete. A numeric 0% is a valid result and retains its weight.</p>
+                    <p><strong>Claude 5 Fable (high):</strong> recorded active-level results are included in all three arenas; no unavailable or not-tested value affects its current qualification.</p>
+                </aside>
+            </div>
         </details>
     </main>
 </Layout>
-
 
 <style>
     @import '../styles/home.css';

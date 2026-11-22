@@ -1,17 +1,112 @@
-.content-page { --page-accent: #93c5fd; position: relative; max-width: 64rem; margin: auto; padding: 2.75rem 1.5rem 4rem; }
-.page-heading { max-width: 48rem; margin-bottom: 2rem; padding-left: 1.25rem; border-left: 3px solid var(--page-accent); }
-.page-kicker { display: block; margin: 0 0 .5rem; color: var(--page-accent); font-size: .75rem; font-weight: 700; letter-spacing: .06em; }
-.page-heading h1 { margin: 0 0 .75rem; font-size: clamp(2rem, 4.5vw, 3.1rem); letter-spacing: -.035em; }
-.page-heading p { max-width: 45rem; margin: .6rem 0 0; color: var(--muted); font-size: 1rem; line-height: 1.7; }
-.content-card { color: var(--muted); padding: 1.75rem; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); line-height: 1.75; }
-.content-card > :first-child { margin-top: 0; }
-.content-card > :last-child { margin-bottom: 0; }
-.content-card h2 { margin: 2rem 0 .7rem; color: var(--text); font-size: 1.3rem; }
-.content-card > h1 { margin: 0 0 1.5rem; font-size: 1.75rem; }
-.content-card h3 { color: var(--text); }
-.content-card p { margin: 0 0 1rem; }
-.content-card strong { color: var(--text); font-weight: 600; }
-.content-card ul { margin: .75rem 0 1.5rem; padding-left: 1.25rem; }
-.content-card li { padding-left: .2rem; margin-bottom: .3rem; }
-.content-card a { color: var(--link); }
-@media (max-width: 640px) { .content-page { padding: 1.75rem 1rem 3rem; }.page-heading { margin-bottom: 1.5rem; padding-left: 1rem; }.content-card { padding: 1.2rem; } }
+/* Shared layout and editorial card styling for content, legal, glossary, and methodology pages. */
+
+.content-page {
+    --page-accent: var(--link);
+    position: relative;
+    max-width: 66rem;
+    margin: auto;
+    padding: 2.75rem 1.5rem 4.25rem;
+}
+
+.page-heading {
+    max-width: 50rem;
+    margin-bottom: 2rem;
+    padding-left: 1.25rem;
+    border-left: 3px solid var(--page-accent);
+}
+
+.page-kicker {
+    display: block;
+    margin: 0 0 0.5rem;
+    color: var(--page-accent);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.page-heading h1 {
+    margin: 0 0 0.75rem;
+    font-size: clamp(2rem, 4.4vw, 3.05rem);
+    letter-spacing: -0.03em;
+}
+
+.page-heading p {
+    max-width: 46rem;
+    margin: 0.55rem 0 0;
+    color: var(--muted);
+    font-size: 0.98rem;
+    line-height: 1.72;
+}
+
+.content-card {
+    padding: 2rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, #101c31 0%, #0d1728 100%);
+    color: var(--muted);
+    line-height: 1.78;
+    box-shadow: var(--surface-highlight), 0 10px 28px rgba(2, 8, 20, 0.25);
+}
+
+.content-card > :first-child {
+    margin-top: 0;
+}
+
+.content-card > :last-child {
+    margin-bottom: 0;
+}
+
+.content-card h2 {
+    margin: 2rem 0 0.7rem;
+    color: var(--text);
+    font-size: 1.32rem;
+}
+
+.content-card > h1 {
+    margin: 0 0 1.5rem;
+    font-size: 1.75rem;
+}
+
+.content-card h3 {
+    color: var(--text);
+}
+
+.content-card p {
+    margin: 0 0 1rem;
+}
+
+.content-card strong {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.content-card ul,
+.content-card ol {
+    margin: 0.75rem 0 1.5rem;
+    padding-left: 1.3rem;
+}
+
+.content-card li {
+    padding-left: 0.2rem;
+    margin-bottom: 0.38rem;
+}
+
+.content-card a {
+    color: var(--link);
+}
+
+@media (max-width: 640px) {
+    .content-page {
+        padding: 1.75rem 1rem 3rem;
+    }
+
+    .page-heading {
+        margin-bottom: 1.5rem;
+        padding-left: 1rem;
+    }
+
+    .content-card {
+        padding: 1.25rem;
+    }
+}

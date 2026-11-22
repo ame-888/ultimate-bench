@@ -1,45 +1,411 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { METHODOLOGY, METHODOLOGY_SECTIONS, methodologyFacts } from '../../data/methodology';
+
 const canonical = new URL(METHODOLOGY.publicationPath, Astro.site).href;
 ---
 <Layout robots="noindex, nosnippet" title={METHODOLOGY.webTitle} description={METHODOLOGY.description}>
-  <Fragment slot="head">
-    <meta property="og:image" content={new URL('/favicon.svg', Astro.site)} />
-    <meta property="og:image:alt" content="Ultimate Bench methodology publication" />
-    <meta name="twitter:card" content="summary" /><meta name="twitter:title" content={METHODOLOGY.webTitle} /><meta name="twitter:description" content={METHODOLOGY.description} />
-  </Fragment>
-  <main class="publication">
-    <header class="cover">
-      <p class="eyebrow">Complete public methodology</p><h1>Ultimate Bench:<br/><span>Methodology and Evaluation Protocol</span></h1>
-      <div class="actions">
-        <a class="primary" href={METHODOLOGY.pdfPath}>Open PDF</a><a href={METHODOLOGY.pdfPath} download>Download PDF</a>
-        <button id="share-document" type="button">Share document</button><button id="copy-link" type="button" data-url={canonical}>Copy link</button>
-      </div><p id="share-status" class="status" role="status" aria-live="polite"></p>
-      <p class="abstract">{METHODOLOGY.description} This consolidated publication supplements the arena-specific pages; protected test cases and answer keys remain private.</p>
-      <p class="meta"><strong>Version {METHODOLOGY.version}</strong><span>Revised {METHODOLOGY.revisionDate}</span><a href={METHODOLOGY.versionedPdfPath}>Versioned PDF</a></p>
-    </header>
-    <div class="document-grid">
-      <nav class="toc" aria-label="Table of contents"><h2>Contents</h2><ol>{METHODOLOGY_SECTIONS.map((section)=><li><a href={`#${section.id}`}>{section.title}</a></li>)}</ol></nav>
-      <article>
-        {METHODOLOGY_SECTIONS.map((section, index) => <section id={section.id}><p class="section-number">{String(index+1).padStart(2,'0')}</p><h2>{section.title}</h2>{section.paragraphs.map(p=><p>{p}</p>)}
-          {section.id === 'weights' && <div class="fact-grid">{methodologyFacts.map(f=><div><strong>{f.name}</strong><span>Operational {f.operationalWeight}/{f.permanentDenominator}</span><span>Reserved {f.reservedWeight}/{f.permanentDenominator}</span></div>)}</div>}
-          {['visual-bench','data-bench','chess-bench'].includes(section.id) && (()=>{const id=section.id==='visual-bench'?'visual':section.id==='data-bench'?'data-retrieval':'chess';const f=methodologyFacts.find(x=>x.id===id)!;return <><div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable benchmark table"><table><thead><tr><th>Level</th><th>Name</th><th>Weight</th><th>Status</th></tr></thead><tbody>{f.levels.map(l=><tr><td>{l.number}</td><th scope="row">{l.name}</th><td>{l.weight}</td><td>{l.status}</td></tr>)}</tbody></table></div><p><a href={`/methodology/${id==='visual'?'visual-bench':id==='data-retrieval'?'data-bench':'chess-bench'}/`}>Read the detailed {f.name} methodology</a></p></>})()}
-        </section>)}
-      </article>
-    </div>
-  </main>
-  <script is:inline define:vars={{ canonical, title: METHODOLOGY.webTitle, description: METHODOLOGY.description }}>
-    const status=document.querySelector('#share-status'); const copy=async()=>{try{await navigator.clipboard.writeText(canonical)}catch{const t=document.createElement('textarea');t.value=canonical;document.body.append(t);t.select();document.execCommand('copy');t.remove()}status.textContent='Link copied to clipboard.'};
-    document.querySelector('#copy-link')?.addEventListener('click',copy); document.querySelector('#share-document')?.addEventListener('click',async()=>{if(navigator.share){try{await navigator.share({title,text:description,url:canonical});status.textContent='Share sheet opened.'}catch(e){if(e.name!=='AbortError')await copy()}}else await copy()});
-  </script>
+    <Fragment slot="head">
+        <meta property="og:image" content={new URL('/favicon.svg', Astro.site)} />
+        <meta property="og:image:alt" content="Ultimate Bench methodology publication" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={METHODOLOGY.webTitle} />
+        <meta name="twitter:description" content={METHODOLOGY.description} />
+    </Fragment>
+    <main class="publication">
+        <header class="cover">
+            <p class="eyebrow">Complete public methodology</p>
+            <h1>Ultimate Bench:<br /><span>Methodology and Evaluation Protocol</span></h1>
+            <div class="actions">
+                <a class="primary" href={METHODOLOGY.pdfPath}>Open PDF</a>
+                <a href={METHODOLOGY.pdfPath} download>Download PDF</a>
+                <button id="share-document" type="button" data-url={canonical} data-title={METHODOLOGY.webTitle} data-description={METHODOLOGY.description}>Share document</button>
+                <button id="copy-link" type="button" data-url={canonical}>Copy link</button>
+            </div>
+            <p id="share-status" class="status" role="status" aria-live="polite"></p>
+            <p class="abstract">{METHODOLOGY.description} This consolidated publication supplements the arena-specific pages; protected test cases and answer keys remain private.</p>
+            <p class="meta">
+                <strong>Version {METHODOLOGY.version}</strong>
+                <span>Revised {METHODOLOGY.revisionDate}</span>
+                <a href={METHODOLOGY.versionedPdfPath}>Versioned PDF</a>
+            </p>
+        </header>
+        <div class="document-grid">
+            <nav class="toc" aria-label="Table of contents">
+                <h2>Contents</h2>
+                <ol>
+                    {METHODOLOGY_SECTIONS.map((section) => (
+                        <li><a href={`#${section.id}`}>{section.title}</a></li>
+                    ))}
+                </ol>
+            </nav>
+            <article>
+                {METHODOLOGY_SECTIONS.map((section, index) => (
+                    <section id={section.id}>
+                        <p class="section-number">{String(index + 1).padStart(2, '0')}</p>
+                        <h2>{section.title}</h2>
+                        {section.paragraphs.map((p) => <p>{p}</p>)}
+                        {section.id === 'weights' && (
+                            <div class="fact-grid">
+                                {methodologyFacts.map((f) => (
+                                    <div>
+                                        <strong>{f.name}</strong>
+                                        <span>Operational {f.operationalWeight}/{f.permanentDenominator}</span>
+                                        <span>Reserved {f.reservedWeight}/{f.permanentDenominator}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        {['visual-bench', 'data-bench', 'chess-bench'].includes(section.id) &&
+                            (() => {
+                                const id = section.id === 'visual-bench' ? 'visual' : section.id === 'data-bench' ? 'data-retrieval' : 'chess';
+                                const f = methodologyFacts.find((x) => x.id === id)!;
+                                return (
+                                    <>
+                                        <div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable benchmark table">
+                                            <table>
+                                                <thead>
+                                                    <tr><th>Level</th><th>Name</th><th>Weight</th><th>Status</th></tr>
+                                                </thead>
+                                                <tbody>
+                                                    {f.levels.map((l) => (
+                                                        <tr><td>{l.number}</td><th scope="row">{l.name}</th><td>{l.weight}</td><td>{l.status}</td></tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <p>
+                                            <a href={`/methodology/${id === 'visual' ? 'visual-bench' : id === 'data-retrieval' ? 'data-bench' : 'chess-bench'}/`}>
+                                                Read the detailed {f.name} methodology
+                                            </a>
+                                        </p>
+                                    </>
+                                );
+                            })()}
+                    </section>
+                ))}
+            </article>
+        </div>
+    </main>
 </Layout>
+
+<script>
+    const status = document.querySelector<HTMLElement>('#share-status');
+    const copyBtn = document.querySelector<HTMLButtonElement>('#copy-link');
+    const shareBtn = document.querySelector<HTMLButtonElement>('#share-document');
+
+    const canonical = copyBtn?.dataset.url ?? window.location.href;
+    const title = shareBtn?.dataset.title ?? document.title;
+    const description = shareBtn?.dataset.description ?? '';
+
+    const copyLink = async () => {
+        try {
+            await navigator.clipboard.writeText(canonical);
+            if (status) status.textContent = 'Link copied to clipboard.';
+        } catch {
+            if (status) status.textContent = `Copy this link: ${canonical}`;
+        }
+    };
+
+    copyBtn?.addEventListener('click', copyLink);
+    shareBtn?.addEventListener('click', async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({ title, text: description, url: canonical });
+                if (status) status.textContent = 'Share sheet opened.';
+            } catch (error) {
+                if (!(error instanceof DOMException && error.name === 'AbortError')) {
+                    await copyLink();
+                }
+            }
+        } else {
+            await copyLink();
+        }
+    });
+</script>
+
 <style>
+.publication {
+    max-width: 72rem;
+    margin: auto;
+    padding: 2.75rem 1.5rem 4.25rem;
+    color: var(--muted);
+}
 
-.publication{max-width:72rem;margin:auto;padding:2.75rem 1.5rem 4rem;color:var(--muted)}.cover{max-width:52rem}.eyebrow,.section-number{font-size:.8rem;color:var(--muted);margin:0 0 .5rem}.cover h1{margin:0 0 1rem;font-size:clamp(1.85rem,4vw,2.6rem)}.cover h1 span{color:inherit}.abstract{line-height:1.75}.meta{display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;font-size:.85rem}.meta strong{color:var(--text);font-weight:500}.actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.25rem}.actions a,.actions button{display:inline-flex;align-items:center;min-height:40px;padding:.5rem .8rem;border:1px solid var(--line);border-radius:4px;background:transparent;color:var(--text);font:inherit;font-size:.85rem;text-decoration:none}.status{min-height:1.5rem;font-size:.85rem}
-.document-grid{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:3rem;margin-top:2rem;padding-top:2rem;border-top:1px solid var(--line)}.document-grid>*{min-width:0}.toc{position:sticky;top:5rem;align-self:start;max-height:calc(100dvh - 7rem);overflow-y:auto}.toc h2{font-size:1rem;margin-top:0}.toc ol{padding-left:1.25rem}.toc li{margin:.4rem 0;font-size:.8rem}.toc a{text-decoration:none}.toc a:hover{text-decoration:underline}article section{margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid var(--line);scroll-margin-top:5rem}article h2{margin:.3rem 0 1rem;font-size:1.4rem}article p{line-height:1.8}.fact-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.fact-grid div{display:flex;flex-direction:column;gap:.3rem;font-size:.85rem}.fact-grid strong{color:var(--text);font-weight:500}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:.75rem;border-bottom:1px solid var(--line);text-align:left;font-size:.9rem}th{color:var(--text);font-weight:500}thead{background:var(--panel)}
-@media(max-width:760px){.publication{padding:1.75rem 1rem 3rem}.document-grid{grid-template-columns:1fr;gap:1.5rem}.toc{position:static;max-height:none}.toc ol{columns:2}.fact-grid{grid-template-columns:1fr}}
-@media(max-width:430px){.toc ol{columns:1}}
-@media print{nav.navbar,.site-footer,.actions,.status,.toc{display:none!important}.publication{max-width:none;padding:0;color:#111}.cover h1,article h2{color:#111}.document-grid{display:block}article section{break-before:page}body{background:#fff!important}}
+.cover {
+    max-width: 54rem;
+}
 
+.eyebrow,
+.section-number {
+    margin: 0 0 0.5rem;
+    color: var(--accent-data);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.cover h1 {
+    margin: 0 0 1rem;
+    font-size: clamp(1.95rem, 4.2vw, 2.85rem);
+}
+
+.cover h1 span {
+    color: var(--link);
+}
+
+.abstract {
+    line-height: 1.75;
+}
+
+.meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.5rem;
+    font-size: 0.85rem;
+}
+
+.meta strong {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 1.25rem;
+}
+
+.actions a,
+.actions button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 7px;
+    background: var(--panel);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.84rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.actions a:hover,
+.actions button:hover {
+    border-color: var(--link);
+    background: var(--panel-hover);
+}
+
+.actions .primary {
+    border-color: rgba(125, 196, 255, 0.45);
+    background: rgba(30, 54, 89, 0.9);
+    color: #e4f2ff;
+}
+
+.status {
+    min-height: 1.5rem;
+    font-size: 0.84rem;
+    color: var(--accent-chess);
+}
+
+.document-grid {
+    display: grid;
+    grid-template-columns: 16rem minmax(0, 1fr);
+    gap: 3rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line-subtle);
+}
+
+.document-grid > * {
+    min-width: 0;
+}
+
+.toc {
+    position: sticky;
+    top: 5rem;
+    align-self: start;
+    max-height: calc(100dvh - 7rem);
+    overflow-y: auto;
+    padding: 1.15rem 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+}
+
+.toc h2 {
+    margin: 0 0 0.75rem;
+    font-size: 0.92rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.toc ol {
+    padding-left: 1.2rem;
+    margin: 0;
+}
+
+.toc li {
+    margin: 0.42rem 0;
+    font-size: 0.8rem;
+}
+
+.toc a {
+    color: var(--muted);
+    text-decoration: none;
+}
+
+.toc a:hover {
+    color: var(--link);
+    text-decoration: underline;
+}
+
+article section {
+    margin-bottom: 2.25rem;
+    padding-bottom: 2.25rem;
+    border-bottom: 1px solid var(--line-subtle);
+    scroll-margin-top: 5.5rem;
+}
+
+article h2 {
+    margin: 0.3rem 0 1rem;
+    font-size: 1.45rem;
+}
+
+article p {
+    line-height: 1.8;
+}
+
+.fact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 1.25rem 0;
+}
+
+.fact-grid div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--panel);
+    font-size: 0.84rem;
+}
+
+.fact-grid strong {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.table-wrap {
+    overflow-x: auto;
+    margin: 1.15rem 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: #0a1322;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 0.75rem 0.9rem;
+    border-bottom: 1px solid var(--line-subtle);
+    text-align: left;
+    font-size: 0.88rem;
+}
+
+tbody tr:last-child th,
+tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+th {
+    color: var(--text);
+    font-weight: 600;
+}
+
+thead {
+    background: #132238;
+}
+
+thead th {
+    color: var(--muted);
+    font-size: 0.74rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+@media (max-width: 760px) {
+    .publication {
+        padding: 1.75rem 1rem 3rem;
+    }
+
+    .document-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .toc {
+        position: static;
+        max-height: none;
+    }
+
+    .toc ol {
+        columns: 2;
+    }
+
+    .fact-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 430px) {
+    .toc ol {
+        columns: 1;
+    }
+}
+
+@media print {
+    nav.navbar,
+    .site-footer,
+    .actions,
+    .status,
+    .toc {
+        display: none !important;
+    }
+
+    .publication {
+        max-width: none;
+        padding: 0;
+        color: #111;
+    }
+
+    .cover h1,
+    article h2 {
+        color: #111;
+    }
+
+    .document-grid {
+        display: block;
+    }
+
+    article section {
+        break-before: page;
+    }
+
+    body {
+        background: #fff !important;
+    }
+}
 </style>
