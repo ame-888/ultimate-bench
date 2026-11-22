@@ -6,6 +6,16 @@ export const benchmarks = {
     ],
     models: [
         {
+            name: 'Gemini 4 Neon (high)',
+            scores: {
+                'lvl1': 100,
+                'lvl2': 89,
+                'lvl3': 88,
+                'lvl4': 98,
+                'lvl5': 0
+            }
+        },
+        {
             name: 'Gemini 4.0 Argon',
             comparison: { group: 'gemini-4-0-argon-code', condition: 'Code execution available' },
             scores: {
