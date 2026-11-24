@@ -119,7 +119,7 @@ const process = [
                 <p class="section-label">Scoring &amp; aggregation</p>
                 <h2 id="scoring-title">Progressive Level Weighting,<br />three distinct signals.</h2>
                 <p><strong>Fixed six-level normalization:</strong> Every arena is permanently normalized against all six progressive weights—1, 2, 4, 8, 16, and 32—for a full ladder denominator of 63. Active numeric results earn weighted points; all unearned or unavailable capacity contributes zero to the numerator. Planned and Locked levels reserve future weight without model-level results, so activation never changes the denominator.</p>
-                <p><code>Arena score = Σ(earned level result × level weight) / 63</code>. Operational weight is Visual 31/63, Data Retrieval 15/63, and Chess 31/63; the currently attainable maxima are 49.21%, 23.81%, and 49.21%. An arena score is weighted performance earned against the complete intended six-level arena—not a percentage only across Active levels.</p>
+                <p><code>Arena score = Σ(earned level result × level weight) / 63</code>. Operational weight is Visual 63/63, Data Retrieval 15/63, and Chess 31/63; the currently attainable maxima are 100.00%, 23.81%, and 49.21%. An arena score is weighted performance earned against the complete intended six-level arena—not a percentage only across Active levels.</p>
                 <p><strong>Overall = (Visual + Data Retrieval + Chess) / 3</strong>, calculated at full precision and rounded only for display. Token price affects only cost comparisons, chart position, and Pareto membership—never results, canonical scores, or ranks.</p>
             </div>
             <div class="formula-card" aria-label="Progressive Level Weighting formula">

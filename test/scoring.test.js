@@ -9,11 +9,11 @@ const {ARENAS,ARENA_LIST,LEVEL_STATUSES,RESULT_STATUSES,activeLevels,canonicalDe
 
 test('canonical six-position structures and statuses are exact',()=>{
  for(const arena of ARENA_LIST){assert.equal(arena.levels.length,6);assert.deepEqual(arena.levels.map(x=>x.weight),[1,2,4,8,16,32]);assert.equal(canonicalDenominator(arena),63);validateArenaDefinition(arena)}
- assert.deepEqual(ARENAS.visual.levels.map(x=>x.status),['Active','Active','Active','Active','Active','Planned']);
+ assert.deepEqual(ARENAS.visual.levels.map(x=>x.status),['Active','Active','Active','Active','Active','Active']);
  assert.deepEqual(ARENAS.dataRetrieval.levels.map(x=>x.status),['Active','Active','Active','Active','Planned','Planned']);
  assert.deepEqual(ARENAS.chess.levels.map(x=>x.status),['Active','Active','Active','Active','Active','Locked']);
  assert.match(ARENAS.chess.levels[5].unlockCondition,/at least one evaluated model obtains a numeric score above 0 on Python/);
- assert.deepEqual(ARENA_LIST.map(operationalWeight),[31,15,31]);
+ assert.deepEqual(ARENA_LIST.map(operationalWeight),[63,15,31]);
 });
 test('definition validation prevents structural and denominator drift',()=>{
  assert.throws(()=>validateArenaDefinition({...ARENAS.visual,levels:ARENAS.visual.levels.slice(0,5)}),/exactly six/);
@@ -28,14 +28,14 @@ test('fixed denominator arithmetic covers all result states',()=>{
  const none=calculateArenaScore(ARENAS.dataRetrieval,{worm:'UNAVAILABLE',koala:'NOT_TESTED',crow:'UNAVAILABLE',octopus:'NOT_TESTED'});assert.equal(none.score,0);assert.equal(none.computable,true);
 });
 test('current perfect Active results reserve future capacity',()=>{
- assert.equal(calculateArenaScore(ARENAS.visual,{lvl1:100,lvl2:100,lvl3:100,lvl4:100,lvl5:100}).score,3100/63);
+ assert.equal(calculateArenaScore(ARENAS.visual,{lvl1:100,lvl2:100,lvl3:100,lvl4:100,lvl5:100,lvl6:100}).score,100);
  assert.equal(calculateArenaScore(ARENAS.dataRetrieval,{worm:100,koala:100,crow:100,octopus:100}).score,1500/63);
  assert.equal(calculateArenaScore(ARENAS.chess,{mouse:100,spider:100,wolf:100,hawk:100,python:100}).score,3100/63);
- const future=structuredClone(ARENAS.visual);future.levels[5].status='Active';assert.equal(canonicalDenominator(future),63);
+ const future=structuredClone(ARENAS.chess);future.levels[5].status='Active';assert.equal(canonicalDenominator(future),63);
 });
 test('Active fields remain required, non-Active fields and origins are rejected',()=>{
  assert.throws(()=>calculateArenaScore(ARENAS.visual,{lvl1:1}),/missing/);
- const planned=structuredClone(benchmarks);planned.models[0].scores.lvl6=0;assert.throws(()=>validateBenchmarkRecords(planned),/Planned/);
+ const planned=structuredClone(benchmarks);planned.dataRetrieval[0].scores.raven=0;assert.throws(()=>validateBenchmarkRecords(planned),/Planned/);
  const locked=structuredClone(benchmarks);locked.chessModels[0].scores.hydra=0;assert.throws(()=>validateBenchmarkRecords(locked),/Locked/);
  const metadata=structuredClone(benchmarks);metadata.chessModels[0].origins={python:'legacy'};assert.throws(()=>validateBenchmarkRecords(metadata),/unsupported metadata field/);
 });
@@ -80,7 +80,7 @@ test('Grok 4.5 Fast results are complete, official, and qualify for Overall',()=
  assert.equal(result.completeCoverage,true);assert.equal(result.rankEligible,true);
  const built=buildLeaderboard(benchmarks),row=built.arenaRows['data-retrieval'].find(item=>item.name===record.name);
  assert.ok(row?.rank);
- assert.deepEqual(benchmarks.models.find(item=>item.name===name)?.scores,{lvl1:26,lvl2:9,lvl3:3,lvl4:0,lvl5:0});
+ assert.deepEqual(benchmarks.models.find(item=>item.name===name)?.scores,{lvl1:26,lvl2:9,lvl3:3,lvl4:0,lvl5:0,lvl6:0});
  assert.deepEqual(benchmarks.chessModels.find(item=>item.name===name)?.scores,{mouse:2,spider:0,wolf:0,hawk:0,python:0});
  const overall=built.rows.find(item=>item.name===name);assert.ok(overall);
  assert.equal(overall.scores.visual,56/63);assert.equal(overall.scores['data-retrieval'],73/63);assert.equal(overall.scores.chess,2/63);
@@ -89,7 +89,7 @@ test('Grok 4.5 Fast results are complete, official, and qualify for Overall',()=
 test('Grok 4.5 Expert results and release metadata feed every leaderboard',()=>{
  const name='Grok 4.5 Expert';
  assert.equal(api.getModelReleaseDate(name),'2026-07-08');
- assert.deepEqual(benchmarks.models.find(row=>row.name===name)?.scores,{lvl1:25,lvl2:19,lvl3:3,lvl4:0,lvl5:0});
+ assert.deepEqual(benchmarks.models.find(row=>row.name===name)?.scores,{lvl1:25,lvl2:19,lvl3:3,lvl4:0,lvl5:0,lvl6:0});
  assert.deepEqual(benchmarks.dataRetrieval.find(row=>row.name===name)?.scores,{worm:26,koala:18,crow:9,octopus:0});
  assert.deepEqual(benchmarks.chessModels.find(row=>row.name===name)?.scores,{mouse:16,spider:0,wolf:0,hawk:0,python:0});
  const built=buildLeaderboard(benchmarks),row=built.rows.find(item=>item.name===name);assert.ok(row);
@@ -100,7 +100,7 @@ test('Grok 4.5 Expert results and release metadata feed every leaderboard',()=>{
 test('GPT-5.6 Sol August completed results qualify for Overall',()=>{
  const name='GPT-5.6 Sol (high) - AUGUST';
  const visualRecords=benchmarks.models.filter(row=>row.name===name);assert.equal(visualRecords.length,1);
- assert.deepEqual(visualRecords[0].scores,{lvl1:92,lvl2:84,lvl3:85,lvl4:50,lvl5:0});
+ assert.deepEqual(visualRecords[0].scores,{lvl1:92,lvl2:84,lvl3:85,lvl4:50,lvl5:0,lvl6:0});
  const chessRecord=benchmarks.chessModels.find(row=>row.name===name);assert.ok(chessRecord);
  assert.deepEqual(chessRecord.scores,{mouse:51,spider:25,wolf:0,hawk:0,python:0});
  const record=benchmarks.dataRetrieval.find(row=>row.name===name);assert.ok(record);
@@ -123,7 +123,7 @@ test('Gemini 3.7 Flash without code execution publishes finalized results and qu
  const name='Gemini 3.7 Flash (without code execution)';
  assert.equal(api.getModelReleaseDate(name),'2026-08-13');
  const visualRecords=benchmarks.models.filter(row=>row.name===name);assert.equal(visualRecords.length,1);
- assert.deepEqual(visualRecords[0].scores,{lvl1:84,lvl2:83,lvl3:74,lvl4:13,lvl5:0});
+ assert.deepEqual(visualRecords[0].scores,{lvl1:84,lvl2:83,lvl3:74,lvl4:13,lvl5:0,lvl6:0});
  const dataRecords=benchmarks.dataRetrieval.filter(row=>row.name===name);assert.equal(dataRecords.length,1);
  assert.deepEqual(dataRecords[0].scores,{worm:26,koala:'INVALID',crow:20,octopus:'INVALID'});
  assert.equal(Object.hasOwn(dataRecords[0].scores,'raven'),false);assert.equal(Object.hasOwn(dataRecords[0].scores,'athena'),false);
@@ -140,6 +140,19 @@ test('Gemini 3.7 Flash without code execution publishes finalized results and qu
  const overall=built.rows.find(row=>row.name===name);assert.ok(overall);
  assert.equal(overall.scores.visual,650/63);assert.equal(overall.scores['data-retrieval'],106/63);assert.equal(overall.scores.chess,378/63);
  assert.equal(overall.score,6);assert.equal(overall.rank,4);
+});
+test('GPT-6.2 Sol (high) activates Visual Bench Level 6 and leads Visual Bench',()=>{
+ const name='GPT-6.2 Sol (high)';
+ assert.equal(api.getModelReleaseDate(name),'2026-11-17');
+ const record=benchmarks.models.find(row=>row.name===name);assert.ok(record);
+ assert.deepEqual(record.scores,{lvl1:100,lvl2:90,lvl3:90,lvl4:72,lvl5:25,lvl6:21});
+ for(const other of benchmarks.models)if(other.name!==name)assert.equal(other.scores.lvl6,0,other.name);
+ const result=calculateArenaScore(ARENAS.visual,record.scores);
+ assert.equal(result.numerator,2288);assert.equal(result.denominator,63);assert.equal(result.score,2288/63);
+ assert.equal(formatAggregateScore(result.score),'36.32');assert.equal(result.coverage,'6/6 active levels');
+ assert.equal(result.completeCoverage,true);assert.equal(result.rankEligible,true);
+ const built=buildLeaderboard(benchmarks),visualRow=built.arenaRows.visual.find(row=>row.name===name);
+ assert.equal(visualRow?.rank,1);assert.equal(visualRow?.score,2288/63);
 });
 test('Gemini 3.1 Pro Preview with code execution has complete DATA results',()=>{
  const name='Gemini 3.1 Pro Preview';
@@ -183,7 +196,7 @@ test('coverage and rank eligibility are independent from reserved capacity',()=>
 });
 test('published migration preserves Active fields and excludes all non-Active fields',()=>{
  for(const r of benchmarks.chessModels){assert.equal(Object.hasOwn(r.scores,'hydra'),false);assert.equal(Object.hasOwn(r,'origins'),false);for(const k of ['mouse','spider','wolf','hawk','python'])assert.equal(Object.hasOwn(r.scores,k),true)}
- for(const r of benchmarks.models)assert.equal(Object.hasOwn(r.scores,'lvl6'),false);
+ for(const r of benchmarks.models)for(const k of ['lvl1','lvl2','lvl3','lvl4','lvl5','lvl6'])assert.equal(Object.hasOwn(r.scores,k),true);
  for(const r of benchmarks.dataRetrieval)for(const k of ['raven','athena'])assert.equal(Object.hasOwn(r.scores,k),false);
  assert.equal(validateBenchmarkRecords(benchmarks),true);
 });
@@ -239,8 +252,7 @@ test('methodology semantics derive from canonical statuses and metadata',async()
  const fs=await import('node:fs/promises');
  const [general,visual,data,chess,spec]=await Promise.all(['src/pages/methodology.astro','src/pages/methodology/visual-bench.astro','src/pages/methodology/data-bench.astro','src/pages/methodology/chess-bench.astro','src/data/benchmarkSpec.ts'].map(path=>fs.readFile(path,'utf8')));
  assert.match(general,/Active, Planned, and Locked levels/);
- assert.match(visual,/Eagle contributes 16\/63 and Owl 8\/63 of the permanent complete six-level Visual ladder/);
- assert.match(visual,/currently operational Visual weight of 31[\s\S]*16\/31 and 8\/31 respectively/);
+ assert.match(visual,/Beholder contributes 32\/63, Eagle contributes 16\/63, and Owl contributes 8\/63 of the permanent complete six-level Visual ladder/);
  assert.doesNotMatch(visual,/(?:16\/31|8\/31)[^.]*complete score/i);
  assert.match(data,/Raven is <strong>Planned<\/strong>[\s\S]*no finalized operational protocol/);
  assert.match(spec,/Raven'[\s\S]*LEVEL_STATUSES\.PLANNED[\s\S]*no finalized operational protocol exists/);

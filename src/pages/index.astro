@@ -93,7 +93,7 @@ type VisualRow = {
     lvl3: LevelValue;
     lvl4: LevelValue;
     lvl5: LevelValue;
-    lvl6: string;
+    lvl6: LevelValue;
     rank: number | null;
     canonicalScore: number;
     canonicalRank: number | null;
@@ -113,7 +113,7 @@ const visualRecordByName = new Map(
             lvl3: m.scores.lvl3,
             lvl4: m.scores.lvl4,
             lvl5: m.scores.lvl5,
-            lvl6: 'PLANNED',
+            lvl6: m.scores.lvl6,
         },
     ]),
 );
@@ -129,7 +129,7 @@ const unifiedList: VisualRow[] = visualArenaRows.map((row) => ({
     weightCoverage: row.canonical.weightCoverage,
 }));
 
-const bestAiScores = computeBestScores(unifiedList, ['lvl1', 'lvl2', 'lvl3', 'lvl4', 'lvl5'] as const);
+const bestAiScores = computeBestScores(unifiedList, ['lvl1', 'lvl2', 'lvl3', 'lvl4', 'lvl5', 'lvl6'] as const);
 
 // --- Data Retrieval Bench Data ---
 type DataRow = {
@@ -313,7 +313,7 @@ const visualHeaders = [
     { key: 'lvl3', css: 'chimp', creature: 'chimpanzee', label: 'CHIMPANZEE', aria: 'Show Chimpanzee Level 3 explanation', id: 'tooltip-explanation-4', heading: 'CHIMPANZEE (Level 3):', body: 'The Rhino image receives imperfect background removal, adding segmentation artifacts and information loss. The same ten questions are repeated in ten fresh, isolated conversations.' },
     { key: 'lvl4', css: 'owl', creature: 'owl', label: 'OWL', aria: 'Show Owl Level 4 explanation', id: 'tooltip-explanation-5', heading: 'OWL (Level 4):', body: 'In a separate 17 × 11 grid with a central 5 × 3 spanning image, the model locates two named anchors and identifies their unique horizontal or vertical midpoint character. Ten fixed questions are repeated in ten fresh, isolated conversations.' },
     { key: 'lvl5', css: 'eagle', creature: 'eagle', label: 'EAGLE', aria: 'Show Eagle Level 5 explanation', id: 'tooltip-explanation-6', heading: 'EAGLE (Level 5):', body: 'A larger, denser mixed-source grid combines animation, live action, irregular cropping, and selective color inversion. The model finds horizontal, vertical, or diagonal midpoint characters across ten fresh, isolated administrations.' },
-    { key: 'lvl6', css: 'beholder', creature: 'beholder', label: 'BEHOLDER', aria: 'Show Beholder Level 6 explanation', id: 'tooltip-explanation-7', heading: 'BEHOLDER (Level 6):', body: 'Planned evaluation. The Level 6 stimulus, task structure, scoring protocol, and measured capabilities have not yet been defined. No model results are currently available.' },
+    { key: 'lvl6', css: 'beholder', creature: 'beholder', label: 'BEHOLDER', aria: 'Show Beholder Level 6 explanation', id: 'tooltip-explanation-7', heading: 'BEHOLDER (Level 6):', body: 'Active Level 6 evaluation with weight 32 in the permanent 63-point denominator.' },
 ] as const;
 
 const chessHeaders = [
@@ -611,7 +611,7 @@ const dataHeaders = [
                     <header class="detail-hero">
                         <span class="detail-kicker">Arena 01 · Perception</span>
                         <h2>Visual Bench</h2>
-                        <p>Five Active fixed-condition protocols for repeatable character localization and midpoint reasoning, with a sixth level Planned.</p>
+                        <p>Six Active fixed-condition protocols for repeatable character localization and midpoint reasoning.</p>
                     </header>
                     <div class="benchmark-description">
                         <p>Visual Bench is the first benchmark in the Ultimate Bench series.<br />
@@ -623,7 +623,7 @@ const dataHeaders = [
                             <li>stability across different kinds of noise</li>
                         </ul>
                         <p class="methodology-link"><a href="/methodology/visual-bench/">View full Visual Bench methodology</a></p>
-                        <p>The five Active levels use increasingly complex fixed task conditions. Each level repeats ten fixed questions across ten fresh, isolated conversations; its percentage is the number correct among 100 response instances, not 100 independent items. Level 6 remains Planned; its weight is reserved without a model result.</p>
+                        <p>The six Active levels use increasingly complex fixed task conditions. Each level repeats ten fixed questions across ten fresh, isolated conversations; its percentage is the number correct among 100 response instances, not 100 independent items.</p>
                     </div>
                     <div class="ranking-controls">
                         <label for="visual-ranking-method">Ranking Method:</label>
@@ -672,7 +672,7 @@ const dataHeaders = [
                                             </div>
                                         </div>
                                     </div>
-                                    {([['lvl1', 'mole'], ['lvl2', 'rhino'], ['lvl3', 'chimp'], ['lvl4', 'owl'], ['lvl5', 'eagle']] as const).map(([levelKey, cssKey]) => {
+                                    {([['lvl1', 'mole'], ['lvl2', 'rhino'], ['lvl3', 'chimp'], ['lvl4', 'owl'], ['lvl5', 'eagle'], ['lvl6', 'beholder']] as const).map(([levelKey, cssKey]) => {
                                         const value = item[levelKey];
                                         const isBest = typeof value === 'number' && value === bestAiScores[levelKey] && value > 0;
                                         const isZero = value === 0 || value === 'INVALID';
@@ -684,9 +684,6 @@ const dataHeaders = [
                                             </div>
                                         );
                                     })}
-                                    <div role="cell" class="benchmark-cell score-cell beholder-score">
-                                        <span class="status-badge planned" title="Planned future level. Protocol not yet defined.">Planned</span>
-                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -886,7 +883,7 @@ const dataHeaders = [
             <summary>Scoring, coverage, and result statuses</summary>
             <div class="home-notes-body">
                 <aside class="disclaimer">
-                    <strong>Fixed six-level normalization (29 July 2026).</strong> Full ladder denominator: 63 in every arena. Operational weight is Visual 31/63, Data Retrieval 15/63, and Chess 31/63. Planned and Locked capacity is reserved, so activation never expands the denominator. Current attainable maxima are 49.21%, 23.81%, and 49.21% respectively.
+                    <strong>Fixed six-level normalization (29 July 2026).</strong> Full ladder denominator: 63 in every arena. Operational weight is Visual 63/63, Data Retrieval 15/63, and Chess 31/63. Planned and Locked capacity is reserved, so activation never expands the denominator. Current attainable maxima are 100.00%, 23.81%, and 49.21% respectively.
                 </aside>
                 <aside class="disclaimer benchmark-status-legend" aria-labelledby="benchmark-status-title">
                     <h2 id="benchmark-status-title">Benchmark status legend</h2>

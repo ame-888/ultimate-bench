@@ -433,7 +433,7 @@ function init() {
     }
 
     const arenaDropdowns = [
-        { selectId: 'visual-ranking-method', tooltipId: 'visual-tooltip-text', tableId: 'visual-table-body', data: unifiedRawList, keys: ['lvl1', 'lvl2', 'lvl3', 'lvl4', 'lvl5'] },
+        { selectId: 'visual-ranking-method', tooltipId: 'visual-tooltip-text', tableId: 'visual-table-body', data: unifiedRawList, keys: ['lvl1', 'lvl2', 'lvl3', 'lvl4', 'lvl5', 'lvl6'] },
         { selectId: 'chess-ranking-method', tooltipId: 'chess-tooltip-text', tableId: 'chess-table-body', data: chessRawList, keys: ['mouse', 'spider', 'wolf', 'hawk', 'python', 'hydra'] },
         { selectId: 'data-ranking-method', tooltipId: 'data-tooltip-text', tableId: 'data-table-body', data: dataRawList, keys: ['worm', 'koala', 'crow', 'octopus'] },
     ];

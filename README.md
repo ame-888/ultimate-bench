@@ -6,7 +6,7 @@ Ultimate Bench is an independent experimental benchmark and static Astro site co
 
 Ultimate Bench uses **fixed six-level normalization**. Every arena defines exactly six weights (`1, 2, 4, 8, 16, 32`), and derives the permanent full-ladder denominator `63` from those definitions. The canonical formula is `Σ(earned result × level weight) / 63`; Overall is the equal arithmetic mean of the three full-precision arena scores.
 
-- **Visual:** Mole, Rhino, Chimpanzee, Owl, Eagle Active; Beholder Planned. Operational weight 31/63; current maximum 49.21%.
+- **Visual:** Mole, Rhino, Chimpanzee, Owl, Eagle, Beholder Active. Operational weight 63/63; current maximum 100.00%.
 - **Data Retrieval:** Worm, Koala, Crow, Octopus Active; Raven and Athena Planned. Operational weight 15/63; current maximum 23.81%.
 - **Chess:** Mouse, Spider, Wolf, Hawk, Python Active; Hydra Locked. Operational weight 31/63; current maximum 49.21%. Hydra may become Active, by deliberate benchmark-version decision, after an evaluated model obtains a numeric score above 0 on Python.
 
@@ -20,7 +20,7 @@ Canonical definitions are in [`src/data/benchmarkSpec.ts`](src/data/benchmarkSpe
 
 ## Public and protected benchmark information
 
-Public protocols describe the evaluated construct, administration count, transformation categories, scoring, validity rules, product/interface configuration, limitations, and audit expectations. Active images, exact questions, character layouts, answer keys, and reconstructable transformation details remain confidential to reduce contamination and benchmark-specific optimization. Visual Bench Levels 1–5 and Chess Bench Levels 1–5 have Active public protocols. Visual Level 6 is Planned; the existing Hydra protocol is Locked and has no model results. DATA Bench now has a dedicated protocol page for Active Levels 1–4, the proposed Raven structure while it remains Planned, and Planned Athena without an inferred task.
+Public protocols describe the evaluated construct, administration count, transformation categories, scoring, validity rules, product/interface configuration, limitations, and audit expectations. Active images, exact questions, character layouts, answer keys, and reconstructable transformation details remain confidential to reduce contamination and benchmark-specific optimization. Visual Bench Levels 1–6 and Chess Bench Levels 1–5 have Active public protocols; the existing Hydra protocol is Locked and has no model results. DATA Bench now has a dedicated protocol page for Active Levels 1–4, the proposed Raven structure while it remains Planned, and Planned Athena without an inferred task.
 
 ## Routes
 
@@ -28,7 +28,7 @@ Public protocols describe the evaluated construct, administration count, transfo
 | --- | --- |
 | `/` | Canonical leaderboard, arena results, status legend, and cost comparison |
 | `/methodology/` | Canonical scoring, statuses, qualification, transparency, and limitations |
-| `/methodology/visual-bench/` | Visual Bench administration, security, scoring, Active Levels 1–5, and Planned Level 6 |
+| `/methodology/visual-bench/` | Visual Bench administration, security, scoring, and Active Levels 1–6 |
 | `/methodology/data-bench/` | DATA Bench administration, exact-answer adjudication, Active Levels 1–4, and Planned Levels 5–6 |
 | `/methodology/chess-bench/` | Chess Bench match rules, independent administration, scoring, and five Active protocols and the Locked Hydra protocol |
 | `/analysis/` | Canonical findings and clearly labeled exploratory statistics |

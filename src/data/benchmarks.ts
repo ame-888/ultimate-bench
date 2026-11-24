@@ -6,13 +6,25 @@ export const benchmarks = {
     ],
     models: [
         {
+            name: 'GPT-6.2 Sol (high)',
+            scores: {
+                'lvl1': 100,
+                'lvl2': 90,
+                'lvl3': 90,
+                'lvl4': 72,
+                'lvl5': 25,
+                'lvl6': 21
+            }
+        },
+        {
             name: 'Gemini 4 Neon (high)',
             scores: {
                 'lvl1': 100,
                 'lvl2': 89,
                 'lvl3': 88,
                 'lvl4': 98,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -23,7 +35,8 @@ export const benchmarks = {
                 'lvl2': 94,
                 'lvl3': 84,
                 'lvl4': 71,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -34,7 +47,8 @@ export const benchmarks = {
                 'lvl2': 85,
                 'lvl3': 79,
                 'lvl4': 35,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -44,7 +58,8 @@ export const benchmarks = {
                 'lvl2': 40,
                 'lvl3': 41,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -54,7 +69,8 @@ export const benchmarks = {
                 'lvl2': 62,
                 'lvl3': 55,
                 'lvl4': 7,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -64,7 +80,8 @@ export const benchmarks = {
                 'lvl2': 33,
                 'lvl3': 34,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -74,7 +91,8 @@ export const benchmarks = {
                 'lvl2': 38,
                 'lvl3': 34,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -84,7 +102,8 @@ export const benchmarks = {
                 'lvl2': 4,
                 'lvl3': 0,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -94,7 +113,8 @@ export const benchmarks = {
                 'lvl2': 1,
                 'lvl3': 2,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -105,7 +125,8 @@ export const benchmarks = {
                 'lvl2': 92,
                 'lvl3': 77,
                 'lvl4': 'INVALID',
-                'lvl5': 'INVALID'
+                'lvl5': 'INVALID',
+                'lvl6': 0
             }
         },
         {
@@ -115,7 +136,8 @@ export const benchmarks = {
                 'lvl2': 83,
                 'lvl3': 74,
                 'lvl4': 13,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -125,7 +147,8 @@ export const benchmarks = {
                 'lvl2': 88,
                 'lvl3': 82,
                 'lvl4': 'INVALID',
-                'lvl5': 'INVALID'
+                'lvl5': 'INVALID',
+                'lvl6': 0
             }
         },
         {
@@ -135,7 +158,8 @@ export const benchmarks = {
                 'lvl2': 6,
                 'lvl3': 6,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -145,7 +169,8 @@ export const benchmarks = {
                 'lvl2': 5,
                 'lvl3': 2,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             },
         },
         {
@@ -156,7 +181,8 @@ export const benchmarks = {
                 'lvl2': 76,
                 'lvl3': 64,
                 'lvl4': 12,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -167,7 +193,8 @@ export const benchmarks = {
                 'lvl2': 64,
                 'lvl3': 62,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             },
         },
         {
@@ -178,7 +205,8 @@ export const benchmarks = {
                 'lvl2': 73,
                 'lvl3': 56,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             },
         },
         {
@@ -189,7 +217,8 @@ export const benchmarks = {
                 'lvl2': 33,
                 'lvl3': 39,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -200,7 +229,8 @@ export const benchmarks = {
                 'lvl2': 33,
                 'lvl3': 43,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -211,7 +241,8 @@ export const benchmarks = {
                 'lvl2': 61,
                 'lvl3': 66,
                 'lvl4': 4,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             },
         },
         {
@@ -221,7 +252,8 @@ export const benchmarks = {
                 'lvl2': 32,
                 'lvl3': 44,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -231,7 +263,8 @@ export const benchmarks = {
                 'lvl2': 50,
                 'lvl3': 35,
                 'lvl4': 2,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -241,7 +274,8 @@ export const benchmarks = {
                 'lvl2': 29,
                 'lvl3': 63,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -252,7 +286,8 @@ export const benchmarks = {
                 'lvl2': 60,
                 'lvl3': 54,
                 'lvl4': 3,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -262,7 +297,8 @@ export const benchmarks = {
                 'lvl2': 11,
                 'lvl3': 13,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -272,7 +308,8 @@ export const benchmarks = {
                 'lvl2': 7,
                 'lvl3': 3,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             },
         },
         {
@@ -282,7 +319,8 @@ export const benchmarks = {
                 'lvl2': 'INVALID',
                 'lvl3': 'INVALID',
                 'lvl4': 'INVALID',
-                'lvl5': 'INVALID'
+                'lvl5': 'INVALID',
+                'lvl6': 0
             }
         },
         {
@@ -292,7 +330,8 @@ export const benchmarks = {
                 'lvl2': 38,
                 'lvl3': 19,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -302,7 +341,8 @@ export const benchmarks = {
                 'lvl2': 4,
                 'lvl3': 0,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -312,7 +352,8 @@ export const benchmarks = {
                 'lvl2': 64,
                 'lvl3': 64,
                 'lvl4': 7,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -322,7 +363,8 @@ export const benchmarks = {
                 'lvl2': 34,
                 'lvl3': 35,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -332,7 +374,8 @@ export const benchmarks = {
                 'lvl2': 80,
                 'lvl3': 80,
                 'lvl4': 26,
-                'lvl5': 8
+                'lvl5': 8,
+                'lvl6': 0
             }
         },
         {
@@ -342,7 +385,8 @@ export const benchmarks = {
                 'lvl2': 71,
                 'lvl3': 65,
                 'lvl4': 25,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -352,7 +396,8 @@ export const benchmarks = {
                 'lvl2': 84,
                 'lvl3': 85,
                 'lvl4': 50,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -362,7 +407,8 @@ export const benchmarks = {
                 'lvl2': 71,
                 'lvl3': 49,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -372,7 +418,8 @@ export const benchmarks = {
                 'lvl2': 67,
                 'lvl3': 60,
                 'lvl4': 3,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -382,7 +429,8 @@ export const benchmarks = {
                 'lvl2': 87,
                 'lvl3': 80,
                 'lvl4': 'INVALID',
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -392,7 +440,8 @@ export const benchmarks = {
                 'lvl2': 57,
                 'lvl3': 55,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -402,7 +451,8 @@ export const benchmarks = {
                 'lvl2': 26,
                 'lvl3': 19,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -412,7 +462,8 @@ export const benchmarks = {
                 'lvl2': 9,
                 'lvl3': 3,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -422,7 +473,8 @@ export const benchmarks = {
                 'lvl2': 19,
                 'lvl3': 3,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -432,7 +484,8 @@ export const benchmarks = {
                 'lvl2': 23,
                 'lvl3': 9,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -442,7 +495,8 @@ export const benchmarks = {
                 'lvl2': 19,
                 'lvl3': 23,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         },
         {
@@ -452,7 +506,8 @@ export const benchmarks = {
                 'lvl2': 0,
                 'lvl3': 0,
                 'lvl4': 0,
-                'lvl5': 0
+                'lvl5': 0,
+                'lvl6': 0
             }
         }
     ],

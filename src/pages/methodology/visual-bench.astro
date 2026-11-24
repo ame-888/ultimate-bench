@@ -15,6 +15,7 @@ const protocols = [
     { number: 3, name: 'Chimpanzee', anchor: 'level-3-chimpanzee' },
     { number: 4, name: 'Owl', anchor: 'level-4-owl' },
     { number: 5, name: 'Eagle', anchor: 'level-5-eagle' },
+    { number: 6, name: 'Beholder', anchor: 'level-6-beholder' },
 ];
 ---
 
@@ -31,13 +32,12 @@ const protocols = [
         <a href="#construct">What it measures</a><a href="#administration">Administration</a><a href="#confidentiality">Confidentiality</a>
         <a href="#scoring">Scoring</a><a href="#status-handling">Statuses</a><a href="#weighting">Weighting</a>
         {protocols.map(protocol => <a href={`#${protocol.anchor}`}>Level {protocol.number} — {protocol.name}</a>)}
-        <a href="#level-6-beholder" class="pending">Level 6 — Beholder (Planned)</a>
     </nav>
 
     <article class="content-card shared-methodology">
         <section id="construct" aria-labelledby="construct-title">
             <p class="section-label">Scope</p><h2 id="construct-title">What Visual Bench measures</h2>
-            <p>The five Active levels use character images and fixed questions to test repeatable correctness under increasingly complex task conditions. Depending on the level, success can require recognizing depicted characters, knowing or recovering their names, locating them in a structured image, following coordinate conventions, locating named anchors, finding a midpoint, and binding each answer to the right question.</p>
+            <p>The six Active levels use character images and fixed questions to test repeatable correctness under increasingly complex task conditions. Depending on the level, success can require recognizing depicted characters, knowing or recovering their names, locating them in a structured image, following coordinate conventions, locating named anchors, finding a midpoint, and binding each answer to the right question.</p>
             <p>Occlusion, segmentation artifacts, irregular cropping, color inversion, visual density, and appropriate use of permitted interface tools can also affect performance. No level isolates a single pure cognitive faculty. Visual Bench is not a comprehensive measure of general visual intelligence, every form of visual-spatial ability, or the underlying foundation model in isolation.</p>
         </section>
 
@@ -144,18 +144,18 @@ const protocols = [
 
     <article class="content-card closing-methodology">
         <section id="weighting" aria-labelledby="weighting-title">
-            <p class="section-label">Official index</p><h2 id="weighting-title">Arena weighting and aggregate score</h2><p><strong>Fixed six-level normalization:</strong> the full ladder denominator is permanently 63. Operational weight is {activeWeight}/63, so the current maximum is 49.21%. Beholder reserves 32 points but has no model-level result. Future activation creates earning opportunity without changing the denominator.</p>
+            <p class="section-label">Official index</p><h2 id="weighting-title">Arena weighting and aggregate score</h2><p><strong>Fixed six-level normalization:</strong> the full ladder denominator is permanently 63. All six Visual levels are Active, so operational weight is {activeWeight}/63 and the current maximum is 100.00%.</p>
             <div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable benchmark table"><table data-visual-weights><thead><tr><th>Active level</th><th>Weight</th><th>Share of complete score</th></tr></thead><tbody>
                 {visualLevels.map(level => <tr data-level={level.number} data-weight={level.weight}><th scope="row">{level.number} — {level.name}</th><td>{level.weight}</td><td>{level.weight}/63</td></tr>)}
-                <tr><th scope="row">6 — Beholder (Planned)</th><td>32 reserved</td><td>32/63</td></tr><tr class="total"><th scope="row">Full ladder denominator</th><td>{fullWeight}</td><td>Permanent</td></tr>
+                <tr class="total"><th scope="row">Full ladder denominator</th><td>{fullWeight}</td><td>Permanent</td></tr>
             </tbody></table></div>
-            <p><code>Visual score = (Mole + 2×Rhino + 4×Chimpanzee + 8×Owl + 16×Eagle) / 63</code></p>
-            <p>Later levels contain more complex task conditions, and the official index intentionally gives success under those conditions greater importance. Eagle contributes 16/63 and Owl 8/63 of the permanent complete six-level Visual ladder. Among the currently operational Visual weight of 31, those levels represent 16/31 and 8/31 respectively. Equal weighting would also be an editorial choice, not an objectively neutral law. Powers of two are transparent, deterministic, monotonic, and easy to reproduce, but these are <strong>editorial importance weights</strong>, not empirically estimated psychometric difficulty parameters.</p>
+            <p><code>Visual score = (Mole + 2×Rhino + 4×Chimpanzee + 8×Owl + 16×Eagle + 32×Beholder) / 63</code></p>
+            <p>Later levels contain more complex task conditions, and the official index intentionally gives success under those conditions greater importance. Beholder contributes 32/63, Eagle contributes 16/63, and Owl contributes 8/63 of the permanent complete six-level Visual ladder. Equal weighting would also be an editorial choice, not an objectively neutral law. Powers of two are transparent, deterministic, monotonic, and easy to reproduce, but these are <strong>editorial importance weights</strong>, not empirically estimated psychometric difficulty parameters.</p>
         </section>
 
         <section id="coverage-ranking" aria-labelledby="coverage-title">
             <p class="section-label">Leaderboard</p><h2 id="coverage-title">Coverage, provisional results, and ranking</h2>
-            <p>Complete Visual coverage means all five Active level results are included. Numeric zero and INVALID both retain coverage and weight. UNAVAILABLE and NOT_TESTED earn zero without reducing denominator 63, and make the score provisional and ineligible for an official arena rank. Missing Active result fields are data errors rather than statuses.</p>
+            <p>Complete Visual coverage means all six Active level results are included. Numeric zero and INVALID both retain coverage and weight. UNAVAILABLE and NOT_TESTED earn zero without reducing denominator 63, and make the score provisional and ineligible for an official arena rank. Missing Active result fields are data errors rather than statuses.</p>
             <p>Official Visual ranks include only complete-coverage results. Overall qualification requires rank-eligible results in all three arenas. Equal unrounded canonical scores receive the same competition rank and the next rank is skipped. Canonical calculations retain full precision; leaderboard composite displays round to one decimal place. Per-level integer percentages are already exact response counts out of 100.</p>
         </section>
 
@@ -171,9 +171,9 @@ const protocols = [
             <p>A repository-maintained schema defines that private record format. Actual records belong in the ignored <code>private/evaluations/</code> directory, outside <code>src/</code> and <code>public/</code>, so they are not bundled into client code or static output. No historical fields have been fabricated.</p>
         </section>
 
-        <section id="level-6-beholder" aria-labelledby="beholder-title" data-level-status="Planned">
-            <p class="section-label">Planned · reserved weight 32</p><h2 id="beholder-title">Level 6 — Beholder</h2>
-            <p>Beholder has no active stimulus, task, or scoring protocol. It contributes nothing to the current Visual score, does not affect coverage or rank eligibility, and must not display a model score. Its future protocol must be documented before activation; no methodology is inferred here.</p>
+        <section id="level-6-beholder" aria-labelledby="beholder-title" data-level-status="Active">
+            <p class="section-label">Active · Level 6 · weight 32</p><h2 id="beholder-title">Level 6 — Beholder</h2>
+            <p>Beholder is the Active Level 6 Visual Bench evaluation, carrying weight 32 in the permanent 63-point denominator under the shared Visual Bench administration and scoring rules. Active stimuli, item details, and answer keys remain confidential.</p>
         </section>
     </article>
   <MethodologyFingerprint value="UB-VIS-20260730-K9M2" />
