@@ -151,8 +151,15 @@ test('GPT-6.2 Sol (high) activates Visual Bench Level 6 and leads Visual Bench',
  assert.equal(result.numerator,2288);assert.equal(result.denominator,63);assert.equal(result.score,2288/63);
  assert.equal(formatAggregateScore(result.score),'36.32');assert.equal(result.coverage,'6/6 active levels');
  assert.equal(result.completeCoverage,true);assert.equal(result.rankEligible,true);
- const built=buildLeaderboard(benchmarks),visualRow=built.arenaRows.visual.find(row=>row.name===name);
+ const dataRecord=benchmarks.dataRetrieval.find(row=>row.name===name);assert.ok(dataRecord);
+ assert.deepEqual(dataRecord.scores,{worm:53,koala:41,crow:29,octopus:7});
+ const dataResult=calculateArenaScore(ARENAS.dataRetrieval,dataRecord.scores);
+ assert.equal(dataResult.numerator,307);assert.equal(dataResult.denominator,63);assert.equal(dataResult.score,307/63);
+ assert.equal(formatAggregateScore(dataResult.score),'4.87');assert.equal(dataResult.coverage,'4/4 active levels');
+ assert.equal(dataResult.completeCoverage,true);assert.equal(dataResult.rankEligible,true);
+ const built=buildLeaderboard(benchmarks),visualRow=built.arenaRows.visual.find(row=>row.name===name),dataRow=built.arenaRows['data-retrieval'].find(row=>row.name===name);
  assert.equal(visualRow?.rank,1);assert.equal(visualRow?.score,2288/63);
+ assert.equal(dataRow?.rank,4);assert.equal(dataRow?.score,307/63);
 });
 test('Gemini 3.1 Pro Preview with code execution has complete DATA results',()=>{
  const name='Gemini 3.1 Pro Preview';

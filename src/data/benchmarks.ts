@@ -512,6 +512,7 @@ export const benchmarks = {
         }
     ],
     dataRetrieval: [
+        { name: 'GPT-6.2 Sol (high)', scores: { worm: 53, koala: 41, crow: 29, octopus: 7 } },
         { name: 'Gemini 4 Neon (high)', scores: { worm: 54, koala: 52, crow: 57, octopus: 0 } },
         { name: 'Muse Spark 1.1', scores: { worm: 24, koala: 'INVALID', crow: 11, octopus: 0 } },
         { name: 'Gemini 3.6 Flash (without code execution)', scores: { worm: 32, koala: 'INVALID', crow: 20, octopus: 'INVALID' } },
