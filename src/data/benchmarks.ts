@@ -457,6 +457,7 @@ export const benchmarks = {
         }
     ],
     dataRetrieval: [
+        { name: 'Gemini 4 Neon (high)', scores: { worm: 54, koala: 52, crow: 57, octopus: 0 } },
         { name: 'Muse Spark 1.1', scores: { worm: 24, koala: 'INVALID', crow: 11, octopus: 0 } },
         { name: 'Gemini 3.6 Flash (without code execution)', scores: { worm: 32, koala: 'INVALID', crow: 20, octopus: 'INVALID' } },
         { name: 'Gemini 3.6 Flash', scores: { worm: 24, koala: 'INVALID', crow: 'INVALID', octopus: 'INVALID' } },
